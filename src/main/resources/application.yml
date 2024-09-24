@@ -1,3 +1,0 @@
-server: # lưu ý không được dùng tab trong file .yml 
-  port: 8080
- 

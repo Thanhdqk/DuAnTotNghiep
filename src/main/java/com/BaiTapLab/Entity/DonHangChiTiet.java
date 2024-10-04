@@ -26,5 +26,5 @@ public class DonHangChiTiet {
 	public MonAn monan;
 	
 	public int so_luong;
-	public float tong_tien;
+	public double tong_tien;
 }

@@ -1,6 +1,9 @@
 package com.BaiTapLab.Entity;
 
 
+import java.time.Instant;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -14,10 +17,19 @@ import lombok.Data;
 public class DonHang {
 	@Id
 	public String don_hangID;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai;
-	public String ngay_tao;
+	
+	public Instant ngay_tao;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String dia_chi;
+	
+	
 	public String so_dien_thoai;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ghi_chu;
 	
 	@ManyToOne

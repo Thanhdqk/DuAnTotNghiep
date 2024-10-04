@@ -2,6 +2,7 @@ package com.BaiTapLab.Entity;
 
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -15,8 +16,11 @@ import lombok.Data;
 public class LoaiLuaChon {
 	@Id
 	public String loai_lua_chonID;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ten_loai_lua_chon;
-	public String so_lan_chon;
+	
+	public int so_lan_chon;
 
 	@ManyToOne
 	@JoinColumn(name = "mon_anID")

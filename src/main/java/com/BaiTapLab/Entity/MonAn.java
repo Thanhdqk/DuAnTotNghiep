@@ -2,7 +2,7 @@ package com.BaiTapLab.Entity;
 
 import java.time.Instant;
 
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -16,11 +16,16 @@ import lombok.Data;
 public class MonAn {
 	@Id
 	public String mon_anID;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ten_mon_an;
 	public Instant ngay_tao;
-	public float gia_goc;
+	public double gia_goc;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String mo_ta;
-	public float gia_moi;
+	
+	public double gia_moi;
 	
 	@ManyToOne
 	@JoinColumn(name = "loai_mon_anID")

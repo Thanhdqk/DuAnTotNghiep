@@ -1,6 +1,9 @@
 package com.BaiTapLab.Entity;
 
 
+import java.time.Instant;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -14,11 +17,15 @@ import lombok.Data;
 public class Voucher {
 	@Id
 	public String voucherID;
-	public float so_tien_giam;
+	public double so_tien_giam;
 	public String hinh_anh;
-	public String han_su_dung;
+	public Instant han_su_dung;
 	public int so_luotSD;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String phuong_thuc_TT;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String dieu_kien;
 	
 	@ManyToOne

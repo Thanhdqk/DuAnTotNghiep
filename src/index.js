@@ -12,7 +12,7 @@ import AdminIndex from './views/admin/Pages/Adminindex';
 import { store } from './views/user/Reducer/store';
 import HomeTemplateSeller from './views/seller/Layout/HomeTemplateSeller';
 import HomeTemplateAdmin from './views/admin/Layout/HomeTemplateAdmin';
-
+import Signin from './views/admin/Partials/Signin';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -23,6 +23,7 @@ root.render(
 
         <Route path='' element={<HomeTemplate/>}>
           <Route index element={<Index/>} />
+          <Route path='signin' element={<Signin />} />
         </Route>
 
         {/*end page user */}

@@ -23,6 +23,7 @@ import TestScroll from './views/user/Pages/TestScroll';
 import ProductDetail from './views/user/Pages/ProductDetail';
 import Search from './views/user/Pages/Search';
 import TestSearch from './views/user/Pages/TestSearch';
+import Page404 from './views/user/Pages/Page404';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -33,13 +34,12 @@ root.render(
 
         <Route path='' element={<HomeTemplate/>}>
           <Route index element={<Index/>} />
-          <Route path='registertoseller' element={<RegisterToSeller/>} />
+          
          
-          <Route path='gaga' element={<TyneMCE></TyneMCE>} />
-          <Route path='gagaga' element={<TestScroll></TestScroll>} />
+          
           <Route path='product' element={<ProductDetail></ProductDetail>} />
           <Route path='search' element={<Search></Search>} />
-          <Route path='search2' element={<TestSearch></TestSearch>} />
+         
 
           
         </Route>
@@ -64,14 +64,11 @@ root.render(
 
         {/*end page admin */}
 
-        {/* page seller */}
+        {/* start page 404 */}
 
-        <Route path='/seller' element={<HomeTemplateSeller />}>
-          <Route index element={<SellerIndex />} />
-        </Route>
+          <Route path='*' element={<Page404></Page404>}></Route>
 
-        {/*end page seller */}
-
+         {/* end page 404 */}
       </Routes>
       <Popup></Popup>
     </BrowserRouter>

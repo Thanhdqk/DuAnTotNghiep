@@ -6,9 +6,10 @@ const TestSearch = () => {
   // Xử lý khi click bên ngoài để đóng popup
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.history')) {
+      if (!event.target.closest('.search-container') && !event.target.closest('.popup')) {
         setShowPopup(false);
-      }
+    }
+    
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => {

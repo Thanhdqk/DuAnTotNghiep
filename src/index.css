@@ -12,7 +12,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.footer-bg-color{
 
+background-color: rgb(244, 245, 246);
+
+}
 .btnlogin {
 
   background-color: rgb(57, 219, 74) !important
@@ -35,8 +39,8 @@ code {
 
   background-color: aquamarine; 
   border-radius: 50%;          
-  width: 100px; 
-  height: 100px; 
+  width: 60px; 
+  height: 60px; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -63,4 +67,209 @@ code {
   color: rgb(57, 219, 74);
 
 
+}
+
+.swiper {
+  width: 100%;
+  height: 400px; /* Đặt chiều cao cố định cho swiper */
+  border-radius: 15px;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Đảm bảo slide sử dụng chiều cao của swiper */
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%; /* Ảnh sẽ chiếm hết chiều cao của slide */
+  object-fit: cover; /* Giữ tỷ lệ cho ảnh */
+ 
+  
+}
+
+.autoplay-progress {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--swiper-theme-color);
+}
+
+.autoplay-progress svg {
+  --progress: 0;
+  position: absolute;
+  left: 0;
+  top: 0px;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  stroke-width: 4px;
+  stroke: var(--swiper-theme-color);
+  fill: none;
+  stroke-dashoffset: calc(125.6px * (1 - var(--progress)));
+  stroke-dasharray: 125.6;
+  transform: rotate(-90deg);
+}
+
+
+/* // */
+
+/* styles.css */
+.image {
+  width: 100%; /* Đảm bảo ảnh chiếm toàn bộ chiều rộng của slide */
+  height: auto; /* Giữ tỷ lệ khung hình của ảnh */
+  max-height: 300px; /* Điều chỉnh chiều cao tối đa cho ảnh */
+  object-fit: cover; /* Đảm bảo ảnh không bị méo khi thu phóng */
+}
+
+.gradient-button {
+  min-width: 350px;
+  background: linear-gradient(to right, red, blue); /* Hiệu ứng gradient đỏ-xanh */
+  color: white; /* Màu chữ */
+  padding: 10px 20px; /* Khoảng cách trong button */
+  border: none; /* Loại bỏ viền */
+  border-radius: 5px; /* Bo góc */
+  cursor: pointer; /* Thay đổi con trỏ chuột khi hover */
+  font-size: 16px; /* Kích thước chữ */
+  transition: background 0.3s ease; /* Hiệu ứng khi hover */
+}
+
+.gradient-button:hover {
+  background: linear-gradient(to right, blue, red); /* Đổi chiều gradient khi hover */
+}
+
+.imagesupport{
+
+border: 1px solid red;
+max-width: 110px;
+height: 110px;
+border-radius: 10px;
+
+}
+
+.gradient-button-2 {
+  background:white;
+  border: 1px solid gray;
+  color: dark;
+  padding: 8px 62px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.gradient-button-2:hover {
+  border: 1px solid red;
+ 
+  color: red;
+  
+}
+
+/* // header and nav */
+header {
+  background-color: #fff;
+}
+
+input[type="text"] {
+  max-width:  350px;
+  min-width: 100px;
+}
+
+.navbar-nav .nav-link {
+  color: #000;
+  font-weight: 500;
+}
+
+.navbar-nav .nav-link.active {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #dc3545;
+}
+
+.btn-danger i {
+  color: #fff;
+}
+header {
+  background-color: #fff;
+ 
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+
+}
+
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+ 
+  background-color: #fff; /* Đảm bảo navbar có nền màu trắng khi dính */
+}
+
+
+
+.sidebar1 {
+  background-color: white; /* Màu nền nhẹ nhàng */
+  padding: 20px; /* Padding cho nội dung bên trong */
+ 
+  height: 100%; /* Chiều cao bằng chiều cao của viewport */
+  
+}
+
+.sidebar1 h2 {
+  font-size: 1.5rem; /* Kích thước chữ cho tiêu đề */
+  margin-bottom: 15px; /* Khoảng cách dưới tiêu đề */
+  color: #343a40; /* Màu chữ */
+  font-weight: bold; /* Chữ đậm */
+  text-align: left; /* Căn trái */
+}
+
+.sidebar1 ul {
+  padding-left: 0; /* Bỏ padding bên trái cho danh sách */
+  list-style-type: none; /* Bỏ dấu chấm cho danh sách */
+}
+
+.sidebar1 ul li {
+  padding: 10px 15px; /* Padding cho từng item */
+  margin: 5px 0; /* Khoảng cách giữa các item */
+  border-radius: 5px; /* Bo tròn các góc */
+  transition: background-color 0.3s; /* Hiệu ứng chuyển màu khi hover */
+  cursor: pointer; /* Con trỏ chuột kiểu pointer khi hover */
+}
+
+.sidebar1 ul li:hover {
+  background-color: #e2e6ea; /* Màu nền khi hover */
+  color: #007bff; /* Màu chữ khi hover */
+}
+
+.sidebar1 h2:last-of-type {
+  margin-top: 20px; /* Khoảng cách trên cho tiêu đề cuối cùng */
+}
+
+.form-check{
+  margin: 7px;
+}
+.form-check i{
+  margin:0px 2px;
 }

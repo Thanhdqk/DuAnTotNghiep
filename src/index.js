@@ -12,7 +12,17 @@ import AdminIndex from './views/admin/Pages/Adminindex';
 import { store } from './views/user/Reducer/store';
 import HomeTemplateSeller from './views/seller/Layout/HomeTemplateSeller';
 import HomeTemplateAdmin from './views/admin/Layout/HomeTemplateAdmin';
-
+import LoginAdmin from './views/admin/Pages/LoginAdmin';
+import AdminLogin from './views/admin/Pages/AdminLogin';
+import RegisterToSeller from './views/user/Pages/RegisterToSeller';
+import Popup from './views/admin/Pages/Popup';
+import ProtectEoute from './views/admin/Pages/ProtectEoute';
+import App from './views/admin/Pages/App';
+import TyneMCE from './views/user/Pages/TyneMCE';
+import TestScroll from './views/user/Pages/TestScroll';
+import ProductDetail from './views/user/Pages/ProductDetail';
+import Search from './views/user/Pages/Search';
+import TestSearch from './views/user/Pages/TestSearch';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -23,17 +33,34 @@ root.render(
 
         <Route path='' element={<HomeTemplate/>}>
           <Route index element={<Index/>} />
+          <Route path='registertoseller' element={<RegisterToSeller/>} />
+         
+          <Route path='gaga' element={<TyneMCE></TyneMCE>} />
+          <Route path='gagaga' element={<TestScroll></TestScroll>} />
+          <Route path='product' element={<ProductDetail></ProductDetail>} />
+          <Route path='search' element={<Search></Search>} />
+          <Route path='search2' element={<TestSearch></TestSearch>} />
+
+          
         </Route>
 
         {/*end page user */}
 
         {/* page admin */}
-
-        <Route path='/admin' element={<HomeTemplateAdmin />}>
+        <Route path='/admin/login' element={<AdminLogin></AdminLogin>} />
         
-          <Route index element={<AdminIndex />} />
-          
+        
+        <Route path='/admin/dashboard' element={
+          <ProtectEoute>
+            <AdminIndex />
+          </ProtectEoute>} >
+
+       
+
         </Route>
+          
+          
+      
 
         {/*end page admin */}
 
@@ -46,6 +73,7 @@ root.render(
         {/*end page seller */}
 
       </Routes>
+      <Popup></Popup>
     </BrowserRouter>
   </Provider>
 );

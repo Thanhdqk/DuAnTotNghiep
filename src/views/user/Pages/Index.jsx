@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ListStore from './ListStore'
 import Banner from './Banner'
 import Category from './Category'
@@ -6,13 +6,27 @@ import CategoryNew from './CategoryNew'
 import ListStoreNew from './ListStoreNew'
 import TestScroll from './TestScroll'
 import Post from './Post'
+import PopupAD from './PopupAD'
 const Index = () => {
+   console.log('run')
+  useEffect(()=>{
+    const modal = new window.bootstrap.Modal(document.getElementById('exampleModal'));
+    modal.show();
+
+    // Cleanup: Đóng modal khi component unmount
+    return () => {
+      modal.hide();
+    };
+  },[])
   return (
+    
     <div className='container-fluid  mb-5' >
+     
       <Banner></Banner>
 
       <CategoryNew></CategoryNew>
 
+      <PopupAD></PopupAD>
       
       
       <div className='row '>

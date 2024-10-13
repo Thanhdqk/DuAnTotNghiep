@@ -1,10 +1,12 @@
+// Adminindex.js
 import React, { useState } from 'react';
 import ApexCharts from 'react-apexcharts';
 import './Adminindex.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
+import { Outlet, Link } from 'react-router-dom';
 
 const Adminindex = () => {
+    
     const [isSidebarHidden, setSidebarHidden] = useState(false);
 
     const toggleSidebar = () => {
@@ -104,16 +106,17 @@ const Adminindex = () => {
     return (
         <div className="dashboard">
             <aside className={`sidebar ${isSidebarHidden ? 'hide' : ''}`}>
-                <h2>Dashboard</h2>
+                <h2>Dash Board</h2>
                 <ul>
-                    <li><a href="#">Dashboard</a></li>
-                    <li><a href="#">User Management</a></li>
-                    <li><a href="#">Orders</a></li>
-                    <li><a href="#">Reports</a></li>
+                    <li><Link to="/admin/dashboard">Dashboard</Link></li>
+                    <li><Link to="/admin/user-management">User Management</Link></li>
+                    <li><Link to="/admin/orders">Orders</Link></li>
+                    <li><Link to="/admin/reports">Reports</Link></li>
                 </ul>
             </aside>
 
             <main className="content">
+                <Outlet></Outlet>
                 <nav className="navbar">
                     <button className="icon-btn" onClick={toggleSidebar}>
                         <img src="https://img.icons8.com/?size=100&id=3096&format=png&color=000000" alt="Menu Icon" />
@@ -122,36 +125,34 @@ const Adminindex = () => {
                 </nav>
 
                 <section className="main-section">
-                <div className="stats">
-    <div className="stat-card">
-        <i className="fas fa-shopping-cart icon orders-icon"></i> {/* Icon for Orders */}
-        <h3>Total Orders</h3>
-        <p>75</p>
-    </div>
-    <div className="stat-card">
-        <i className="fas fa-truck icon delivered-icon"></i> {/* Icon for Delivered */}
-        <h3>Total Delivered</h3>
-        <p>357</p>
-    </div>
-    <div className="stat-card">
-        <i className="fas fa-times-circle icon canceled-icon"></i> {/* Icon for Canceled */}
-        <h3>Total Canceled</h3>
-        <p>65</p>
-    </div>
-    <div className="stat-card">
-        <i className="fas fa-dollar-sign icon revenue-icon"></i> {/* Icon for Revenue */}
-        <h3>Total Revenue</h3>
-        <p>$128</p>
-    </div>
-</div>
+                    <div className="stats">
+                        <div className="stat-card">
+                            <i className="fas fa-shopping-cart icon orders-icon"></i>
+                            <h3>Total Orders</h3>
+                            <p>75</p>
+                        </div>
+                        <div className="stat-card">
+                            <i className="fas fa-truck icon delivered-icon"></i>
+                            <h3>Total Delivered</h3>
+                            <p>357</p>
+                        </div>
+                        <div className="stat-card">
+                            <i className="fas fa-times-circle icon canceled-icon"></i>
+                            <h3>Total Canceled</h3>
+                            <p>65</p>
+                        </div>
+                        <div className="stat-card">
+                            <i className="fas fa-dollar-sign icon revenue-icon"></i>
+                            <h3>Total Revenue</h3>
+                            <p>$128</p>
+                        </div>
+                    </div>
 
-
-
-                    <div className="charts-row">
-                        <div className="chart-container col-6">
+                    <div className="charts-row" style={{ display: 'flex', marginBottom: '20px' }}>
+                        <div className="chart-container" style={{ flex: 1, marginRight: '10px' }}>
                             <ApexCharts options={revenueChartOptions} series={revenueChartOptions.series} type="line" height={250} />
                         </div>
-                        <div className="chart-container col-6">
+                        <div className="chart-container" style={{ flex: 1, marginLeft: '10px' }}>
                             <ApexCharts options={orderChartOptions} series={orderChartOptions.series} type="bar" height={250} />
                         </div>
                     </div>
@@ -161,70 +162,44 @@ const Adminindex = () => {
                     </div>
 
                     <section className="customer-reviews">
-    <h2>Customer Reviews</h2>
-    <div className="reviews">
-        <div className="review-card">
-            <i className="fas fa-user-circle"></i> {/* Icon for Sofia */}
-            <p><strong>Sofia</strong></p>
-            <p>⭐⭐⭐⭐⭐</p>
-            <p>"Great service!"</p>
-        </div>
-        <div className="review-card">
-            <i className="fas fa-user-circle"></i> {/* Icon for John S. */}
-            <p><strong>John S.</strong></p>
-            <p>⭐⭐⭐⭐</p>
-            <p>"Good quality products."</p>
-        </div>
-        <div className="review-card">
-            <i className="fas fa-user-circle"></i> {/* Icon for Ashley */}
-            <p><strong>Ashley</strong></p>
-            <p>⭐⭐⭐⭐⭐</p>
-            <p>"Will come back again!"</p>
-        </div>
-    </div>
-</section>
+                        <h2>Customer Reviews</h2>
+                        <div className="reviews">
+                            <div className="review-card">
+                                <i className="fas fa-user-circle"></i>
+                                <p><strong>Sofia</strong></p>
+                                <p>⭐⭐⭐⭐⭐</p>
+                                <p>"Great service!"</p>
+                            </div>
+                            <div className="review-card">
+                                <i className="fas fa-user-circle"></i>
+                                <p><strong>John S.</strong></p>
+                                <p>⭐⭐⭐⭐</p>
+                                <p>"Good quality products."</p>
+                            </div>
+                            <div className="review-card">
+                                <i className="fas fa-user-circle"></i>
+                                <p><strong>Ashley</strong></p>
+                                <p>⭐⭐⭐⭐⭐</p>
+                                <p>"Will come back again!"</p>
+                            </div>
+                        </div>
+                    </section>
 
-<section className="customer-reviews">
-    <h2>Customer Reviews</h2>
-    <div className="reviews">
-        <div className="review-card">
-            <i className="fas fa-user-circle review-icon"></i> {/* Icon for Sofia */}
-            <p><strong>Sofia</strong></p>
-            <p>⭐⭐⭐⭐⭐</p>
-            <p>"Great service!"</p>
-        </div>
-        <div className="review-card">
-            <i className="fas fa-user-circle review-icon"></i> {/* Icon for John S. */}
-            <p><strong>John S.</strong></p>
-            <p>⭐⭐⭐⭐</p>
-            <p>"Good quality products."</p>
-        </div>
-        <div className="review-card">
-            <i className="fas fa-user-circle review-icon"></i> {/* Icon for Ashley */}
-            <p><strong>Ashley</strong></p>
-            <p>⭐⭐⭐⭐⭐</p>
-            <p>"Will come back again!"</p>
-        </div>
-    </div>
-</section>
-
-<section className="notifications">
-    <h2>Notifications</h2>
-    <div className="notification-card">
-        <i className="fas fa-user-circle notification-icon"></i> {/* Icon for new user */}
-        <p>New user registered: Alex</p>
-    </div>
-    <div className="notification-card">
-        <i className="fas fa-box notification-icon"></i> {/* Icon for order */}
-        <p>Order #1234 has been shipped!</p>
-    </div>
-    <div className="notification-card">
-        <i className="fas fa-star notification-icon"></i> {/* Icon for review */}
-        <p>Customer review received from Mike: ⭐⭐⭐⭐</p>
-    </div>
-</section>
-
-
+                    <section className="notifications">
+                        <h2>Notifications</h2>
+                        <div className="notification-card">
+                            <i className="fas fa-user-circle notification-icon"></i>
+                            <p>New user registered: Alex</p>
+                        </div>
+                        <div className="notification-card">
+                            <i className="fas fa-box notification-icon"></i>
+                            <p>Order #1234 has been shipped!</p>
+                        </div>
+                        <div className="notification-card">
+                            <i className="fas fa-star notification-icon"></i>
+                            <p>Customer review received from Mike: ⭐⭐⭐⭐</p>
+                        </div>
+                    </section>
                 </section>
             </main>
         </div>

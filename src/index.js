@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -9,6 +8,10 @@ import HomeTemplate from './views/user/Layout/HomeTemplate';
 import Index from './views/user/Pages/Index';
 import SellerIndex from './views/seller/Pages/Sellerindex';
 import AdminIndex from './views/admin/Pages/Adminindex';
+import Dashboard from './views/admin/Pages/Dashboard';
+import UserManagement from './views/admin/Pages/UserManagement';
+import Orders from './views/admin/Pages/Orders';
+import Reports from './views/admin/Pages/Reports';
 import { store } from './views/user/Reducer/store';
 import HomeTemplateSeller from './views/seller/Layout/HomeTemplateSeller';
 import HomeTemplateAdmin from './views/admin/Layout/HomeTemplateAdmin';
@@ -31,7 +34,11 @@ root.render(
         {/* page admin */}
 
         <Route path='/admin' element={<HomeTemplateAdmin />}>
-        
+        <Route index element={<AdminIndex />} /> {/* Trang Dashboard */}
+    <Route path="dashboard" element={<Dashboard />} />
+    <Route path="user-management" element={<UserManagement />} />
+    <Route path="orders" element={<Orders />} />
+    <Route path="reports" element={<Reports />} />
           <Route index element={<AdminIndex />} />
           
         </Route>
@@ -40,9 +47,7 @@ root.render(
 
         {/* page seller */}
 
-        <Route path='/seller' element={<HomeTemplateSeller />}>
-          <Route index element={<SellerIndex />} />
-        </Route>
+       
 
         {/*end page seller */}
 

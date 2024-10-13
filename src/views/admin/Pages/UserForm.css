@@ -1,0 +1,88 @@
+.form-container {
+  margin: 30px auto;
+  padding: 40px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 1200px;
+}
+
+.form-paper {
+  padding: 40px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  width: 100%;
+}
+
+.form-title {
+  color: #00796b;
+  font-weight: 600;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.table-container {
+  margin-top: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+}
+
+.table-title {
+  margin-bottom: 15px;
+  color: #00796b;
+  font-weight: 600;
+  font-size: 1.8rem;
+}
+
+.form-file-input {
+  display: block;
+  margin: 15px 0;
+}
+
+.MuiButton-contained {
+  background-color: #00796b;
+  color: white;
+  padding: 16px 32px;
+  font-size: 1.2rem;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.MuiButton-contained:hover {
+  background-color: #004d40;
+}
+
+.MuiTableCell {
+  color: #444;
+  padding: 15px;
+  font-size: 1rem;
+}
+
+.MuiTableHead {
+  background-color: #e0f7fa;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.custom-search {
+  width: 100%;
+  max-width: 1000px;
+  height: 50px;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+.input-field {
+  height: 56px; /* Chiều cao mặc định cho MUI TextField */
+}
+.input-field {
+  margin: 8px 0; /* Ensure consistent vertical spacing */
+}

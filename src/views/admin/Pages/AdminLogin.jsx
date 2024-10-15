@@ -23,6 +23,11 @@ const AdminLogin = () => {
             const { email, password } = values;
             console.log("email", email);
             console.log("password", password)
+            
+            // form.setValues({
+            //     email: rowData.email,
+            //     password: rowData.password
+            //   });
 
             const APILogin = async () => {
                 const res = await axios(

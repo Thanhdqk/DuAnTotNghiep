@@ -1,7 +1,15 @@
 import React, { useState } from 'react'
 import { Table } from 'antd';
 import { Editor } from '@tinymce/tinymce-react';
-
+// DanhMuc
+// Danh_mucID (PK)
+// Ten_loaiDM
+// Ngay_tao
+// Trang_thaiPD
+// Trang_thaiHD
+// Ghi_chu
+// AccountID (FK)
+// BannerID (FK)
 const columns = [
   {
     title: 'Name',

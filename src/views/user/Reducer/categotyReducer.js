@@ -25,10 +25,14 @@ export const API_FindALL_Category = () => {
 
     return  async (dispatch) => {
 
-            const RES = await axios({url:'http://localhost:8080/findAllCategory',method:'GET'});
+            try {
+              const RES = await axios({url:'http://localhost:8080/findAllCategory',method:'GET'});
 
             const API_FindALL_Category =  FindAllCategory(RES.data);
             dispatch(API_FindALL_Category);
+            } catch (error) {
+              
+            }
 
     }
 

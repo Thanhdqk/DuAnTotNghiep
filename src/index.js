@@ -25,6 +25,7 @@ import Search from './views/user/Pages/Search';
 import TestSearch from './views/user/Pages/TestSearch';
 import Page404 from './views/user/Pages/Page404';
 import Test from './views/admin/Pages/Test';
+import CrudCategory from './views/admin/Pages/CrudCategory';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -50,6 +51,7 @@ root.render(
         {/* page admin */}
         <Route path='/admin/login' element={<AdminLogin></AdminLogin>} />
         <Route path='ga1' element={<Test></Test>}></Route>
+        <Route path='danhmuc' element={<CrudCategory></CrudCategory>}></Route>
         
         <Route path='/admin/dashboard' element={
           <ProtectEoute>
@@ -59,6 +61,7 @@ root.render(
          
          
         </Route>
+
       
           
           

@@ -27,6 +27,7 @@ import Page404 from './views/user/Pages/Page404';
 import Test from './views/admin/Pages/Test';
 import CrudCategory from './views/admin/Pages/CrudCategory';
 import CrudPOPUP from './views/admin/Pages/CrudPOPUP';
+import AllProducts from './views/user/Pages/AllProducts';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -42,7 +43,7 @@ root.render(
           
           <Route path='product' element={<ProductDetail></ProductDetail>} />
           <Route path='search' element={<Search></Search>} />
-         
+          <Route path='allproduct' element={<AllProducts></AllProducts>}></Route>
 
           
         </Route>
@@ -54,6 +55,7 @@ root.render(
         <Route path='ga1' element={<Test></Test>}></Route>
         <Route path='danhmuc' element={<CrudCategory></CrudCategory>}></Route>
         <Route path='popup' element={<CrudPOPUP></CrudPOPUP>}></Route>
+       
         
         <Route path='/admin/dashboard' element={
           <ProtectEoute>

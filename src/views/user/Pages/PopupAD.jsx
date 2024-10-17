@@ -1,5 +1,9 @@
 import React from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react';
 
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { Navigation,Autoplay } from 'swiper/modules';
 const PopupAD = () => {
   return (
     <>
@@ -15,14 +19,36 @@ const PopupAD = () => {
           <div className="d-flex justify-content-center">
 
 
-            <img className='img-fluid' src="/images/product2.png" alt="" />
+          <Swiper
+    style={{ height: 370 }}
+    spaceBetween={10} // Tạo khoảng cách giữa các slide
+    navigation={true} // Thêm nút điều hướng
+    autoplay={{
+        delay: 3000, // Slide sẽ tự động chuyển sau 3 giây
+        disableOnInteraction: false, // Tiếp tục tự động sau khi người dùng tương tác
+    }}
+    modules={[Navigation, Autoplay]} // Kích hoạt Autoplay và Navigation
+    className="mySwiper1"
+    slidesPerView={1} // Chỉ hiển thị 1 slide
+>
+    <SwiperSlide className=''>
+        <img className='img-fluid' src="/images/product2.png" alt="" />
+    </SwiperSlide>
+    <SwiperSlide className=''>
+        <img className='img-fluid' src="/images/product2.png" alt="" />
+    </SwiperSlide>
+    <SwiperSlide className=''>
+        <img className='img-fluid' src="/images/product2.png" alt="" />
+    </SwiperSlide>
+</Swiper>
+           
             
 
            
 
           </div>
           
-          <h3>Dưa hấu RED</h3>
+   
         
           </div>
           

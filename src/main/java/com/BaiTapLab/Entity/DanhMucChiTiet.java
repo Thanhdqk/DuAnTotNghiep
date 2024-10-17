@@ -12,15 +12,19 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "voucherdetail")
-public class VoucherDetail {
+@Table(name = "danhmucchitiet")
+public class DanhMucChiTiet {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     public int id;
 	
-	@ManyToOne
-	public Users users;
+	public int so_luongSP;
 	
 	@ManyToOne
-	public Voucher voucher;
+	public DanhMuc danhmuc;
+	
+	@ManyToOne
+	public SanPham sanpham;
+	
+	
 }

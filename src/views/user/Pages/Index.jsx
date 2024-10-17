@@ -7,6 +7,7 @@ import ListStoreNew from './ListStoreNew'
 import TestScroll from './TestScroll'
 import Post from './Post'
 import PopupAD from './PopupAD'
+import { NavLink } from 'react-router-dom'
 const Index = () => {
    console.log('run')
   useEffect(()=>{
@@ -58,7 +59,7 @@ const Index = () => {
       <TestScroll></TestScroll>
 
       <div className="col-md-12 text-center">
-          <button className='gradient-button-2' >Xem tất cả sản phẩm</button>
+      <NavLink to={'allproduct'}   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>   <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
       </div>
 
       <div className='row '>
@@ -89,7 +90,7 @@ const Index = () => {
       {/* <ListStore></ListStore> */}
       <TestScroll></TestScroll>
       <div className="col-md-12 text-center">
-          <button className='gradient-button-2' >Xem tất cả sản phẩm</button>
+        <NavLink to={'allproduct'}   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}  >  <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
       </div>
 
       <div className='row '>

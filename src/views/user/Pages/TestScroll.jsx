@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules';
+import { NavLink } from 'react-router-dom';
 
 const TestScroll = () => {
     return (
@@ -27,7 +28,8 @@ const TestScroll = () => {
             }}
         >
             <SwiperSlide className=''>
-                <div className="d-flex justify-content-center">
+            <NavLink to="/product" style={{textDecoration:'none'}}>
+                <div className="d-flex justify-content-center" >
 
                     <div className="card mx-5 mt-3 " style={{ minWidth: '250px', minHeight: '310px', borderRadius: '20px', position: 'relative', overflow: 'hidden', boxShadow: 'none' }}>
 
@@ -58,7 +60,9 @@ const TestScroll = () => {
                     </div>
 
                 </div>
+                </NavLink>
             </SwiperSlide>
+            
             <SwiperSlide>
                 <div className=" d-flex justify-content-center">
 

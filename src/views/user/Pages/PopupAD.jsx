@@ -22,7 +22,7 @@ const PopupAD = () => {
           <Swiper
     style={{ height: 370 }}
     spaceBetween={10} // Tạo khoảng cách giữa các slide
-    navigation={true} // Thêm nút điều hướng
+   
     autoplay={{
         delay: 3000, // Slide sẽ tự động chuyển sau 3 giây
         disableOnInteraction: false, // Tiếp tục tự động sau khi người dùng tương tác

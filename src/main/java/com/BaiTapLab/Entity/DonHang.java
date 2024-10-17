@@ -38,8 +38,10 @@ public class DonHang {
 	public double phi_ship;
 	
     @ManyToOne
+    @JoinColumn(name = "accountID")
     public Users users;
     
     @ManyToOne
+    @JoinColumn(name = "voucherID")
     public Voucher voucher;
 }

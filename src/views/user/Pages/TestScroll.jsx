@@ -34,7 +34,7 @@ const TestScroll = () => {
 
                         <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className='ms-3 mt-1'>
+                        <div className='text-start ms-3 mt-1'>
                             <h5 >Fattoush salad</h5>
                             <p>escription of the item</p>
 
@@ -67,7 +67,7 @@ const TestScroll = () => {
 
                         <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className='ms-3 mt-1'>
+                        <div className='text-start ms-3 mt-1'>
                             <h5 >Fattoush salad</h5>
                             <p>escription of the item</p>
 
@@ -100,7 +100,7 @@ const TestScroll = () => {
 
                         <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className='ms-3 mt-1'>
+                        <div className= 'text-start ms-3 mt-1'>
                             <h5 >Fattoush salad</h5>
                             <p>escription of the item</p>
 
@@ -133,7 +133,7 @@ const TestScroll = () => {
 
                         <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className='ms-3 mt-1'>
+                        <div className='text-start ms-3 mt-1'>
                             <h5 >Fattoush salad</h5>
                             <p>escription of the item</p>
 
@@ -166,7 +166,7 @@ const TestScroll = () => {
 
                         <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className='ms-3 mt-1'>
+                        <div className='text-start ms-3 mt-1'>
                             <h5 >Fattoush salad</h5>
                             <p>escription of the item</p>
 
@@ -199,7 +199,7 @@ const TestScroll = () => {
 
                         <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className='ms-3 mt-1'>
+                        <div className='text-start ms-3 mt-1'>
                             <h5 >Fattoush salad</h5>
                             <p>escription of the item</p>
 
@@ -232,7 +232,7 @@ const TestScroll = () => {
 
                         <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className='ms-3 mt-1'>
+                        <div className='text-start ms-3 mt-1'>
                             <h5 >Fattoush salad</h5>
                             <p>escription of the item</p>
 
@@ -265,7 +265,7 @@ const TestScroll = () => {
 
                         <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className='ms-3 mt-1'>
+                        <div className='text-start ms-3 mt-1'>
                             <h5 >Fattoush salad</h5>
                             <p>escription of the item</p>
 
@@ -298,7 +298,7 @@ const TestScroll = () => {
 
                         <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className='ms-3 mt-1'>
+                        <div className='text-start ms-3 mt-1'>
                             <h5 >Fattoush salad</h5>
                             <p>escription of the item</p>
 

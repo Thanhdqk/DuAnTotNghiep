@@ -33,16 +33,16 @@ const Index = () => {
 
         <div className='col-md-12 mt-1'>
 
-          <h6 className='ms-3 text-danger mt-5'>SPECIAL STORE</h6>
+          <h6 className='ms-3 text-danger mt-5'>ĐẶC BIỆT</h6>
 
         </div>
 
         <div className='col-md-6'>
 
-          <h1 className='ms-3 text-dark mt-1 fw-bold'>Standout Dishes
+          <h3 className='ms-3 text-dark mt-1 fw-bold'>Hàng mới nhập
             <br />
-            From Our Menu
-          </h1>
+            Tuần này
+          </h3>
 
         </div>
         <div className='col-md-6 d-flex flex-column justify-content-center '>
@@ -65,16 +65,16 @@ const Index = () => {
 
         <div className='col-md-12 '>
 
-          <h6 className='ms-3 text-danger mt-2'>SPECIAL STORE</h6>
+          <h6 className='ms-3 text-danger mt-2'>ĐẶC BIỆT</h6>
 
         </div>
 
         <div className='col-md-6'>
 
-          <h1 className='ms-3 text-dark mt-1 fw-bold'>Standout Dishes
+          <h3 className='ms-3 text-dark mt-1 fw-bold'>Top các sản phẩm 
             <br />
-            From Our Menu
-          </h1>
+            Bán chạy
+          </h3>
 
         </div>
         <div className='col-md-6 d-flex flex-column justify-content-center '>
@@ -96,16 +96,16 @@ const Index = () => {
 
         <div className='col-md-12 '>
 
-          <h6 className='ms-3 text-danger mt-2'>SPECIAL STORE</h6>
+          <h6 className='ms-3 text-danger mt-2'>ĐẶC BIỆT</h6>
 
         </div>
 
         <div className='col-md-6'>
 
-          <h1 className='ms-3 text-dark mt-1 fw-bold'>Standout Dishes
-            <br />
-            From Our Menu
-          </h1>
+          <h3 className='ms-3 text-dark mt-1 fw-bold'>Hàng ngàn ưu đãi
+            {/* <br />
+            From Our Menu */}
+          </h3>
 
         </div>
         <div className='col-md-6 d-flex flex-column justify-content-center '>

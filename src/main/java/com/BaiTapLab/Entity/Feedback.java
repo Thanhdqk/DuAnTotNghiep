@@ -1,32 +1,29 @@
 package com.BaiTapLab.Entity;
 
-
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "suluachon")
-public class SuLuaChon {
+@Table(name = "feedback")
+public class Feedback {
 	@Id
-	public String su_lua_chonID;
+	public String feedbackID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ten_lua_chon;
+	public String loai_yeu_cau;
 	
-	public double gia;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String noi_dung;
+	
+	public String hinh_anh;
 	
 	@ManyToOne
-	@JoinColumn(name = "mon_anID")
-	public MonAn monan;
-	
-	@ManyToOne
-	@JoinColumn(name = "loai_lua_chonID")
-	public LoaiLuaChon loailuachon;
+	public Users users;
 }

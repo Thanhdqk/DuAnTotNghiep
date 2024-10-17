@@ -1,6 +1,9 @@
 package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,17 +14,13 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "danhgia")
-public class DanhGia {
+@Table(name = "yeuthich")
+public class YeuThich {
 	@Id
-	public String danh_giaID;
+	public String yeu_thichID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String noi_dung;
-	
-	public int so_sao;
-	
-	public String hinh_anh;
+	public String ten_san_pham;
 	
 	public LocalDate ngay_tao;
 	

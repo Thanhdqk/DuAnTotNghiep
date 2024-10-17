@@ -1,7 +1,5 @@
 package com.BaiTapLab.Entity;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,15 +10,15 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "voucherdetail")
-public class VoucherDetail {
+@Table(name = "phuongthucTTchitiet")
+public class PhuongthucTTChiTiet {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     public int id;
 	
 	@ManyToOne
-	public Users users;
+	public PhuongThucTT phuongthucTT;
 	
 	@ManyToOne
-	public Voucher voucher;
+	public SanPham sanpham;
 }

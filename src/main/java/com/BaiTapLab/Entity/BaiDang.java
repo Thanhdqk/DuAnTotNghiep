@@ -1,45 +1,41 @@
 package com.BaiTapLab.Entity;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "voucher")
-public class Voucher {
+@Table(name = "baidang")
+public class BaiDang {
 	@Id
-	public String voucherID;
-	
-	public String so_tien_giam;
+	public String bai_dangID;
 	
 	public String hinh_anh;
 	
-	public LocalDate han_su_dung;
-	
-	public int so_luot_SD;
-	
-	public int so_luong;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String tieu_de;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String phuong_thucTT;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String dieu_kien;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hoat_dong;
+	public String noi_dung;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String phe_duyet;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hoat_dong;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String yeu_cau;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ghi_chu;
+	
+	@ManyToOne
+	@JoinColumn(name = "accountID")
+	public Users users;
 }

@@ -11,7 +11,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -22,7 +21,6 @@ public class Users {
 	@Id
 	public String accountID;
 	
-	@JsonIgnore
 	public String password;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
@@ -39,9 +37,54 @@ public class Users {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String dia_chi;
 	
-	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	public List<DonHang> donhang;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String vi_pham;
 	
-	@OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
-	public CuaHang cuahang;
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<DonHang> donhang;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<SanPham> sanpham;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<Popup> popup;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<Respone> respone;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<Feedback> feedback;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<LichSuTimKiem> lichsutimkiem;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<DanhGia> danhgia;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<PhuongThucTT> phuongthucTT;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<VoucherDetail> voucherDetail;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<YeuThich> yeuthich;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<NhaCungCap> nhacungcap;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<BaiDang> baidang;
 }

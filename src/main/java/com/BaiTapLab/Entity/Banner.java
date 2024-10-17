@@ -11,23 +11,25 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "danhgia")
-public class DanhGia {
+@Table(name = "banner")
+public class Banner {
 	@Id
-	public String danh_giaID;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String noi_dung;
-	
-	public int so_sao;
+	public String bannerId;
 	
 	public String hinh_anh;
 	
-	public LocalDate ngay_tao;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hoat_dong;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String phe_duyet;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String yeu_cau;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String ghi_chu;
 	
 	@ManyToOne
 	public Users users;
-	
-	@ManyToOne
-	public SanPham sanpham;
 }

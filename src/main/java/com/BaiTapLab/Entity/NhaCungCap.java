@@ -1,7 +1,5 @@
 package com.BaiTapLab.Entity;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -11,23 +9,19 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "danhgia")
-public class DanhGia {
+@Table(name = "nhacungcap")
+public class NhaCungCap {
 	@Id
-	public String danh_giaID;
+	public String nha_cung_capID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String noi_dung;
+	public String ten_nhaCC;
 	
-	public int so_sao;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String ten_mat_hang;
 	
-	public String hinh_anh;
-	
-	public LocalDate ngay_tao;
+	public String so_dien_thoai;
 	
 	@ManyToOne
 	public Users users;
-	
-	@ManyToOne
-	public SanPham sanpham;
 }

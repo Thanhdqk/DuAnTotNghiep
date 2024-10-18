@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -30,9 +31,9 @@ public class Popup {
 	
 	public LocalDate han_su_dung;
 	
-	@ManyToOne
-	@JoinColumn(name = "san_phamId")
-	public SanPham sanpham;
+	@OneToOne
+    @JoinColumn(name = "san_phamId", referencedColumnName = "san_phamId")
+    private SanPham sanPham;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

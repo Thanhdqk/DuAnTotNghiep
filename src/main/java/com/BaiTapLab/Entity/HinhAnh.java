@@ -24,6 +24,6 @@ public class HinhAnh {
 	public String ten_hinh;
 	
 	@ManyToOne
-	@JoinColumn(name = "accountID")
-	public Users users;
+	@JoinColumn(name = "san_phamId")
+	public SanPham sanpham;
 }

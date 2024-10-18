@@ -37,6 +37,10 @@ public class DonHang {
 	
 	public double phi_ship;
 	
+	@OneToMany(mappedBy = "donhang", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<DonHangChiTiet> donhangchitiet;
+	
     @ManyToOne
     @JoinColumn(name = "accountID")
     public Users users;

@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -23,9 +24,9 @@ public class Respone {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String noi_dung;
 	
-	@ManyToOne
-	@JoinColumn(name = "feedbackID")
-	public Feedback feedback;
+	@OneToOne
+    @JoinColumn(name = "feedbackID", referencedColumnName = "feedbackID")
+    private Feedback feedback;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

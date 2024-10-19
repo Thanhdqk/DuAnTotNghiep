@@ -41,7 +41,7 @@ public class ThuongHieu {
 	
 	@OneToMany(mappedBy = "thuonghieu", cascade = CascadeType.ALL)
 	@JsonIgnore
-	public List<ThuongHieuChiTiet> thuonghieuchitiet;
+	public List<SanPham> sanpham;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

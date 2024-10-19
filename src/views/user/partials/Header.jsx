@@ -74,7 +74,7 @@ const Header = () => {
             </NavLink>
 
             <NavLink className="nav-link active position-relative me-5"  to={''}>
-              <i className='fa fa-cart-plus fs-4' style={{ color: 'rgb(57,219,74)' }}></i>
+              <i className='fa fa-cart-plus fs-4' style={{ color: 'rgb(57,219,74)' }} href="cart"></i>
               <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                 style={{ fontSize: '0.6em', padding: '0.2em 0.4em', minWidth: '1.5em', height: '1.5em' }}>
                 10

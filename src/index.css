@@ -302,3 +302,223 @@ header {
     margin: 20px 0;
     display: inline-block;}
 	.contant_box_404{ margin-top:-50px;}
+
+  /* Giỏ hàng đây nha */
+  .breaddesign {
+    background-color: #f4f5f6;
+    margin-top: 10px;
+    padding: 10px 10px 10px 10px;
+    display: flex;
+    align-items: center;
+    height: 40px;
+  }
+  
+  .breadcrumb {
+    margin: 0;
+  } 
+
+  .diachi{
+    border: 1px solid #d4d7de;
+    margin-top: 10px;
+  }
+   .thongtin{
+    padding: 10px;
+   }
+
+   .hangdautien,
+   .hangthuhai,
+   .hangthuba {
+       display: flex;
+       align-items: center; 
+       margin: 0;
+       height: 40px;
+   }
+
+   .tieude{
+    font-weight: bold;
+   }
+
+   .noidung{
+    margin: 0;
+    margin-left: auto;
+   }
+
+   .tieude,
+   .noidung{
+     margin: 0;
+     line-height: 40px;
+     padding: 0;
+   }
+
+  .thaydoidiachi {
+    border: 1px solid #d4d7de;
+    background-color: white;
+    width: 150px;
+    height: 30px;
+    margin-left: auto; 
+    border-radius: 5px;
+  }
+  
+  .thaydoidiachi:hover {
+    border: 1px solid black;
+  }
+
+  .trangchu {
+    color: #777e90;
+    text-decoration: none;
+  }
+  .trangchu:hover {
+    text-decoration: underline;
+  }
+
+  .giohang {
+    color: black;
+    font-weight: bold;
+  }
+
+  .sanphamvakhuyenmai{
+    margin-top: 10px;
+  }
+
+  .sanpham{
+    border: 1px solid #d4d7de;
+    margin: 0;
+  }
+
+  .tieudesanpham{
+    display: flex;
+    font-weight: bolder;
+    font-size: larger;
+    color: white;
+    border: 1px solid black;
+    background-color: black;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+  }
+
+  .tieudesanpham p{
+    margin: 0;
+  }
+
+  .navsanpham{
+    background-color: #f4f5f6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+    padding: 10px;
+  }
+
+  .navsotiennd{
+    padding-right: 10px;
+  }
+  
+
+  .cardgiohang {
+    display: flex;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #d4d7de;
+    gap: 15px; 
+}
+
+  .no-outline{
+    outline: none;
+    border: none;
+  }
+  
+  .chitietgiatien {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-left: 90px;
+    padding-top: 30px;
+}
+  .tieudekhuyenmai{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    border: none;
+    font-weight: bolder;
+    font-size: larger;
+    background-color: #f4f5f6;
+  }
+  .tieudekhuyenmai p{
+    margin: 0;
+  }
+
+  .noidungkhuyenmai2>p:hover{
+    color: red;
+  }
+
+  .thanhtoan button:hover{
+    background-color: black !important;
+    color: white !important;
+  }
+
+  .icon-container {
+    position: relative;
+    width: 37px;
+    height: 37px;
+    cursor: pointer;
+  }
+  
+  .plus-icon,
+  .check-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+  
+  .plus-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .check-icon {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  
+  .icon-container.checked .plus-icon {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  
+  .icon-container.checked .check-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .magiamgiacuatoi{
+    padding: 10px;
+    border: 1px solid #d4d7de;
+    border-left: 10px solid #d4d7de;
+    width: 320px;
+  }
+
+  .voucher-container {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 20px; 
+  }
+  
+  .voucher-item {
+    flex: 1 1 calc(33.33% - 20px); 
+    max-width: calc(33.33% - 20px); 
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+    padding: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); 
+    border-radius: 5px;
+  }
+  
+  /*Kết thúc giỏ hàng*/
+
+  
+  

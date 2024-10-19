@@ -36,8 +36,9 @@ const NewHeader = () => {
                 <div className="container-fluid py-1">
                     <div className="row align-items-center">
                         {/* Logo và Dropdown */}
-                        <div className="col-3 col-md-3 d-flex align-items-center mt-2">
-                            <img src="https://via.placeholder.com/100x40?text=LOTTE+MART" alt="Lotte Mart Logo" className="me-3 img-fluid" />
+                        <div className="col-3 col-md-3 d-flex align-items-center mt-2 ps-3">
+                            {/* <img src="https://via.placeholder.com/100x40?text=LOTTE+MART" alt="Lotte Mart Logo" className="me-3 img-fluid" /> */}
+                            <img src="/images/logo-removebg-preview.png" className="me-3 img-fluid" width={80} alt="" />
                         </div>
 
                         {/* Tìm kiếm */}
@@ -50,7 +51,7 @@ const NewHeader = () => {
 
                         {/* Icon giỏ hàng và thông báo */}
                         <div className="col-5 col-md-3 d-flex justify-content-end align-items-center mt-2">
-                            <NavLink className="nav-link active position-relative me-4" to={''}>
+                            <NavLink className="nav-link active position-relative me-4" to={'cart'}>
                                 <i className='fa fa-cart-plus fs-5 mt-1'></i>
                                 <span className="position-absolute top-3 start-100 translate-middle badge rounded-pill bg-danger"
                                       style={{ fontSize: '0.6em', padding: '0.2em 0.4em', minWidth: '1.5em', height: '1.5em' }}>

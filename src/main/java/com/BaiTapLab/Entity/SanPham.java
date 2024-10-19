@@ -37,6 +37,8 @@ public class SanPham {
 	
 	public int phantram_GG;
 	
+	public String hinh_anh;
+	
 	public LocalDate han_gg;
 	
 	public String trang_thai_kho;

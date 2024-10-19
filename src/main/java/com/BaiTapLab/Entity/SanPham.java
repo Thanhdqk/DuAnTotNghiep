@@ -37,6 +37,8 @@ public class SanPham {
 	
 	public int phantram_GG;
 	
+	public int so_luong;
+	
 	public String hinh_anh;
 	
 	public LocalDate han_gg;
@@ -88,14 +90,6 @@ public class SanPham {
 	@JsonIgnore
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
-	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
-	public List<ThuongHieuChiTiet> thuonghieuchitiet;
-	
-	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
-	public List<DanhMucChiTiet> danhmucchitiet;
-	
 	@OneToOne(mappedBy = "sanPham", cascade = CascadeType.ALL)
     @JsonIgnore  
     private Popup popup;
@@ -103,4 +97,12 @@ public class SanPham {
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
+	
+	@ManyToOne
+	@JoinColumn(name = "danh_mucId")
+	public DanhMuc danhmuc;
+	
+	@ManyToOne
+	@JoinColumn(name = "thuong_hieuID")
+	public ThuongHieu thuonghieu;
 }

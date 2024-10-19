@@ -43,7 +43,7 @@ public class DanhMuc {
 	
 	@OneToMany(mappedBy = "danhmuc", cascade = CascadeType.ALL)
 	@JsonIgnore
-	public List<DanhMucChiTiet> danhmucchitiet;
+	public List<SanPham> sanpham;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

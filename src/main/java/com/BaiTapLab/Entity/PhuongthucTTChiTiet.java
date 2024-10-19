@@ -19,7 +19,7 @@ public class PhuongthucTTChiTiet {
 	
 	@ManyToOne
 	@JoinColumn(name = "phuong_thucTTID")
-	public PhuongThucTT phuongthucTT;
+	public PhuongThucTT phuongthuctt;
 	
 	@ManyToOne
 	@JoinColumn(name = "san_phamId")

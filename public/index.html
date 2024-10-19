@@ -50,16 +50,3 @@
   </body>
   
 </html>
-<script>
-  $(window).scroll(function(){
-      $(".firstpart-header").css("opacity", 1 - $(window).scrollTop() / 300);
-      console.log(1 - $(window).scrollTop() / 300 );
-     if((1 - $(window).scrollTop() / 300)<0){
-      $(".select-tabs").addClass("fixed-top");
-     }else{
-      $(".select-tabs").removeClass("fixed-top");
-     }
-     
-    });
-  
-  </script>

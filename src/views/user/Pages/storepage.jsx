@@ -2,13 +2,14 @@ import React from "react";
 import Shopbody from "./shopbody";
 import { Rate } from 'antd';
 import { Input } from 'antd';
+import Swiper from "./swiper";
 
 const Storepage = () => {
 
     return (
         <div className="container">
             <div className='row'>
-                <div className='col-12 firstpart-header'><div className='row  rounded position-relative' style={{ "backgroundImage": "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.6) 100%), url(img/mcdonaldbanner.jpg)", backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover', minHeight: '300px', maxHeight: '500px' }}>
+                <div className='col-12 firstpart-header'><div className='row  rounded position-relative' style={{ "backgroundImage": "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.6) 100%), url(images/mcdonaldbanner.jpg)", backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover', minHeight: '300px', maxHeight: '500px' }}>
                     <div className='col-6'>
                         <div className='row h-100 align-items-end' >
                             <div className='col ' style={{ marginBottom: '5%', marginLeft: '2%' }}>
@@ -36,7 +37,7 @@ const Storepage = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className='col d-none d-md-block  p-2'> <img className='img-fluid  rounded  ' src='img/ho.jpg' ></img> </div>
+                            <div className='col d-none d-md-block  p-2'> <img className='img-fluid  rounded  ' src='images/ho.jpg' ></img> </div>
                         </div>
                     </div>
 
@@ -104,9 +105,10 @@ const Storepage = () => {
                     <div className="col">  <Shopbody /></div>
 
                 </div>
-
-
             </div>
+            <div>
+            </div>
+            <Swiper />
         </div>
 
     )

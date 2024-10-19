@@ -12,11 +12,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.footer-bg-color{
 
-.btnlogin {
+background-color: rgb(244, 245, 246);
 
-  background-color: rgb(57, 219, 74) !important
 }
+
 
 .cyclegreen {
   background-color: rgb(57,219,74); 
@@ -35,8 +36,8 @@ code {
 
   background-color: aquamarine; 
   border-radius: 50%;          
-  width: 100px; 
-  height: 100px; 
+  width: 60px; 
+  height: 60px; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -64,281 +65,285 @@ code {
 
 
 }
-.ant-tabs-tab-btn{
-  font-size: 30px;
-  margin-left: 15px;
 
+.swiper {
+  width: 100%;
+  height: 400px; /* Đặt chiều cao cố định cho swiper */
+  border-radius: 15px;
 }
-.d-flex {
-  display: -webkit-box;
-  display: -ms-flexbox;
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  /* Center slide text vertically */
   display: flex;
-}
-
-.align-center {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.flex-centerY-centerX {
   justify-content: center;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
   align-items: center;
+  height: 100%; /* Đảm bảo slide sử dụng chiều cao của swiper */
 }
 
-body {
-  background-color: #f7f7f7;
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%; /* Ảnh sẽ chiếm hết chiều cao của slide */
+  object-fit: cover; /* Giữ tỷ lệ cho ảnh */
+ 
+  
 }
 
-.page-wrapper {
+.autoplay-progress {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--swiper-theme-color);
+}
+
+.autoplay-progress svg {
+  --progress: 0;
+  position: absolute;
+  left: 0;
+  top: 0px;
+  z-index: 10;
+  width: 100%;
   height: 100%;
-  display: table;
+  stroke-width: 4px;
+  stroke: var(--swiper-theme-color);
+  fill: none;
+  stroke-dashoffset: calc(125.6px * (1 - var(--progress)));
+  stroke-dasharray: 125.6;
+  transform: rotate(-90deg);
 }
 
-.page-wrapper .page-inner {
-  display: table-cell;
-  vertical-align: middle;
+
+/* // */
+
+/* styles.css */
+.image {
+  width: 100%; /* Đảm bảo ảnh chiếm toàn bộ chiều rộng của slide */
+  height: auto; /* Giữ tỷ lệ khung hình của ảnh */
+  max-height: 300px; /* Điều chỉnh chiều cao tối đa cho ảnh */
+  object-fit: cover; /* Đảm bảo ảnh không bị méo khi thu phóng */
 }
 
-.el-wrapper {
-  width: 360px;
-  padding: 15px;
-  margin: 15px auto;
+.gradient-button {
+  min-width: 350px;
+  background: linear-gradient(to right, red, blue); /* Hiệu ứng gradient đỏ-xanh */
+  color: white; /* Màu chữ */
+  padding: 10px 20px; /* Khoảng cách trong button */
+  border: none; /* Loại bỏ viền */
+  border-radius: 5px; /* Bo góc */
+  cursor: pointer; /* Thay đổi con trỏ chuột khi hover */
+  font-size: 16px; /* Kích thước chữ */
+  transition: background 0.3s ease; /* Hiệu ứng khi hover */
+}
+
+.gradient-button:hover {
+  background: linear-gradient(to right, blue, red); /* Đổi chiều gradient khi hover */
+}
+
+.imagesupport{
+
+border: 1px solid red;
+max-width: 110px;
+height: 110px;
+border-radius: 10px;
+
+}
+
+.gradient-button-2 {
+  background:white;
+  border: 1px solid gray;
+  color: dark;
+  padding: 8px 62px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.gradient-button-2:hover {
+  border: 1px solid red;
+ 
+  color: red;
+  
+}
+
+/* // header and nav */
+header {
   background-color: #fff;
 }
 
-@media (max-width: 991px) {
-  .el-wrapper {
-    width: 345px;
-  }
+input[type="text"] {
+  max-width:  350px;
+  min-width: 100px;
 }
 
-@media (max-width: 767px) {
-  .el-wrapper {
-    width: 290px;
-    margin: 30px auto;
-  }
+.navbar-nav .nav-link {
+  color: #000;
+  font-weight: 500;
 }
 
-.el-wrapper:hover .h-bg {
-  left: 0px;
+.navbar-nav .nav-link.active {
+  color: #dc3545;
+  font-weight: bold;
 }
 
-.el-wrapper:hover .price {
-  left: 20px;
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -o-transform: translateY(-50%);
-  transform: translateY(-50%);
-  color: #818181;
+.navbar-nav .nav-link:hover {
+  color: #dc3545;
 }
 
-.el-wrapper:hover .add-to-cart {
-  left: 50%;
-}
-
-.el-wrapper:hover .img {
-  webkit-filter: blur(7px);
-  -o-filter: blur(7px);
-  -ms-filter: blur(7px);
-  filter: blur(7px);
-  filter: progid:DXImageTransform.Microsoft.Blur(pixelradius='7', shadowopacity='0.0');
-  opacity: 0.4;
-}
-
-.el-wrapper:hover .info-inner {
-  bottom: 155px;
-}
-
-.el-wrapper:hover .a-size {
-  -webkit-transition-delay: 300ms;
-  -o-transition-delay: 300ms;
-  transition-delay: 300ms;
-  bottom: 50px;
-  opacity: 1;
-}
-
-.el-wrapper .box-down {
-  width: 100%;
-  height: 60px;
-  position: relative;
-  overflow: hidden;
-}
-
-.el-wrapper .box-up {
-  width: 100%;
-  height: 300px;
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-
-.el-wrapper .img {
-  padding: 20px 0;
-  -webkit-transition: all 800ms cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition: all 800ms cubic-bezier(0, 0, 0.18, 1);
-  -o-transition: all 800ms cubic-bezier(0, 0, 0.18, 1);
-  transition: all 800ms cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  -webkit-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -o-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-}
-
-.h-bg {
-  -webkit-transition: all 800ms cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition: all 800ms cubic-bezier(0, 0, 0.18, 1);
-  -o-transition: all 800ms cubic-bezier(0, 0, 0.18, 1);
-  transition: all 800ms cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  -webkit-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -o-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  width: 660px;
-  height: 100%;
-  background-color: #3f96cd;
-  position: absolute;
-  left: -659px;
-}
-
-.h-bg .h-bg-inner {
-  width: 50%;
-  height: 100%;
-  background-color: #464646;
-}
-
-.info-inner {
-  -webkit-transition: all 400ms cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition: all 400ms cubic-bezier(0, 0, 0.18, 1);
-  -o-transition: all 400ms cubic-bezier(0, 0, 0.18, 1);
-  transition: all 400ms cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  -webkit-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -o-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  position: absolute;
-  width: 100%;
-  bottom: 25px;
-}
-
-.info-inner .p-name,
-.info-inner .p-company {
-  display: block;
-}
-
-.info-inner .p-name {
-  font-family: 'PT Sans', sans-serif;
-  font-size: 18px;
-  color: #252525;
-}
-
-.info-inner .p-company {
-  font-family: 'Lato', sans-serif;
-  font-size: 12px;
-  text-transform: uppercase;
-  color: #8c8c8c;
-}
-
-.a-size {
-  -webkit-transition: all 300ms cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition: all 300ms cubic-bezier(0, 0, 0.18, 1);
-  -o-transition: all 300ms cubic-bezier(0, 0, 0.18, 1);
-  transition: all 300ms cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  -webkit-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -o-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  position: absolute;
-  width: 100%;
-  bottom: -20px;
-  font-family: 'PT Sans', sans-serif;
-  color: #828282;
-  opacity: 0;
-}
-
-.a-size .size {
-  color: #252525;
-}
-
-.cart {
-  display: block;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  font-family: 'Lato', sans-serif;
-  font-weight: 700;
-}
-
-.cart .price {
-  -webkit-transition: all 600ms cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition: all 600ms cubic-bezier(0, 0, 0.18, 1);
-  -o-transition: all 600ms cubic-bezier(0, 0, 0.18, 1);
-  transition: all 600ms cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  -webkit-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -o-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  -webkit-transition-delay: 100ms;
-  -o-transition-delay: 100ms;
-  transition-delay: 100ms;
-  display: block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  font-size: 16px;
-  color: #252525;
-}
-
-.cart .add-to-cart {
-  -webkit-transition: all 600ms cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition: all 600ms cubic-bezier(0, 0, 0.18, 1);
-  -o-transition: all 600ms cubic-bezier(0, 0, 0.18, 1);
-  transition: all 600ms cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  -webkit-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -moz-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  -o-transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  transition-timing-function: cubic-bezier(0, 0, 0.18, 1);
-  /* ease-out */
-  -webkit-transition-delay: 100ms;
-  -o-transition-delay: 100ms;
-  transition-delay: 100ms;
-  display: block;
-  position: absolute;
-  top: 50%;
-  left: 110%;
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-
-.cart .add-to-cart .txt {
-  font-size: 12px;
+.btn-danger i {
   color: #fff;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-  white-space: nowrap;
+}
+header {
+  background-color: #fff;
+ 
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+
 }
 
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+ 
+  background-color: #fff; /* Đảm bảo navbar có nền màu trắng khi dính */
+}
+
+
+
+.sidebar1 {
+  background-color: white; /* Màu nền nhẹ nhàng */
+  padding: 20px; /* Padding cho nội dung bên trong */
+ 
+  height: 100%; /* Chiều cao bằng chiều cao của viewport */
+  
+}
+
+.sidebar1 h2 {
+  font-size: 1.5rem; /* Kích thước chữ cho tiêu đề */
+  margin-bottom: 15px; /* Khoảng cách dưới tiêu đề */
+  color: #343a40; /* Màu chữ */
+  font-weight: bold; /* Chữ đậm */
+  text-align: left; /* Căn trái */
+}
+
+.sidebar1 ul {
+  padding-left: 0; /* Bỏ padding bên trái cho danh sách */
+  list-style-type: none; /* Bỏ dấu chấm cho danh sách */
+}
+
+.sidebar1 ul li {
+  padding: 10px 15px; /* Padding cho từng item */
+  margin: 5px 0; /* Khoảng cách giữa các item */
+  border-radius: 5px; /* Bo tròn các góc */
+  transition: background-color 0.3s; /* Hiệu ứng chuyển màu khi hover */
+  cursor: pointer; /* Con trỏ chuột kiểu pointer khi hover */
+}
+
+.sidebar1 ul li:hover {
+  background-color: #e2e6ea; /* Màu nền khi hover */
+  color: #007bff; /* Màu chữ khi hover */
+}
+
+.sidebar1 h2:last-of-type {
+  margin-top: 20px; /* Khoảng cách trên cho tiêu đề cuối cùng */
+}
+
+.form-check{
+  margin: 7px;
+}
+.form-check i{
+  margin:0px 2px;
+}
+
+.page_404{ padding:40px 0; background:#fff; font-family: 'Arvo', serif;
+}
+
+.page_404  img{ width:100%;}
+
+.four_zero_four_bg{
+ 
+ background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+    height: 400px;
+    background-position: center;
+ }
+ 
+ 
+ .four_zero_four_bg h1{
+ font-size:80px;
+ }
+ 
+  .four_zero_four_bg h3{
+			 font-size:80px;
+			 }
+			 
+			 .link_404{			 
+	color: #fff!important;
+    padding: 10px 20px;
+    background: #39ac31;
+    margin: 20px 0;
+    display: inline-block;}
+	.contant_box_404{ margin-top:-50px;}
+
+
+
+  /* // */
+
+  /* From Uiverse.io by Yaya12085 */ 
+.custum-file-upload {
+  height: 200px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: space-between;
+  gap: 20px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #cacaca;
+  background-color: rgba(255, 255, 255, 1);
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+}
+
+.custum-file-upload .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custum-file-upload .icon svg {
+  height: 80px;
+  fill: rgba(75, 85, 99, 1);
+}
+
+.custum-file-upload .text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custum-file-upload .text span {
+  font-weight: 400;
+  color: rgba(75, 85, 99, 1);
+}
+
+.custum-file-upload input {
+  display: none;
+}

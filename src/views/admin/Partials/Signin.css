@@ -1,0 +1,90 @@
+.background-wrapper {
+    background: linear-gradient(135deg, #e0f7fa, #ffe0b2); /* Soft gradient background */
+    min-height: 100vh; /* Ensure it covers the full viewport height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px; /* Optional padding */
+}
+
+.card {
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: #ffffff; /* Card background color */
+    width: 100%; /* Make card responsive */
+    max-width: 500px; /* Set a max width */
+    margin-top: 95px; /* Adjusted margin to move the card down further */
+    margin-bottom: 20px; /* Optional bottom margin */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); /* Softer hover shadow */
+}
+
+/* Other existing styles... */
+.btn-primary {
+    background-color: #6ab04c; 
+    border: none;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #4a9b35; 
+    transform: translateY(-2px);
+}
+
+.input-group-text {
+    background-color: #f9f9f9; 
+    border-radius: 0.5rem;
+}
+
+.forgot-password {
+    color: #6ab04c; 
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+h1 {
+    font-weight: 700;
+    color: #333; 
+}
+
+.text-secondary {
+    font-size: 0.9rem;
+    color: #6c757d; /* Muted secondary text color */
+}
+
+.social-btn {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+
+.btn-google:hover, .btn-facebook:hover {
+    opacity: 0.85; /* Slightly more opaque on hover */
+}
+
+.divider {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.divider-button {
+    background-color: #6ab04c; /* Match OR button color with primary */
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 10px 20px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.divider-button:hover {
+    background-color: #4a9b35; /* Updated hover color for OR button */
+}

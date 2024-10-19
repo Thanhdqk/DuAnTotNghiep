@@ -1,0 +1,18 @@
+# Khai báo port
+server: # lưu ý không được dùng tab trong file .yml 
+  port: 8080
+  
+#Connect sql server
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;
+    username: sa
+    password: 123
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: update # Hoặc create, none tuỳ theo nhu cầu
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect # Đảm bảo cung cấp dialect phù hợp

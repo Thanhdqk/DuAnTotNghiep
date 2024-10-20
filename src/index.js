@@ -28,6 +28,9 @@ import Test from './views/admin/Pages/Test';
 import CrudCategory from './views/admin/Pages/CrudCategory';
 import CrudPOPUP from './views/admin/Pages/CrudPOPUP';
 import AllProducts from './views/user/Pages/AllProducts';
+import Quanlyyeucau from './views/user/Pages/Quanlyyeucau';
+import Tableyeucau from './views/user/Pages/tableyeucau';
+import Quanlybaidang from './views/user/Pages/quanlybaidang';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -44,6 +47,9 @@ root.render(
           <Route path='product' element={<ProductDetail></ProductDetail>} />
           <Route path='search' element={<Search></Search>} />
           <Route path='allproduct' element={<AllProducts></AllProducts>}></Route>
+          <Route path='yeucau' element={<Quanlyyeucau></Quanlyyeucau>}></Route>
+          <Route path='yeucau' element={<Quanlyyeucau></Quanlyyeucau>}></Route>
+          <Route path='baidang' element={<Quanlybaidang></Quanlybaidang>}></Route>
 
           
         </Route>

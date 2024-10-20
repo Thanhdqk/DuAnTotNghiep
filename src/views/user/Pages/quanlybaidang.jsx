@@ -1,33 +1,55 @@
 
-import React, { useState } from 'react'
-import { Table } from 'antd';
+import React, { useEffect, useState } from 'react'
+import { Space, Table, Tag } from 'antd';
+
 import { Input, Form, Upload } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Editor } from '@tinymce/tinymce-react';
+import axios from 'axios';
+import { object } from 'yup';
 const { TextArea } = Input;
 
 const Quanlybaidang = () => {
+    const { Column, ColumnGroup } = Table;
     const [content, setContent] = useState('');
+    const data = [
+
+    ];
+    const columns = [
+        {
+          title: 'Name',
+          dataIndex: 'name',
+          key: 'name',
+        }
+     
+      ];
+      
+    useEffect(() => {
+        axios.get(`http://localhost:8080/baidang/filltable`)
+            .then(function (response) {
+                let person;
+                person = response.data;
+                
+                data.push(person[0]);
+                console.log(data);
+                const headerCount = Object.keys(data[0])
+                headerCount.slice(8,1);
+                for (let i = 0; i < headerCount.length; i++) {
+                    columns.push({ title: headerCount[i], dataIndex: headerCount[i], key: headerCount[i] })
+                }
+                console.log(columns);
+                // console.log(headerCount);
+            })
+            .catch(error => console.log(error));
+    })
 
     const handleEditorChange = (newContent) => {
         console.log(newContent);
         setContent(newContent);
     };
+
     const { TextArea } = Input;
-    const columns = [
-        {
-            title: 'Name',
-            dataIndex: 'name',
-        },
-        {
-            title: 'Age',
-            dataIndex: 'age',
-        },
-        {
-            title: 'Address',
-            dataIndex: 'address',
-        },
-    ];
+
 
 
     const normFile = (e) => {
@@ -104,7 +126,21 @@ const Quanlybaidang = () => {
                     {/* Table content */}
                     <div className="tab-pane fade show active" id="table-tab-pane" role="tabpanel" >
                         <h3>QUẢN LÍ DANH MỤC</h3>
-                        <Table rowSelection={rowSelection} columns={columns} dataSource={dataSource} />
+                        <Table dataSource={data} columns={columns}>
+
+                            
+
+                            <Column
+                                title="Action"
+                                key="action"
+                                render={(_, record) => (
+                                    <Space size="middle">
+
+                                        <a>Delete</a>
+                                    </Space>
+                                )}
+                            />
+                        </Table>
 
                     </div>
                     <div className="tab-pane fade " id="form-tab-pane" role="tabpanel" >
@@ -156,7 +192,7 @@ const Quanlybaidang = () => {
                                     <div className='inputtext mt-2'>
                                         <div className='h4'>Hình ảnh</div>
                                         <Form.Item label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
-                                            <Upload  action="/upload.do" listType="picture-card">
+                                            <Upload action="/upload.do" listType="picture-card">
                                                 <button style={{ border: 0, background: 'none' }} type="button">
                                                     <PlusOutlined />
                                                     <div style={{ marginTop: 8 }}>Upload</div>
@@ -187,7 +223,7 @@ const Quanlybaidang = () => {
 
 
                                         <TextArea rows={5} />
-                                       
+
                                     </div>
                                 </div>
                             </div>

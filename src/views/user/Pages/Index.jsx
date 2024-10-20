@@ -9,8 +9,8 @@ import Post from './Post'
 import PopupAD from './PopupAD'
 import { NavLink } from 'react-router-dom'
 const Index = () => {
-   console.log('run')
-  useEffect(()=>{
+  console.log('run')
+  useEffect(() => {
     const modal = new window.bootstrap.Modal(document.getElementById('exampleModal'));
     modal.show();
 
@@ -18,18 +18,18 @@ const Index = () => {
     return () => {
       modal.hide();
     };
-  },[])
+  }, [])
   return (
-    
+
     <div className='container-fluid  mb-5' >
-     
+
       <Banner></Banner>
 
       <CategoryNew></CategoryNew>
 
       <PopupAD></PopupAD>
-      
-      
+
+
       <div className='row '>
 
         <div className='col-md-12 mt-1'>
@@ -59,7 +59,7 @@ const Index = () => {
       <TestScroll></TestScroll>
 
       <div className="col-md-12 text-center">
-      <NavLink to={'allproduct'}   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>   <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
+        <NavLink to={'allproduct'} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>   <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
       </div>
 
       <div className='row '>
@@ -72,7 +72,7 @@ const Index = () => {
 
         <div className='col-md-6'>
 
-          <h3 className='ms-3 text-dark mt-1 fw-bold'>Top các sản phẩm 
+          <h3 className='ms-3 text-dark mt-1 fw-bold'>Top các sản phẩm
             <br />
             Bán chạy
           </h3>
@@ -90,7 +90,7 @@ const Index = () => {
       {/* <ListStore></ListStore> */}
       <TestScroll></TestScroll>
       <div className="col-md-12 text-center">
-        <NavLink to={'allproduct'}   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}  >  <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
+        <NavLink to={'allproduct'} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}  >  <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
       </div>
 
       <div className='row '>
@@ -121,13 +121,13 @@ const Index = () => {
       {/* <ListStore></ListStore> */}
       <TestScroll></TestScroll>
       <div className="col-md-12 text-center">
-          <button className='gradient-button-2' >Xem tất cả sản phẩm</button>
+        <button className='gradient-button-2' >Xem tất cả sản phẩm</button>
       </div>
 
-     
 
-     {/* // post */}
-    <Post></Post>
+
+      {/* // post */}
+      <Post></Post>
 
 
 

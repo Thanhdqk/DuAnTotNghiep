@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import ListProduct from './ListProduct';
+
 import { useParams } from 'react-router-dom'
 import axios from 'axios';
 import SimilarProduct from './SimilarProduct';
@@ -9,7 +9,15 @@ const ProductDetail = () => {
     const params = useParams();
     const [ProductDetail, SetProductDetail] = useState({});
     const [ProductsSimilar, SetProductsSimilar] = useState([])
+    const [QuantityProduct,SetQuantityProduct] = useState(1);
 
+    const handleChange = (e) => {
+        const value = Number(e.target.value);
+        // Cập nhật số lượng, đảm bảo không nhỏ hơn 1
+        if (value >= 1) {
+            SetQuantityProduct(value);
+        }
+    };
     const Change_Img = (event)=>{
            
         const src = event.target.getAttribute('img-change');
@@ -76,9 +84,12 @@ const ProductDetail = () => {
                     <hr />
                     <h6 className="fw-bold mt-4">Số lượng</h6>
                     <div className="btn-group mt-2" role="group" aria-label="Basic example">
-                        <button type="button" className="btn btn-outline-primary btn-sm p-2 fw-bold">-</button>
-                        <input className="form-control form-control-sm w-50" type="number" />
-                        <button type="button" className="btn btn-outline-primary btn-sm p-2 fw-bold">+</button>
+                        <button onClick={()=>{
+                            if(QuantityProduct==1)
+                            {return}
+                            SetQuantityProduct(QuantityProduct-1)}} type="button"  className="btn btn-outline-primary btn-sm p-2 fw-bold">-</button>
+                        <input onChange={handleChange} className="form-control form-control-sm w-50" max={300} type="number" value={QuantityProduct}  />
+                        <button  onClick={()=>{SetQuantityProduct(QuantityProduct+1)}} type="button" className="btn btn-outline-primary btn-sm p-2 fw-bold">+</button>
 
 
                     </div>

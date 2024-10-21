@@ -7,7 +7,7 @@ import { ListProductSearch } from '../Reducer/productReducer';
 const NewHeader = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [historySearch,SethistorySearch] = useState([]);
-   
+    const [Text,SetText] = useState("");
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -57,10 +57,10 @@ const NewHeader = () => {
         {
             
             
-            let updateHistory = [value,...historySearch];
+            let updateHistory = [Text,...historySearch];
             SethistorySearch(updateHistory);
             localStorage.setItem("HistorySearch", JSON.stringify(updateHistory));
-            
+            SetText("");
         
             
         }
@@ -82,7 +82,9 @@ const NewHeader = () => {
 
                         {/* Tìm kiếm */}
                         <form className="col-4 col-md-6 mt-2 mt-md-0 d-flex justify-content-center mt-2" onSubmit={handleSubmit}>
-                            <input type="text" className="form-control me-2 search" placeholder="Tìm kiếm"  onClick={handleInputClick} />
+                            <input type="text" className="form-control me-2 search" placeholder="Tìm kiếm" value={Text} onChange={(e)=>{
+                                SetText(e.target.value)
+                            }}  onClick={handleInputClick} />
                             <button className="btn btn-outline-secondary" type="submit">
                                 <i className="bi bi-search"></i>
                             </button>
@@ -180,7 +182,7 @@ const NewHeader = () => {
                                                
                                                 const res = await axios({url:`http://localhost:8080/Product/FindbyName?name=${object}`,method:'GET'})
                                                 const api = ListProductSearch(res.data);
-                                               
+                                               SetText(object)
                                                 dispatch(api);
                                                 setShowPopup(false);
                                                 navigate('/search')

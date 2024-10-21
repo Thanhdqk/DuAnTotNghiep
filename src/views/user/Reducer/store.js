@@ -3,6 +3,7 @@ import userReducer from './userReducer'
 import popReducer from './popupReducer'
 import categoryReducer from './categotyReducer'
 import productReducer from './productReducer'
+import cartReducer from './cartReducer'
 export const store = configureStore({
 
     reducer:{
@@ -10,7 +11,8 @@ export const store = configureStore({
         user:userReducer,
         popup:popReducer,
         category:categoryReducer,
-        product:productReducer
+        product:productReducer,
+        cart:cartReducer
     }
 
 

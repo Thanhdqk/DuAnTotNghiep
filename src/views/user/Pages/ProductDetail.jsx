@@ -1,6 +1,41 @@
-import React from 'react'
-import SimilarProduct from './SimilarProduct'
+import React, { useEffect, useState } from 'react'
+import ListProduct from './ListProduct';
+import { useParams } from 'react-router-dom'
+import axios from 'axios';
+import SimilarProduct from './SimilarProduct';
+
 const ProductDetail = () => {
+
+    const params = useParams();
+    const [ProductDetail, SetProductDetail] = useState({});
+    const [ProductsSimilar, SetProductsSimilar] = useState([])
+
+    const Change_Img = (event)=>{
+           
+        const src = event.target.getAttribute('img-change');
+       document.querySelector(".image1").src = `/images/${src}`
+    }
+
+    const API_Product_Detail = async () => {
+        try {
+            const res = await axios({ url: `http://localhost:8080/Product/Detail?id=${params.id}`, method: 'GET' })
+        const resProductSimlar = await axios({ url: `http://localhost:8080/Product/Similar?id=${params.id}`, method: 'GET' })
+        SetProductDetail(res.data);
+        SetProductsSimilar(resProductSimlar.data)
+        } catch (error) {
+            
+        }
+    }
+
+    useEffect(() => {
+
+        API_Product_Detail()
+        window.scrollTo(0, 0);
+
+    }, [params.id])
+
+
+
     return (
         <div className='container mb-5'>
             <div className='row mb-5' >
@@ -8,48 +43,38 @@ const ProductDetail = () => {
 
 
                 <div className="col-md-6  ">
-                    <img className='img-fluid ' src="/images/product2.png" alt="" />
+                    {ProductDetail?.hinhanh?.length >  0 ? <img className='img-fluid image1' style={{ minHeight: 350, minWidth: 300 }} src={`/images/${ProductDetail.hinhanh[0].ten_hinh}`} alt="" /> : null }
 
                     <div className='row mx-auto'>
 
-                        <div className='imagesupport ms-2' >
+                        {ProductDetail?.hinhanh?.slice(1, 4).map((image,index) => {
+                            return <div className='imagesupport ms-2' key={index} >
 
-                            <img className='img-fluid mt-4 ' style={{ maxHeight: 100, maxWidth: 100 }} src="/images/category1.png" alt="" />
+                                <img onClick={Change_Img} img-change={`${image.ten_hinh}`} className='img-fluid mt-1 ' style={{ maxHeight: 100, maxWidth: 100 }} src={`/images/${image.ten_hinh}`} alt="" />
 
-                        </div>
-
-                        <div className='imagesupport ms-2' >
-
-                            <img className='img-fluid mt-4' style={{ maxHeight: 100, maxWidth: 100 }} src="/images/category1.png" alt="" />
-
-                        </div>
-
-                        <div className='imagesupport ms-2' >
-
-                            <img className='img-fluid mt-4' style={{ maxHeight: 100, maxWidth: 100 }} src="/images/category1.png" alt="" />
-
-                        </div>
+                            </div>
+                        })}
 
                     </div>
                 </div>
                 <div className="col-md-6 ">
 
-                    <h3 className='mt-5 fw-bold'>Dưa Hấu Giống Mỹ 2.7kg</h3>
+                    <h3 className='mt-5 fw-bold'>{ProductDetail.ten_san_pham}</h3>
                     <span  ><i class="bi bi-star-fill text-warning fs-5 me-1"></i>  4.9(10)  |  <a className='ms-3'> 10 Đánh giá</a> </span>
 
-                    <h2 className="fw-bold mt-3">99.000 đ</h2>
+                    <h2 className="fw-bold mt-3">{ProductDetail.gia_goc} đ</h2>
 
-                    <h6 className="fw-bold mt-2">Mô tả ngắn</h6>
+                    <h6 className="fw-bold mt-2">{ProductDetail.mo_ta}</h6>
 
-                    <ul className='mt-3'>
+                    {/* <ul className='mt-3'>
                         <li style={{ marginBottom: '10px' }}> <b>Dưa Hấu Giống Mỹ</b> có vỏ màu xanh và sọc dưa đậm, ruột đỏ, hột đen. Quả có vỏ cứng, dày, ăn rất ngon, độ đường cao, hương vị thơm ngon, hấp dẫn.</li>
                         <li style={{ marginBottom: '10px' }}>Dưa Hấu Giống Mỹ có vỏ màu xanh và sọc dưa đậm, ruột đỏ, hột đen. Quả có vỏ cứng, dày, ăn rất ngon, độ đường cao, hương vị thơm ngon, hấp dẫn.</li>
 
                         <li>Có thể thưởng thức bằng cách ướp lạnh hoặc nước ép dưa hấu, sinh tố, kem, hoặc salad...</li>
 
-                    </ul>
+                    </ul> */}
                     <hr />
-                    <h6 className="fw-bold mt-2">Số lượng</h6>
+                    <h6 className="fw-bold mt-4">Số lượng</h6>
                     <div className="btn-group mt-2" role="group" aria-label="Basic example">
                         <button type="button" className="btn btn-outline-primary btn-sm p-2 fw-bold">-</button>
                         <input className="form-control form-control-sm w-50" type="number" />
@@ -88,12 +113,12 @@ const ProductDetail = () => {
 
                 <div className="col-md-12 d-flex mt-3">
 
-               <select className="form-select w-25 " aria-label="Default select example">
-  <option selected>Open this select menu</option>
-  <option value={1}>One</option>
-  <option value={2}>Two</option> 
-  <option value={3}>Three</option>
-</select>
+                    <select className="form-select w-25 " aria-label="Default select example">
+                        <option selected>Open this select menu</option>
+                        <option value={1}>One</option>
+                        <option value={2}>Two</option>
+                        <option value={3}>Three</option>
+                    </select>
 
 
 
@@ -194,23 +219,23 @@ const ProductDetail = () => {
                     </div>
                 </div>
 
-                
-            <hr className='mt-3 ' />
-           
+
+                <hr className='mt-3 ' />
+
 
             </div>
             <div className="row">
-            <div className="col-md-12">
+                <div className="col-md-12">
 
-<h4 className='mt-2 fw-bold'>Sản phẩm tương tự</h4>   
-
-
-
-<SimilarProduct></SimilarProduct>
+                    <h4 className='mt-2 fw-bold'>Sản phẩm tương tự</h4>
 
 
 
-</div>
+                  <SimilarProduct Products={ProductsSimilar}></SimilarProduct>
+
+
+
+                </div>
             </div>
 
         </div>

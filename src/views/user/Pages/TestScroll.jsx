@@ -28,7 +28,7 @@ const TestScroll = () => {
             }}
         >
             <SwiperSlide className=''>
-            <NavLink to="/product" style={{textDecoration:'none'}}>
+            <NavLink to="/product/detail/1" style={{textDecoration:'none'}}>
                 <div className="d-flex justify-content-center" >
 
                     <div className="card mx-5 mt-3 " style={{ minWidth: '250px', minHeight: '310px', borderRadius: '20px', position: 'relative', overflow: 'hidden', boxShadow: 'none' }}>

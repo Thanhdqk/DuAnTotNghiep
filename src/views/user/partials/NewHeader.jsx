@@ -1,14 +1,27 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { ListProductSearch } from '../Reducer/productReducer';
 
 const NewHeader = () => {
     const [showPopup, setShowPopup] = useState(false);
-    
+    const [historySearch,SethistorySearch] = useState([]);
+   
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     // Xử lý khi click bên ngoài để đóng popup
     useEffect(() => {
+       SethistorySearch(JSON.parse(localStorage.getItem("HistorySearch")) || [])
         const handleClickOutside = (event) => {
-            if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
+            if (
+                !event.target.closest('.search-container') && 
+                !event.target.closest('.popup') &&
+                !event.target.closest('.card') // Thêm điều kiện cho phần tử card
+            ) {
+                
                 setShowPopup(false);
             }
         };
@@ -30,6 +43,33 @@ const NewHeader = () => {
         setShowPopup(true);
     };
 
+    const handleSubmit =    async (event) =>{
+        event.preventDefault();
+        const value = document.querySelector(".search").value;
+        
+        const res = await axios({url:`http://localhost:8080/Product/FindbyName?name=${value}`,method:'GET'})
+        const api = ListProductSearch(res.data);
+        console.log('data',res.data)
+        dispatch(api);
+        
+
+        if(value !=='')
+        {
+            
+            
+            let updateHistory = [value,...historySearch];
+            SethistorySearch(updateHistory);
+            localStorage.setItem("HistorySearch", JSON.stringify(updateHistory));
+            
+        
+            
+        }
+
+
+        setShowPopup(false);
+        navigate('/search')
+    }
+
     return (
         <>
             <header className="bg-white border-bottom">
@@ -41,16 +81,16 @@ const NewHeader = () => {
                         </div>
 
                         {/* Tìm kiếm */}
-                        <div className="col-4 col-md-6 mt-2 mt-md-0 d-flex justify-content-center mt-2">
-                            <input type="text" className="form-control me-2" placeholder="Tìm kiếm" onClick={handleInputClick} />
+                        <form className="col-4 col-md-6 mt-2 mt-md-0 d-flex justify-content-center mt-2" onSubmit={handleSubmit}>
+                            <input type="text" className="form-control me-2 search" placeholder="Tìm kiếm"  onClick={handleInputClick} />
                             <button className="btn btn-outline-secondary" type="submit">
                                 <i className="bi bi-search"></i>
                             </button>
-                        </div>
+                        </form>
 
                         {/* Icon giỏ hàng và thông báo */}
                         <div className="col-5 col-md-3 d-flex justify-content-end align-items-center mt-2">
-                            <NavLink className="nav-link active position-relative me-4" to={''}>
+                            <NavLink className="nav-link active position-relative me-4" to={'Cart'}>
                                 <i className='fa fa-cart-plus fs-5 mt-1'></i>
                                 <span className="position-absolute top-3 start-100 translate-middle badge rounded-pill bg-danger"
                                       style={{ fontSize: '0.6em', padding: '0.2em 0.4em', minWidth: '1.5em', height: '1.5em' }}>
@@ -123,7 +163,7 @@ const NewHeader = () => {
                         position: 'absolute',
                         top: '20%',
                         left: '30%',
-                        zIndex: 5,
+                        zIndex: 999, 
                         borderRadius: '20px',
                         boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.5)',
                         backgroundColor: 'white',
@@ -135,7 +175,17 @@ const NewHeader = () => {
                                 <div className="col-md-6 " style={{borderRight:'1px solid black'}}>
                                     <h5 style={{fontWeight:'bold', marginBottom: '1rem', color: '#333' }}>Lịch sử</h5>
                                     <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                                        <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
+                                       {historySearch.slice(0,10).map((object,index)=>{
+                                            return  <li onClick={ async ()=>{
+                                               
+                                                const res = await axios({url:`http://localhost:8080/Product/FindbyName?name=${object}`,method:'GET'})
+                                                const api = ListProductSearch(res.data);
+                                               
+                                                dispatch(api);
+                                                setShowPopup(false);
+                                                navigate('/search')
+                                            }} style={{ marginBottom: '0.5rem', color: '#555',cursor: 'pointer'  }}>{object}</li>
+                                       })}
                                     </ul>
                                 </div>
                                 <div className="col-md-6">

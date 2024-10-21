@@ -8,12 +8,23 @@ import TestScroll from './TestScroll'
 import Post from './Post'
 import PopupAD from './PopupAD'
 import { NavLink } from 'react-router-dom'
+import { Call_API_Products } from '../Reducer/productReducer'
+import { useDispatch, useSelector } from 'react-redux'
+import ListProduct from './ListProduct'
 const Index = () => {
    console.log('run')
+   const dispatch = useDispatch();
+
+  const ListProductThisWeek = useSelector(state => state.product.ListProductThisWeek);
+  const ListProductTopSale = useSelector(state => state.product.ListProductTopSale);
+  const ListProductDiscount = useSelector(state => state.product.ListProductDiscount);
+  console.log(ListProductThisWeek)
+
   useEffect(()=>{
     const modal = new window.bootstrap.Modal(document.getElementById('exampleModal'));
     modal.show();
-
+    const CallAPIProduct = Call_API_Products();
+    dispatch(CallAPIProduct);
     // Cleanup: Đóng modal khi component unmount
     return () => {
       modal.hide();
@@ -56,10 +67,10 @@ const Index = () => {
 
       {/* // list product */}
       {/* <ListStore></ListStore> */}
-      <TestScroll></TestScroll>
+      <ListProduct products={ListProductThisWeek} ></ListProduct>
 
       <div className="col-md-12 text-center">
-      <NavLink to={'allproduct'}   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>   <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
+      <NavLink to={'allproduct/FindProductThisWeek'}   >   <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
       </div>
 
       <div className='row '>
@@ -88,9 +99,9 @@ const Index = () => {
 
       {/* // list product */}
       {/* <ListStore></ListStore> */}
-      <TestScroll></TestScroll>
+      <ListProduct products={ListProductDiscount} ></ListProduct>
       <div className="col-md-12 text-center">
-        <NavLink to={'allproduct'}   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}  >  <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
+        <NavLink to={'allproduct/FindProductThisWeek'}    >  <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
       </div>
 
       <div className='row '>
@@ -119,9 +130,9 @@ const Index = () => {
 
       {/* // list product */}
       {/* <ListStore></ListStore> */}
-      <TestScroll></TestScroll>
+      <ListProduct products={ListProductDiscount} ></ListProduct>
       <div className="col-md-12 text-center">
-          <button className='gradient-button-2' >Xem tất cả sản phẩm</button>
+          <NavLink to={'allproduct/FindProductDiscount'} className='gradient-button-2' >Xem tất cả sản phẩm</NavLink>
       </div>
 
      

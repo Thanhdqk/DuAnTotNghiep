@@ -28,24 +28,38 @@ import Test from './views/admin/Pages/Test';
 import CrudCategory from './views/admin/Pages/CrudCategory';
 import CrudPOPUP from './views/admin/Pages/CrudPOPUP';
 import AllProducts from './views/user/Pages/AllProducts';
+import SearchByDanhmuc from './views/user/Pages/SearchByDanhmuc';
+import Cart from './views/user/Pages/Cart';
+import Thanhtoan from './views/user/Pages/Thanhtoan';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
     <BrowserRouter>
       <Routes>
-
+     
         {/* page user */}
 
         <Route path='' element={<HomeTemplate/>}>
+      
           <Route index element={<Index/>} />
           
-         
-          
-          <Route path='product' element={<ProductDetail></ProductDetail>} />
-          <Route path='search' element={<Search></Search>} />
-          <Route path='allproduct' element={<AllProducts></AllProducts>}></Route>
 
-          
+          <Route path='product/detail' >
+          <Route path=':id' element={<ProductDetail></ProductDetail>}></Route>
+          </Route>
+
+
+          <Route path='search' element={<Search></Search>} />
+
+       
+          <Route path='allproduct/:kind' element={<AllProducts></AllProducts>}></Route>
+
+          <Route path='product/danhmuc/:id' element={<SearchByDanhmuc></SearchByDanhmuc>}></Route>
+
+          <Route path='Cart' element={<Cart></Cart>}></Route>
+
+          <Route path='Paying' element={<Thanhtoan></Thanhtoan>}></Route>
+
         </Route>
 
         {/*end page user */}

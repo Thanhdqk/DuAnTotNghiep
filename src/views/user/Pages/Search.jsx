@@ -1,25 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ListStore from './ListStore';
+import axios from 'axios';
 
 
 const Search = () => {
+
+  const [Danhmuc,SetDanhmuc] = useState([]);
+  const [Product,SetProduct] = useState([]);
+  const API =  async() =>{
+
+   try {
+    const API_Danhmuc = await axios({url:'http://localhost:8080/findAllCategory',method:'GET'});
+    const API_SanPham = await axios({url:'http://localhost:8080/FindProductThisWeek',method:'GET'});
+
+    SetDanhmuc(API_Danhmuc.data);
+    SetProduct(API_SanPham.data)
+   } catch (error) {
+    
+   }
+
+  }
+
+  useEffect(()=>{
+    API();
+  },[])
+  
   return (
     <div className="container-fluid">
       <div className="row">
         <div className="col-12 col-md-2 sidebar1">
           <h2>Danh mục</h2>
           <ul className="list-unstyled">
-            <li>Bánh Kẹo</li>
-            <li>Đồ Uống</li>
-            <li>Trà, Cà Phê</li>
-            <li>Chế Phẩm Từ Sữa</li>
-            <li>Thực Phẩm Khô</li>
-            <li>Thực Phẩm Đông Lạnh</li>
-            <li>Gạo, Mì, Bún, Đậu</li>
-            <li>Dầu Ăn, Gia Vị</li>
-            <li>Bánh Tươi</li>
-            <li>Món Ăn Nhanh</li>
-            <li>Thực Phẩm Bổ Sung</li>
+           {Danhmuc.map((d)=>{
+            return  <li key={d.danh_mucId} >{d.ten_loaiDM} </li>
+           })}
+            
           </ul>
           <h2>Khuyến mãi</h2>
           <div>
@@ -87,7 +102,7 @@ const Search = () => {
         </div>
 
         <div className="col-12 col-md-10 product-list">
-          <ListStore></ListStore>
+          <ListStore Products={Product} ></ListStore>
         </div>
       </div>
 

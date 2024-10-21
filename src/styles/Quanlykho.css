@@ -1,0 +1,215 @@
+/* Căn chỉnh cho các input và select */
+.input-container {
+  display: flex;
+  gap: 30px; /* Khoảng cách hợp lý giữa các cột */
+  margin-bottom: 20px;
+  justify-content: space-between;
+}
+
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #4f4f4f;
+}
+
+input,
+.ant-select-selector {
+  width: 92%; /* Đảm bảo các input và select cùng kích thước */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+input:focus,
+.ant-select-focused .ant-select-selector {
+  border-color: #39bda7;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+/* Phong cách nút */
+.button {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid #4f4f4f;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  color: black;
+  background-color: white;
+  transition: all 0.3s ease;
+  position: relative;
+  margin-top: 28px;
+  overflow: hidden;
+}
+
+.button:hover {
+  color: white;
+  border-color: #39bda7;
+  background-color: #39bda7;
+}
+
+/* Hiệu ứng cho nút */
+.button:before,
+.button:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  transition: all 0.4s ease-in-out;
+}
+
+.button:before {
+  width: 120%;
+  height: 120%;
+  background-color: rgba(0, 0, 0, 0.05);
+  z-index: -1;
+}
+
+.button:after {
+  width: 130%;
+  height: 130%;
+  background-color: #39bda7;
+  z-index: -2;
+}
+
+.button:hover:before {
+  top: -10%;
+  transform: translateX(-50%) scale(1.1);
+}
+
+.button:hover:after {
+  top: -15%;
+  transform: translateX(-50%) scale(1.15);
+}
+
+/* Căn giữa Tabs */
+.mx-auto {
+  margin: auto;
+}
+
+/* Căn chỉnh nội dung Tabs */
+.ant-tabs-card .ant-tabs-content-holder {
+  margin-top: 16px;
+}
+
+.ant-tabs-tab {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ant-tabs-tab-btn {
+  padding: 8px 16px;
+}
+
+/* Tabs Container */
+.ant-tabs {
+  background-color: #f9fafb; /* Nền nhẹ cho toàn bộ tab */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+  padding: 20px;
+}
+
+/* Tabs Header */
+.ant-tabs-nav {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.ant-tabs-tab {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.ant-tabs-tab:hover {
+  background-color: #e8f7ff; /* Hiệu ứng hover cho tab */
+}
+
+.ant-tabs-tab-active {
+  background-color: #39bda7; /* Màu khi tab được chọn */
+  color: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(57, 189, 167, 0.4); /* Hiệu ứng nổi */
+}
+
+/* Card Content */
+.tab-content {
+  padding: 20px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #343a40;
+}
+
+.buttonedit {
+  margin-right: 10px;
+  color: white;
+  background-color: blue;
+  border-radius: 5px;
+  width: 50px;
+  height: 30px;
+  border: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Thêm hiệu ứng chuyển tiếp */
+}
+
+.buttonedit:hover {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+}
+
+.buttondelete {
+  color: white;
+  background-color: red;
+  border-radius: 5px;
+  width: 55px;
+  height: 30px;
+  border: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Thêm hiệu ứng chuyển tiếp */
+}
+
+.buttondelete:hover {
+  background-color: white; /* Màu nền khi hover */
+  color: black; /* Màu chữ khi hover */
+  border: 1px solid black;
+}
+
+.buttonexcel {
+  color: white; /* Màu chữ */
+  background-color: green; /* Màu nền */
+  border: none; /* Không có viền */
+  border-radius: 5px; /* Bo tròn các góc */
+  padding: 10px 15px; /* Padding cho nút */
+  font-weight: bold; /* Chữ đậm */
+  cursor: pointer; /* Thay đổi con trỏ khi hover */
+  transition: background-color 0.3s ease; /* Hiệu ứng chuyển tiếp */
+}
+
+.buttonexcel:hover {
+  background-color: darkgreen; /* Màu nền khi hover */
+}
+

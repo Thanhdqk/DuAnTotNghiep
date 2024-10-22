@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.BaiTapLab.Entity.Role;
+import com.BaiTapLab.Entity.Roles;
 import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.UsersRepository;
 
@@ -35,7 +35,7 @@ public class UsersRestController {
 	        response.put("message", "Đăng nhập thành công!"); 
 	        //response.put(user.get().getHinh_anh(), response);
 	        response.put("roles", user.get().getRoles().stream()
-	                .map(Role::getTen_vai_tro)
+	                .map(Roles::getTen_vai_tro)
 	                .collect(Collectors.toList())); // Thêm vai trò vào phản hồi
 	        return ResponseEntity.ok(response);
 	    } else {

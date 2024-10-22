@@ -50,4 +50,8 @@ public class DonHang {
     @ManyToOne
     @JoinColumn(name = "voucherID")
     public Voucher voucher;
+    
+    @ManyToOne
+    @JoinColumn(name = "dia_chiID")
+    public DiaChi diachi;
 }

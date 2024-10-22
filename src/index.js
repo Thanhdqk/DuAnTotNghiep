@@ -58,7 +58,7 @@ root.render(
 
           <Route path='Cart' element={<Cart></Cart>}></Route>
 
-          <Route path='Paying' element={<Thanhtoan></Thanhtoan>}></Route>
+          <Route path='Thanhtoan' element={<Thanhtoan></Thanhtoan>}></Route>
 
         </Route>
 

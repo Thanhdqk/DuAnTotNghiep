@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Checkbox, Button, Modal, Input } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, UserOutlined, PhoneOutlined, HomeOutlined   } from '@ant-design/icons';
+import { useDispatch, useSelector } from "react-redux";
+import { ClearCart, DecreaseItem, IncreaseItem, RemoveItem } from "../Reducer/cartReducer";
 
 function Cart() {
     const [showPopup, setShowPopup] = useState(false);
@@ -60,10 +62,13 @@ function Cart() {
         setCheckedAll(newCheckedItems.every((item) => item));
       };
 
-      const increaseQuantity = () => setQuantity(quantity + 1);
-      const decreaseQuantity = () => {
-        if (quantity > 1) setQuantity(quantity - 1);
-      };
+     
+
+      const ListCart = useSelector(state => state.cart.Cart)
+     const dispatch = useDispatch();
+
+
+
     // Xử lý khi click bên ngoài để đóng popup
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -89,19 +94,11 @@ function Cart() {
         setShowPopup(true);
     };
     return ( 
-        <> 
+        <div className="container-fluid"> 
        
-            <nav className="breaddesign col-11 mx-auto" aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item">
-                        <NavLink to={'/'} className={"trangchu"}>Trang chủ</NavLink>
-                    </li>
-                    <li className="mx-2"><span> | </span></li>
-                    <li className="breadcrumb-item giohang" aria-current="page">Giỏ hàng</li>
-                </ol>
-            </nav>
+           
 
-            <div className="diachi col-11 mx-auto">
+            <div className="diachi col-12 mx-auto">
                 <div className="thongtin">
                     <div className="hangdautien">
                         <img width={32} height={32} src="https://img.icons8.com/windows/32/user-male-circle.png" alt="user" className="icon" />
@@ -164,7 +161,7 @@ function Cart() {
                 </div>
             </div>
 
-            <div className="col-11 mx-auto sanphamvakhuyenmai d-flex justify-content-between">
+            <div className="col-12 mx-auto sanphamvakhuyenmai d-flex justify-content-between">
                 <div className="sanpham col-7">
                     <div className="tieudesanpham col-12">
                         <p>Tất cả sản phẩm (2)</p>
@@ -177,67 +174,58 @@ function Cart() {
                         </div>
                         <div className="navsotiennd">
                             Số tiền
-                            <DeleteOutlined style={{ paddingLeft: '70px' }}/>
+                            <DeleteOutlined onClick={()=>{
+                                const clear = ClearCart();
+                                dispatch(clear)
+                            }} style={{ paddingLeft: '115px' }}/>
                         </div>
                     </div>
-                    <div className="col-12 cardgiohang d-flex align-items-start">
+
+                    {ListCart.map((cart,index )=>{
+                        return <div className="col-12 cardgiohang d-flex align-items-start" key={index}>
                         <Checkbox 
-                            checked={checkedItems[0]} 
-                            onChange={handleCheckItemChange(0)} 
+                            checked={checkedItems[index]} 
+                            onChange={handleCheckItemChange(index)} 
                             style={{ paddingLeft: '10px', paddingBottom: '140px' }} 
                         />
                         <div>
                             <div className="d-flex">
-                                <img width={150} height={150} src="/images/sanpham1.png" alt="Sản phẩm" />
-                                <p style={{ width: '300px' }}>Mặt Nạ Giấy Dưỡng Da Dermal Ngọc Trai Và Collagen Trắng Da 23g</p>
+                                <img width={150} height={150} src={`/images/${cart.hinhanh[0].ten_hinh}`} alt="Sản phẩm" />
+                                <p className="text-center" style={{ width: '300px' }}>{cart.ten_san_pham}</p>
                             </div>
-                            <div className="d-flex ps-4 align-items-center">
-                                <EditOutlined />
-                                <input type="text" className="no-outline" placeholder="Thêm ghi chú" />
-                            </div>
+                           
                         </div>
 
                         <div className="chitietgiatien d-flex flex-column align-items-center justify-content-center">
-                            <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>12.900 ₫</p>
+                            <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>{cart.QuantityProduct * cart.gia_goc}</p>
                             <div className="d-flex align-items-center">
-                                <Button onClick={decreaseQuantity} type="default" size="small">-</Button>
-                                <span style={{ margin: '0 10px' }}>{quantity}</span>
-                                <Button onClick={increaseQuantity} type="default" size="small">+</Button>
+                                <Button onClick={()=>{
+                                        const increase = DecreaseItem({
+                                            productId:cart.san_phamId,
+                                            quantity: 1
+                                        })
+                                        dispatch(increase)
+                                }} type="default" size="small">-</Button>
+                                <span style={{ margin: '0 10px' }}>{cart.QuantityProduct}</span>
+                                <Button onClick={()=>{
+                                      const increase = IncreaseItem({
+                                        productId:cart.san_phamId,
+                                        quantity: 1
+                                    })
+                                    dispatch(increase)
+                                }} type="default" size="small">+</Button>
                                   
                             </div>
                             <p style={{ color: '#777e90', margin: '0' }}>Tối đa 127 sản phẩm</p>
                         </div>
-                        <DeleteOutlined style={{ paddingTop: '70px' }} /> 
+                        <DeleteOutlined onClick={()=>{
+                            const remove= RemoveItem(cart.san_phamId);
+                            dispatch(remove);
+                        }} style={{ paddingTop: '70px',paddingLeft:'65px' }} /> 
                     </div>
-                    <div className="col-12 cardgiohang d-flex align-items-start">
-                        <Checkbox 
-                            checked={checkedItems[1]} 
-                            onChange={handleCheckItemChange(1)} 
-                            style={{ paddingLeft: '10px', paddingBottom: '140px' }} 
-                        />
-                        <div>
-                            <div className="d-flex">
-                                <img width={150} height={150} src="/images/sanpham2.png" alt="Sản phẩm" />
-                                <p style={{ width: '300px' }}>Hộp Quà Sữa Tắm Lux Hương Hoa Thiên Điểu 570g</p>
-                            </div>
-                            <div className="d-flex ps-4 align-items-center">
-                                <EditOutlined />
-                                <input type="text" className="no-outline" placeholder="Thêm ghi chú" />
-                            </div>
-                        </div>
-
-                        <div className="chitietgiatien d-flex flex-column align-items-center justify-content-center">
-                            <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>12.900 ₫</p>
-                            <div className="d-flex align-items-center">
-                                <Button onClick={decreaseQuantity} type="default" size="small">-</Button>
-                                <span style={{ margin: '0 10px' }}>{quantity}</span>
-                                <Button onClick={increaseQuantity} type="default" size="small">+</Button>
-                                  
-                            </div>
-                            <p style={{ color: '#777e90', margin: '0' }}>Tối đa 127 sản phẩm</p>
-                        </div>
-                        <DeleteOutlined style={{ paddingTop: '70px' }} /> 
-                    </div>
+                    })}
+                    
+                    
                 </div>
                 
                 <div className="khuyenmai col-4">
@@ -367,7 +355,7 @@ function Cart() {
                     </div>
                 </div>
             </div>  
-            </>  
+            </div>  
     );
   }
   export default Cart;

@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios';
 import SimilarProduct from './SimilarProduct';
+import { AddItem } from '../Reducer/cartReducer';
+import { useDispatch } from 'react-redux';
 
 const ProductDetail = () => {
 
@@ -10,10 +12,15 @@ const ProductDetail = () => {
     const [ProductDetail, SetProductDetail] = useState({});
     const [ProductsSimilar, SetProductsSimilar] = useState([])
     const [QuantityProduct,SetQuantityProduct] = useState(1);
+    const dispatch = useDispatch();
+
+    const handleAddCart = (e)=>{
+        alert("clicked")
+    }
 
     const handleChange = (e) => {
         const value = Number(e.target.value);
-        // Cập nhật số lượng, đảm bảo không nhỏ hơn 1
+       
         if (value >= 1) {
             SetQuantityProduct(value);
         }
@@ -100,7 +107,14 @@ const ProductDetail = () => {
 
                         <button className='btn btn-outline-dark text-danger ms-3'><i class="fa fa-cart-plus fs-3"></i></button>
 
-                        <button className="gradient-button ms-4 fw-bold">
+                        <button onClick={()=>{
+                           
+                           const addCart = AddItem({
+                            ProductDetail: ProductDetail,
+                            QuantityProduct: QuantityProduct,
+                        });
+                           dispatch(addCart)
+                        }} className="gradient-button ms-4 fw-bold">
                             Thêm vào giỏ hàng
                         </button>
                     </div>

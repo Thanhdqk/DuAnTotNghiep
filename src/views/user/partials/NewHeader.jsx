@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { ListProductSearch } from '../Reducer/productReducer';
 
@@ -12,6 +12,7 @@ const NewHeader = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const cart = useSelector(state => state.cart.Cart)
     // Xử lý khi click bên ngoài để đóng popup
     useEffect(() => {
        SethistorySearch(JSON.parse(localStorage.getItem("HistorySearch")) || [])
@@ -96,7 +97,7 @@ const NewHeader = () => {
                                 <i className='fa fa-cart-plus fs-5 mt-1'></i>
                                 <span className="position-absolute top-3 start-100 translate-middle badge rounded-pill bg-danger"
                                       style={{ fontSize: '0.6em', padding: '0.2em 0.4em', minWidth: '1.5em', height: '1.5em' }}>
-                                    10
+                                    {cart.length}
                                 </span>
                             </NavLink>
                             <NavLink className="me-4 d-flex align-items-center" to="#">

@@ -37,6 +37,9 @@ public class Users {
 	public String email;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hoat_dong;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String vi_pham;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

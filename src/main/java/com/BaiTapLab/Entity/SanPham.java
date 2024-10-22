@@ -43,8 +43,6 @@ public class SanPham {
 	
 	public String trang_thai_kho;
 	
-	public int luot_xem;
-	
 	public int luot_mua;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
@@ -54,7 +52,10 @@ public class SanPham {
 	public String phe_duyet;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String yeu_cau;
+	public String trang_thai_xoa;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String nhap_hang;
 	
 	public double chieu_cao;
 	public double chieu_dai;
@@ -88,9 +89,13 @@ public class SanPham {
 	@JsonIgnore
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
-	@OneToOne(mappedBy = "sanPham", cascade = CascadeType.ALL)
-    @JsonIgnore  
-    private Popup popup;
+	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<PhanHoiDanhGia> phanhoidanhgia;
+	
+	@ManyToOne
+	@JoinColumn(name = "popupID")
+	public Popup popup;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

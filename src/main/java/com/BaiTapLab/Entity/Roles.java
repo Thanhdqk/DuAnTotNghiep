@@ -1,9 +1,8 @@
 package com.BaiTapLab.Entity;
 
-import java.time.LocalDate;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -12,13 +11,13 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "lichsutimkiem")
-public class LichSuTimKiem {
+@Table(name = "roles")
+public class Roles {
 	@Id
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ten_san_phamTK;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    public int id;
 	
-	public int so_lanTK;
+	public String ten_vai_tro;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

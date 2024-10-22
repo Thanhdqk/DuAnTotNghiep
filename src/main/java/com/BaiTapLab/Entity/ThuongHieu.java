@@ -28,16 +28,12 @@ public class ThuongHieu {
 	public LocalDate ngay_tao;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String phe_duyet;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String yeu_cau;
+	public String trang_thai_xoa;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ghi_chu;
+	public String hinh_anh;
 	
 	@OneToMany(mappedBy = "thuonghieu", cascade = CascadeType.ALL)
 	@JsonIgnore

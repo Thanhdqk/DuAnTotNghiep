@@ -33,19 +33,10 @@ public class Voucher {
 	public int so_luong;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String phuong_thucTT;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
 	public String dieu_kien;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String phe_duyet;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ghi_chu;
 	
 	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
 	@JsonIgnore
@@ -54,12 +45,4 @@ public class Voucher {
 	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<VoucherDetail> voucherdetail;
-	
-	@ManyToOne
-	@JoinColumn(name = "san_phamId")
-	public SanPham sanpham;
-	
-	@ManyToOne
-	@JoinColumn(name = "accountID")
-	public Users users;
 }

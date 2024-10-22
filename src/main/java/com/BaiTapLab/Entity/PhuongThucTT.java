@@ -27,9 +27,6 @@ public class PhuongThucTT {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ten_loai;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ghi_chu;
-	
 	@OneToMany(mappedBy = "phuongthuctt", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<PhuongthucTTChiTiet> phuongthucTTChiTiet;

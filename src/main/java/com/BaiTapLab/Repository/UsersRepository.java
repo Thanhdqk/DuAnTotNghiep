@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.BaiTapLab.Entity.Role;
+import com.BaiTapLab.Entity.Roles;
 import com.BaiTapLab.Entity.Users;
 
 public interface UsersRepository extends JpaRepository<Users, String> {

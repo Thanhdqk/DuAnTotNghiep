@@ -18,7 +18,7 @@ import RegisterToSeller from './views/user/Pages/RegisterToSeller';
 import Popup from './views/admin/Pages/Popup';
 import ProtectEoute from './views/admin/Pages/ProtectEoute';
 import App from './views/admin/Pages/App';
-import TyneMCE from './views/user/Pages/TyneMCE';
+import TynecMCE from './views/user/Pages/TyneMCE';
 import TestScroll from './views/user/Pages/TestScroll';
 import ProductDetail from './views/user/Pages/ProductDetail';
 import Search from './views/user/Pages/Search';
@@ -28,6 +28,15 @@ import Test from './views/admin/Pages/Test';
 import CrudCategory from './views/admin/Pages/CrudCategory';
 import CrudPOPUP from './views/admin/Pages/CrudPOPUP';
 import AllProducts from './views/user/Pages/AllProducts';
+import Baidang from './views/user/Pages/Baidang';
+import Chitietnhahang from './views/user/Pages/Chitietnhahang';
+import Doimatkhau from './views/user/Pages/Doimatkhau';
+import Giohang from './views/user/Pages/Giohang';
+import NhapOTP from './views/user/Pages/NhapOTP';
+import Quenmatkhau from './views/user/Pages/Quenmatkhau';
+import Thanhtoan from './views/user/Pages/Thanhtoan';
+import Thuonghieu from './views/user/Pages/Thuonghieu';
+import Voucher from './views/user/Pages/Voucher';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -44,7 +53,26 @@ root.render(
           <Route path='product' element={<ProductDetail></ProductDetail>} />
           <Route path='search' element={<Search></Search>} />
           <Route path='allproduct' element={<AllProducts></AllProducts>}></Route>
-
+          <Route path='testsearch' element={<TestSearch></TestSearch>}></Route>
+          <Route path='tyne' element={<TynecMCE></TynecMCE>}></Route>
+          <Route path='testscroll' element={<TestScroll></TestScroll>}></Route>
+          <Route path='popup' element={<Popup></Popup>}></Route>
+          <Route path='login' element={<LoginAdmin></LoginAdmin>} />
+          <Route path='register' element={<RegisterToSeller></RegisterToSeller>} />
+          <Route path='404' element={<Page404></Page404>}></Route>
+          <Route path='sellerindex' element={<SellerIndex></SellerIndex>}></Route>
+          <Route path='hometemplateseller' element={<HomeTemplateSeller></HomeTemplateSeller>}></Route>
+          <Route path='admin' element={<HomeTemplateAdmin></HomeTemplateAdmin>}></Route>
+          <Route path='app' element={<App></App>}></Route>
+          <Route path='baidang' element={<Baidang></Baidang>}></Route>
+          <Route path='chitietnhahang' element={<Chitietnhahang></Chitietnhahang>}></Route>
+          <Route path='dmk' element={<Doimatkhau></Doimatkhau>}></Route>
+          <Route path='giohang' element={<Giohang></Giohang>}></Route>
+          <Route path='otp' element={<NhapOTP></NhapOTP>}></Route>
+          <Route path='qmk' element={<Quenmatkhau></Quenmatkhau>}></Route>
+          <Route path='thanhtoan' element={<Thanhtoan></Thanhtoan>}></Route>
+          <Route path='thuonghieu' element={<Thuonghieu></Thuonghieu>}></Route>
+          <Route path='voucher' element={<Voucher></Voucher>}></Route>
           
         </Route>
 

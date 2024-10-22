@@ -1,0 +1,85 @@
+/* Styling for the section title */
+.section-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background-color: #ff5733; /* A bright highlight color */
+  border-radius: 2px;
+}
+
+/* Customize the cards */
+.custom-card {
+  transition: transform 0.3s ease;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-card:hover {
+  transform: translateY(-10px);
+}
+
+.card-image {
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+
+.card-body {
+  text-align: center;
+  padding: 20px;
+}
+
+@media (max-width: 576px) {
+  .card-body {
+    padding: 15px;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+}
+
+/* Styling for the section title */
+.section-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+  color: red; /* Màu bên trong chữ */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 
+    2px 2px 0 yellow, 
+    -2px -2px 0 yellow, 
+    2px -2px 0 yellow, 
+    -2px 2px 0 yellow; /* Viền ngoài chữ màu vàng */
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background-color: #ff5733;
+  border-radius: 2px;
+}
+

@@ -1,0 +1,110 @@
+/* BannerManager.css */
+
+.container {
+    margin: 20px auto;
+}
+
+.paper {
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-color: #f9f9f9; /* Màu nền sáng */
+}
+
+.header-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header-title h4 {
+    font-weight: 700;
+    color: #3f51b5; /* Màu chủ đạo */
+}
+
+.header-title h6 {
+    margin-top: 10px;
+    color: #757575; /* Màu chữ nhạt */
+}
+
+.search-filter {
+    margin: 20px 0;
+}
+
+.table {
+    margin-top: 20px;
+}
+
+.table-cell {
+    font-weight: 600;
+    background-color: #e3f2fd; /* Màu nền cho tiêu đề bảng */
+}
+
+.actions-button {
+    margin-left: 8px;
+}
+
+.actions-button:hover {
+    opacity: 0.8; /* Hiệu ứng hover cho nút */
+}
+
+.button-primary {
+    background-color: #3f51b5;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.button-secondary {
+    background-color: #f50057;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.button-primary:hover {
+    background-color: #303f9f;
+}
+
+.button-secondary:hover {
+    background-color: #c51162;
+}
+
+.input-field {
+    margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+    .actions-button {
+        margin: 4px;
+    }
+}
+.table-row-header {
+    background-color: #4caf50; /* Màu xanh lá cây đậm hơn */
+    font-weight: bold; /* Làm nổi bật tiêu đề */
+    color: white; /* Màu chữ cho tiêu đề */
+}
+.search-filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.search-filter-item {
+    flex: 1;
+    margin-right: 16px;
+}
+
+.search-filter-item:last-child {
+    margin-right: 0;
+}
+
+@media (max-width: 600px) {
+    .search-filter-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-filter-item {
+        margin-right: 0;
+        margin-bottom: 16px;
+    }
+}

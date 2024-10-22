@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import ApexCharts from 'react-apexcharts';
 import './Adminindex.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Logout } from '../../user/Reducer/userReducer';
-import { useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 
 const Adminindex = () => {
@@ -114,7 +115,7 @@ const Adminindex = () => {
     const renderHello = () =>{
         if(Account)
         {
-            return <h1>Welcome back, {Account.name}</h1>
+            return <h1>Welcome back, {Account.hovaten}</h1>
 
 
 
@@ -144,20 +145,16 @@ const Adminindex = () => {
 
     return (
         <div className="dashboard">
-            <aside className={`sidebar ${isSidebarHidden ? 'hide' : ''}`}>
-                <h2>Dashboard</h2>
+                    <aside className={`sidebar ${isSidebarHidden ? 'hide' : ''}`}>
+                <h2>Dash Board</h2>
                 <ul>
-                    <li><a href="#">Dashboard</a></li>
-                    <li><a href="#">User Management</a></li>
-                    <li><a href="#">Orders</a></li>
-                    <li><a href="#">Reports</a></li>
-                    <li><a href="#">Orders</a></li>
-                    <li><a href="#">Reports</a></li>
-                   
-                  
-                    {renderbuttonLogout()}
-                    
+                    <li><NavLink to="/admin/dashboard">Dashboard</NavLink></li>
+                    <li><NavLink to="/admin/user-management">User Management</NavLink></li>
+                    <li><NavLink to="/admin/orders">Orders</NavLink></li>
+                    <li><NavLink to="/admin/reports">Reports</NavLink></li>
                 </ul>
+                {renderbuttonLogout()}
+          \
             </aside>
 
             <main className="content">

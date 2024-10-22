@@ -28,6 +28,9 @@ import Test from './views/admin/Pages/Test';
 import CrudCategory from './views/admin/Pages/CrudCategory';
 import CrudPOPUP from './views/admin/Pages/CrudPOPUP';
 import AllProducts from './views/user/Pages/AllProducts';
+import UserForm from './views/admin/Pages/UserManagement'
+import BannerManager from './views/admin/Pages/BannerManager'
+import SupplierManagement from './views/admin/Pages/Dashboard'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -54,8 +57,12 @@ root.render(
         <Route path='/admin/login' element={<AdminLogin></AdminLogin>} />
         <Route path='ga1' element={<Test></Test>}></Route>
         <Route path='danhmuc' element={<CrudCategory></CrudCategory>}></Route>
-        <Route path='popup' element={<CrudPOPUP></CrudPOPUP>}></Route>
        
+        <Route path='popup' element={<CrudPOPUP></CrudPOPUP>}></Route>
+        <Route path='admin/user-management' element={<UserForm/>}></Route>
+        <Route path='admin/orders' element={<SupplierManagement/>}></Route>
+        <Route path='admin/reports' element={<BannerManager/>}></Route>
+      
         
         <Route path='/admin/dashboard' element={
           <ProtectEoute>
@@ -85,3 +92,4 @@ root.render(
 );
 
 reportWebVitals();
+ 

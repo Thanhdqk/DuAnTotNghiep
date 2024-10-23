@@ -21,7 +21,7 @@ import lombok.Data;
 public class DiaChi {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    public int id;
+    public int dia_chiID;
 	
 	public String dia_chi;
 	

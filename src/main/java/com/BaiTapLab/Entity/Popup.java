@@ -40,7 +40,7 @@ public class Popup {
 	
 	@OneToMany(mappedBy = "popup", cascade = CascadeType.ALL)
 	@JsonIgnore
-	public List<NhaCungCapChiTiet> nhacungcapchitiet;
+	public List<SanPham> sanpham;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

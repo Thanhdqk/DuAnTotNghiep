@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.BaiTapLab.Entity.Role;
+import com.BaiTapLab.Entity.Roles;
 import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.UsersRepository;
 
@@ -42,7 +42,7 @@ public class SercurityConfig {
 //		                .orElseThrow(() -> new UsernameNotFoundException(username));
 				String password = user.getPassword();
 				String[] roles = user.getRoles().stream()
-	                    .map(Role::getTen_vai_tro)
+	                    .map(Roles::getTen_vai_tro)
 	                    .toArray(String[]::new);
 				return User.withUsername(username).password(password).roles(roles).build();				
 			} catch (NoSuchElementException e) {

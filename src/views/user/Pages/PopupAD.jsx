@@ -1,10 +1,22 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { Navigation,Autoplay } from 'swiper/modules';
+import { useSelector } from 'react-redux';
+import { NavLink } from 'react-router-dom';
+import axios from 'axios';
 const PopupAD = () => {
+  const [pop,setpop] = useState([]);
+  const api = async() =>{
+    const res = await  axios({ url: 'http://localhost:8080/FindAllPopUpSpare?id=PopUp_1', method: 'GET' });
+    setpop(res.data);
+  }
+  useEffect(()=>{
+    api()
+  },[])
+  
   return (
     <>
     {/* Modal */}
@@ -20,7 +32,7 @@ const PopupAD = () => {
 
 
           <Swiper
-    style={{ height: 370 }}
+    style={{ height: 400 }}
     spaceBetween={10} // Tạo khoảng cách giữa các slide
    
     autoplay={{
@@ -31,15 +43,29 @@ const PopupAD = () => {
     className="mySwiper1"
     slidesPerView={1} // Chỉ hiển thị 1 slide
 >
-    <SwiperSlide className=''>
-        <img className='img-fluid' src="/images/product2.png" alt="" />
-    </SwiperSlide>
-    <SwiperSlide className=''>
-        <img className='img-fluid' src="/images/product2.png" alt="" />
-    </SwiperSlide>
-    <SwiperSlide className=''>
-        <img className='img-fluid' src="/images/product2.png" alt="" />
-    </SwiperSlide>
+{pop.map((ad)=>{
+  return <SwiperSlide className='' key={ad.popupID}>
+  
+  {ad.sanpham.map((sp) => (
+        <NavLink style={{textDecoration:'none'}} to={`/product/detail/${sp.san_phamId}`} key={sp.san_phamId}>
+          <img className='img-fluid mx-auto' src={`/images/${sp.hinhanh[0].ten_hinh}`} alt="" style={{ maxWidth: '65%', height: '70%' }} />
+          <h4 className='mt-2'>{sp.ten_san_pham}</h4>
+          <h4 className='text-danger fw-bold mb-0 text-start ms-3'>Giảm giá {sp.phantram_GG}%</h4>
+          <div className='d-flex mt-1'>
+            <p className='ms-3' style={{ fontSize: 16, textDecoration: 'line-through' }}>
+              {sp.gia_goc} <span className='text-danger'>VND</span>
+            </p>
+            <p className='ms-3 fw-bold' style={{ fontSize: 16 }}>
+              {sp.gia_km} <span className='text-danger'>VND</span>
+            </p>
+          </div>
+        </NavLink>
+      ))}
+</SwiperSlide>
+})}
+
+
+    
 </Swiper>
            
             

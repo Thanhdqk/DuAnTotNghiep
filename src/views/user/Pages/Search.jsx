@@ -86,46 +86,46 @@ const Search = () => {
 
                 if (checked) {
 
-                  if (DanhmucCurrent === '' && TextSearch !=='') {
-                    const All = await axios({url:`http://localhost:8080/Product/FindbyNameWithDiscount?name=${TextSearch}`,method:'GET'});
+                  if (DanhmucCurrent === '' && TextSearch !== '') {
+                    const All = await axios({ url: `http://localhost:8080/Product/FindbyNameWithDiscount?name=${TextSearch}`, method: 'GET' });
                     dispatch(ListProductSearch(All.data));
                     console.log("dm rỗng")
                   }
 
                   else if (TextSearch === '' && DanhmucCurrent !== '') {
-                    const All = await axios({url:`http://localhost:8080/Product/FindbyDanhmucWithDiscount?id=${DanhmucCurrent}`,method:'GET'});
+                    const All = await axios({ url: `http://localhost:8080/Product/FindbyDanhmucWithDiscount?id=${DanhmucCurrent}`, method: 'GET' });
                     dispatch(ListProductSearch(All.data));
                     console.log("search rỗng")
                   }
                   else if (TextSearch === '' && DanhmucCurrent === '') {
-                    const All = await axios({url:`http://localhost:8080/FindProductDiscount`,method:'GET'});
+                    const All = await axios({ url: `http://localhost:8080/FindProductDiscount`, method: 'GET' });
                     dispatch(ListProductSearch(All.data));
-                   
+
                   }
 
                   else {
-                    const All = await axios({url:`http://localhost:8080/Product/FindbyNameandDanhmucWithDiscount?id=${DanhmucCurrent}&name=${TextSearch}`,method:'GET'});
+                    const All = await axios({ url: `http://localhost:8080/Product/FindbyNameandDanhmucWithDiscount?id=${DanhmucCurrent}&name=${TextSearch}`, method: 'GET' });
                     dispatch(ListProductSearch(All.data));
                   }
 
                 }
                 else {
 
-                  if (DanhmucCurrent === '' && TextSearch !=='') {
-                    const All = await axios({url:`http://localhost:8080/Product/FindbyName?name=${TextSearch}`,method:'GET'});
+                  if (DanhmucCurrent === '' && TextSearch !== '') {
+                    const All = await axios({ url: `http://localhost:8080/Product/FindbyName?name=${TextSearch}`, method: 'GET' });
                     dispatch(ListProductSearch(All.data));
                     console.log("dm rỗng")
                   }
 
                   else if (TextSearch === '' && DanhmucCurrent !== '') {
-                    const All = await axios({url:`http://localhost:8080/Product/FindByCategory?id=${DanhmucCurrent}`,method:'GET'});
+                    const All = await axios({ url: `http://localhost:8080/Product/FindByCategory?id=${DanhmucCurrent}`, method: 'GET' });
                     dispatch(ListProductSearch(All.data));
                     console.log("search rỗng")
                   }
                   else if (TextSearch === '' && DanhmucCurrent === '') {
-                    const All = await axios({url:`http://localhost:8080/FindProductThisWeek`,method:'GET'});
+                    const All = await axios({ url: `http://localhost:8080/FindProductThisWeek`, method: 'GET' });
                     dispatch(ListProductSearch(All.data));
-                   
+
                   }
 
                 }
@@ -144,43 +144,52 @@ const Search = () => {
             <div className="form-check">
               <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" />
               <label className="form-check-label" htmlFor="flexRadioDefault1">
-                <i class="bi bi-star-fill text-warning"></i>
+                <i className="bi bi-star-fill text-warning"></i>
 
               </label>
             </div>
             <div className="form-check">
               <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" />
               <label className="form-check-label" htmlFor="flexRadioDefault2">
-                <i class="bi bi-star-fill text-warning"></i>
-                <i class="bi bi-star-fill text-warning"></i>
+                <i className="bi bi-star-fill text-warning"></i>
+                <i className="bi bi-star-fill text-warning"></i>
 
               </label>
             </div>
             <div className="form-check">
               <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" />
               <label className="form-check-label" htmlFor="flexRadioDefault3">
-                <i class="bi bi-star-fill text-warning"></i>
-                <i class="bi bi-star-fill text-warning"></i>
-                <i class="bi bi-star-fill text-warning"></i>
+                <div>
+                  <i className="bi bi-star-fill text-warning" />
+                  <i className="bi bi-star-fill text-warning" />
+                  <i className="bi bi-star-fill text-warning" />
+                </div>
+
               </label>
             </div>
             <div className="form-check">
               <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault4" />
               <label className="form-check-label" htmlFor="flexRadioDefault4">
-                <i class="bi bi-star-fill text-warning"></i>
-                <i class="bi bi-star-fill text-warning"></i>
-                <i class="bi bi-star-fill text-warning"></i>
-                <i class="bi bi-star-fill text-warning"></i>
+                <div>
+                  <i className="bi bi-star-fill text-warning" />
+                  <i className="bi bi-star-fill text-warning" />
+                  <i className="bi bi-star-fill text-warning" />
+                  <i className="bi bi-star-fill text-warning" />
+                </div>
+
               </label>
             </div>
             <div className="form-check">
               <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault5" />
               <label className="form-check-label" htmlFor="flexRadioDefault5">
-                <i class="bi bi-star-fill text-warning"></i>
-                <i class="bi bi-star-fill text-warning"></i>
-                <i class="bi bi-star-fill text-warning"></i>
-                <i class="bi bi-star-fill text-warning"></i>
-                <i class="bi bi-star-fill text-warning"></i>
+                <div>
+                  <i className="bi bi-star-fill text-warning" />
+                  <i className="bi bi-star-fill text-warning" />
+                  <i className="bi bi-star-fill text-warning" />
+                  <i className="bi bi-star-fill text-warning" />
+                  <i className="bi bi-star-fill text-warning" />
+                </div>
+
               </label>
             </div>
           </div>

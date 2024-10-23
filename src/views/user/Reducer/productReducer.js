@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import axios from 'axios';
+import { setLoading } from './LoadingReducer';
 
 const initialState = {
   ListProductThisWeek: [],
@@ -38,10 +39,13 @@ export const Call_API_Products = () => {
   return async (dispatch) => {
 
    try {
+    const turnonloading = setLoading('block');
+    dispatch(turnonloading)
     const [ListProductThisWeekAPI, ListProductTopSaleAPI, ListProductDiscountAPI] = await Promise.all([
       axios({ url: 'http://localhost:8080/FindProductThisWeek', method: 'GET' }),
       axios({ url: 'http://localhost:8080/FindProductThisWeek', method: 'GET' }),
       axios({ url: 'http://localhost:8080/FindProductDiscount', method: 'GET' })
+     
       
     ]);
 
@@ -60,6 +64,10 @@ export const Call_API_Products = () => {
     dispatch(API_ListProductThisWeek);
     dispatch(API_ListProductTopSale);
     dispatch(API_ListProductDiscount);
+   
+    // tắt loading
+    const turnoffloading = setLoading('none');
+    dispatch(turnoffloading);
    } catch (error) {
     
    }

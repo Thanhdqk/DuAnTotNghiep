@@ -37,7 +37,7 @@ const ListProduct = ({products}) => {
                         <div className="card mx-5 mt-3 " style={{ minWidth: '250px', minHeight: '310px', borderRadius: '20px', position: 'relative', overflow: 'hidden', boxShadow: 'none' }}>
     
     
-                            <img src={`/images/${product.hinhanh[0].ten_hinh}`} className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
+                            <img src={`/images/${product.hinhanh[0].ten_hinh}`} className='img-fluid mx-auto' style={{ maxWidth: 200,maxHeight:200 }} alt="" />
     
                             <div className='text-start ms-3 mt-1'>
                                 <h6 >{product.ten_san_pham}</h6>

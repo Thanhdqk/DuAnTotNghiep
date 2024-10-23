@@ -11,6 +11,7 @@ import { NavLink } from 'react-router-dom'
 import { Call_API_Products } from '../Reducer/productReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import ListProduct from './ListProduct'
+import { setLoading } from '../Reducer/LoadingReducer'
 const Index = () => {
    console.log('run')
    const dispatch = useDispatch();
@@ -23,8 +24,12 @@ const Index = () => {
   useEffect(()=>{
     const modal = new window.bootstrap.Modal(document.getElementById('exampleModal'));
     modal.show();
+    const turnonloading = setLoading('block');
+    dispatch(turnonloading)
     const CallAPIProduct = Call_API_Products();
     dispatch(CallAPIProduct);
+    const turnoffloading = setLoading('none');
+    dispatch(turnoffloading);
     // Cleanup: Đóng modal khi component unmount
     return () => {
       modal.hide();

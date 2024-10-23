@@ -5,40 +5,44 @@ import axios from 'axios';
 import SimilarProduct from './SimilarProduct';
 import { AddItem } from '../Reducer/cartReducer';
 import { useDispatch } from 'react-redux';
+import DanhGia from './DanhGia';
 
 const ProductDetail = () => {
 
     const params = useParams();
     const [ProductDetail, SetProductDetail] = useState({});
+    const [Danhgia, SetDanhGia] = useState([]);
     const [ProductsSimilar, SetProductsSimilar] = useState([])
-    const [QuantityProduct,SetQuantityProduct] = useState(1);
+    const [QuantityProduct, SetQuantityProduct] = useState(1);
     const dispatch = useDispatch();
 
-    const handleAddCart = (e)=>{
+    const handleAddCart = (e) => {
         alert("clicked")
     }
 
     const handleChange = (e) => {
         const value = Number(e.target.value);
-       
+
         if (value >= 1) {
             SetQuantityProduct(value);
         }
     };
-    const Change_Img = (event)=>{
-           
+    const Change_Img = (event) => {
+
         const src = event.target.getAttribute('img-change');
-       document.querySelector(".image1").src = `/images/${src}`
+        document.querySelector(".image1").src = `/images/${src}`
     }
 
     const API_Product_Detail = async () => {
         try {
             const res = await axios({ url: `http://localhost:8080/Product/Detail?id=${params.id}`, method: 'GET' })
-        const resProductSimlar = await axios({ url: `http://localhost:8080/Product/Similar?id=${params.id}`, method: 'GET' })
-        SetProductDetail(res.data);
-        SetProductsSimilar(resProductSimlar.data)
+            const resdanhgia = await axios({ url: `http://localhost:8080/FindDangGiaByIdSanPham?id=${params.id}`, method: 'GET' })
+            const resProductSimlar = await axios({ url: `http://localhost:8080/Product/Similar?id=${params.id}`, method: 'GET' })
+            SetProductDetail(res.data);
+            SetDanhGia(resdanhgia.data)
+            SetProductsSimilar(resProductSimlar.data)
         } catch (error) {
-            
+
         }
     }
 
@@ -58,11 +62,11 @@ const ProductDetail = () => {
 
 
                 <div className="col-md-6  ">
-                    {ProductDetail?.hinhanh?.length >  0 ? <img className='img-fluid image1' style={{ minHeight: 350, minWidth: 300 }} src={`/images/${ProductDetail.hinhanh[0].ten_hinh}`} alt="" /> : null }
+                    {ProductDetail?.hinhanh?.length > 0 ? <img className='img-fluid image1' style={{ minHeight: 350, minWidth: 300 }} src={`/images/${ProductDetail.hinhanh[0].ten_hinh}`} alt="" /> : null}
 
                     <div className='row mx-auto'>
 
-                        {ProductDetail?.hinhanh?.slice(1, 4).map((image,index) => {
+                        {ProductDetail?.hinhanh?.slice(1, 4).map((image, index) => {
                             return <div className='imagesupport ms-2' key={index} >
 
                                 <img onClick={Change_Img} img-change={`${image.ten_hinh}`} className='img-fluid mt-1 ' style={{ maxHeight: 100, maxWidth: 100 }} src={`/images/${image.ten_hinh}`} alt="" />
@@ -91,12 +95,12 @@ const ProductDetail = () => {
                     <hr />
                     <h6 className="fw-bold mt-4">Số lượng</h6>
                     <div className="btn-group mt-2" role="group" aria-label="Basic example">
-                        <button onClick={()=>{
-                            if(QuantityProduct==1)
-                            {return}
-                            SetQuantityProduct(QuantityProduct-1)}} type="button"  className="btn btn-outline-primary btn-sm p-2 fw-bold">-</button>
-                        <input onChange={handleChange} className="form-control form-control-sm w-50" max={300} type="number" value={QuantityProduct}  />
-                        <button  onClick={()=>{SetQuantityProduct(QuantityProduct+1)}} type="button" className="btn btn-outline-primary btn-sm p-2 fw-bold">+</button>
+                        <button onClick={() => {
+                            if (QuantityProduct == 1) { return }
+                            SetQuantityProduct(QuantityProduct - 1)
+                        }} type="button" className="btn btn-outline-primary btn-sm p-2 fw-bold">-</button>
+                        <input onChange={handleChange} className="form-control form-control-sm w-50" max={300} type="number" value={QuantityProduct} />
+                        <button onClick={() => { SetQuantityProduct(QuantityProduct + 1) }} type="button" className="btn btn-outline-primary btn-sm p-2 fw-bold">+</button>
 
 
                     </div>
@@ -107,13 +111,13 @@ const ProductDetail = () => {
 
                         <button className='btn btn-outline-dark text-danger ms-3'><i class="fa fa-cart-plus fs-3"></i></button>
 
-                        <button onClick={()=>{
-                           
-                           const addCart = AddItem({
-                            ProductDetail: ProductDetail,
-                            QuantityProduct: QuantityProduct,
-                        });
-                           dispatch(addCart)
+                        <button onClick={() => {
+
+                            const addCart = AddItem({
+                                ProductDetail: ProductDetail,
+                                QuantityProduct: QuantityProduct,
+                            });
+                            dispatch(addCart)
                         }} className="gradient-button ms-4 fw-bold">
                             Thêm vào giỏ hàng
                         </button>
@@ -131,124 +135,7 @@ const ProductDetail = () => {
 
             </div>
 
-            <div className='row '>
-                <div className='col-md-12 mx-auto bg-body-secondary text-center' style={{ minHeight: 45, borderRadius: 5 }}>
-                    <h4 className='fw-bold mt-3'>Đánh giá sản phẩm</h4>
-                </div>
-
-                <div className="col-md-12 d-flex mt-3">
-
-                    <select className="form-select w-25 " aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value={1}>One</option>
-                        <option value={2}>Two</option>
-                        <option value={3}>Three</option>
-                    </select>
-
-
-
-
-
-                </div>
-
-                <div className="mb-1">
-
-                    <div className="  p-3 mt-3">
-                        <div className="d-flex align-items-center mb-1">
-                            <div className="me-3">
-                                <span className="badge bg-danger">T</span>
-                            </div>
-                            <div>
-                                <strong>tú le</strong> <span className="text-muted">(13/05/2024)</span>
-                            </div>
-                        </div>
-                        <p className="mb-0">tươi</p>
-                    </div>
-
-                    {/* Bình luận 2 */}
-                    <div className=" border p-3 rounded">
-                        <div className="d-flex align-items-center mb-1">
-                            <div className="me-3">
-                                <span className="badge bg-primary">L</span>
-                            </div>
-                            <div>
-                                <strong>Lê th*****</strong> <span className="text-muted">(11/05/2024)</span>
-                            </div>
-                        </div>
-                        <p className="mb-0">
-                            LOTTE Mart chân thành cảm ơn Quý khách đã quan tâm, tin tưởng và sử dụng dịch vụ của LOTTE Mart. Rất mong nhận được sự ủng hộ của Quý khách trong thời gian tới a.
-                        </p>
-
-                    </div>
-                </div>
-
-                <div className="mb-1">
-
-                    <div className="  p-3 mt-3">
-                        <div className="d-flex align-items-center mb-1">
-                            <div className="me-3">
-                                <span className="badge bg-danger">T</span>
-                            </div>
-                            <div>
-                                <strong>tú le</strong> <span className="text-muted">(13/05/2024)</span>
-                            </div>
-                        </div>
-                        <p className="mb-0">tươi</p>
-                    </div>
-
-                    {/* Bình luận 2 */}
-                    <div className=" border p-3 rounded">
-                        <div className="d-flex align-items-center mb-1">
-                            <div className="me-3">
-                                <span className="badge bg-primary">L</span>
-                            </div>
-                            <div>
-                                <strong>Lê th*****</strong> <span className="text-muted">(11/05/2024)</span>
-                            </div>
-                        </div>
-                        <p className="mb-0">
-                            LOTTE Mart chân thành cảm ơn Quý khách đã quan tâm, tin tưởng và sử dụng dịch vụ của LOTTE Mart. Rất mong nhận được sự ủng hộ của Quý khách trong thời gian tới a.
-                        </p>
-
-                    </div>
-                </div>
-
-                <div className="mb-1">
-
-                    <div className="  p-3 mt-3">
-                        <div className="d-flex align-items-center mb-1">
-                            <div className="me-3">
-                                <span className="badge bg-danger">T</span>
-                            </div>
-                            <div>
-                                <strong>tú le</strong> <span className="text-muted">(13/05/2024)</span>
-                            </div>
-                        </div>
-                        <p className="mb-0">tươi</p>
-                    </div>
-
-                    {/* Bình luận 2 */}
-                    <div className=" border p-3 rounded">
-                        <div className="d-flex align-items-center mb-1">
-                            <div className="me-3">
-                                <span className="badge bg-primary">L</span>
-                            </div>
-                            <div>
-                                <strong>Lê th*****</strong> <span className="text-muted">(11/05/2024)</span>
-                            </div>
-                        </div>
-                        <p className="mb-0">
-                            LOTTE Mart chân thành cảm ơn Quý khách đã quan tâm, tin tưởng và sử dụng dịch vụ của LOTTE Mart. Rất mong nhận được sự ủng hộ của Quý khách trong thời gian tới a.
-                        </p>
-
-                    </div>
-                </div>
-
-
-                <hr className='mt-3 ' />
-
-
-            </div>
+            <DanhGia DanhGias={Danhgia} ></DanhGia>
             <div className="row">
                 <div className="col-md-12">
 
@@ -256,7 +143,7 @@ const ProductDetail = () => {
 
 
 
-                  <SimilarProduct Products={ProductsSimilar}></SimilarProduct>
+                    <SimilarProduct Products={ProductsSimilar}></SimilarProduct>
 
 
 

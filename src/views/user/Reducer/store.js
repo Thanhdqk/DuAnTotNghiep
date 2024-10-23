@@ -5,6 +5,9 @@ import categoryReducer from './categotyReducer'
 import productReducer from './productReducer'
 import cartReducer from './cartReducer'
 import searchReducer from './searchReducer'
+import bannerReducer from './bannerReducer'
+import LoadingReducer from './LoadingReducer'
+import { ContentPopup } from './popupReducer'
 export const store = configureStore({
 
     reducer:{
@@ -14,7 +17,10 @@ export const store = configureStore({
         category:categoryReducer,
         product:productReducer,
         cart:cartReducer,
-        textSearch:searchReducer
+        textSearch:searchReducer,
+        banner : bannerReducer,
+        Loadingga:LoadingReducer,
+        ListPopup:ContentPopup
     }
 
 

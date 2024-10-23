@@ -31,6 +31,7 @@ import AllProducts from './views/user/Pages/AllProducts';
 import SearchByDanhmuc from './views/user/Pages/SearchByDanhmuc';
 import Cart from './views/user/Pages/Cart';
 import Thanhtoan from './views/user/Pages/Thanhtoan';
+import Loading from './views/user/Pages/Loading';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -92,10 +93,17 @@ root.render(
           <Route path='*' element={<Page404></Page404>}></Route>
 
          {/* end page 404 */}
+
+
+          
+
+
       </Routes>
       <Popup></Popup>
     </BrowserRouter>
+    <Loading></Loading>
   </Provider>
+  
 );
 
 reportWebVitals();

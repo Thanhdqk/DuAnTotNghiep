@@ -35,7 +35,7 @@ const ProductDanhmuc = ({ Products }) => {
 
                         <div className='text-center d-flex flex-column justify-content-center borderRadiousRight'  >
 
-                            <i class="fa fa-cart-plus text-white"></i>
+                            <i className="fa fa-cart-plus text-white"></i>
 
                         </div>
 

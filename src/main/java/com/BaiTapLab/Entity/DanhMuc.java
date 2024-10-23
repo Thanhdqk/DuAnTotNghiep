@@ -3,6 +3,7 @@ package com.BaiTapLab.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -45,5 +46,6 @@ public class DanhMuc {
 	
 	@ManyToOne
 	@JoinColumn(name = "bannerId")
+	 @JsonBackReference
 	public Banner banner;
 }

@@ -3,6 +3,7 @@ package com.BaiTapLab.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -96,6 +97,7 @@ public class SanPham {
 	
 	@ManyToOne
 	@JoinColumn(name = "popupID")
+	@JsonBackReference
 	public Popup popup;
 	
 	@ManyToOne

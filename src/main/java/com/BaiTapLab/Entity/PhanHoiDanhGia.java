@@ -2,6 +2,7 @@ package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
@@ -32,6 +33,7 @@ public class PhanHoiDanhGia {
 	
 	@ManyToOne
 	@JoinColumn(name = "danh_giaID")
+	 @JsonBackReference
 	public DanhGia danhgia;
 	
 }

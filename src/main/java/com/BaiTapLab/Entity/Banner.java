@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -31,7 +32,7 @@ public class Banner {
 	public String trnag_thai_xoa;
 	
 	@OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
-	@JsonIgnore
+	 @JsonManagedReference
 	public List<DanhMuc> danhmuc;
 	
 	@ManyToOne

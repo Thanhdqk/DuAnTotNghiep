@@ -3,10 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { ListProductSearch } from '../Reducer/productReducer';
+import { SetTEXT } from '../Reducer/searchReducer';
 
 const NewHeader = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [historySearch,SethistorySearch] = useState([]);
+    
+
     const [Text,SetText] = useState("");
 
     const dispatch = useDispatch();
@@ -61,7 +64,9 @@ const NewHeader = () => {
             let updateHistory = [Text,...historySearch];
             SethistorySearch(updateHistory);
             localStorage.setItem("HistorySearch", JSON.stringify(updateHistory));
-            SetText("");
+            dispatch(SetTEXT(Text));
+        
+           
         
             
         }
@@ -85,6 +90,8 @@ const NewHeader = () => {
                         <form className="col-4 col-md-6 mt-2 mt-md-0 d-flex justify-content-center mt-2" onSubmit={handleSubmit}>
                             <input type="text" className="form-control me-2 search" placeholder="Tìm kiếm" value={Text} onChange={(e)=>{
                                 SetText(e.target.value)
+                                if(e.target.value ==='')
+                                {dispatch(SetTEXT(''));}
                             }}  onClick={handleInputClick} />
                             <button className="btn btn-outline-secondary" type="submit">
                                 <i className="bi bi-search"></i>
@@ -185,6 +192,7 @@ const NewHeader = () => {
                                                 const api = ListProductSearch(res.data);
                                                SetText(object)
                                                 dispatch(api);
+                                                dispatch(SetTEXT(object));
                                                 setShowPopup(false);
                                                 navigate('/search')
                                             }} style={{ marginBottom: '0.5rem', color: '#555',cursor: 'pointer'  }}>{object}</li>

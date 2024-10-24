@@ -1,56 +1,81 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Space, Table, Tag } from 'antd';
-
+import { useFormik } from "formik";
 import { Input, Form, Upload } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Editor } from '@tinymce/tinymce-react';
 import axios from 'axios';
 import { object } from 'yup';
+import { Formik, Field } from 'formik';
 const { TextArea } = Input;
+
+
+
 
 const Quanlybaidang = () => {
     const { Column, ColumnGroup } = Table;
     const [content, setContent] = useState('');
-    const data = [
-
-    ];
-    const columns = [
-        {
-          title: 'Name',
-          dataIndex: 'name',
-          key: 'name',
-        }
-     
-      ];
+    const [baidang, setBaidang] = useState([]);
+    const { TextArea } = Input;
+    const cc = React.useRef(null);
+    const headerCount = ["Bài đăng ID", "Tiêu đề", "Hình ảnh", "Ghi chú", "Hoạt động", "Nội dung", "Phê duyệt", "Yêu Cầu", "Người đăng", "Hành động"];
+    let result;
+    let formik = useFormik({
+        initialValues: {
+            bai_dangID: '',
+            tieu_de: '',
+            hinh_anh: '',
+            ghi_chu: '',
+            hoat_dong: '',
+            noi_dung: '',
+            phe_duyet: '',
+            yeu_cau: '',
+        },
       
+    });
+    const handleClick = () => {
+        console.log(baidang[0].bai_dangID);
+        formik.setFieldValue("bai_dangID", baidang[0].bai_dangID);
+        formik.setFieldValue("tieu_de", baidang[0].tieu_de);
+        formik.setFieldValue("hinh_anh", baidang[0].hinh_anh);
+        formik.setFieldValue("ghi_chu", baidang[0].ghi_chu);
+        formik.setFieldValue("hoat_dong", baidang[0].hoat_dong);
+        formik.setFieldValue("noi_dung", baidang[0].noi_dung);
+        formik.setFieldValue("phe_duyet", baidang[0].phe_duyet);
+        formik.setFieldValue("yeu_cau", baidang[0].yeu_cau);
+        cc.current.click();
+        console.log(formik.initialValues);
+
+    }
+    
     useEffect(() => {
         axios.get(`http://localhost:8080/baidang/filltable`)
             .then(function (response) {
-                let person;
-                person = response.data;
-                
-                data.push(person[0]);
-                console.log(data);
-                const headerCount = Object.keys(data[0])
-                headerCount.slice(8,1);
-                for (let i = 0; i < headerCount.length; i++) {
-                    columns.push({ title: headerCount[i], dataIndex: headerCount[i], key: headerCount[i] })
-                }
-                console.log(columns);
-                // console.log(headerCount);
+                setBaidang(response.data);
             })
+
             .catch(error => console.log(error));
-    })
+
+
+
+
+    }, [])
+
+
+   
+   
+
+
+
+
+
+
 
     const handleEditorChange = (newContent) => {
         console.log(newContent);
         setContent(newContent);
     };
-
-    const { TextArea } = Input;
-
-
 
     const normFile = (e) => {
         if (Array.isArray(e)) {
@@ -110,15 +135,15 @@ const Quanlybaidang = () => {
         ],
     };
     return (
+        
         <div className='container'>
-
             <div>
                 <ul className="nav nav-pills nav-fill" id="myTab" role="tablist">
                     <li className="nav-item" role="presentation">
                         <button className="nav-link active fw-bold" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-tab-pane" type="button" role="tab" >DANH SÁCH</button>
                     </li>
                     <li className="nav-item" role="presentation">
-                        <button className="nav-link fw-bold" id="form-tab" data-bs-toggle="tab" data-bs-target="#form-tab-pane" type="button" role="tab" >BIỂU MẨU</button>
+                        <button className="nav-link fw-bold " id=" form-tab " ref={cc} data-bs-toggle="tab" data-bs-target="#form-tab-pane" type="button" role="tab" >BIỂU MẨU</button>
                     </li>
                 </ul>
                 {/* Tab content */}
@@ -126,21 +151,35 @@ const Quanlybaidang = () => {
                     {/* Table content */}
                     <div className="tab-pane fade show active" id="table-tab-pane" role="tabpanel" >
                         <h3>QUẢN LÍ DANH MỤC</h3>
-                        <Table dataSource={data} columns={columns}>
-
-                            
-
-                            <Column
-                                title="Action"
-                                key="action"
-                                render={(_, record) => (
-                                    <Space size="middle">
-
-                                        <a>Delete</a>
-                                    </Space>
-                                )}
-                            />
-                        </Table>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    {headerCount.map((item) => {
+                                        return (
+                                            <th scope="col">{item}</th>
+                                        )
+                                    })}
+                                </tr>
+                            </thead>
+                            <tbody className='table-body-data'>
+                                {baidang.map((baidang) => {
+                                    return (
+                                        <tr>
+                                            <td>{baidang.bai_dangID}</td>
+                                            <td>{baidang.tieu_de}</td>
+                                            <td>{baidang.hinh_anh}</td>
+                                            <td>{baidang.ghi_chu}</td>
+                                            <td>{baidang.hoat_dong}</td>
+                                            <td>{baidang.noi_dung}</td>
+                                            <td>{baidang.phe_duyet}</td>
+                                            <td>{baidang.yeu_cau}</td>
+                                            <td>{baidang.users.accountID}</td>
+                                            <td><button id='edit' onClick={handleClick} className='btn btn-secondary'>{baidang.users.accountID}</button></td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
 
                     </div>
                     <div className="tab-pane fade " id="form-tab-pane" role="tabpanel" >
@@ -152,7 +191,7 @@ const Quanlybaidang = () => {
                                     <div className='inputtext mt-2'>
                                         <div className='h4'>Mã bài đăng </div>
                                         <div className="input-group mb-3">
-                                            <input type="text" className="form-control" disabled placeholder="" aria-label="Username" aria-describedby="basic-addon1" />
+                                            <input value={formik.values.bai_dangID} type="text" className="form-control " />
                                         </div>
 
                                     </div>
@@ -180,6 +219,7 @@ const Quanlybaidang = () => {
                                             name=""
                                             className="mt-5"
                                             onEditorChange={handleEditorChange}
+                                            value={formik.values.noi_dung}
                                         />
                                     </div>
                                     <div className='inputtext mt-2'>

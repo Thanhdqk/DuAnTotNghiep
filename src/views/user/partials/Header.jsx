@@ -1,51 +1,45 @@
 import React from 'react'
-<<<<<<< HEAD
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Logout } from '../Reducer/userReducer'
 const Header = () => {
-  
+
   const account = useSelector(state => state.user.useraccount)
   const navigate = useNavigate()
   const dispatch = useDispatch();
-  const RenderLogin = () =>{
-    if(account)
-    {
-      
+  const RenderLogin = () => {
+    if (account) {
+
       return <>
-       <div className="dropdown me-3">
-  <button className="btn btn-primary bg-green btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-   Hello,  <span className='text-light fw-bold'>{account.name}</span>
-  </button>
-  <ul className="dropdown-menu dropdown-menu-dark" style={{maxWidth:60}}>
+        <div className="dropdown me-3">
+          <button className="btn btn-primary bg-green btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Hello,  <span className='text-light fw-bold'>{account.name}</span>
+          </button>
+          <ul className="dropdown-menu dropdown-menu-dark" style={{ maxWidth: 60 }}>
 
-    <li><NavLink className="dropdown-item " onClick={()=>{
-        localStorage.removeItem("Account")
-        const logout = Logout();
-        dispatch(logout)
-    }}>Logout</NavLink></li>
-    <li><NavLink className="dropdown-item" onClick={()=>{
-       
-    }}>My Profile</NavLink></li>
-   
-  </ul>
-</div>
+            <li><NavLink className="dropdown-item " onClick={() => {
+              localStorage.removeItem("Account")
+              const logout = Logout();
+              dispatch(logout)
+            }}>Logout</NavLink></li>
+            <li><NavLink className="dropdown-item" onClick={() => {
 
-      
+            }}>My Profile</NavLink></li>
+
+          </ul>
+        </div>
+
+
       </>
     }
-    else{
-      return  <NavLink to={"/admin/login"} className="btn btn-success btn-sm me-5 px-3 fw-bold btnlogin"><i className='fa fa-user me-2'></i> Login</NavLink>
+    else {
+      return <NavLink to={"/admin/login"} className="btn btn-success btn-sm me-5 px-3 fw-bold btnlogin"><i className='fa fa-user me-2'></i> Login</NavLink>
 
 
     }
   }
 
 
-=======
-import { NavLink } from 'react-router-dom'
-const Header = () => {
->>>>>>> origin/loifrontend
   return (
     <nav className="navbar navbar-expand-lg mt-2 " style={{ position: 'sticky', top: 0, 'zIndex': 1000, 'background-color': 'white' }} >
       <div className="container-fluid p-0 ">
@@ -61,11 +55,7 @@ const Header = () => {
 
             </li>
             <li className="nav-item me-3">
-<<<<<<< HEAD
               <NavLink className="nav-link" to={'/gaga'}><h5 className=' ' style={{ color: 'black' }}>Menu</h5></NavLink>
-=======
-              <NavLink className="nav-link" to={""}><h5 className=' ' style={{ color: 'black' }}>Menu</h5></NavLink>
->>>>>>> origin/loifrontend
             </li>
 
             <li className="nav-item me-3">
@@ -78,11 +68,11 @@ const Header = () => {
 
           </ul>
           <form className="d-flex" >
-          <NavLink className="nav-link active me-5"  to={''}>
+            <NavLink className="nav-link active me-5" to={''}>
               <i className='fa fa-search fs-4' style={{ color: 'rgb(57,219,74)' }}></i>
             </NavLink>
 
-            <NavLink className="nav-link active position-relative me-5"  to={''}>
+            <NavLink className="nav-link active position-relative me-5" to={''}>
               <i className='fa fa-cart-plus fs-4' style={{ color: 'rgb(57,219,74)' }}></i>
               <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                 style={{ fontSize: '0.6em', padding: '0.2em 0.4em', minWidth: '1.5em', height: '1.5em' }}>
@@ -90,17 +80,10 @@ const Header = () => {
               </span>
             </NavLink>
 
-            
 
-<<<<<<< HEAD
+
             {/* button here */}
             {RenderLogin()}
-=======
-
-            <button type="button" className="btn btn-success btn-sm me-5 px-3 fw-bold btnlogin"><i className='fa fa-user me-2'></i> Login</button>
-
-
->>>>>>> origin/loifrontend
 
           </form>
         </div>

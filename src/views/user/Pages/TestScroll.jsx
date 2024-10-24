@@ -28,41 +28,41 @@ const TestScroll = () => {
             }}
         >
             <SwiperSlide className=''>
-            <NavLink to="/product" style={{textDecoration:'none'}}>
-                <div className="d-flex justify-content-center" >
+                <NavLink to="/product/detail/1" style={{ textDecoration: 'none' }}>
+                    <div className="d-flex justify-content-center" >
 
-                    <div className="card mx-5 mt-3 " style={{ minWidth: '250px', minHeight: '310px', borderRadius: '20px', position: 'relative', overflow: 'hidden', boxShadow: 'none' }}>
+                        <div className="card mx-5 mt-3 " style={{ minWidth: '250px', minHeight: '310px', borderRadius: '20px', position: 'relative', overflow: 'hidden', boxShadow: 'none' }}>
 
 
-                        <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
+                            <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className='text-start ms-3 mt-1'>
-                            <h5 >Fattoush salad</h5>
-                            <p>escription of the item</p>
+                            <div className='text-start ms-3 mt-1'>
+                                <h5 >Fattoush salad</h5>
+                                <p>escription of the item</p>
 
-                            <div className="d-flex">
-                                <p>2.4 <span className='text-danger'>Km</span></p>
-                                <p className='text-end ms-auto me-2'> 4 <span className="bi bi-star-fill text-warning" />
-                                </p>
+                                <div className="d-flex">
+                                    <p>2.4 <span className='text-danger'>Km</span></p>
+                                    <p className='text-end ms-auto me-2'> 4 <span className="bi bi-star-fill text-warning" />
+                                    </p>
+                                </div>
+
+
+                            </div>
+
+                            <div className='text-center d-flex flex-column justify-content-center borderRadiousRight'  >
+
+                                <i class="bi bi-heart text-white"></i>
+
                             </div>
 
 
-                        </div>
-
-                        <div className='text-center d-flex flex-column justify-content-center borderRadiousRight'  >
-
-                            <i class="bi bi-heart text-white"></i>
 
                         </div>
-
-
 
                     </div>
-
-                </div>
                 </NavLink>
             </SwiperSlide>
-            
+
             <SwiperSlide>
                 <div className=" d-flex justify-content-center">
 
@@ -104,7 +104,7 @@ const TestScroll = () => {
 
                         <img src="/images/react.png" className='img-fluid mx-auto' style={{ maxWidth: 200 }} alt="" />
 
-                        <div className= 'text-start ms-3 mt-1'>
+                        <div className='text-start ms-3 mt-1'>
                             <h5 >Fattoush salad</h5>
                             <p>escription of the item</p>
 

@@ -1,7 +1,28 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ListStoreNew from './ListStoreNew'
 import Banner from './Banner'
+import { useParams } from 'react-router-dom'
+import axios from 'axios'
+import ProductDanhmuc from './ProductDanhmuc'
 const AllProducts = () => {
+
+    const params = useParams();
+    const [Product,SetProduct] = useState([]);
+    const API = async()=>{
+      
+       try {
+        const res = await axios({url:`http://localhost:8080/${params.kind}`,method:'GET'});
+        SetProduct(res.data)
+       } catch (error) {
+        
+       }
+    }
+
+    useEffect(()=>{
+        API()
+    },[params.kind])
+
+
     return (
         <div className='container-fluid'>
             <Banner></Banner>
@@ -20,7 +41,7 @@ const AllProducts = () => {
                 </div>
                 <div className="col-md-12">
 
-                <ListStoreNew></ListStoreNew>
+              <ProductDanhmuc Products={Product}></ProductDanhmuc>
 
                 </div>
 

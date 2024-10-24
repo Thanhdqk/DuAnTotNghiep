@@ -12,7 +12,6 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-<<<<<<< HEAD
 .footer-bg-color{
 
 background-color: rgb(244, 245, 246);
@@ -20,14 +19,6 @@ background-color: rgb(244, 245, 246);
 }
 
 
-=======
-
-.btnlogin {
-
-  background-color: rgb(57, 219, 74) !important
-}
-
->>>>>>> origin/loifrontend
 .cyclegreen {
   background-color: rgb(57,219,74); 
     border-radius: 50% ;          
@@ -45,13 +36,8 @@ background-color: rgb(244, 245, 246);
 
   background-color: aquamarine; 
   border-radius: 50%;          
-<<<<<<< HEAD
   width: 60px; 
   height: 60px; 
-=======
-  width: 100px; 
-  height: 100px; 
->>>>>>> origin/loifrontend
   display: flex;
   justify-content: center;
   align-items: center;
@@ -78,7 +64,6 @@ background-color: rgb(244, 245, 246);
   color: rgb(57, 219, 74);
 
 
-<<<<<<< HEAD
 }
 
 .swiper {
@@ -362,59 +347,220 @@ header {
 .custum-file-upload input {
   display: none;
 }
-.flip-card {
-  background-color: transparent;
-  width: 100%;
-  height: 254px;
-  perspective: 1000px;
-  font-family: sans-serif;
+
+/* Giỏ hàng đây nha */
+.breaddesign {
+  background-color: #f4f5f6;
+  margin-top: 10px;
+  padding: 10px 10px 10px 10px;
+  display: flex;
+  align-items: center;
+  height: 40px;
 }
 
-.title {
-  font-size: 1.5em;
-  font-weight: 900;
-  text-align: center;
+.breadcrumb {
+  margin: 0;
+} 
+
+.diachi{
+  border: 1px solid red;
+  margin-top: 10px;
+}
+ .thongtin{
+  padding: 10px;
+ }
+
+ .hangdautien,
+ .hangthuhai,
+ .hangthuba {
+     display: flex;
+     align-items: center; 
+     margin: 0;
+     height: 40px;
+ }
+
+ .tieude{
+  font-weight: bold;
+ }
+
+ .noidung{
+  margin: 0;
+  margin-left: auto;
+ }
+
+ .tieude,
+ .noidung{
+   margin: 0;
+   line-height: 40px;
+   padding: 0;
+ }
+
+.thaydoidiachi {
+  border: 1px solid #d4d7de;
+  background-color: white;
+  width: 150px;
+  height: 30px;
+  margin-left: auto; 
+  border-radius: 5px;
+}
+
+.thaydoidiachi:hover {
+  border: 1px solid black;
+}
+
+.trangchu {
+  color: #777e90;
+  text-decoration: none;
+}
+.trangchu:hover {
+  text-decoration: underline;
+}
+
+.giohang {
+  color: black;
+  font-weight: bold;
+}
+
+.sanphamvakhuyenmai{
+  margin-top: 10px;
+}
+
+.sanpham{
+  border: 1px solid #d4d7de;
   margin: 0;
 }
 
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.8s;
-  transform-style: preserve-3d;
+.tieudesanpham{
+  display: flex;
+  font-weight: bolder;
+  font-size: larger;
+  color: white;
+  border: 1px solid white;
+  background-color: red;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
 }
 
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
+.tieudesanpham p{
+  margin: 0;
 }
 
-.flip-card-front, .flip-card-back {
-  box-shadow: 0 8px 14px 0 rgba(0,0,0,0.2);
-  position: absolute;
+.navsanpham{
+  background-color: #f4f5f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.navsotiennd{
+  padding-right: 10px;
+}
+
+
+.cardgiohang {
+  display: flex;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #d4d7de;
+  gap: 15px; 
+}
+
+.no-outline{
+  outline: none;
+  border: none;
+}
+
+.chitietgiatien {
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  border: 1px solid coral;
-  border-radius: 1rem;
+  padding-left: 90px;
+  padding-top: 30px;
+}
+.tieudekhuyenmai{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  border: none;
+  font-weight: bolder;
+  font-size: larger;
+  background-color: #f4f5f6;
+}
+.tieudekhuyenmai p{
+  margin: 0;
 }
 
-.flip-card-front {
-  background: linear-gradient(120deg, bisque 60%, rgb(255, 231, 222) 88%,
-     rgb(255, 211, 195) 40%, rgba(255, 127, 80, 0.603) 48%);
-  color: coral;
+.noidungkhuyenmai2>p:hover{
+  color: red;
 }
 
-.flip-card-back {
-  background: linear-gradient(120deg, rgb(255, 174, 145) 30%, coral 88%,
-     bisque 40%, rgb(255, 185, 160) 78%);
-  color: white;
-  transform: rotateY(180deg);
-=======
->>>>>>> origin/loifrontend
+.thanhtoan button:hover{
+  background-color: black !important;
+  color: white !important;
 }
+
+.icon-container {
+  position: relative;
+  width: 37px;
+  height: 37px;
+  cursor: pointer;
+}
+
+.plus-icon,
+.check-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.plus-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.check-icon {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.icon-container.checked .plus-icon {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.icon-container.checked .check-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.magiamgiacuatoi{
+  padding: 10px;
+  border: 1px solid #d4d7de;
+  border-left: 10px solid #d4d7de;
+  width: 320px;
+}
+
+.voucher-container {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 20px; 
+}
+
+.voucher-item {
+  flex: 1 1 calc(33.33% - 20px); 
+  max-width: calc(33.33% - 20px); 
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  padding: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); 
+  border-radius: 5px;
+}
+
+/*Kết thúc giỏ hàng*/

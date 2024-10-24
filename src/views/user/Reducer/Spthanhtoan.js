@@ -1,25 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    ListSpthanhtoan :[]
+    ListSpthanhtoan: []  // Khởi tạo như một mảng rỗng
 }
 
 const Spthanhtoan = createSlice({
-  name: 'Spthanhtoan',
-  initialState,
-  reducers: {
+    name: 'Spthanhtoan',
+    initialState,
+    reducers: {
 
-    AddSpthanhtoan : (state,action) =>{
-        state.ListSpthanhtoan = action.payload
-    },
-    DeleteSpthanhtoan: (state,action) =>{
-      state.ListSpthanhtoan = action.payload
-  }
+      
+       
 
-
-  }
+    }
 });
 
-export const {} = Spthanhtoan.actions
+export const { } = Spthanhtoan.actions;
 
-export default Spthanhtoan.reducer
+export default Spthanhtoan.reducer;

@@ -2,7 +2,8 @@ package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -12,15 +13,25 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "lichsutimkiem")
-public class LichSuTimKiem {
+@Table(name = "phanhoidanhgia")
+public class PhanHoiDanhGia {
 	@Id
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ten_san_phamTK;
+	public String phan_hoiID;
 	
-	public int so_lanTK;
+	public String noi_dung;
+	
+	public LocalDate ngay_tao;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
+	
+	@ManyToOne
+	@JoinColumn(name = "san_phamId")
+	public SanPham sanpham;
+	
+	@ManyToOne
+	@JoinColumn(name = "danh_giaID")
+	public DanhGia danhgia;
+	
 }

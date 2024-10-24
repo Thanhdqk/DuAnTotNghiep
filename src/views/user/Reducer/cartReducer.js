@@ -4,7 +4,9 @@ import axios from 'axios';
 
 const initialState = {
     Cart:[],
-    ListSpthanhtoan: [] 
+    ListSpthanhtoan: [], 
+    ListSpthanhtoan2: []
+
 }
 
 const cartReducer = createSlice({
@@ -129,13 +131,17 @@ AddSpthanhtoan: (state, action) => {
     RemoveSpthanhtoan : (state, action) =>{
     
        const index = state.ListSpthanhtoan.findIndex(p => p.san_phamId == action.payload);
-       }
+       },
+
+    Thanhtoan:(state,action) =>{
+        state.ListSpthanhtoan2 =action.payload
+    }
 
 
     }
 });
 
-export const {AddItem,RemoveItem,IncreaseItem,ClearCart,DecreaseItem, AddSpthanhtoan, DeleteSpthanhtoan,Clear,IncreaseSpthanhtoan,DecreaseSpthanhtoan,RemoveSpthanhtoan} = cartReducer.actions
+export const {AddItem,RemoveItem,IncreaseItem,ClearCart,DecreaseItem, AddSpthanhtoan, DeleteSpthanhtoan,Clear,IncreaseSpthanhtoan,DecreaseSpthanhtoan,RemoveSpthanhtoan,Thanhtoan} = cartReducer.actions
 
 export default cartReducer.reducer
 

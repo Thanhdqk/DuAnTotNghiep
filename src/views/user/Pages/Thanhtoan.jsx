@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Select  } from 'antd';
 import { DeleteOutlined, EditOutlined, CreditCardOutlined, WalletOutlined  } from '@ant-design/icons';
+import { useSelector } from "react-redux";
 
 const options = [
     {
@@ -23,6 +24,9 @@ const options = [
     }
   ];
   const labelRender = (props) => {
+
+    
+
     const { label, value } = props;
     if (label) {
       return value;
@@ -34,6 +38,14 @@ const options = [
     </span>);
   };
 function Thanhtoan() {
+    const ListSPChecked = useSelector(state => state.cart.ListSpthanhtoan2) || [];
+    console.log(ListSPChecked);
+    const totalAmount = Array.isArray(ListSPChecked)
+    ? ListSPChecked.reduce((total, Spthanhtoan) => {
+        console.log(`Quantity: ${Spthanhtoan.QuantityProduct}, Giá: ${Spthanhtoan.gia_goc}`);
+        return total + (Spthanhtoan.QuantityProduct * Spthanhtoan.gia_goc);
+    }, 0)
+    : 0;
     const [showPopup, setShowPopup] = useState(false);
 
     // Xử lý khi click bên ngoài để đóng popup
@@ -54,6 +66,7 @@ function Thanhtoan() {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('scroll', handleScroll);
+            
         };
     }, []);
 
@@ -134,11 +147,12 @@ function Thanhtoan() {
                             Số tiền
                         </div>
                     </div>
-                    <div className="col-12 cardgiohang d-flex align-items-start">
+                    {ListSPChecked.map((sp,index)=>{
+                        return <div className="col-12 cardgiohang d-flex align-items-start" key={index}>
                         <div>
                             <div className="d-flex">
-                                <img width={150} height={150} src="/images/sanpham1.png" alt="Sản phẩm" />
-                                <p style={{ width: '300px' }}>Mặt Nạ Giấy Dưỡng Da Dermal Ngọc Trai Và Collagen Trắng Da 23g</p>
+                                <img width={150} height={150} src={`/images/${sp.hinhanh[0].ten_hinh}`} alt="Sản phẩm" />
+                                <p style={{ width: '300px' }}>{sp.ten_san_pham}</p>
                             </div>
                             <div className="d-flex ps-4 align-items-center">
                                 <EditOutlined />
@@ -147,27 +161,12 @@ function Thanhtoan() {
                         </div>
 
                         <div className="chitietgiatien d-flex flex-column align-items-center justify-content-center">
-                            <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>12.900 ₫</p>
-                            <p style={{ color: '#777e90', margin: '0' }}>Số lượng: 5</p>
+                            <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>{sp.QuantityProduct * sp.gia_goc}</p>
+                            <p style={{ color: '#777e90', margin: '0' }}>Số lượng: {sp.QuantityProduct}</p>
                         </div>
                     </div>
-                    <div className="col-12 cardgiohang d-flex align-items-start">
-                        <div>
-                            <div className="d-flex">
-                                <img width={150} height={150} src="/images/sanpham2.png" alt="Sản phẩm" />
-                                <p style={{ width: '300px' }}>Hộp Quà Sữa Tắm Lux Hương Hoa Thiên Điểu 570g</p>
-                            </div>
-                            <div className="d-flex ps-4 align-items-center">
-                                <EditOutlined />
-                                <input type="text" className="no-outline" placeholder="Thêm ghi chú" />
-                            </div>
-                        </div>
-
-                        <div className="chitietgiatien d-flex flex-column align-items-center justify-content-center">
-                            <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>12.900 ₫</p>
-                            <p style={{ color: '#777e90', margin: '0' }}>Số lượng: 1</p>
-                        </div>
-                    </div>
+                    })}
+                   
                 </div>
                 
                 <div className="khuyenmai col-4">

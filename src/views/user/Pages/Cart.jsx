@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { Checkbox, Button, Modal, Input } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, UserOutlined, PhoneOutlined, HomeOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from "react-redux";
-import { ClearCart, DecreaseItem, IncreaseItem, RemoveItem, AddSpthanhtoan, Clear, DecreaseSpthanhtoan, DeleteSpthanhtoan, IncreaseSpthanhtoan, RemoveSpthanhtoan} from "../Reducer/cartReducer";
+import { ClearCart, DecreaseItem, IncreaseItem, RemoveItem, AddSpthanhtoan, Clear, DecreaseSpthanhtoan, DeleteSpthanhtoan, IncreaseSpthanhtoan, RemoveSpthanhtoan, Thanhtoan} from "../Reducer/cartReducer";
 
 
 function Cart() {
@@ -77,16 +77,17 @@ function Cart() {
 
     const ListCart = useSelector(state => state.cart.Cart);
     const ListSPChecked = useSelector(state => state.cart.ListSpthanhtoan) || [];
-    console.log(ListSPChecked);
+    
     const totalAmount = Array.isArray(ListSPChecked)
     ? ListSPChecked.reduce((total, Spthanhtoan) => {
-        console.log(`Quantity: ${Spthanhtoan.QuantityProduct}, Giá: ${Spthanhtoan.gia_goc}`);
+      
         return total + (Spthanhtoan.QuantityProduct * Spthanhtoan.gia_goc);
     }, 0)
     : 0;
 console.log(`Tổng tiền: ${totalAmount}`);
 
     const dispatch = useDispatch();
+    dispatch(Thanhtoan(ListSPChecked))
 
     const handleCheckAllChange = (e) => {
         const isChecked = e.target.checked;
@@ -117,6 +118,7 @@ console.log(`Tổng tiền: ${totalAmount}`);
     // Xử lý khi click bên ngoài để đóng popup
     useEffect(() => {
         console.log('Danh sách sản phẩm đã thay đổi:', ListSPChecked);
+      
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
                 setShowPopup(false);
@@ -133,7 +135,10 @@ console.log(`Tổng tiền: ${totalAmount}`);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('scroll', handleScroll);
-            dispatch(Clear())
+            console.log("disamout",ListSPChecked)
+         
+           dispatch(Clear())
+          
         };
     },[] );
 

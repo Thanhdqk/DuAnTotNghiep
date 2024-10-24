@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { Checkbox, Button, Modal, Input } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, UserOutlined, PhoneOutlined, HomeOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from "react-redux";
-import { ClearCart, DecreaseItem, IncreaseItem, RemoveItem, AddSpthanhtoan, Clear, DecreaseSpthanhtoan, DeleteSpthanhtoan, IncreaseSpthanhtoan, RemoveSpthanhtoan, Thanhtoan} from "../Reducer/cartReducer";
+import { ClearCart, DecreaseItem, IncreaseItem, RemoveItem, AddSpthanhtoan, Clear, DecreaseSpthanhtoan, DeleteSpthanhtoan, IncreaseSpthanhtoan, RemoveSpthanhtoan, Thanhtoan } from "../Reducer/cartReducer";
 
 
 function Cart() {
@@ -51,7 +51,7 @@ function Cart() {
     const handleCancelVoucher = () => {
         setIsModalVoucherOpen(false);
     };
-   
+
 
     const handleCheckItemChange = (index, cart) => (e) => {
         const newCheckedItems = [...checkedItems];
@@ -77,14 +77,14 @@ function Cart() {
 
     const ListCart = useSelector(state => state.cart.Cart);
     const ListSPChecked = useSelector(state => state.cart.ListSpthanhtoan) || [];
-    
+
     const totalAmount = Array.isArray(ListSPChecked)
-    ? ListSPChecked.reduce((total, Spthanhtoan) => {
-      
-        return total + (Spthanhtoan.QuantityProduct * Spthanhtoan.gia_goc);
-    }, 0)
-    : 0;
-console.log(`Tổng tiền: ${totalAmount}`);
+        ? ListSPChecked.reduce((total, Spthanhtoan) => {
+
+            return total + (Spthanhtoan.QuantityProduct * Spthanhtoan.gia_goc);
+        }, 0)
+        : 0;
+    console.log(`Tổng tiền: ${totalAmount}`);
 
     const dispatch = useDispatch();
     dispatch(Thanhtoan(ListSPChecked))
@@ -93,21 +93,21 @@ console.log(`Tổng tiền: ${totalAmount}`);
         const isChecked = e.target.checked;
         setCheckedAll(isChecked);
         setCheckedItems(checkedItems.map(() => isChecked));
-        
+
         if (isChecked) {
             // Nếu tất cả được chọn, dispatch action cho tất cả sản phẩm
             ListCart.forEach(cart => {
                 const api = AddSpthanhtoan(cart);
                 dispatch(api);
-                console.log('Thêm sản phẩm:', cart);
+               
             });
-            
+
         } else {
             // Nếu không có sản phẩm nào được chọn, dispatch action xóa cho tất cả
             ListCart.forEach(cart => {
                 const api = DeleteSpthanhtoan(cart);
                 dispatch(api);
-                console.log('Xóa sản phẩm:', cart);
+                
             });
         }
 
@@ -118,7 +118,7 @@ console.log(`Tổng tiền: ${totalAmount}`);
     // Xử lý khi click bên ngoài để đóng popup
     useEffect(() => {
         console.log('Danh sách sản phẩm đã thay đổi:', ListSPChecked);
-      
+
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
                 setShowPopup(false);
@@ -135,12 +135,12 @@ console.log(`Tổng tiền: ${totalAmount}`);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('scroll', handleScroll);
-            console.log("disamout",ListSPChecked)
-         
-           dispatch(Clear())
-          
+            console.log("disamout", ListSPChecked)
+
+            dispatch(Clear())
+
         };
-    },[] );
+    }, []);
 
     const handleInputClick = () => {
         setShowPopup(true);
@@ -253,20 +253,19 @@ console.log(`Tổng tiền: ${totalAmount}`);
                                 <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>{cart.QuantityProduct * cart.gia_goc}</p>
                                 <div className="d-flex align-items-center">
                                     <Button onClick={() => {
-                                         if(ListSPChecked.length>0)
-                                            {
-                                                const increasesp = DecreaseSpthanhtoan({
-                                                    productId: cart,
-                                                    quantity: 1
-                                                })
-                                                dispatch(increasesp)
-                                            }
+                                        if (ListSPChecked.length > 0) {
+                                            const increasesp = DecreaseSpthanhtoan({
+                                                productId: cart,
+                                                quantity: 1
+                                            })
+                                            dispatch(increasesp)
+                                        }
                                         const increase = DecreaseItem({
                                             productId: cart.san_phamId,
                                             quantity: 1
                                         })
                                         dispatch(increase)
-                                       
+
                                     }} type="default" size="small">-</Button>
                                     <span style={{ margin: '0 10px' }}>{cart.QuantityProduct}</span>
                                     <Button onClick={() => {
@@ -275,15 +274,14 @@ console.log(`Tổng tiền: ${totalAmount}`);
                                             quantity: 1
                                         })
                                         dispatch(increase)
-                                        if(ListSPChecked.length>0)
-                                        {
+                                        if (ListSPChecked.length > 0) {
                                             const increasesp = IncreaseSpthanhtoan({
                                                 productId: cart,
                                                 quantity: 1
                                             })
                                             dispatch(increasesp)
                                         }
-                                        
+
                                     }} type="default" size="small">+</Button>
 
                                 </div>
@@ -292,7 +290,7 @@ console.log(`Tổng tiền: ${totalAmount}`);
                             <DeleteOutlined onClick={() => {
                                 const remove = RemoveItem(cart.san_phamId);
                                 dispatch(remove);
-                               
+
                             }} style={{ paddingTop: '70px', paddingLeft: '65px' }} />
                         </div>
                     })}
@@ -419,10 +417,12 @@ console.log(`Tổng tiền: ${totalAmount}`);
                         </div>
                         <div className="col-12 mt-2 thanhtoan" >
                             <NavLink to="/thanhtoan">
-                                <button style={{
+                                <button  disabled={ListSPChecked.length === 0}  style={{
                                     width: '100%', height: '45px',
-                                    borderRadius: '5px', border: 'none', backgroundColor: 'red',
+                                    borderRadius: '5px', border: 'none', 
+                                    backgroundColor: ListSPChecked.length === 0 ?'black':'red',
                                     color: 'white', fontWeight: 'bolder'
+                                   
                                 }}>Thanh toán</button>
                             </NavLink>
                         </div>

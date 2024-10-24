@@ -2,9 +2,15 @@ import React from 'react'
 
 const Footer = () => {
   return (
+<<<<<<< HEAD
     <footer className=' footer-bg-color p-5'>
 <div className='row '>
       <div className='col-md-3 text-center  '>
+=======
+    <footer className='row '>
+
+      <div className='col-md-3 text-center'>
+>>>>>>> origin/loifrontend
         <img src="/images/logo-web.png" alt="" />
 
         <p className='mt-2'>Savor the artistry where
@@ -69,7 +75,10 @@ const Footer = () => {
         </div>
 
       </div>
+<<<<<<< HEAD
       </div>
+=======
+>>>>>>> origin/loifrontend
     </footer>
   )
 }

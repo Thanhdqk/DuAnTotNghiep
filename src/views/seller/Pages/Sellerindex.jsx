@@ -1,4 +1,5 @@
 import React from 'react'
+<<<<<<< HEAD
 import Storepage from '../../user/Pages/storepage'
 
 const Sellerindex = () => {
@@ -6,6 +7,12 @@ const Sellerindex = () => {
    <>
     <Storepage/>
    </>
+=======
+
+const Sellerindex = () => {
+  return (
+    <div>Sellerindex</div>
+>>>>>>> origin/loifrontend
   )
 }
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
 import ApexCharts from 'react-apexcharts';
 import './Adminindex.css';
@@ -279,3 +280,14 @@ const Adminindex = () => {
 };
 
 export default Adminindex;
+=======
+import React from 'react'
+
+const Adminindex = () => {
+  return (
+    <div>Adminindex</div>
+  )
+}
+
+export default Adminindex
+>>>>>>> origin/loifrontend

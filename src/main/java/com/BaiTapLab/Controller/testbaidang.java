@@ -22,8 +22,8 @@ public class testbaidang {
 	@GetMapping("filltable")
 	public List<BaiDang> filltable() {
 		List<BaiDang> listbaidang = baidangrepo.findAll();
-		System.out.println(listbaidang.get(0));
 		return listbaidang;
 	}
+	
 
 }

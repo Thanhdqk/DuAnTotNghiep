@@ -5,7 +5,7 @@ server: # lưu ý không được dùng tab trong file .yml
 #Connect sql server
 spring:
   datasource:
-    url: jdbc:sqlserver://localhost;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;
+    url: jdbc:sqlserver://localhost;databaseName=testbaidang;encrypt=true;trustServerCertificate=true;
     username: sa
     password: 123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver

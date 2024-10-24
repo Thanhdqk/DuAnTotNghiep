@@ -29,6 +29,8 @@ const ListProduct = ({products}) => {
             }}
         >
             {products.map((product)=>{
+                const totalStars = product.danhgia.reduce((sum, rating) => sum + rating.so_sao, 0);
+                const averageStars = product.danhgia.length > 0 ? (totalStars / product.danhgia.length).toFixed(1) : 0;
 
                 return <SwiperSlide key={product.san_phamId} className=''>
                 <NavLink to={`/product/detail/${product.san_phamId}`} style={{textDecoration:'none'}} >
@@ -51,7 +53,7 @@ const ListProduct = ({products}) => {
                                 }
                                 <div className="d-flex">
                                     <p>2.4 <span className='text-danger'>Km</span></p>
-                                    <p className='text-end ms-auto me-2'> 4 <span className="bi bi-star-fill text-warning" />
+                                    <p className='text-end ms-auto me-2'> {averageStars} <span className="bi bi-star-fill text-warning" />
                                     </p>
                                 </div>
     

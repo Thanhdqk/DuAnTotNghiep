@@ -20,7 +20,8 @@ const ListStore = ({ Products }) => {
 
 
       {listProduct.map((product) => {
-
+          const totalStars = product.danhgia.reduce((sum, rating) => sum + rating.so_sao, 0);
+          const averageStars = product.danhgia.length > 0 ? (totalStars / product.danhgia.length).toFixed(1) : 0;
         return <NavLink to={`/product/detail/${product.san_phamId}`} className="card mx-5 mt-3" key={product.san_phamId} style={{ width: '250px', minHeight: '310px', borderRadius: '20px', position: 'relative', overflow: 'hidden', textDecoration: 'none' }}>
 
 
@@ -38,7 +39,7 @@ const ListStore = ({ Products }) => {
 
             <div className="d-flex">
               <p>2.4 <span className='text-danger'>Km</span></p>
-              <p className='text-end ms-auto me-2'> 4 <span className="bi bi-star-fill text-warning" />
+              <p className='text-end ms-auto me-2'> {averageStars} <span className="bi bi-star-fill text-warning" />
               </p>
             </div>
 
@@ -63,7 +64,8 @@ const ListStore = ({ Products }) => {
 
 
         : Products.map((product) => {
-
+          const totalStars = product.danhgia.reduce((sum, rating) => sum + rating.so_sao, 0);
+          const averageStars = product.danhgia.length > 0 ? (totalStars / product.danhgia.length).toFixed(1) : 0;
           return <div className="card mx-5 mt-3" key={product.san_phamId} style={{ width: '250px', minHeight: '310px', borderRadius: '20px', position: 'relative', overflow: 'hidden' }}>
 
 
@@ -81,7 +83,7 @@ const ListStore = ({ Products }) => {
 
               <div className="d-flex">
                 <p>2.4 <span className='text-danger'>Km</span></p>
-                <p className='text-end ms-auto me-2'> 4 <span className="bi bi-star-fill text-warning" />
+                <p className='text-end ms-auto me-2'> {averageStars}  <span className="bi bi-star-fill text-warning" />
                 </p>
               </div>
 

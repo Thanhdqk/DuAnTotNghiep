@@ -161,7 +161,7 @@ function Thanhtoan() {
                             </div>
 
                             <div className="chitietgiatien d-flex flex-column align-items-center justify-content-center">
-                                <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>{sp.QuantityProduct * sp.gia_goc}</p>
+                                <p style={{ fontSize: '20px', fontWeight: 'bolder' }}> {sp.gia_km >0 ? sp.QuantityProduct * sp.gia_km : sp.QuantityProduct * sp.gia_goc} </p>
                                 <p style={{ color: '#777e90', margin: '0' }}>Số lượng: {sp.QuantityProduct}</p>
                             </div>
                         </div>

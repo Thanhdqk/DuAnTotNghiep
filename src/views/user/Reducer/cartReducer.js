@@ -22,7 +22,7 @@ const cartReducer = createSlice({
             if (index < 0) {
                 const item = { ...ProductDetail, QuantityProduct }
                 state.Cart.push(item)
-                alert(`Thêm thành công ${ProductDetail.ten_san_pham} với ${QuantityProduct} sản phẩm`)
+                // alert(`Thêm thành công ${ProductDetail.ten_san_pham} với ${QuantityProduct} sản phẩm`)
             }
             else {
                 state.Cart[index].QuantityProduct += QuantityProduct

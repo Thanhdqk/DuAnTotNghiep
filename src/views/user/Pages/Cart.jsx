@@ -79,11 +79,15 @@ function Cart() {
     const ListSPChecked = useSelector(state => state.cart.ListSpthanhtoan) || [];
 
     const totalAmount = Array.isArray(ListSPChecked)
-        ? ListSPChecked.reduce((total, Spthanhtoan) => {
+    ? ListSPChecked.reduce((total, Spthanhtoan) => {
+        // Nếu `gia_km` lớn hơn 0, dùng `gia_km`, nếu không dùng `gia_goc`
+        const price = Spthanhtoan.gia_km > 0 ? Spthanhtoan.gia_km : Spthanhtoan.gia_goc;
+        return total + (Spthanhtoan.QuantityProduct * price);
+    }, 0)
+    : 0;
 
-            return total + (Spthanhtoan.QuantityProduct * Spthanhtoan.gia_goc);
-        }, 0)
-        : 0;
+console.log(`Tổng tiền: ${totalAmount}`);
+
     console.log(`Tổng tiền: ${totalAmount}`);
 
     const dispatch = useDispatch();
@@ -250,7 +254,7 @@ function Cart() {
                             </div>
 
                             <div className="chitietgiatien d-flex flex-column align-items-center justify-content-center">
-                                <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>{cart.QuantityProduct * cart.gia_goc}</p>
+                                <p style={{ fontSize: '20px', fontWeight: 'bolder' }}> {cart.gia_km >0 ? cart.QuantityProduct * cart.gia_km : cart.QuantityProduct * cart.gia_goc}     </p>
                                 <div className="d-flex align-items-center">
                                     <Button onClick={() => {
                                         if (ListSPChecked.length > 0) {

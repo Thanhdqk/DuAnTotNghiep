@@ -28,13 +28,7 @@ public class Banner {
 	public String hoat_dong;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String phe_duyet;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String yeu_cau;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ghi_chu;
+	public String trnag_thai_xoa;
 	
 	@OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
 	@JsonIgnore

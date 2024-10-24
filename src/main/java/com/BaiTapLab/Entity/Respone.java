@@ -24,6 +24,8 @@ public class Respone {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String noi_dung;
 	
+	public LocalDate ngay_tao;
+	
 	@OneToOne
     @JoinColumn(name = "feedbackID", referencedColumnName = "feedbackID")
     private Feedback feedback;

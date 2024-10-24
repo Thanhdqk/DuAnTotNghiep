@@ -1,6 +1,5 @@
 package com.BaiTapLab.Entity;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,32 +18,20 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "voucher")
-public class Voucher {
+@Table(name = "diachi")
+public class DiaChi {
 	@Id
-	public String voucherID;
-	
-	public String so_tien_giam;
-	
-	public String hinh_anh;
-	
-	public LocalDate han_su_dung;
-	
-	public int so_luot_SD;
-	
-	public int so_luong;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    public int dia_chiID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String dieu_kien;
+	public String dia_chi;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hoat_dong;
-	
-	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "diachi", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<DonHang> donhang;
 	
-	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
-	@JsonIgnore
-	public List<VoucherDetail> voucherdetail;
+	@ManyToOne
+    @JoinColumn(name = "accountID")
+    public Users users;
 }

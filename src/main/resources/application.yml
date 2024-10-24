@@ -16,3 +16,4 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.SQLServerDialect # Đảm bảo cung cấp dialect phù hợp
+        

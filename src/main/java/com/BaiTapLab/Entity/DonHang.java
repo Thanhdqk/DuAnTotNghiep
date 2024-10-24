@@ -27,6 +27,8 @@ public class DonHang {
 	
 	public LocalDate ngay_tao;
 	
+	public LocalDate thoi_gianXN;
+	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String dia_chi;
 	
@@ -48,4 +50,8 @@ public class DonHang {
     @ManyToOne
     @JoinColumn(name = "voucherID")
     public Voucher voucher;
+    
+    @ManyToOne
+    @JoinColumn(name = "dia_chiID")
+    public DiaChi diachi;
 }

@@ -29,6 +29,9 @@ public class NhaCungCap {
 	
 	public String so_dien_thoai;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String dia_chi;
+	
 	@OneToMany(mappedBy = "nhacungcap", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;

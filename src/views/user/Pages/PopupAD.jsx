@@ -10,7 +10,7 @@ import axios from 'axios';
 const PopupAD = () => {
   const [pop,setpop] = useState([]);
   const api = async() =>{
-    const res = await  axios({ url: 'http://localhost:8080/FindAllPopUpSpare?id=PopUp_1', method: 'GET' });
+    const res = await  axios({ url: 'http://localhost:8080/FindAllPopUp', method: 'GET' });
     setpop(res.data);
   }
   useEffect(()=>{

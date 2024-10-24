@@ -8,6 +8,7 @@ import searchReducer from './searchReducer'
 import bannerReducer from './bannerReducer'
 import LoadingReducer from './LoadingReducer'
 import { ContentPopup } from './popupReducer'
+import Spthanhtoan from './Spthanhtoan'
 export const store = configureStore({
 
     reducer:{
@@ -20,7 +21,8 @@ export const store = configureStore({
         textSearch:searchReducer,
         banner : bannerReducer,
         Loadingga:LoadingReducer,
-        ListPopup:ContentPopup
+        ListPopup:ContentPopup,
+        Spthanhtoan:Spthanhtoan   
     }
 
 

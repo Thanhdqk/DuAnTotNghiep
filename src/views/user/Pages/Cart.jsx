@@ -15,11 +15,13 @@ function Cart() {
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalVoucherOpen, setIsModalVoucherOpen] = useState(false);
     const [isChecked, setIsChecked] = useState(Array(6).fill(false)); // Tạo mảng trạng thái
-
+    const [sum,Setsum] = useState(0);
+    const [spchecked,setspchecked] = useState([]); 
     const handleToggle = (index) => {
     const newChecked = [...isChecked];
     newChecked[index] = !newChecked[index]; // Đảo trạng thái chỉ phần tử được nhấn
     setIsChecked(newChecked); // Cập nhật lại state
+
     };
     const showModal = () => {
         setIsModalOpen(true);
@@ -52,14 +54,23 @@ function Cart() {
         const isChecked = e.target.checked;
         setCheckedAll(isChecked); 
         setCheckedItems(checkedItems.map(() => isChecked));
+        
       };
     
-      const handleCheckItemChange = (index) => (e) => {
+      const handleCheckItemChange = (index,cart) => (e) => {
         const newCheckedItems = [...checkedItems];
         newCheckedItems[index] = e.target.checked;
         setCheckedItems(newCheckedItems);
+       
     
         setCheckedAll(newCheckedItems.every((item) => item));
+        if(e.target.checked)
+        {
+            console.log(cart)
+        }
+        else{
+            console.log(cart)
+        }
       };
 
      
@@ -164,7 +175,7 @@ function Cart() {
             <div className="col-12 mx-auto sanphamvakhuyenmai d-flex justify-content-between">
                 <div className="sanpham col-7">
                     <div className="tieudesanpham col-12">
-                        <p>Tất cả sản phẩm (2)</p>
+                        <p>Tất cả sản phẩm ({ListCart.length})</p>
                     </div>
                     <div className="navsanpham col-12">
                         <div className="navsanphamnd">
@@ -185,7 +196,8 @@ function Cart() {
                         return <div className="col-12 cardgiohang d-flex align-items-start" key={index}>
                         <Checkbox 
                             checked={checkedItems[index]} 
-                            onChange={handleCheckItemChange(index)} 
+                            onChange={handleCheckItemChange(index,cart)} 
+                            
                             style={{ paddingLeft: '10px', paddingBottom: '140px' }} 
                         />
                         <div>

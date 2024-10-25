@@ -38,6 +38,7 @@ const labelRender = (props) => {
 };
 function Thanhtoan() {
     const diachi = React.useRef(null);
+    const shippingfee = React.useRef(null);
     const [diachivalue, setdiachivalue] = useState("");
     const [diachivalue2, setdiachivalue2] = useState("");
 
@@ -70,41 +71,56 @@ function Thanhtoan() {
                 setdiachivalue2(listprovince[i].ProvinceID);
             }
         }
-        apishippingfee();
 
+
+    };
+    const data = {
+        token: "b20158be-5619-11ef-8e53-0a00184fe694",
+        shop_id: 193308,
+        service_type_id: null,
+        service_id: 53320,
+        insurance_value: 100000,
+        coupon: null,
+        cod_failed_amount: 2000,
+        from_district_id: 1454,
+        from_ward_code: "21211",
+        to_district_id: 1452,
+        to_ward_code: "21012",
+        weight: parseInt(1134),
+        length: parseInt(50),
+        width: parseInt(5000),
+        height: parseInt(500),
+        cod_value: parseInt(0),
+    };
+    Number.prototype.format = function (n, x, s, c) {
+        var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')',
+            num = this.toFixed(Math.max(0, ~~n));
+
+        return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
     };
 
     const apishippingfee = async () => {
         const res = await axios({
-            url: 'np', method: 'GET',
+            url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', method: 'POST',
             headers: {
-                "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
-                "Content-Type": "application/json",
-                "ShopId": 193308,
-                " Content-Type": "text/plain"
-            }, data: {
-                "service_id":53321,
-                "insurance_value":500000,
-                "coupon": null,
-                "from_district_id":1542,
-                "to_district_id":1444,
-                "to_ward_code":"20314",
-                "height":15,
-                "length":15,
-                "weight":1000,
-                "width":15
-            }
-            
-        });
-        console.log(res.data);
+                'Token': data.token,
+                'Content-Type': 'application/json',
+            }, data: JSON.stringify(data),
 
+        }).catch(error => {
+            console.log(error);
+        });
+        console.log(res.data.data);
+        setdiachivalue2(res.data.data.total);
+        let formatnumber = res.data.data.total.format(2, 3, '.', ',');;
+        shippingfee.current.innerHTML = formatnumber + "đ";
     };
 
     // Xử lý khi click bên ngoài để đóng popup
 
     useEffect(() => {
         api();
-
+        apishippingfee();
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
                 setShowPopup(false);
@@ -273,7 +289,7 @@ function Thanhtoan() {
                                 <p style={{ margin: '0', color: '#777e90' }}>Phí vận chuyển</p>
                             </div>
                             <div className="fw-bolder">
-                                0 ₫
+                                <p ref={shippingfee}></p>
                             </div>
                         </div>
                         <div className="d-flex justify-content-between align-items-center" style={{ height: '45px' }}>

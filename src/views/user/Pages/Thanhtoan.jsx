@@ -1,56 +1,120 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { Select  } from 'antd';
-import { DeleteOutlined, EditOutlined, CreditCardOutlined, WalletOutlined  } from '@ant-design/icons';
+import { Select } from 'antd';
+import { DeleteOutlined, EditOutlined, CreditCardOutlined, WalletOutlined } from '@ant-design/icons';
+import axios from "axios";
+import { Formik, useFormik } from 'formik';
 
 const options = [
     {
         label: (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <img style={{ marginRight: '8px' }} width="24" height="24" src="https://img.icons8.com/office/40/wallet.png" alt="wallet"/> Thanh toán trực tiếp
+                <img style={{ marginRight: '8px' }} width="24" height="24" src="https://img.icons8.com/office/40/wallet.png" alt="wallet" /> Thanh toán trực tiếp
             </div>
         ),
-      value: 'Thanh toán trực tiếp',
+        value: 'Thanh toán trực tiếp',
     },
     {
         label: (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <img width={24} height={24} src="/images/vnpay.png" alt="" /> Ví Vnpay
+                <img width={24} height={24} src="/images/vnpay.png" alt="" /> Ví Vnpay
             </div>
-          ),
-      value: 'Ví Vnpay',
+        ),
+        value: 'Ví Vnpay',
     }
-  ];
-  const labelRender = (props) => {
+];
+
+const labelRender = (props) => {
     const { label, value } = props;
     if (label) {
-      return value;
+        return value;
     }
     return (
-    <span>
-        <img style={{ marginRight: '8px' }} width="24" height="24" src="https://img.icons8.com/office/40/wallet.png" alt="wallet"/>
-        Phương thức thanh toán
-    </span>);
-  };
+        <span>
+            <img style={{ marginRight: '8px' }} width="24" height="24" src="https://img.icons8.com/office/40/wallet.png" alt="wallet" />
+            Phương thức thanh toán
+        </span>);
+};
 function Thanhtoan() {
+    const diachi = React.useRef(null);
+    const [diachivalue, setdiachivalue] = useState("");
+    const [diachivalue2, setdiachivalue2] = useState("");
+
     const [showPopup, setShowPopup] = useState(false);
+    const [listprovince, setlistprovince] = useState([]);
+
+    const api = async () => {
+        const res = await axios({
+            url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province', method: 'GET',
+            headers: {
+                "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
+            }
+        });
+        setlistprovince(res.data.data);
+
+    }
+
+
+    const onButtonClick = () => {
+        setdiachivalue(diachi.current.innerHTML);
+        let firstindex = diachivalue.indexOf("tỉnh");
+        console.log(firstindex);
+        let diachitemp = diachivalue.substring(firstindex, diachivalue.lastIndexOf(','));
+        let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).trim();
+        console.log(diachitemp);
+        console.log(diachitemp2);
+        for (let i = 0; i < listprovince.length; i++) {
+            if (listprovince[i].ProvinceName === diachitemp2) {
+                console.log("ddas", listprovince[i].ProvinceID);
+                setdiachivalue2(listprovince[i].ProvinceID);
+            }
+        }
+        apishippingfee();
+
+    };
+
+    const apishippingfee = async () => {
+        const res = await axios({
+            url: 'np', method: 'GET',
+            headers: {
+                "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
+                "Content-Type": "application/json",
+                "ShopId": 193308,
+                " Content-Type": "text/plain"
+            }, data: {
+                "service_id":53321,
+                "insurance_value":500000,
+                "coupon": null,
+                "from_district_id":1542,
+                "to_district_id":1444,
+                "to_ward_code":"20314",
+                "height":15,
+                "length":15,
+                "weight":1000,
+                "width":15
+            }
+            
+        });
+        console.log(res.data);
+
+    };
 
     // Xử lý khi click bên ngoài để đóng popup
+
     useEffect(() => {
+        api();
+
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
                 setShowPopup(false);
             }
         };
-
         const handleScroll = () => {
             setShowPopup(false);
         };
-
         document.addEventListener('mousedown', handleClickOutside);
         window.addEventListener('scroll', handleScroll);
-
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('scroll', handleScroll);
@@ -60,15 +124,18 @@ function Thanhtoan() {
     const handleInputClick = () => {
         setShowPopup(true);
     };
-    return ( 
-        <> 
-        <header className="bg-white border-bottom">
+    console.log("listprovince", listprovince);
+
+    return (
+        <>
+
+            <header className="bg-white border-bottom">
                 <div className="container-fluid py-1">
                     <div className="row align-items-center">
                         {/* Logo và Dropdown */}
                         <div className="col-3 col-md-3 d-flex align-items-center mt-2 ps-3">
                             <NavLink to="/">
-                                <img src="/images/logo-removebg-preview.png" className="me-3 img-fluid" width={80} alt="" />    
+                                <img src="/images/logo-removebg-preview.png" className="me-3 img-fluid" width={80} alt="" />
                             </NavLink>
                         </div>
 
@@ -107,13 +174,13 @@ function Thanhtoan() {
                     <div className="hangdautien">
                         <img width={32} height={32} src="https://img.icons8.com/windows/32/user-male-circle.png" alt="user" className="icon" />
                         <p className="tieude" >Thông tin người nhận:</p>
-                        <p className="noidung" style={{ paddingLeft: '200px' }}>Thành | 0984762140</p>                    
+                        <p className="noidung" style={{ paddingLeft: '200px' }}>Thành | 0984762140</p>
                     </div>
 
                     <div className="hangthuhai">
                         <img width={32} height={32} src="https://img.icons8.com/windows/32/home.png" alt="home" className="icon" />
                         <p className="tieude">Địa chỉ giao hàng:</p>
-                        <p className="noidung" style={{ paddingLeft: '233px' }}>đường số 10, Campuchia, tỉnh Đắc Lắk, làng Nủ</p>
+                        <p ref={diachi} className="noidung" style={{ paddingLeft: '233px' }}>đường số 10, Campuchia, tỉnh Long An, làng Nủ</p>
                     </div>
 
                     <div className="hangthuba">
@@ -169,7 +236,7 @@ function Thanhtoan() {
                         </div>
                     </div>
                 </div>
-                
+
                 <div className="khuyenmai col-4">
                     <div className="tieudekhuyenmai">
                         <p>Thông tin thanh toán</p>
@@ -188,12 +255,12 @@ function Thanhtoan() {
                                 labelRender={labelRender}
                                 defaultValue="1"
                                 style={{
-                                width: '100%',
+                                    width: '100%',
                                 }}
                                 options={options}
                             />
                         </div>
-                        <div className="d-flex justify-content-between align-items-center mt-4" style={{ height: '45px'}}>
+                        <div className="d-flex justify-content-between align-items-center mt-4" style={{ height: '45px' }}>
                             <div>
                                 <p style={{ margin: '0', color: '#777e90' }}>Tổng giá trị đơn hàng</p>
                             </div>
@@ -201,7 +268,7 @@ function Thanhtoan() {
                                 100.000 ₫
                             </div>
                         </div>
-                        <div className="d-flex justify-content-between align-items-center" style={{ height: '45px'}}>
+                        <div className="d-flex justify-content-between align-items-center" style={{ height: '45px' }}>
                             <div>
                                 <p style={{ margin: '0', color: '#777e90' }}>Phí vận chuyển</p>
                             </div>
@@ -209,7 +276,7 @@ function Thanhtoan() {
                                 0 ₫
                             </div>
                         </div>
-                        <div className="d-flex justify-content-between align-items-center" style={{ height: '45px'}}>
+                        <div className="d-flex justify-content-between align-items-center" style={{ height: '45px' }}>
                             <div>
                                 <p style={{ margin: '0', fontWeight: 'bolder' }}>Thành tiền</p>
                             </div>
@@ -218,14 +285,16 @@ function Thanhtoan() {
                             </div>
                         </div>
                         <div className="col-12 mt-2 thanhtoan" >
-                            <button style={{ width: '100%', height: '45px', 
-                                borderRadius: '5px', border: 'none', backgroundColor: 'red', 
-                                color: 'white', fontWeight: 'bolder' }}>Đặt hàng</button>
+                            <button onClick={onButtonClick} style={{
+                                width: '100%', height: '45px',
+                                borderRadius: '5px', border: 'none', backgroundColor: 'red',
+                                color: 'white', fontWeight: 'bolder'
+                            }}>Đặt hàng</button>
                         </div>
                     </div>
                 </div>
-            </div>  
-            </>  
+            </div>
+        </>
     );
-  }
-  export default Thanhtoan;
+}
+export default Thanhtoan;

@@ -9,51 +9,51 @@ const CategoryNew = () => {
   const Dispatch = useDispatch();
 
 
-  const DispatchAPI = async () =>{
+  const DispatchAPI = async () => {
 
     const api = API_FindALL_Category();
     Dispatch(api);
 
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     DispatchAPI();
-  })
+  },[])
 
   return (
     <div className='row' style={{
-        display: 'flex',
-        justifyContent: 'center',
-      
-       
-      }}>
-        {ListCategory.map((object,index)=>{
-          return <div className="card mx-4 text-center" key={object.id} style={{ width: '90px', height: '90px', borderRadius: '20px',margin:25}} >
+      display: 'flex',
+      justifyContent: 'center',
+
+
+    }}>
+      {ListCategory.map((object, index) => {
+        return <div className="card mx-4 text-center" key={object.id} style={{ width: '90px', height: '90px', borderRadius: '20px', margin: 25 }} >
           <div className='cycleBlueLight mx-auto mt-3'>
-            <img src={`/images/${object.image}`}  className='img-fluid' alt="" />
+            <img src={`/images/${object.image}`} className='img-fluid' alt="" />
 
-          </div>  
-        
+          </div>
+
         </div>
-        })}
-
-       
-
-       
-
-        
-
-        
-
-       
-       
-
-       
-
-        
+      })}
 
 
-      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
   )
 }
 

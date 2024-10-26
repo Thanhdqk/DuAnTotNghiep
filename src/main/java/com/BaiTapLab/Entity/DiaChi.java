@@ -1,6 +1,5 @@
 package com.BaiTapLab.Entity;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,29 +18,20 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "danhgia")
-public class DanhGia {
+@Table(name = "diachi")
+public class DiaChi {
 	@Id
-	public String danh_giaID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    public int dia_chiID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String noi_dung;
+	public String dia_chi;
 	
-	public int so_sao;
-	
-	public String hinh_anh;
-	
-	public LocalDate ngay_tao;
-	
-	@OneToMany(mappedBy = "danhgia", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<PhanHoiDanhGia> phanhoidanhgia;
+	@OneToMany(mappedBy = "diachi", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<DonHang> donhang;
 	
 	@ManyToOne
-	@JoinColumn(name = "accountID")
-	public Users users;
-	
-	@ManyToOne
-	@JoinColumn(name = "san_phamId")
-	public SanPham sanpham;
+    @JoinColumn(name = "accountID")
+    public Users users;
 }

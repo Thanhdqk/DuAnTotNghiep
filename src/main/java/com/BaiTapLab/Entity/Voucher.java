@@ -1,13 +1,17 @@
 package com.BaiTapLab.Entity;
 
+import java.time.LocalDate;
+import java.util.List;
 
-import java.time.Instant;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -17,18 +21,30 @@ import lombok.Data;
 public class Voucher {
 	@Id
 	public String voucherID;
-	public double so_tien_giam;
-	public String hinh_anh;
-	public Instant han_su_dung;
-	public int so_luotSD;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String phuong_thuc_TT;
+	public String so_tien_giam;
+	
+	public String hinh_anh;
+	
+	public LocalDate han_su_dung;
+	
+	public int so_luot_SD;
+	
+	public int so_luong;
+	
+	public int don_hang_toi_thieu;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String dieu_kien;
 	
-	@ManyToOne
-	@JoinColumn(name = "ten_cua_hang")
-	public CuaHang cuahang;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hoat_dong;
+	
+	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<DonHang> donhang;
+	
+	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<VoucherDetail> voucherdetail;
 }

@@ -13,17 +13,17 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "voucherdetail")
-public class VoucherDetail {
+@Table(name = "nhacungcapchitiet")
+public class NhaCungCapChiTiet {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     public int id;
 	
 	@ManyToOne
-	@JoinColumn(name = "accountID")
-	public Users users;
+	@JoinColumn(name = "nha_cung_capID")
+	public NhaCungCap nhacungcap;
 	
 	@ManyToOne
-	@JoinColumn(name = "voucherID")
-	public Voucher voucher;
+	@JoinColumn(name = "san_phamId")
+	public SanPham sanpham;
 }

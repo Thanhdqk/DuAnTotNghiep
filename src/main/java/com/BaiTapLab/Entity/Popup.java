@@ -12,34 +12,38 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "danhgia")
-public class DanhGia {
+@Table(name = "popup")
+public class Popup {
 	@Id
-	public String danh_giaID;
+	public String popupID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String noi_dung;
+	public String ten_san_pham;
 	
-	public int so_sao;
+	public double gia_cu;
+	
+	public double gia_moi;
+	
+	public int phan_tramGG;
 	
 	public String hinh_anh;
 	
 	public LocalDate ngay_tao;
 	
-	@OneToMany(mappedBy = "danhgia", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<PhanHoiDanhGia> phanhoidanhgia;
+	public LocalDate han_su_dung;
+	
+	@OneToMany(mappedBy = "popup", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<SanPham> sanpham;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
 	
-	@ManyToOne
-	@JoinColumn(name = "san_phamId")
-	public SanPham sanpham;
 }

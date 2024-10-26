@@ -1,6 +1,8 @@
 package com.BaiTapLab.Entity;
 
-import java.time.LocalDate;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,17 +15,15 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "voucherdetail")
-public class VoucherDetail {
+@Table(name = "hinhanh")
+public class HinhAnh {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
-    public int id;
+    private int id;
+	
+	public String ten_hinh;
 	
 	@ManyToOne
-	@JoinColumn(name = "accountID")
-	public Users users;
-	
-	@ManyToOne
-	@JoinColumn(name = "voucherID")
-	public Voucher voucher;
+	@JoinColumn(name = "san_phamId")
+	public SanPham sanpham;
 }

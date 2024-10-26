@@ -1,6 +1,9 @@
 package com.BaiTapLab.Entity;
 
+import java.time.LocalDate;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,21 +15,21 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "suluachon")
-public class SuLuaChon {
+@Table(name = "yeuthich")
+public class YeuThich {
 	@Id
-	public String su_lua_chonID;
+	public String yeu_thichID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ten_lua_chon;
+	public String ten_san_pham;
 	
-	public double gia;
-	
-	@ManyToOne
-	@JoinColumn(name = "mon_anID")
-	public MonAn monan;
+	public LocalDate ngay_tao;
 	
 	@ManyToOne
-	@JoinColumn(name = "loai_lua_chonID")
-	public LoaiLuaChon loailuachon;
+	@JoinColumn(name = "accountID")
+	public Users users;
+	
+	@ManyToOne
+	@JoinColumn(name = "san_phamId")
+	public SanPham sanpham;
 }

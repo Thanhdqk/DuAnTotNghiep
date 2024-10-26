@@ -1,6 +1,6 @@
 package com.BaiTapLab.Entity;
 
-
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,18 +12,15 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "loailuachon")
-public class LoaiLuaChon {
+@Table(name = "lichsutimkiem")
+public class LichSuTimKiem {
 	@Id
-	public String loai_lua_chonID;
-	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ten_loai_lua_chon;
+	public String ten_san_phamTK;
 	
-	public int so_lan_chon;
-
+	public int so_lanTK;
+	
 	@ManyToOne
-	@JoinColumn(name = "mon_anID")
-	public MonAn monan;
-	
+	@JoinColumn(name = "accountID")
+	public Users users;
 }

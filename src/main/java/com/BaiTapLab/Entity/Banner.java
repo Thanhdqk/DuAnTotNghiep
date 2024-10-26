@@ -17,29 +17,24 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "danhgia")
-public class DanhGia {
+@Table(name = "banner")
+public class Banner {
 	@Id
-	public String danh_giaID;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String noi_dung;
-	
-	public int so_sao;
+	public String bannerId;
 	
 	public String hinh_anh;
 	
-	public LocalDate ngay_tao;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hoat_dong;
 	
-	@OneToMany(mappedBy = "danhgia", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<PhanHoiDanhGia> phanhoidanhgia;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String trnag_thai_xoa;
+	
+	@OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<DanhMuc> danhmuc;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
-	
-	@ManyToOne
-	@JoinColumn(name = "san_phamId")
-	public SanPham sanpham;
 }

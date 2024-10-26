@@ -14,17 +14,18 @@ import lombok.Data;
 @Table(name = "donhangchitiet")
 public class DonHangChiTiet {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
     public int id;
 	
-	@ManyToOne
-	@JoinColumn(name = "don_hangID", nullable = false)
-	public DonHang donhang;
-	
-	@ManyToOne
-	@JoinColumn(name = "mon_anID")
-	public MonAn monan;
 	
 	public int so_luong;
 	public double tong_tien;
+	
+	@ManyToOne
+	@JoinColumn(name = "don_hangid")
+	public DonHang donhang;
+	
+	@ManyToOne
+	@JoinColumn(name = "san_phamId")
+	public SanPham sanpham;
 }

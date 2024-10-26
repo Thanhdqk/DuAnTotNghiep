@@ -1,6 +1,5 @@
 package com.BaiTapLab.Entity;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,29 +16,27 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "danhgia")
-public class DanhGia {
+@Table(name = "nhacungcap")
+public class NhaCungCap {
 	@Id
-	public String danh_giaID;
+	public String nha_cung_capID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String noi_dung;
+	public String ten_nhaCC;
 	
-	public int so_sao;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String ten_mat_hang;
 	
-	public String hinh_anh;
+	public String so_dien_thoai;
 	
-	public LocalDate ngay_tao;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String dia_chi;
 	
-	@OneToMany(mappedBy = "danhgia", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<PhanHoiDanhGia> phanhoidanhgia;
+	@OneToMany(mappedBy = "nhacungcap", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
-	
-	@ManyToOne
-	@JoinColumn(name = "san_phamId")
-	public SanPham sanpham;
 }

@@ -1,39 +1,26 @@
 package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "danhgia")
-public class DanhGia {
+@Table(name = "phanhoidanhgia")
+public class PhanHoiDanhGia {
 	@Id
-	public String danh_giaID;
+	public String phan_hoiID;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
 	public String noi_dung;
 	
-	public int so_sao;
-	
-	public String hinh_anh;
-	
 	public LocalDate ngay_tao;
-	
-	@OneToMany(mappedBy = "danhgia", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<PhanHoiDanhGia> phanhoidanhgia;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
@@ -42,4 +29,9 @@ public class DanhGia {
 	@ManyToOne
 	@JoinColumn(name = "san_phamId")
 	public SanPham sanpham;
+	
+	@ManyToOne
+	@JoinColumn(name = "danh_giaID")
+	public DanhGia danhgia;
+	
 }

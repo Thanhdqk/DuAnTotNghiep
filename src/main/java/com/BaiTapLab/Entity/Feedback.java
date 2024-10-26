@@ -1,9 +1,6 @@
 package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -11,35 +8,32 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "danhgia")
-public class DanhGia {
+@Table(name = "feedback")
+public class Feedback {
 	@Id
-	public String danh_giaID;
+	public String feedbackID;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String loai_yeu_cau;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String noi_dung;
 	
-	public int so_sao;
-	
 	public String hinh_anh;
 	
-	public LocalDate ngay_tao;
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String trang_thai;
 	
-	@OneToMany(mappedBy = "danhgia", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<PhanHoiDanhGia> phanhoidanhgia;
+	@OneToOne(mappedBy = "feedback", cascade = CascadeType.ALL)
+    private Respone respone;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
-	
-	@ManyToOne
-	@JoinColumn(name = "san_phamId")
-	public SanPham sanpham;
 }

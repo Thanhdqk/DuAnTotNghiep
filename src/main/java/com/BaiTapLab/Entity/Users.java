@@ -9,20 +9,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class Users {
 	@Id
 	public String accountID;
 	
-	@JsonIgnore
 	public String password;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
@@ -30,18 +33,83 @@ public class Users {
 	
 	public String hinh_anh;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String vai_tro;
-	
 	public String so_dien_thoai;
-	public String email;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String dia_chi;
+	public String hoat_dong;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String vi_pham;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JsonIgnore
+    private List<Roles> roles;  
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	public List<DonHang> donhang;
+    @JsonIgnore
+    private List<DonHang> donhang;
 	
-	@OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
-	public CuaHang cuahang;
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<DanhMuc> danhmuc;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<SanPham> sanpham;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<Popup> popup;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<Respone> respone;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<Feedback> feedback;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<LichSuTimKiem> lichsutimkiem;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<DanhGia> danhgia;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<PhuongThucTT> phuongthucTT;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<VoucherDetail> voucherDetail;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<YeuThich> yeuthich;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<NhaCungCap> nhacungcap;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<BaiDang> baidang;
+
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<PhanHoiDanhGia> phanhoidanhgia;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<DiaChi> diachi;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<Banner> banner;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<ThuongHieu> thuonghieu;
 }

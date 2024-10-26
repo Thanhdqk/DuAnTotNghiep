@@ -27,7 +27,7 @@ const SupplierManagement = () => {
     tenNhaCungCap: '',
     tenMatHang: '',
     soDienThoai: '',
-    ghiChu: '',
+    dia_chi: '',
     ngayTao: '',
   });
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,7 +44,7 @@ const SupplierManagement = () => {
       tenNhaCungCap: '',
       tenMatHang: '',
       soDienThoai: '',
-      ghiChu: '',
+      dia_chi: '',
       ngayTao: '',
     });
     setSearchTerm('');
@@ -57,8 +57,8 @@ const SupplierManagement = () => {
   };
 
   const suppliers = [
-    { maNhaCungCap: '001', tenNhaCungCap: 'Nhà Cung Cấp 1', tenMatHang: 'Mặt hàng 1', soDienThoai: '0901234567', ghiChu: 'Ghi chú 1', ngayTao: '01/01/2024' },
-    { maNhaCungCap: '002', tenNhaCungCap: 'Nhà Cung Cấp 2', tenMatHang: 'Mặt hàng 2', soDienThoai: '0987654321', ghiChu: 'Ghi chú 2', ngayTao: '02/01/2024' },
+    { maNhaCungCap: '001', tenNhaCungCap: 'Nhà Cung Cấp 1', tenMatHang: 'Mặt hàng 1', soDienThoai: '0901234567', dia_chi: 'Ghi chú 1', ngayTao: '01/01/2024' },
+    { maNhaCungCap: '002', tenNhaCungCap: 'Nhà Cung Cấp 2', tenMatHang: 'Mặt hàng 2', soDienThoai: '0987654321', dia_chi: 'Ghi chú 2', ngayTao: '02/01/2024' },
   ];
 
   const filteredSuppliers = suppliers.filter(supplier => {
@@ -132,7 +132,7 @@ const SupplierManagement = () => {
                     <TableCell>Tên Nhà Cung Cấp</TableCell>
                     <TableCell>Tên Mặt Hàng</TableCell>
                     <TableCell>Số Điện Thoại</TableCell>
-                    <TableCell>Ghi Chú</TableCell>
+                    <TableCell>Địa Chỉ</TableCell>
                     <TableCell>Ngày Tạo</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
@@ -144,7 +144,7 @@ const SupplierManagement = () => {
                       <TableCell>{supplier.tenNhaCungCap}</TableCell>
                       <TableCell>{supplier.tenMatHang}</TableCell>
                       <TableCell>{supplier.soDienThoai}</TableCell>
-                      <TableCell>{supplier.ghiChu}</TableCell>
+                      <TableCell>{supplier.dia_chi}</TableCell>
                       <TableCell>{supplier.ngayTao}</TableCell>
                       <TableCell>
   <Button
@@ -225,13 +225,13 @@ const SupplierManagement = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  name="ghiChu"
-                  label="Ghi Chú"
+                  name="dia_chi"
+                  label="địa chỉ"
                   variant="outlined"
                   fullWidth
                   value={formData.ghiChu}
                   onChange={handleInputChange}
-                  disabled
+                  
                 />
               </Grid>
               <Grid item xs={12}>

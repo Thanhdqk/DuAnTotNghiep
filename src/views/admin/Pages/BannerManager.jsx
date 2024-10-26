@@ -47,11 +47,7 @@ const BannerManager = () => {
   const resetForm = () => {
     setFormData({
       maBaiDang: '',
-      tieuDe: '',
-      noiDung: '',
-      trangThaiPheDuyet: 'Chưa phê duyệt',
       trangThaiHoatDong: 'Ngừng hoạt động',
-      ghiChu: '',
       hinhAnh: null,
       ngayTao: '',
       ngayHetHan: '',
@@ -137,12 +133,12 @@ const BannerManager = () => {
                 <TableHead>
                   <TableRow className="table-row-header">
                     <TableCell>Mã Bài Đăng</TableCell>
-                    <TableCell>Tiêu Đề</TableCell>
-                    <TableCell>Nội Dung</TableCell>
+                   
+                   
                     <TableCell>Hình Ảnh</TableCell>
-                    <TableCell>Trạng Thái Phê Duyệt</TableCell>
+                 
                     <TableCell>Trạng Thái Hoạt Động</TableCell>
-                    <TableCell>Ghi Chú</TableCell>
+                    
                     <TableCell>Ngày Tạo</TableCell>
                     <TableCell>Ngày Hết Hạn</TableCell>
                     <TableCell>Actions</TableCell>
@@ -152,12 +148,12 @@ const BannerManager = () => {
                   {filteredPosts.map((post) => (
                     <TableRow key={post.maBaiDang}>
                       <TableCell>{post.maBaiDang}</TableCell>
-                      <TableCell>{post.tieuDe}</TableCell>
-                      <TableCell>{post.noiDung}</TableCell>
+                    
+                   
                       <TableCell>{post.hinhAnh ? post.hinhAnh.name : 'Chưa có hình'}</TableCell>
-                      <TableCell>{post.trangThaiPheDuyet}</TableCell>
+                      
                       <TableCell>{post.trangThaiHoatDong}</TableCell>
-                      <TableCell>{post.ghiChu}</TableCell>
+                     
                       <TableCell>{post.ngayTao}</TableCell>
                       <TableCell>{post.ngayHetHan}</TableCell>
                       <TableCell>
@@ -200,30 +196,6 @@ const BannerManager = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  name="tieuDe"
-                  label="Tiêu Đề"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  value={formData.tieuDe}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  name="noiDung"
-                  label="Nội Dung"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  multiline
-                  rows={4}
-                  value={formData.noiDung}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
                   name="ngayTao"
                   label="Ngày Tạo"
                   variant="outlined"
@@ -254,18 +226,6 @@ const BannerManager = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  name="trangThaiPheDuyet"
-                  label="Trạng Thái Phê Duyệt"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  value={formData.trangThaiPheDuyet}
-                  onChange={handleInputChange}
-                  disabled
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
                   name="trangThaiHoatDong"
                   label="Trạng Thái Hoạt Động"
                   variant="outlined"
@@ -276,21 +236,11 @@ const BannerManager = () => {
                   disabled
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  name="ghiChu"
-                  label="Ghi Chú"
-                  variant="outlined"
-                  fullWidth
-                  value={formData.ghiChu}
-                  onChange={handleInputChange}
-                  disabled
-                />
-              </Grid>
+            
               <Grid item xs={12}>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="images/*"
                   onChange={handleFileChange}
                   style={{ display: 'none' }}
                   id="upload-button"

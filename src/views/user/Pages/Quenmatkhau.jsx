@@ -4,11 +4,11 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Quenmatkhau = () => {
-  const [email, setEmail] = useState('');
+  const [accountID, setAccountID] = useState('');
   const [message, setMessage] = useState('');
 
   const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+    setAccountID(event.target.value);
   };
 
   const handleSubmit = async (event) => {
@@ -16,12 +16,12 @@ const Quenmatkhau = () => {
     
     try {
       const response = await axios.post('http://localhost:8080/sendemail', null, {
-        params: { email: email }
+        params: { accountID: accountID }
       });
   
       if (response.status === 200) {
         setMessage('Email đã được gửi. Vui lòng kiểm tra hòm thư của bạn!');
-        localStorage.setItem('email', email);
+        localStorage.setItem('accountID', accountID);
         window.location.href = "/otp";
       } else {
         setMessage('Không tìm thấy người dùng với email này.');
@@ -43,12 +43,12 @@ const Quenmatkhau = () => {
                 Điền email gắn với tài khoản của bạn để nhận mã OTP thay đổi mật khẩu.
               </Card.Text>
               <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="formEmail">
+                <Form.Group controlId="formAccountID">
                   <Form.Label>Email</Form.Label>
                   <Form.Control 
                     type="email" 
                     placeholder="Nhập email của bạn" 
-                    value={email} 
+                    value={accountID} 
                     onChange={handleEmailChange} 
                     required 
                   />
@@ -58,7 +58,7 @@ const Quenmatkhau = () => {
                 </Button>
                 {message && <p className="mt-3 text-center">{message}</p>}
                 <div className="text-center mt-3">
-                  <a href="/login">Quay lại đăng nhập</a>
+                  <a href="/admin/login">Quay lại đăng nhập</a>
                 </div>
               </Form>
             </Card.Body>

@@ -187,10 +187,10 @@ header {
   background-color: #fff;
 }
 
-input[type="text"] {
+/* input[type="text"] {
   max-width:  350px;
   min-width: 100px;
-}
+} */
 
 .navbar-nav .nav-link {
   color: #000;

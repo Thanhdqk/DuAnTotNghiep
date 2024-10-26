@@ -57,3 +57,12 @@
 .voucher-button {
   font-size: 14px;
 }
+.link-button {
+  background: none; /* Không có nền */
+  color: blue; /* Màu giống liên kết */
+  text-decoration: underline; /* Gạch chân */
+  border: none; /* Không có viền */
+  cursor: pointer; /* Con trỏ khi hover */
+  padding: 0; /* Không có padding */
+}
+

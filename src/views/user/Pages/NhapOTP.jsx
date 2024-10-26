@@ -6,13 +6,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const NhapOTP = () => {
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
-  const [email, setEmail] = useState('');
+  const [accountID, setAccountID] = useState('');
 
   // Lấy email từ localStorage khi component được khởi tạo
   useEffect(() => {
-    const savedEmail = localStorage.getItem('email'); // Kiểm tra localStorage
+    const savedEmail = localStorage.getItem('accountID'); // Kiểm tra localStorage
     if (savedEmail) {
-      setEmail(savedEmail);
+      setAccountID(savedEmail);
     } else {
       setMessage('Không tìm thấy email. Vui lòng thử lại.');
     }
@@ -29,7 +29,7 @@ const NhapOTP = () => {
       const response = await axios.post('http://localhost:8080/verify-otp', null, {
         params: {
           otp: otp,
-          email: email, // Sử dụng email đã lấy từ localStorage
+          accountID: accountID, // Sử dụng email đã lấy từ localStorage
         }
       });
 

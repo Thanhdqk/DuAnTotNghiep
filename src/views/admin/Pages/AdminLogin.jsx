@@ -141,7 +141,10 @@ const AdminLogin = () => {
                                         <button type="submit" className="btn btn-primary w-100 ">Login</button>
                                     </div>
                                     <div className="col-xs-6 text-end">
-                                        <button type="button" className="btn btn-link text-green">Forgot password?</button>
+                                       
+                                    
+                                            <a href="/qmk"><button type="button" className="btn btn-link text-green">Forgot password?</button></a>
+                                    
                                     </div>
                                 </div>
                             </form>

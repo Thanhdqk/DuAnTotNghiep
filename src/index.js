@@ -37,6 +37,9 @@ import Quenmatkhau from './views/user/Pages/Quenmatkhau';
 import Thanhtoan from './views/user/Pages/Thanhtoan';
 import Thuonghieu from './views/user/Pages/Thuonghieu';
 import Voucher from './views/user/Pages/Voucher';
+import VoucherSelection from './views/user/Pages/VoucherSelection';
+import DonHang from './views/user/Pages/DonHang';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -73,6 +76,8 @@ root.render(
           <Route path='thanhtoan' element={<Thanhtoan></Thanhtoan>}></Route>
           <Route path='thuonghieu' element={<Thuonghieu></Thuonghieu>}></Route>
           <Route path='voucher' element={<Voucher></Voucher>}></Route>
+          <Route path='voucherselection' element={<VoucherSelection></VoucherSelection>}></Route>
+          <Route path='donhang' element={<DonHang></DonHang>}></Route>
           
         </Route>
 

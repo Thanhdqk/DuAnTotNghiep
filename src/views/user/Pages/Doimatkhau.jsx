@@ -7,13 +7,13 @@ const Doimatkhau = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [email, setEmail] = useState('');
+  const [accountID, setAccountID] = useState('');
 
   useEffect(() => {
-    const savedEmail = localStorage.getItem('email'); // Lấy email từ localStorage
+    const savedEmail = localStorage.getItem('accountID'); // Lấy email từ localStorage
     console.log('Email đã lưu:', savedEmail); // Kiểm tra giá trị email
     if (savedEmail) {
-      setEmail(savedEmail);
+      setAccountID(savedEmail);
     } else {
       setMessage('Email không được tìm thấy trong localStorage.'); // Thông báo nếu không tìm thấy email
     }
@@ -39,13 +39,14 @@ const Doimatkhau = () => {
     try {
       // Gửi cả email và mật khẩu trong body
       const response = await axios.post(`http://localhost:8080/reset-password`, {
-        email: email,
+        accountID: accountID,
         password: password
       });
   
       if (response.data) {
-        setMessage('Mật khẩu đã được thay đổi thành công.');
-        localStorage.removeItem('email'); // Xóa email sau khi hoàn thành
+        window.location.href = "admin/login";
+        localStorage.removeItem('accountID'); // Xóa email sau khi hoàn thành
+        
       } else {
         setMessage('Không thể thay đổi mật khẩu. Vui lòng thử lại.');
       }

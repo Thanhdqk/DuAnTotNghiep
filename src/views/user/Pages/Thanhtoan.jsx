@@ -86,10 +86,10 @@ function Thanhtoan() {
         from_ward_code: "21211",
         to_district_id: 1452,
         to_ward_code: "21012",
-        weight: parseInt(1134),
+        weight: parseInt(15),
         length: parseInt(50),
-        width: parseInt(5000),
-        height: parseInt(500),
+        width: parseInt(50),
+        height: parseInt(50),
         cod_value: parseInt(0),
     };
     Number.prototype.format = function (n, x, s, c) {

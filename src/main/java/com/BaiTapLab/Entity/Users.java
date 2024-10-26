@@ -2,9 +2,9 @@ package com.BaiTapLab.Entity;
 
 import java.util.List;
 
-
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -110,4 +110,8 @@ public class Users {
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<ThuongHieu> thuonghieu;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonBackReference
+	public List<GioHang> giohang;
 }

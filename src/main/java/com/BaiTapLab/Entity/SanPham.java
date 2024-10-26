@@ -72,7 +72,7 @@ public class SanPham {
 	public List<DonHangChiTiet> donhangchitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	@JsonManagedReference
 	public List<DanhGia> danhgia;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
@@ -92,7 +92,7 @@ public class SanPham {
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	@JsonManagedReference
 	public List<PhanHoiDanhGia> phanhoidanhgia;
 	
 	@ManyToOne
@@ -111,4 +111,8 @@ public class SanPham {
 	@ManyToOne
 	@JoinColumn(name = "thuong_hieuID")
 	public ThuongHieu thuonghieu;
+	
+	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+	@JsonBackReference
+	public List<GioHang> giohang;
 }

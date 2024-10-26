@@ -1,11 +1,16 @@
 package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -14,27 +19,22 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "phanhoidanhgia")
-public class PhanHoiDanhGia {
+@Table(name = "giohang")
+public class GioHang {
 	@Id
-	public String phan_hoiID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    public int id;
 	
-	public String noi_dung;
-	
-	public LocalDate ngay_tao;
+	public int so_luong;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
+	@JsonManagedReference // Thay đổi ở đây
 	public Users users;
 	
 	@ManyToOne
 	@JoinColumn(name = "san_phamId")
-	 @JsonBackReference
+	@JsonManagedReference // Thay đổi ở đây
+	
 	public SanPham sanpham;
-	
-	@ManyToOne
-	@JoinColumn(name = "danh_giaID")
-	 @JsonBackReference
-	public DanhGia danhgia;
-	
 }

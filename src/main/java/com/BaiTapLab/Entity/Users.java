@@ -34,7 +34,6 @@ public class Users {
 	public String hinh_anh;
 	
 	public String so_dien_thoai;
-	public String email;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
@@ -113,4 +112,8 @@ public class Users {
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<ThuongHieu> thuonghieu;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<GioHang> giohang;
 }

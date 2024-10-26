@@ -20,7 +20,7 @@ public class DonHangChiTiet {
 	
 	public int so_luong;
 	public double tong_tien;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "don_hangid")
 	public DonHang donhang;

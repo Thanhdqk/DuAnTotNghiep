@@ -31,18 +31,6 @@ public class UsersService {
     @Autowired
     private DiaChiRepository diaChiRepository;
 
-    private static final String UPLOAD_DIR = "uploads/";
-
-    public String saveImage(MultipartFile image) throws IOException {
-        if (image.isEmpty()) {
-            return null;
-        }
-        // Tạo tên file duy nhất
-        String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-        Files.copy(image.getInputStream(), Paths.get(UPLOAD_DIR + fileName));
-        return fileName;
-    }
-
     @Transactional
     public Users createUserWithImageAndDetails(Users user, Roles role, DiaChi diaChi, MultipartFile image) throws IOException {
         // Không cần lưu ảnh trên backend, chỉ lưu vào DB

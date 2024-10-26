@@ -39,6 +39,8 @@ public class DonHang {
 	
 	public double phi_ship;
 	
+	public double tong_tien;
+	
 	@OneToMany(mappedBy = "donhang", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<DonHangChiTiet> donhangchitiet;

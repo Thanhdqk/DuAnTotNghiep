@@ -24,6 +24,8 @@ public class Voucher {
 	
 	public String so_tien_giam;
 	
+	public String don_hang_toi_thieu;
+	
 	public String hinh_anh;
 	
 	public LocalDate han_su_dung;
@@ -45,4 +47,19 @@ public class Voucher {
 	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<VoucherDetail> voucherdetail;
+	
+	@Override
+    public String toString() {
+        return "Voucher{" +
+                "voucherID='" + voucherID + '\'' +
+                ", so_tien_giam='" + so_tien_giam + '\'' +
+                ", don_hang_toi_thieu='" + don_hang_toi_thieu + '\'' +
+                ", hinh_anh='" + hinh_anh + '\'' +
+                ", han_su_dung=" + han_su_dung +
+                ", so_luot_SD=" + so_luot_SD +
+                ", so_luong=" + so_luong +
+                ", dieu_kien='" + dieu_kien + '\'' +
+                ", hoat_dong='" + hoat_dong + '\'' +
+                '}';
+    }
 }

@@ -57,6 +57,8 @@ public class SanPham {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String nhap_hang;
 	
+	public double tien_nhap_hang;
+	
 	public double chieu_cao;
 	public double chieu_dai;
 	public double chieu_rong;
@@ -93,10 +95,14 @@ public class SanPham {
 	@JsonIgnore
 	public List<PhanHoiDanhGia> phanhoidanhgia;
 	
+	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<GioHang> giohang;
+	
 	@ManyToOne
 	@JoinColumn(name = "popupID")
 	public Popup popup;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;

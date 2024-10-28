@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,7 +20,8 @@ import lombok.Data;
 @Table(name = "yeuthich")
 public class YeuThich {
 	@Id
-	public String yeu_thichID;
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+    public int id;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ten_san_pham;

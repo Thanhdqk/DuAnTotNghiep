@@ -22,9 +22,9 @@ public class Voucher {
 	@Id
 	public String voucherID;
 	
-	public String so_tien_giam;
+	public int so_tien_giam;
 	
-	public String don_hang_toi_thieu;
+	public int don_hang_toi_thieu;
 	
 	public String hinh_anh;
 	

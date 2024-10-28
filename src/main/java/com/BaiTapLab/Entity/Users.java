@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,7 +18,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Data
+
 @Getter
 @Setter
 @Entity
@@ -41,77 +42,96 @@ public class Users {
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Roles> roles;  
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<DonHang> donhang;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<DanhMuc> danhmuc;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<SanPham> sanpham;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<Popup> popup;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<Respone> respone;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<Feedback> feedback;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<LichSuTimKiem> lichsutimkiem;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<DanhGia> danhgia;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<PhuongThucTT> phuongthucTT;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<VoucherDetail> voucherDetail;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<YeuThich> yeuthich;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<NhaCungCap> nhacungcap;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<BaiDang> baidang;
 
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<PhanHoiDanhGia> phanhoidanhgia;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<DiaChi> diachi;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<Banner> banner;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<ThuongHieu> thuonghieu;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonBackReference
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<GioHang> giohang;
 }

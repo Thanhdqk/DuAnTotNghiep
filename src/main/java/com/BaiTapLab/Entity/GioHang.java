@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,10 +31,12 @@ public class GioHang {
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	@JsonManagedReference // Thay đổi ở đây
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public Users users;
 	
 	@ManyToOne
 	@JoinColumn(name = "san_phamId")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonManagedReference // Thay đổi ở đây
 	
 	public SanPham sanpham;

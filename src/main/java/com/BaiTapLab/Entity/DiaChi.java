@@ -3,6 +3,7 @@ package com.BaiTapLab.Entity;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -14,8 +15,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "diachi")
 public class DiaChi {
@@ -27,9 +31,11 @@ public class DiaChi {
 	
 	@OneToMany(mappedBy = "diachi", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<DonHang> donhang;
 	
 	@ManyToOne
+	
     @JoinColumn(name = "accountID")
     public Users users;
 }

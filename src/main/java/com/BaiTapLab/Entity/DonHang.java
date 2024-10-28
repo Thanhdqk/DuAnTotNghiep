@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -38,9 +39,11 @@ public class DonHang {
 	public String ghi_chu;
 	
 	public double phi_ship;
+
 	
 	@OneToMany(mappedBy = "donhang", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<DonHangChiTiet> donhangchitiet;
 	
     @ManyToOne

@@ -13,4 +13,5 @@ public interface GioHangRepository extends JpaRepository<GioHang, Integer> {
 	 
 	 @Query("SELECT g FROM GioHang g WHERE g.users.accountID = ?1 AND g.sanpham.san_phamId = ?2")
 	 GioHang findByUserIdAndSanPhamId(String accountId,String sanphamId);
+	 
 }

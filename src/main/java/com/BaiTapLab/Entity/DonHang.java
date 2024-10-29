@@ -29,10 +29,9 @@ public class DonHang {
 	
 	public LocalDate thoi_gianXN;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String dia_chi;
-	
 	public String so_dien_thoai;
+	
+	public String hinh_anh;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ghi_chu;

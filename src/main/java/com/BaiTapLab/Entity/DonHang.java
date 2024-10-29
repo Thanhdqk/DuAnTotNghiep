@@ -31,6 +31,8 @@ public class DonHang {
 	
 	public String so_dien_thoai;
 	
+	public String hinh_anh;
+	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ghi_chu;
 	

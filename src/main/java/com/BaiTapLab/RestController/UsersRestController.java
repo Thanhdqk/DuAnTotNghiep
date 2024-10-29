@@ -107,6 +107,7 @@ public class UsersRestController {
 	            String token = jwtUtil.generateToken(user.get().getAccountID());
 	            response.put("message", "Đăng nhập thành công!");
 	            response.put("token", token);
+	            response.put("accountID", user.get().accountID);
 	            response.put("hinhAnh", user.get().getHinh_anh());
 	            response.put("hovaten", user.get().getHovaten());
 	            response.put("roles", user.get().getRoles().stream()

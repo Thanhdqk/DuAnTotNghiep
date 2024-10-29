@@ -42,5 +42,9 @@ public class ThuongHieu {
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
+	
+	@ManyToOne
+	@JoinColumn(name = "nha_cung_capID")
+	public NhaCungCap nhacungcap;
 }
 

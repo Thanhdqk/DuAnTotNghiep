@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.BaiTapLab.Entity.SanPham;
 import com.BaiTapLab.Entity.Voucher;
 import com.BaiTapLab.Repository.VoucherRepository;
 import com.BaiTapLab.Service.VoucherService;
@@ -43,60 +46,13 @@ public class VoucherRestController {
 		System.out.println(listVoucher);
 		return ResponseEntity.ok(listVoucher);
 	}
-	
-//	@PostMapping("/voucher/add")
-//	public ResponseEntity<Voucher> addVoucher(
-//	        @RequestParam("voucherID") String voucherID,
-//	        @RequestParam("dieu_kien") String dieu_kien,
-//	        @RequestParam("don_hang_toi_thieu") int don_hang_toi_thieu,
-//	        @RequestParam("han_su_dung") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate han_su_dung,
-//	        @RequestParam("hoat_dong") String hoat_dong,
-//	        @RequestParam("so_luong") int so_luong,
-//	        @RequestParam("so_luot_SD") int so_luot_SD,
-//	        @RequestParam("so_tien_giam") int so_tien_giam,
-//	        @RequestParam("hinh_anh") MultipartFile[] hinh_anh) throws IllegalStateException, IOException { // Sử dụng MultipartFile cho hình ảnh
-//
-//	    // Tạo đối tượng Voucher từ các tham số
-//	    Voucher voucher = new Voucher();
-//	    voucher.setVoucherID(voucherID);
-//	    voucher.setDieu_kien(dieu_kien);
-//	    voucher.setDon_hang_toi_thieu(don_hang_toi_thieu);
-//	    voucher.setHan_su_dung(han_su_dung);
-//	    voucher.setHoat_dong(hoat_dong);
-//	    voucher.setSo_luong(so_luong);
-//	    voucher.setSo_luot_SD(so_luot_SD);
-//	    voucher.setSo_tien_giam(so_tien_giam);
-//	    // Xử lý file hình ảnh nếu cần
-//
-////	    if (hinh_anh.length > 0) {
-////	        for (MultipartFile file : hinh_anh) {
-////	            String tenHinhAnh = file.getOriginalFilename(); // Lấy tên hình ảnh
-////	            // Lưu tên hình ảnh vào Voucher
-////	            voucher.setHinh_anh(tenHinhAnh);
-////	            // Lưu file vào hệ thống file nếu cần
-////	            file.transferTo(new File("src/main/resources/images/" + tenHinhAnh));
-////	        }
-////	    }
-//	    if (hinh_anh.length > 0) {
-//	    	String tenHinhAnh = hinh_anh[0].getOriginalFilename();
-//	        String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
-//
-//	        // Tạo thư mục nếu chưa tồn tại
-//	        File hinhFile = new File(uploadDir + tenHinhAnh);
-//	        if (!hinhFile.getParentFile().exists()) {
-//	            hinhFile.getParentFile().mkdirs();
-//	        }
-//
-//	        // Lưu file ảnh
-//	        hinh_anh[0].transferTo(hinhFile);
-//
-//	        // Tạo URL để truy cập ảnh
-//	        String imageUrl = "http://localhost:8080/images/" + tenHinhAnh;
-//	    }
-//	    Voucher saveVoucher = voucherService.createVoucher(voucher);
-//	    return ResponseEntity.ok(saveVoucher);
-//	}
 
+	@GetMapping("/edit/voucher/{voucherID}")
+	public ResponseEntity<Voucher> getSanPhamById(@PathVariable String voucherID){
+		Optional<Voucher> voucher = voucherRepository.findById(voucherID);
+	    return voucher.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+	}
+	
 	@PostMapping("/voucher/add")
 	public ResponseEntity<?> addVoucher(
 	        @RequestParam("voucherID") String voucherID,
@@ -236,7 +192,29 @@ public class VoucherRestController {
 	                .body("Lỗi khi xóa voucher: " + e.getMessage());
 	    }
 	}
-
 	
+	@PutMapping("/voucher/deleteToGarbage/{voucherID}")
+	public ResponseEntity<Object> deleteVoucherToGarbage(@PathVariable String voucherID) {
+	    boolean isDeleted = voucherService.deleteVoucherById(voucherID);
+	    if (isDeleted) {
+	        // Trả về một đối tượng JSON
+	        return ResponseEntity.ok(Collections.singletonMap("message", "Voucher đã được cập nhật trạng thái xóa."));
+	    } else {
+	        // Trả về một đối tượng JSON chứa thông báo lỗi
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Không tìm thấy voucher với ID: " + voucherID));
+	    }
+	}
+
+	@PutMapping("/voucher/reloadFromGarbage/{voucherID}")
+	public ResponseEntity<Object> deleteVoucherToGarbageNull(@PathVariable String voucherID) {
+	    boolean isDeleted = voucherService.reloadVoucherById(voucherID);
+	    if (isDeleted) {
+	        // Trả về một đối tượng JSON
+	        return ResponseEntity.ok(Collections.singletonMap("message", "Voucher đã được cập nhật trạng thái xóa."));
+	    } else {
+	        // Trả về một đối tượng JSON chứa thông báo lỗi
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Không tìm thấy voucher với ID: " + voucherID));
+	    }
+	}
 	
 }

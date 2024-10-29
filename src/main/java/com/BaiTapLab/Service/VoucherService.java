@@ -38,5 +38,16 @@ public class VoucherService {
 	    // Thực hiện xóa voucher
 	    voucherRepository.deleteById(voucherID);
 	}
+	
+
+	public boolean deleteVoucherById(String voucherID) {
+        int result = voucherRepository.markAsDeleted(voucherID);
+        return result > 0; // Trả về true nếu cập nhật thành công
+    }
+	
+	public boolean reloadVoucherById(String voucherID) {
+        int result = voucherRepository.reloadVoucherID(voucherID);
+        return result > 0; // Trả về true nếu cập nhật thành công
+    }
 
 }

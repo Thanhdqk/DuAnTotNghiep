@@ -15,4 +15,10 @@ public interface UsersRepository extends JpaRepository<Users, String> {
 	Users findByAccountID(String accountID);
 	@Query("SELECT u FROM Users u LEFT JOIN u.roles r WHERE u.accountID = :accountID")
 	Optional<Users> findUserWithRolesByAccountId(@Param("accountID") String accountID);
+	
+	@Query("SELECT us.accountID, us.hovaten, us.so_dien_thoai, us.hoat_dong, dc.dia_chi, dc.dia_chiID " +
+	           "FROM Users us " +
+	           "JOIN us.diachi dc")
+	List<Object[]> findAllUserWithAddress();
+
 }

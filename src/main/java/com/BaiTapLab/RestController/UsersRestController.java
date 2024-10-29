@@ -2,7 +2,9 @@ package com.BaiTapLab.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +41,31 @@ public class UsersRestController {
 	
 	@Autowired
     private JwtUtil jwtUtil;
+	
+	@GetMapping("/getUserAndAddress")
+	public List<Map<String, Object>> getUsersWithAddress() {
+	    List<Object[]> results = usersRepository.findAllUserWithAddress();
+	    
+	    List<Map<String, Object>> response = new ArrayList <>();
+	    
+	    for (Object[] row : results) {
+	        Map<String, Object> userAddress = new HashMap<>();
+	        userAddress.put("accountID", row[0]);
+	        userAddress.put("hovaten", row[1]);
+	        userAddress.put("soDienThoai", row[2]);
+	        userAddress.put("hoatDong", row[3]);
+	        userAddress.put("diaChi", row[4]);
+	        userAddress.put("diaChiID", row[5]);
+
+	        response.add(userAddress);
+	    }
+	    return response;
+	}
+	
+    @GetMapping("/test")
+    public List<Users> test() {
+        return usersRepository.findAll();
+    }
 //	@PostMapping("/login")
 //	public ResponseEntity<Map<String, Object>> login(@RequestParam String email, @RequestParam String password) {
 //	    Optional<Users> user = usersRepository.findByEmailAndPassword(email, password);

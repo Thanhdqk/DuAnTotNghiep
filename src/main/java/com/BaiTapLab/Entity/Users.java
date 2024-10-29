@@ -84,7 +84,7 @@ public class Users {
 	public List<VoucherDetail> voucherDetail;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
+	@JsonBackReference
 	public List<YeuThich> yeuthich;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
@@ -100,7 +100,8 @@ public class Users {
 	public List<PhanHoiDanhGia> phanhoidanhgia;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
+	 @JsonBackReference
+	 
 	public List<DiaChi> diachi;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)

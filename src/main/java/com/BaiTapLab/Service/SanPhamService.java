@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
 
 import com.BaiTapLab.Entity.DanhMuc;
@@ -26,9 +29,9 @@ public class SanPhamService {
 		return SanphamRepository.findSanPhamLast7Days(sevenDaysAgo);
 	}
 	
-	public List<SanPham> FindProductTopSell()
+	public List<SanPham> FindProductTopSell(Pageable pageable)
 	{
-		return null;
+		return SanphamRepository.findTop10ByLuotMua(pageable);
 	}
 	
 	public List<SanPham> FindProductDiscount()
@@ -81,9 +84,31 @@ public class SanPhamService {
 	{
 		return SanphamRepository.findSanPhamByTenAndGG(name);
 	}
+	// today
+	public List<SanPham> FindSanPhamByNameWithoutDiscount(String name)
+	{
+		return SanphamRepository.findSanPhamByTenWithOutGG(name);
+	}
 	
 	public List<SanPham> FindSanPhamByDanhmucWithDiscount(String id)
 	{
 		return SanphamRepository.findSanPhamByDandMucAndGG(id);
 	}
+	// today
+	public List<SanPham> FindSanPhamByDanhmucWithoutDiscount(String id)
+	{
+		return SanphamRepository.findSanPhamByDandMucAndWithOutGG(id);
+	}
+	
+	
+	public List<SanPham> FindSanPhamBySoSao(int sosao)
+	{
+		return SanphamRepository.findSanPhamBySoSao(sosao);
+	}
+	
+	public List<SanPham> findSanPhamByTotalSoSaoEquals5(){
+		return SanphamRepository.findSanPhamByTotalSoSaoEquals5();
+	}
+	
+	
 }

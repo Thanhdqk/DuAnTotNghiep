@@ -80,7 +80,7 @@ public class SanPham {
 	public List<PhuongthucTTChiTiet> phuongthucTTChitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	@JsonBackReference
 	public List<YeuThich> yeuthich;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)

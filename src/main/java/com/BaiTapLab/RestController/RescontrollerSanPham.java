@@ -3,6 +3,9 @@ package com.BaiTapLab.RestController;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +32,7 @@ public class RescontrollerSanPham {
 	@GetMapping("FindProductTopSell")
 	public List<SanPham> FindProductTopSell() {
 		
-		return SanPhamService.FindProductTopSell();
+		return SanPhamService.FindProductTopSell(PageRequest.of(0, 10));
 	}
 	
 	// tìm kiếm các sản phẩm đc giảm giá
@@ -91,6 +94,19 @@ public class RescontrollerSanPham {
 		return SanPhamService.FindSanPhamLikeNameAndCategoryWithoutDiscount(name, id);
 	}
 	
+	// tìm sản phẩm theo name  ko có giảm giá
+	@GetMapping("Product/findSanPhamByTenWithOutGG")
+	public List<SanPham> findSanPhamByTenWithOutGG(@RequestParam("name") String name) {
+		return SanPhamService.FindSanPhamByNameWithoutDiscount(name);
+	}
+	// tìm sản phẩm theo  danh mục ko có giảm giá
+	@GetMapping("Product/findSanPhamByDandMucAndWithOutGG")
+	public List<SanPham> findSanPhamByDandMucAndWithOutGG(@RequestParam("id") String id) {
+		return SanPhamService.FindSanPhamByDanhmucWithoutDiscount(id);
+	}
+	
+	
+	
 	// tìm sản phẩm theo name  có giảm giá
 	
 	@GetMapping("Product/FindbyNameWithDiscount")
@@ -104,4 +120,18 @@ public class RescontrollerSanPham {
 	public List<SanPham> FindbyDanhmucWithDiscount(@RequestParam("id") String id) {
 		return SanPhamService.FindSanPhamByDanhmucWithDiscount(id);
 	}
+	
+	
+	// tìm sản phẩm theo danh mục có giảm giá
+		@GetMapping("Product/FindbySosao")
+		public List<SanPham> FindbySosao(@RequestParam("sosao") int saosao) {
+			return SanPhamService.FindSanPhamBySoSao(saosao);
+		}
+		
+		@GetMapping("Product/FindbySosao5")
+		public List<SanPham> FindbySosao1() {
+			return SanPhamService.findSanPhamByTotalSoSaoEquals5();
+		}
+		
+	
 }

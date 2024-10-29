@@ -44,7 +44,7 @@ const Search = () => {
             {Danhmuc.map((d) => {
               return <li onClick={async (e) => {
                 const danhmuc = e.target.getAttribute("data-value");
-
+                
 
 
                 if (TextSearch === '') {

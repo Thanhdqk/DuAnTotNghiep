@@ -27,7 +27,8 @@ const SimilarProduct = ({ Products }) => {
             }}
         >
             {Products?.map((product) => {
-
+                const totalStars = product.danhgia.reduce((sum, rating) => sum + rating.so_sao, 0);
+                const averageStars = product.danhgia.length > 0 ? (totalStars / product.danhgia.length).toFixed(1) : 0;
                 return <SwiperSlide key={product.san_phamId} className=''>
                     <NavLink to={`/product/detail/${product.san_phamId}`} style={{ textDecoration: 'none' }} >
                         <div className="d-flex justify-content-center" >
@@ -42,14 +43,8 @@ const SimilarProduct = ({ Products }) => {
                                     {product.phantram_GG > 0 ? null : <p style={{ fontSize: 14 }}>{product.gia_goc} <span className='text-danger'>VND</span></p>}
 
                                     <div className="d-flex">
-                                        <p style={{ fontSize: 14, textDecoration: 'line-through' }}>{product.gia_goc} <span className='text-danger'>VND</span></p>
-                                        <p className='ms-3 fw-bold' style={{ fontSize: 14 }}>{product.gia_km} <span className='text-danger'>VND</span></p>
-
-                                    </div>
-
-                                    <div className="d-flex">
                                         <p>2.4 <span className='text-danger'>Km</span></p>
-                                        <p className='text-end ms-auto me-2'> 4 <span className="bi bi-star-fill text-warning" />
+                                        <p className='text-end ms-auto me-2'> {averageStars} <span className="bi bi-star-fill text-warning" />
                                         </p>
                                     </div>
 

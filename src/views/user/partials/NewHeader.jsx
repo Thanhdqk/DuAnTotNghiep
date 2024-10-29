@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { ListProductSearch } from '../Reducer/productReducer';
 import { SetTEXT } from '../Reducer/searchReducer';
+import { CallAPI_Cart } from '../Reducer/cartReducer';
 
 const NewHeader = () => {
+    const userId = localStorage.getItem('account_id');
     const [showPopup, setShowPopup] = useState(false);
     const [historySearch,SethistorySearch] = useState([]);
     
@@ -15,9 +17,10 @@ const NewHeader = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const cart = useSelector(state => state.cart.Cart)
+    const cart = useSelector(state => state.cart.CartDatabase)
     // Xử lý khi click bên ngoài để đóng popup
     useEffect(() => {
+        dispatch(CallAPI_Cart(userId))
        SethistorySearch(JSON.parse(localStorage.getItem("HistorySearch")) || [])
         const handleClickOutside = (event) => {
             if (
@@ -65,10 +68,6 @@ const NewHeader = () => {
             SethistorySearch(updateHistory);
             localStorage.setItem("HistorySearch", JSON.stringify(updateHistory));
             dispatch(SetTEXT(Text));
-        
-           
-        
-            
         }
 
 

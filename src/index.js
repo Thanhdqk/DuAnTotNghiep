@@ -31,6 +31,7 @@ import SearchByDanhmuc from './views/user/Pages/SearchByDanhmuc';
 import Cart from './views/user/Pages/Cart';
 import Thanhtoan from './views/user/Pages/Thanhtoan';
 import Loading from './views/user/Pages/Loading';
+import DonHang2 from './views/user/Pages/DonHang'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -59,6 +60,7 @@ root.render(
           <Route path='Cart' element={<Cart></Cart>}></Route>
 
           <Route path='Thanhtoan' element={<Thanhtoan></Thanhtoan>}></Route>
+          <Route path='Thanhtoan2' element={<DonHang2></DonHang2>}></Route>
 
         </Route>
 

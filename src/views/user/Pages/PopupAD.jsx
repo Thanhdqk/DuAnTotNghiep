@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 const PopupAD = () => {
-  const [pop,setpop] = useState([]);
+  const [pop1,setpop] = useState([]);
   const api = async() =>{
     const res = await  axios({ url: 'http://localhost:8080/FindAllPopUp', method: 'GET' });
     setpop(res.data);
@@ -43,7 +43,7 @@ const PopupAD = () => {
     className="mySwiper1"
     slidesPerView={1} // Chỉ hiển thị 1 slide
 >
-{pop.map((ad)=>{
+{pop1.map((ad)=>{
   return <SwiperSlide className='' key={ad.popupID}>
   
   {ad.sanpham.map((sp) => (

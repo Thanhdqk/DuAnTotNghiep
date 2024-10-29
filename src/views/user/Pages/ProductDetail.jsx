@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios';
 import SimilarProduct from './SimilarProduct';
-import { AddItem } from '../Reducer/cartReducer';
+import { AddItem, addItemToCart } from '../Reducer/cartReducer';
 import { useDispatch } from 'react-redux';
 import DanhGia from './DanhGia';
 
 const ProductDetail = () => {
 
     const params = useParams();
+    const [averageRating, setAverageRating] = useState(0);
     const [ProductDetail, SetProductDetail] = useState({});
     const [Danhgia, SetDanhGia] = useState([]);
     const [ProductsSimilar, SetProductsSimilar] = useState([])
@@ -41,6 +42,9 @@ const ProductDetail = () => {
             SetProductDetail(res.data);
             SetDanhGia(resdanhgia.data)
             SetProductsSimilar(resProductSimlar.data)
+            const totalStars = resdanhgia.data.reduce((total, review) => total + review.so_sao, 0);
+            const avgStars = resdanhgia.data.length > 0 ? (totalStars / resdanhgia.data.length).toFixed(1) : 0;
+            setAverageRating(avgStars);
         } catch (error) {
 
         }
@@ -49,6 +53,7 @@ const ProductDetail = () => {
     useEffect(() => {
 
         API_Product_Detail()
+       
         window.scrollTo(0, 0);
 
     }, [params.id])
@@ -56,12 +61,14 @@ const ProductDetail = () => {
 
 
     return (
+        
         <div className='container mb-5'>
             <div className='row mb-5' >
                 <hr className='text-green' />
 
 
                 <div className="col-md-6  ">
+                    
                     {ProductDetail?.hinhanh?.length > 0 ? <img className='img-fluid image1' style={{ minHeight: 350, minWidth: 300 }} src={`/images/${ProductDetail.hinhanh[0].ten_hinh}`} alt="" /> : null}
 
                     <div className='row mx-auto'>
@@ -79,9 +86,9 @@ const ProductDetail = () => {
                 <div className="col-md-6 ">
 
                     <h3 className='mt-5 fw-bold'>{ProductDetail.ten_san_pham}</h3>
-                    <span  ><i class="bi bi-star-fill text-warning fs-5 me-1"></i>  4.9(10)  |  <a className='ms-3'> 10 Đánh giá</a> </span>
+                    <span  ><i class="bi bi-star-fill text-warning fs-5 me-1"></i>  ({averageRating})  |  <a className='ms-3'> {Danhgia.length} Đánh giá</a> </span>
 
-                    <h2 className="fw-bold mt-3">{ProductDetail.gia_goc} đ</h2>
+                    {ProductDetail.phantram_GG>0 ?<h2 className="fw-bold mt-3">{ProductDetail.gia_km} đ</h2> : <h2 className="fw-bold mt-3">{ProductDetail.gia_goc} đ</h2>}
 
                     <h6 className="fw-bold mt-2">{ProductDetail.mo_ta}</h6>
 
@@ -107,13 +114,15 @@ const ProductDetail = () => {
 
                     <div className='d-flex mt-5'>
 
-                        <button className='btn btn-outline-dark text-danger '><i class="bi bi-heart-fill fs-3"></i></button>
+                        <button className='btn btn-outline-dark text-danger ' onClick={()=>{
+                            alert(`id sản phẩm ${params.id} và `)
+                        }}><i class="bi bi-heart-fill fs-3"></i></button>
 
                         <button className='btn btn-outline-dark text-danger ms-3'><i class="fa fa-cart-plus fs-3"></i></button>
 
                         <button onClick={() => {
 
-                            const addCart = AddItem({
+                            const addCart = addItemToCart({
                                 ProductDetail: ProductDetail,
                                 QuantityProduct: QuantityProduct,
                             });

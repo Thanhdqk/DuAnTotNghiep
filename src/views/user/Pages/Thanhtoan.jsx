@@ -1,11 +1,12 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Select } from 'antd';
 import { DeleteOutlined, EditOutlined, CreditCardOutlined, WalletOutlined } from '@ant-design/icons';
 import axios from "axios";
 import { Formik, useFormik } from 'formik';
-
+import { useSelector } from "react-redux";
+const userId = localStorage.getItem('account_id');
 const options = [
     {
         label: (
@@ -24,7 +25,6 @@ const options = [
         value: 'Ví Vnpay',
     }
 ];
-
 const labelRender = (props) => {
     const { label, value } = props;
     if (label) {
@@ -37,10 +37,20 @@ const labelRender = (props) => {
         </span>);
 };
 function Thanhtoan() {
-    const diachi = React.useRef(null);
-    const shippingfee = React.useRef(null);
-    const [diachivalue, setdiachivalue] = useState("");
-    const [diachivalue2, setdiachivalue2] = useState("");
+
+    const ListSPChecked = useSelector(state => state.cart.ListSpthanhtoan2) || [];
+    console.log(ListSPChecked);
+    const product_id_params = ListSPChecked.map(item => item.sanpham.san_phamId);
+    const product_quantity_params = ListSPChecked.map(item => item.so_luong);
+    console.log(product_id_params);
+    console.log(ListSPChecked.map(item => item.so_luong));
+    const totalAmount = Array.isArray(ListSPChecked)
+        ? ListSPChecked.reduce((total, Spthanhtoan) => {
+            const price = Spthanhtoan.sanpham.gia_km > 0 ? Spthanhtoan.sanpham.gia_km : Spthanhtoan.sanpham.gia_goc;
+            return total + (Spthanhtoan.so_luong * price);
+        }, 0)
+        : 0;
+
 
     const [showPopup, setShowPopup] = useState(false);
     const [listprovince, setlistprovince] = useState([]);
@@ -56,24 +66,21 @@ function Thanhtoan() {
 
     }
 
+    const diachi = React.useRef(null);
+    const shippingfee = React.useRef(null);
+    const sodt = React.useRef(null);
+    const btn = React.useRef(null);
+    const btn3 = React.useRef(null);
+    const [diachivalue, setdiachivalue] = useState("");
+    const [diachivalue2, setdiachivalue2] = useState("");
+    const [shipvalue, setshipvalue] = useState("");
 
-    const onButtonClick = () => {
-        setdiachivalue(diachi.current.innerHTML);
-        let firstindex = diachivalue.indexOf("tỉnh");
-        console.log(firstindex);
-        let diachitemp = diachivalue.substring(firstindex, diachivalue.lastIndexOf(','));
-        let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).trim();
-        console.log(diachitemp);
-        console.log(diachitemp2);
-        for (let i = 0; i < listprovince.length; i++) {
-            if (listprovince[i].ProvinceName === diachitemp2) {
-                console.log("ddas", listprovince[i].ProvinceID);
-                setdiachivalue2(listprovince[i].ProvinceID);
-            }
-        }
+    const redirect = useNavigate();
 
+    const btn3click = () => {
+        redirect('/');
+    }
 
-    };
     const data = {
         token: "b20158be-5619-11ef-8e53-0a00184fe694",
         shop_id: 193308,
@@ -92,14 +99,9 @@ function Thanhtoan() {
         height: parseInt(50),
         cod_value: parseInt(0),
     };
-    Number.prototype.format = function (n, x, s, c) {
-        var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')',
-            num = this.toFixed(Math.max(0, ~~n));
-
-        return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
-    };
-
     const apishippingfee = async () => {
+       
+       
         const res = await axios({
             url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', method: 'POST',
             headers: {
@@ -107,20 +109,64 @@ function Thanhtoan() {
                 'Content-Type': 'application/json',
             }, data: JSON.stringify(data),
 
-        }).catch(error => {
-            console.log(error);
-        });
-        console.log(res.data.data);
-        setdiachivalue2(res.data.data.total);
+        }); setshipvalue(res.data.data.total);
+ 
+        setdiachivalue(diachi.current.innerHTML);
+        let firstindex = diachivalue.indexOf("tinh");
+        console.log(firstindex);
+        let diachitemp = diachivalue.substring(firstindex, diachivalue.lastIndexOf(','));
+        let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).trim();
+        console.log(diachitemp);
+        console.log(diachitemp2);
+        for (let i = 0; i < listprovince.length; i++) {
+            if (listprovince[i].ProvinceName === diachitemp2) {
+                console.log("tỉnh id", listprovince[i].ProvinceID);
+                setdiachivalue2(listprovince[i].ProvinceID);
+            }
+        }
+
         let formatnumber = res.data.data.total.format(2, 3, '.', ',');;
         shippingfee.current.innerHTML = formatnumber + "đ";
     };
 
-    // Xử lý khi click bên ngoài để đóng popup
+
+
+
+    Number.prototype.format = function (n, x, s, c) {
+        var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')',
+            num = this.toFixed(Math.max(0, ~~n));
+
+        return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
+    };
+
+
+    function createpayment() {
+        let res = axios({
+            url: `http://localhost:8080/createpayment?userid=${userId}&spid=${product_id_params}&quantity=${product_quantity_params}&total=${totalAmount + shipvalue}`, method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }, data: {
+                'don_hangid': null,
+                'trang_thai': "chờ xử lí",
+                'ngay_tao': new Date(),
+                'thoi_gianXN': null,
+                'dia_chi': diachi.current.innerHTML,
+                'so_dien_thoai': sodt.current.innerHTML,
+                'ghi_chu': null,
+                'phi_ship': shipvalue,
+                'thanh_tien': totalAmount + shipvalue
+            }
+        });
+        console.log(res.data);
+    }
+
+
 
     useEffect(() => {
         api();
         apishippingfee();
+    
+
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
                 setShowPopup(false);
@@ -134,36 +180,31 @@ function Thanhtoan() {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('scroll', handleScroll);
+
         };
     }, []);
+
 
     const handleInputClick = () => {
         setShowPopup(true);
     };
-    console.log("listprovince", listprovince);
 
     return (
         <>
-
             <header className="bg-white border-bottom">
                 <div className="container-fluid py-1">
                     <div className="row align-items-center">
-                        {/* Logo và Dropdown */}
                         <div className="col-3 col-md-3 d-flex align-items-center mt-2 ps-3">
                             <NavLink to="/">
                                 <img src="/images/logo-removebg-preview.png" className="me-3 img-fluid" width={80} alt="" />
                             </NavLink>
                         </div>
-
-                        {/* Tìm kiếm */}
                         <div className="col-6 col-md-6 mt-2 mt-md-0 d-flex justify-content-center mt-2 px-2">
                             <input type="text" className="form-control me-2" style={{ width: '500px' }} placeholder="Tìm kiếm" onClick={handleInputClick} />
                             <button className="btn btn-outline-secondary" type="submit">
                                 <i className="bi bi-search"></i>
                             </button>
                         </div>
-
-                        {/* Icon giỏ hàng và thông báo */}
                         <div className="col-3 col-md-3 d-flex justify-content-end align-items-center mt-2">
                             <NavLink className="me-4 d-flex align-items-center" to="#">
                                 <i className="bi bi-person-circle text-dark fs-4"></i>
@@ -190,7 +231,7 @@ function Thanhtoan() {
                     <div className="hangdautien">
                         <img width={32} height={32} src="https://img.icons8.com/windows/32/user-male-circle.png" alt="user" className="icon" />
                         <p className="tieude" >Thông tin người nhận:</p>
-                        <p className="noidung" style={{ paddingLeft: '200px' }}>Thành | 0984762140</p>
+                        <p className="noidung" style={{ paddingLeft: '200px' }}>Thành | <span ref={sodt} className="sodt">0984762140</span> </p>
                     </div>
 
                     <div className="hangthuhai">
@@ -217,40 +258,26 @@ function Thanhtoan() {
                             Số tiền
                         </div>
                     </div>
-                    <div className="col-12 cardgiohang d-flex align-items-start">
-                        <div>
-                            <div className="d-flex">
-                                <img width={150} height={150} src="/images/sanpham1.png" alt="Sản phẩm" />
-                                <p style={{ width: '300px' }}>Mặt Nạ Giấy Dưỡng Da Dermal Ngọc Trai Và Collagen Trắng Da 23g</p>
+                    {ListSPChecked.map((sp, index) => {
+                        return <div className="col-12 cardgiohang d-flex align-items-start" key={index}>
+                            <div>
+                                <div className="d-flex">
+                                    <img width={150} height={150} src={`/images/${sp.sanpham.hinhanh[0].ten_hinh}`} alt="Sản phẩm" />
+                                    <p style={{ width: '300px' }}>{sp.sanpham.ten_san_pham}</p>
+                                </div>
+                                <div className="d-flex ps-4 align-items-center">
+                                    <EditOutlined />
+                                    <input type="text" className="no-outline" placeholder="Thêm ghi chú" />
+                                </div>
                             </div>
-                            <div className="d-flex ps-4 align-items-center">
-                                <EditOutlined />
-                                <input type="text" className="no-outline" placeholder="Thêm ghi chú" />
-                            </div>
-                        </div>
 
-                        <div className="chitietgiatien d-flex flex-column align-items-center justify-content-center">
-                            <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>12.900 ₫</p>
-                            <p style={{ color: '#777e90', margin: '0' }}>Số lượng: 5</p>
-                        </div>
-                    </div>
-                    <div className="col-12 cardgiohang d-flex align-items-start">
-                        <div>
-                            <div className="d-flex">
-                                <img width={150} height={150} src="/images/sanpham2.png" alt="Sản phẩm" />
-                                <p style={{ width: '300px' }}>Hộp Quà Sữa Tắm Lux Hương Hoa Thiên Điểu 570g</p>
-                            </div>
-                            <div className="d-flex ps-4 align-items-center">
-                                <EditOutlined />
-                                <input type="text" className="no-outline" placeholder="Thêm ghi chú" />
+                            <div className="chitietgiatien d-flex flex-column align-items-center justify-content-center">
+                                <p style={{ fontSize: '20px', fontWeight: 'bolder' }}> {sp.sanpham.gia_km > 0 ? sp.so_luong * sp.sanpham.gia_km : sp.so_luong * sp.sanpham.gia_goc} </p>
+                                <p style={{ color: '#777e90', margin: '0' }}>Số lượng: {sp.so_luong}</p>
                             </div>
                         </div>
+                    })}
 
-                        <div className="chitietgiatien d-flex flex-column align-items-center justify-content-center">
-                            <p style={{ fontSize: '20px', fontWeight: 'bolder' }}>12.900 ₫</p>
-                            <p style={{ color: '#777e90', margin: '0' }}>Số lượng: 1</p>
-                        </div>
-                    </div>
                 </div>
 
                 <div className="khuyenmai col-4">
@@ -297,15 +324,29 @@ function Thanhtoan() {
                                 <p style={{ margin: '0', fontWeight: 'bolder' }}>Thành tiền</p>
                             </div>
                             <div className="fw-bolder" style={{ color: 'red' }}>
-                                100.000 ₫
+                                {(totalAmount + shipvalue).toLocaleString()} ₫
                             </div>
                         </div>
-                        <div className="col-12 mt-2 thanhtoan" >
-                            <button onClick={onButtonClick} style={{
+                        <div data-bs-toggle="modal" data-bs-target="#exampleModal2" className="col-12 mt-2 thanhtoan" >
+                            <button ref={btn} onClick={createpayment} style={{
                                 width: '100%', height: '45px',
                                 borderRadius: '5px', border: 'none', backgroundColor: 'red',
                                 color: 'white', fontWeight: 'bolder'
                             }}>Đặt hàng</button>
+                        </div>
+                        <div>
+                            <div className="modal fade" id="exampleModal2" tabIndex={-1} >
+                                <div className="modal-dialog modal-dialog-centered" >
+                                    <div className="modal-content">
+                                        <div className="modal-header" style={{ borderBottom: 'none' }}>
+                                            <div className='h2'>Đặt hàng thành công</div>
+                                        </div>
+                                        <div className="modal-footer text-center    ">
+                                            <button ref={btn3} onClick={btn3click} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

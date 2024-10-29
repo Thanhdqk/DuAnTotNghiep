@@ -20,7 +20,7 @@ import lombok.Data;
 @Table(name = "danhgia")
 public class DanhGia {
 	@Id
-	public String danh_giaID;
+	public int danh_giaID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String noi_dung;

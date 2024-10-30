@@ -39,6 +39,7 @@ public class DonHangService {
         donHang.setVoucher(voucher);
 
         voucher.setSo_luot_SD(voucher.getSo_luot_SD() - 1);
+        voucher.setSo_luong(voucher.getSo_luong() - 1);
         voucherRepository.save(voucher);
         return donHangRepository.save(donHang);
     }

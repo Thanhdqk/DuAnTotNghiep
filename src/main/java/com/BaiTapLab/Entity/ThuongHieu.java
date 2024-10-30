@@ -42,5 +42,19 @@ public class ThuongHieu {
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
+	
+	@Override
+	public String toString() {
+	    return "ThuongHieu{" +
+	            "thuong_hieuID='" + thuong_hieuID + '\'' +
+	            ", ten_thuong_hieu='" + ten_thuong_hieu + '\'' +
+	            ", ngay_tao=" + ngay_tao +
+	            ", hoat_dong='" + hoat_dong + '\'' +
+	            ", trang_thai_xoa='" + trang_thai_xoa + '\'' +
+	            ", hinh_anh='" + hinh_anh + '\'' +
+	            ", users=" + (users != null ? users.getAccountID() : "null") + // Giả sử bạn muốn hiển thị tên người dùng
+	            '}';
+	}
+
 }
 

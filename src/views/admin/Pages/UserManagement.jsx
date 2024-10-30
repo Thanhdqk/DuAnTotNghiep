@@ -39,7 +39,6 @@ const UserForm = () => {
     hinh_anh: "",
     vai_tro: "",
     so_dien_thoai: "",
-    email: "",
     dia_chi: "",
     previewUrl: "",
   });
@@ -90,21 +89,18 @@ const UserForm = () => {
   };
 
   const validateForm = () => {
-    const { accountID, hovaten, password, email, so_dien_thoai, dia_chi } =
+    const { accountID, hovaten, password, so_dien_thoai, dia_chi } =
       formData;
     let errors = {};
 
     if (!accountID) errors.accountID = "Account ID không được để trống!";
-    else if (accountID.length <= 5)
-      errors.accountID = "Account ID phải nhiều hơn 5 ký tự!";
+    else if (!/\S+@\S+\.\S+/.test(accountID))
+      errors.accountID = "Account ID không hợp lệ!";
 
     if (!hovaten) errors.hovaten = "Họ và tên không được để trống!";
     if (!password) errors.password = "Mật khẩu không được để trống!";
     else if (password.length < 5 || password.length > 9)
       errors.password = "Mật khẩu phải từ 5 đến 9 ký tự!";
-
-    if (!email) errors.email = "Email không được để trống!";
-    else if (!/\S+@\S+\.\S+/.test(email)) errors.email = "Email không hợp lệ!";
 
     if (!so_dien_thoai)
       errors.so_dien_thoai = "Số điện thoại không được để trống!";
@@ -190,16 +186,15 @@ const UserForm = () => {
 
   const handleEdit = (user) => {
     setCurrentUser(user);
-    console.log(user);
+    console.log('cc',user);
     setFormData({
       accountID: user.accountID,
       hovaten: user.hovaten,
       password: user.password,
       hinh_anh: user.hinh_anh,
-      vai_tro: user.vai_tro,
+      vai_tro: user.roles[0].ten_vai_tro,
       so_dien_thoai: user.so_dien_thoai,
-      email: user.email,
-      dia_chi: user.dia_chi,
+      dia_chi: user.diachi[0].dia_chi,
       previewUrl: user.hinh_anh, // Giả định có URL hình ảnh
     });
     setTabValue(1);
@@ -227,12 +222,13 @@ const UserForm = () => {
       hinh_anh: "",
       vai_tro: "",
       so_dien_thoai: "",
-      email: "",
       dia_chi: "",
       previewUrl: "",
     });
     setFormErrors({});
+    
   };
+  console.log(formData)
 
   const filteredData = list.filter((user) => {
     const matchesSearchTerm =
@@ -241,7 +237,9 @@ const UserForm = () => {
       (user.accountID &&
         user.accountID.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesRoleFilter = roleFilter ? user.vai_tro === roleFilter : true;
+        const matchesRoleFilter = roleFilter 
+        ? user.roles?.some(role => role.ten_vai_tro === roleFilter) 
+        : true;
 
     return matchesSearchTerm && matchesRoleFilter;
   });
@@ -253,6 +251,7 @@ const UserForm = () => {
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
+  
 
   return (
     <Container maxWidth="xl" className="form-container">
@@ -334,7 +333,6 @@ const UserForm = () => {
                   <TableCell>Hình Ảnh</TableCell>
                   <TableCell>Vai Trò</TableCell>
                   <TableCell>Số Điện Thoại</TableCell>
-                  <TableCell>Email</TableCell>
                   <TableCell>Địa Chỉ</TableCell>
                   <TableCell>Mật Khẩu</TableCell>
                   <TableCell>Actions</TableCell>
@@ -358,11 +356,10 @@ const UserForm = () => {
                           "No Image"
                         )}
                       </TableCell>
-                      <TableCell>{user.vai_tro}</TableCell>{" "}
+                      <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>{" "}
                       {/* Hiển thị vai trò */}
                       <TableCell>{user.so_dien_thoai}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.dia_chi}</TableCell>{" "}
+                      <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>{" "}
                       {/* Hiển thị địa chỉ */}
                       <TableCell>{user.password}</TableCell>
                       <TableCell>
@@ -469,19 +466,6 @@ const UserForm = () => {
                   onChange={handleInputChange}
                   error={!!formErrors.so_dien_thoai}
                   helperText={formErrors.so_dien_thoai}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  name="email"
-                  label="Email"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  error={!!formErrors.email}
-                  helperText={formErrors.email}
                 />
               </Grid>
               <Grid item xs={12}>

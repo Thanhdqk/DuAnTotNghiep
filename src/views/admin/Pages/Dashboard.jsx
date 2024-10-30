@@ -147,26 +147,15 @@ const SupplierManagement = () => {
                       <TableCell>{supplier.dia_chi}</TableCell>
                       <TableCell>{supplier.ngayTao}</TableCell>
                       <TableCell>
-  <Button
-    variant="outlined"
-    color="primary"
-    onClick={() => handleEdit(supplier)}
-    startIcon={<Edit />}
-    style={{
-      border: 'none', // Remove border
-      boxShadow: 'none', // Remove shadow
-    }}
-  />
-  <Button
-    variant="outlined"
-    color="secondary"
-    onClick={() => handleDelete(supplier.maNhaCungCap)}
-    startIcon={<Delete />}
-    style={{
-      border: 'none', // Remove border
-      boxShadow: 'none', // Remove shadow
-    }}
-  />
+                      <Button onClick={() => handleEdit(supplier)}>
+                          <Edit />
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(supplier.maNhaCungCap)}
+                          sx={{ color: "secondary" }}
+                        >
+                          <Delete />
+                        </Button>
 </TableCell>
                     </TableRow>
                   ))}

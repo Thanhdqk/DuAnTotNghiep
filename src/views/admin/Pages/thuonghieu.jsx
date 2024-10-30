@@ -1,302 +1,335 @@
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Table, Button, Form, Container, Row, Col } from 'react-bootstrap';
+import {
+  Container,
+  Paper,
+  Typography,
+  Grid,
+  TextField,
+  Button,
+  AppBar,
+  Tabs,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl
+} from "@mui/material";
+import { Add, Restore, Edit, Delete } from "@mui/icons-material";
+import './SupplierManagement.css';
 
-const columns = () => [
-  {
-    title: 'ID',
-    dataIndex: 'id',
-  },
-  {
-    title: 'Tên Thương Hiệu',
-    dataIndex: 'tenThuongHieu',
-  },
-  {
-    title: 'Ngày Tạo',
-    dataIndex: 'ngayTao',
-  },
-  {
-    title: 'Trạng Thái HD',
-    dataIndex: 'trangThaiHD',
-  },
-  {
-    title: 'Trạng Thái Xóa',
-    dataIndex: 'trangThaiXoa',
-  },
-  {
-    title: 'Hình Ảnh',
-    dataIndex: 'hinhAnh',
-  },
-  {
-    title: 'Account ID',
-    dataIndex: 'accountID',
-  },
-  {
-    title: 'Action',
-    key: 'action',
-  }
-];
-
-const Thuonghieu = () => {
-  const [data, setData] = useState([]);
+const SupplierManagement = () => {
+  const [tabValue, setTabValue] = useState(0);
   const [formData, setFormData] = useState({
-    thuong_hieuID: '',
-    ten_thuong_hieu: '',
-    ngay_tao: '',
-    hoat_dong: '',
-    trang_thai_xoa: '',
-    hinh_anh: '',
-    accountID: '' 
+    id: '',
+    tenThuongHieu: '',
+    ngayTao: '',
+    trangThaiHD: '',
+    trangThaiXoa: '',
+    hinhAnh: '',
+    accountID: '',
+    imageFile: null,  // State to hold the uploaded image file
   });
-
-
-  // Load all brands
-  const dataSource = async () => {
-    const response = await axios.get('http://localhost:8080/loadAll');
-    console.log(response.data); // Kiểm tra dữ liệu trả về
-    setData(response.data);
-  };
-  
-
-  // Handle form input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value 
-    });
-  };
-
-  // Handle form reset
-  const handleReset = () => {
-    setFormData({
-      thuong_hieuID: '',
-      ten_thuong_hieu: '',
-      ngay_tao: '',
-      hoat_dong: '',
-      trang_thai_xoa: '',
-      hinh_anh: '',
-      accountID: ''
-    });
-  };
-
-  // Hàm thêm thương hiệu
-const handleAdd = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await axios.post('http://localhost:8080/add', formData);
-    if (response.status === 200) {
-      alert('Thêm thành công!');
-      handleReset();
-      dataSource();
-    } else {
-      alert('Có lỗi xảy ra, vui lòng thử lại.');
-    }
-  } catch (error) {
-    console.error('Lỗi khi thêm thương hiệu:', error);
-  }
-};
-
-// Hàm cập nhật thương hiệu
-const handleCapNhat = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await axios.put(`http://localhost:8080/update/${formData.thuong_hieuID}`, formData);
-    if (response.status === 200) {
-      alert('Cập nhật thành công!');
-      handleReset();
-      dataSource();
-    } else {
-      alert('Có lỗi xảy ra, vui lòng thử lại.');
-    }
-  } catch (error) {
-    console.error('Lỗi khi cập nhật thương hiệu:', error);
-  }
-};
-  // Handle delete brand
-  const handleDelete = async (id) => {
-    try {
-      const response = await axios.delete(`http://localhost:8080/delete/${id}`);
-      if (response.status === 200) {
-        alert('Xóa thành công!');
-        handleReset();
-        dataSource(); // Cập nhật lại danh sách
-      } else {
-        alert('Có lỗi xảy ra, vui lòng thử lại.');
-      }
-    } catch (error) {
-      console.error('Lỗi khi xóa thương hiệu:', error);
-    }
-  };
-
-  // Handle edit brand
-  const handleEdit = (item) => {
-    // Chuyển đổi định dạng ngày tháng
-    const ngay_tao = new Date(item.ngay_tao);
-    const formattedNgayTao = ngay_tao.toISOString().slice(0, 16); // Chỉ lấy phần 'yyyy-MM-ddTHH:mm'
-  
-    setFormData({
-      thuong_hieuID: item.thuong_hieuID,
-      ten_thuong_hieu: item.ten_thuong_hieu,
-      ngay_tao: formattedNgayTao, // Gán giá trị đã định dạng
-      hoat_dong: item.hoat_dong,
-      trang_thai_xoa: item.trang_thai_xoa,
-      hinh_anh: item.hinh_anh,
-      accountID: item.accountID
-    });
-  };
-
-  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [suppliers, setSuppliers] = useState([]);
 
   useEffect(() => {
-    dataSource();
+    fetchSuppliers();
   }, []);
 
+  const fetchSuppliers = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/loadAll');
+      setSuppliers(response.data);
+    } catch (error) {
+      console.error('Error fetching suppliers', error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({ ...formData, imageFile: file });
+  };
+
+  const resetForm = () => {
+    setFormData({
+      id: '',
+      tenThuongHieu: '',
+      ngayTao: '',
+      trangThaiHD: '',
+      trangThaiXoa: '',
+      hinhAnh: '',
+      accountID: '',
+      imageFile: null,  // Reset image file state
+    });
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+    resetForm();
+  };
+
+  const filteredSuppliers = suppliers.filter(supplier => {
+    const name = supplier.tenThuongHieu || ''; // Nếu tên là null hoặc undefined, gán là chuỗi rỗng
+    return name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+  
+
+  const handleEdit = (supplier) => {
+    setFormData(supplier);
+    setTabValue(1);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/delete/${id}`);
+      setSuppliers(suppliers.filter(supplier => supplier.id !== id));
+      alert(`Xóa nhà cung cấp với ID: ${id}`);
+    } catch (error) {
+      console.error('Error deleting supplier', error);
+    }
+  };
+
+  const handleAdd = async () => {
+    const formDataToSend = new FormData();
+    // Append fields to FormData
+    for (const key in formData) {
+      formDataToSend.append(key, formData[key]);
+    }
+
+    try {
+      const response = await axios.post('http://localhost:8080/add', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',  // Set content type for file upload
+        },
+      });
+      setSuppliers([...suppliers, response.data]);
+      resetForm();
+      setTabValue(0);
+    } catch (error) {
+      console.error('Error adding supplier', error);
+    }
+  };
+
   return (
-    <Container className="mt-4">
-      <Row>
-        <Col>
-          <ul className="nav nav-pills nav-fill">
-            <li className="nav-item">
-              <button className="nav-link active fw-bold" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-tab-pane" type="button">
-                DANH SÁCH
-              </button>
-            </li>
-            <li className="nav-item">
-              <button className="nav-link fw-bold" id="form-tab" data-bs-toggle="tab" data-bs-target="#form-tab-pane" type="button">
-                BIỂU MẪU
-              </button>
-            </li>
-          </ul>
-        </Col>
-      </Row>
+    <Container maxWidth="xl">
+      <Paper elevation={5} style={{ padding: '16px', color: '#1976d2' }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Quản Lý Nhà Cung Cấp
+        </Typography>
 
-      <div className="tab-content mt-3">
-        <div className="tab-pane fade show active" id="table-tab-pane">
-          <h3>QUẢN LÍ THƯƠNG HIỆU</h3>
-          <Table bordered hover>
-            <thead>
-              <tr>
-                {columns().map((col, index) => (
-                  <th key={index}>{col.title}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.thuong_hieuID}</td>
-                  <td>{item.ten_thuong_hieu}</td>
-                  <td>{item.ngay_tao}</td>
-                  <td>{item.hoat_dong}</td>
-                  <td>{item.trang_thai_xoa}</td>
-                  <td>{item.hinh_anh}</td>
-                  <td>{item.accountID}</td>
-                  <td>
-                    <Button className="btn btn-warning me-2" onClick={() => handleEdit(item)}>Edit</Button>
-                    <Button className="btn btn-danger" onClick={() => handleDelete(item.thuong_hieuID)}>Xóa</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
+        <AppBar position="static" color="default">
+          <Tabs value={tabValue} onChange={handleTabChange} centered>
+            <Tab label="Danh Sách Nhà Cung Cấp" />
+            <Tab label="Thêm Nhà Cung Cấp" />
+          </Tabs>
+        </AppBar>
 
-        <div className="tab-pane fade" id="form-tab-pane">
-          <h3>THÊM MỚI THƯƠNG HIỆU</h3>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>ID Thương Hiệu</Form.Label>
-              <Form.Control
-                type='text'
-                name="thuong_hieuID"
-                value={formData.thuong_hieuID}
-                onChange={handleInputChange}
-                placeholder="Nhập ID thương hiệu"
-              />
-            </Form.Group>
+        {tabValue === 0 && (
+          <div>
+            <Typography variant="h6" align="center" style={{ marginTop: '16px' }}>
+              Danh Sách Nhà Cung Cấp
+            </Typography>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Tên Thương Hiệu</Form.Label>
-              <Form.Control
-                type='text'
-                name="ten_thuong_hieu"
-                value={formData.ten_thuong_hieu}
-                onChange={handleInputChange}
-                placeholder="Nhập tên thương hiệu"
-              />
-            </Form.Group>
+            <Grid container spacing={2} style={{ marginTop: '16px' }}>
+              <Grid item xs={12}>
+                <TextField
+                  label="Tìm kiếm theo tên thương hiệu"
+                  variant="outlined"
+                  fullWidth
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </Grid>
+            </Grid>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Ngày Tạo</Form.Label>
-              <Form.Control
-                type='datetime-local'
-                name="ngay_tao"
-                value={formData.ngay_tao}
-                onChange={handleInputChange}
-                placeholder="Chọn ngày tạo"
-              />
-            </Form.Group>
+            <TableContainer component={Paper} style={{ marginTop: '16px', color: '#1976d2' }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell>Tên Thương Hiệu</TableCell>
+                    <TableCell>Ngày Tạo</TableCell>
+                    <TableCell>Trạng Thái HD</TableCell>
+                    <TableCell>Trạng Thái Xóa</TableCell>
+                    <TableCell>Hình Ảnh</TableCell>
+                    <TableCell>Account ID</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredSuppliers.map((supplier) => (
+                    <TableRow key={supplier.id}>
+                      <TableCell>{supplier.id}</TableCell>
+                      <TableCell>{supplier.tenThuongHieu}</TableCell>
+                      <TableCell>{supplier.ngayTao}</TableCell>
+                      <TableCell>{supplier.trangThaiHD}</TableCell>
+                      <TableCell>{supplier.trangThaiXoa}</TableCell>
+                      <TableCell>{supplier.hinhAnh}</TableCell>
+                      <TableCell>{supplier.accountID}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => handleEdit(supplier)}
+                          startIcon={<Edit />}
+                        />
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => handleDelete(supplier.id)}
+                          startIcon={<Delete />}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+        )}
 
-            <Form.Group className="mb-3">
-              <Form.Label>Trạng Thái HD</Form.Label>
-              <Form.Select name="hoat_dong" value={formData.hoat_dong} onChange={handleInputChange}>
-                <option>Chọn trạng thái HD</option>
-                <option value="Hoạt động">Hoạt động</option>
-                <option value="Không hoạt động">Không hoạt động</option>
-              </Form.Select>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Trạng Thái Xóa</Form.Label>
-              <Form.Select name="trang_thai_xoa" value={formData.trang_thai_xoa} onChange={handleInputChange}>
-                <option>Chọn trạng thái</option>
-                <option value="Đã xóa">Đã xóa</option>
-                <option value="Chưa xóa">Chưa xóa</option>
-              </Form.Select>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Hình Ảnh</Form.Label>
-              <Form.Control
-                type='file'
-                name="hinh_anh"
-                value={formData.hinh_anh}
-                onChange={handleInputChange}
-                placeholder="Nhập hình Ảnh"
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Account ID</Form.Label>
-              <Form.Control
-                type='text'
-                name="accountID"
-                value={formData.accountID}
-                onChange={handleInputChange}
-                placeholder="Nhập Account ID"
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3 ms-3 d-flex">
-              <Button variant="success" type="button" onClick={handleAdd} className="me-2">
-                Thêm
-              </Button>
-              <Button variant="warning" type="button" onClick={handleCapNhat} className="me-2">
-                Cập nhật
-              </Button>
-              <Button variant="danger" type="button" className="me-2" onClick={() => handleDelete(formData.thuong_hieuID)}>
-                Xóa
-              </Button>
-              <Button variant="info" type="button" onClick={handleReset}>
-                Reset
-              </Button>
-            </Form.Group>
-          </Form>
-        </div>
-      </div>
+        {tabValue === 1 && (
+          <form>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  name="id"
+                  label="ID"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={formData.id}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="tenThuongHieu"
+                  label="Tên Thương Hiệu"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={formData.tenThuongHieu}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="ngayTao"
+                  label="Ngày Tạo"
+                  variant="outlined"
+                  fullWidth
+                  type="date"
+                  required
+                  value={formData.ngayTao}
+                  onChange={handleInputChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth required>
+                  <InputLabel>Trạng Thái Hoạt Động</InputLabel>
+                  <Select
+                    name="trangThaiHD"
+                    value={formData.trangThaiHD}
+                    onChange={handleInputChange}
+                  >
+                    <MenuItem value="">
+                      <em>Chọn trạng thái HD</em>
+                    </MenuItem>
+                    <MenuItem value="Hoạt động">Hoạt động</MenuItem>
+                    <MenuItem value="Không hoạt động">Không hoạt động</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth required>
+                  <InputLabel>Trạng Thái Xóa</InputLabel>
+                  <Select
+                    name="trangThaiXoa"
+                    value={formData.trangThaiXoa}
+                    onChange={handleInputChange}
+                  >
+                    <MenuItem value="">
+                      <em>Chọn trạng thái</em>
+                    </MenuItem>
+                    <MenuItem value="Đã xóa">Đã xóa</MenuItem>
+                    <MenuItem value="Chưa xóa">Chưa xóa</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="accountID"
+                  label="Account ID"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={formData.accountID}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <input
+                  accept="image/*"
+                  id="upload-button"
+                  type="file"
+                  style={{ display: 'none' }}
+                  onChange={handleFileChange}
+                />
+                <label htmlFor="upload-button">
+                  <Button variant="contained" component="span">
+                    Tải lên Hình Ảnh
+                  </Button>
+                </label>
+              </Grid>
+             
+              <Grid item xs={12} container spacing={2}>
+                <Grid item xs={6}>
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={handleAdd}
+                    startIcon={<Add />}
+                  >
+                    THÊM NHÀ CUNG CẤP
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    onClick={resetForm}
+                    startIcon={<Restore />}
+                  >
+                    ĐẶT LẠI
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          </form>
+        )}
+      </Paper>
     </Container>
   );
 };
 
-export default Thuonghieu;
+export default SupplierManagement;

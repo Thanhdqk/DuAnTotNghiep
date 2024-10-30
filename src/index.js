@@ -31,6 +31,7 @@ import AllProducts from './views/user/Pages/AllProducts';
 import UserForm from './views/admin/Pages/UserManagement'
 import BannerManager from './views/admin/Pages/BannerManager'
 import SupplierManagement from './views/admin/Pages/Dashboard'
+import Thuonghieu from './views/admin/Pages/thuonghieu';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -56,6 +57,7 @@ root.render(
         {/* page admin */}
         <Route path='/admin/login' element={<AdminLogin></AdminLogin>} />
         <Route path='ga1' element={<Test></Test>}></Route>
+        <Route path='thuonghieu' element={<Thuonghieu></Thuonghieu>}></Route>
         <Route path='danhmuc' element={<CrudCategory></CrudCategory>}></Route>
        
         <Route path='popup' element={<CrudPOPUP></CrudPOPUP>}></Route>

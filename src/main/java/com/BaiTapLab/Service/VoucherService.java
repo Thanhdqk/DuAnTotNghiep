@@ -52,6 +52,8 @@ public class VoucherService {
         return result > 0; // Trả về true nếu cập nhật thành công
     }
 	
-
+	public boolean existsByVoucherID(String accountID) {
+	    return voucherRepository.existsByVoucherID(accountID);
+	}
 
 }

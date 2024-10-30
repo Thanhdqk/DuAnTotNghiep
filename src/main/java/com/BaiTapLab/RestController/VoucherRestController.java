@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -149,10 +150,11 @@ public class VoucherRestController {
 	        @RequestParam("hoat_dong") String hoat_dong,
 	        @RequestParam("hanh_dong") String hanh_dong,
 	        @RequestParam("so_luong") int so_luong,
-	        @RequestParam("so_luot_SD") int so_luot_SD,
+	        //@RequestParam("so_luot_SD") int so_luot_SD,
 	        @RequestParam("so_tien_giam") int so_tien_giam,
 	        @RequestParam("accountID") String accountID,
 	        @RequestParam(value = "hinh_anh", required = false) MultipartFile[] hinh_anh) {
+		Map<String, String> response = new HashMap<>();
 
 	    try {
 	        // Tạo đối tượng Voucher từ các tham số
@@ -165,9 +167,13 @@ public class VoucherRestController {
 	        voucher.setHoat_dong(hoat_dong);
 	        voucher.setHanh_dong("Thêm");
 	        voucher.setSo_luong(so_luong);
-	        voucher.setSo_luot_SD(so_luot_SD);
+	        //voucher.setSo_luot_SD(so_luot_SD);
 	        voucher.setSo_tien_giam(so_tien_giam);
 
+	        if (voucherService.existsByVoucherID(voucherID)) {
+	            response.put("message", "Voucher đã tồn tại, không thể thêm mới!"); // Thông báo lỗi
+	            return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // 409 Conflict
+	        }
 	        // Xử lý file ảnh nếu được upload
 	        if (hinh_anh != null && hinh_anh.length > 0) {
 	            String tenHinhAnh = hinh_anh[0].getOriginalFilename();
@@ -231,7 +237,7 @@ public class VoucherRestController {
 	        @RequestParam("hoat_dong") String hoat_dong,
 	        @RequestParam("hanh_dong") String hanh_dong,
 	        @RequestParam("so_luong") int so_luong,
-	        @RequestParam("so_luot_SD") int so_luot_SD,
+	        //@RequestParam("so_luot_SD") int so_luot_SD,
 	        @RequestParam("so_tien_giam") int so_tien_giam,
 	        @RequestParam(value = "hinh_anh", required = false) MultipartFile[] hinh_anh) {
 
@@ -247,7 +253,7 @@ public class VoucherRestController {
 	        voucher.setNgay_tao(ngay_tao);
 	        voucher.setSo_luong(so_luong);
 	        voucher.setHanh_dong("Cập nhật");
-	        voucher.setSo_luot_SD(so_luot_SD);
+	        //voucher.setSo_luot_SD(so_luot_SD);
 	        voucher.setSo_tien_giam(so_tien_giam);
 
 	        // Xử lý file ảnh nếu được upload

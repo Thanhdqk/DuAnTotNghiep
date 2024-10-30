@@ -54,4 +54,13 @@ public class UsersService {
     public Users findByAccountID(String accountID) {
         return usersRepository.findByAccountID(accountID);
     }
+    
+    public List<Object[]> listUsers() {
+        return usersRepository.listUsers();
+    }
+    
+    public boolean existsByAccountID(String accountID) {
+        return usersRepository.existsByAccountID(accountID);
+    }
+
 }

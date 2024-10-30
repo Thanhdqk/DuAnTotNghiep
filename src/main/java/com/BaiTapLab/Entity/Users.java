@@ -71,10 +71,6 @@ public class Users {
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
-	public List<LichSuTimKiem> lichsutimkiem;
-	
-	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
 	public List<DanhGia> danhgia;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
@@ -116,4 +112,18 @@ public class Users {
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<GioHang> giohang;
+	
+//	@Override
+//	public String toString() {
+//	    return "Users{" +
+//	            "accountID='" + accountID + '\'' +
+//	            ", password='" + password + '\'' +
+//	            ", hovaten='" + hovaten + '\'' +
+//	            ", hinh_anh='" + hinh_anh + '\'' +
+//	            ", so_dien_thoai='" + so_dien_thoai + '\'' +
+//	            ", hoat_dong='" + hoat_dong + '\'' +
+//	            ", vi_pham='" + vi_pham + '\'' +
+//	            '}';
+//	}
+
 }

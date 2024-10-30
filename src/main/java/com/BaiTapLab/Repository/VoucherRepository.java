@@ -31,4 +31,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, String>{
             "FROM voucher vc JOIN voucherdetail vcdt ON vc.voucherID = vcdt.voucherID", 
     nativeQuery = true)
 	List<Object[]> findAllVouchersWithDetails();
+	
+	boolean existsByVoucherID(String voucherID);
 }

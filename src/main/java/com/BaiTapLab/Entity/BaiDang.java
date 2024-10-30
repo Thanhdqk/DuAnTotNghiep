@@ -1,5 +1,7 @@
 package com.BaiTapLab.Entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,6 +24,8 @@ public class BaiDang {
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String noi_dung;
+	
+	public LocalDate ngay_tao;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;

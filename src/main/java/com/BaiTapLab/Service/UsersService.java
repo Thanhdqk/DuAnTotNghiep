@@ -50,4 +50,8 @@ public class UsersService {
     public List<Object[]> getAllUsersWithAddress() {
         return usersRepository.findAllUserWithAddress();
     }
+    
+    public Users findByAccountID(String accountID) {
+        return usersRepository.findByAccountID(accountID);
+    }
 }

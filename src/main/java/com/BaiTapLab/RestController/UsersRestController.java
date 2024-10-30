@@ -3,92 +3,138 @@ package com.BaiTapLab.RestController;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.Entity.DiaChi;
 import com.BaiTapLab.Entity.Roles;
 import com.BaiTapLab.Entity.Users;
-import com.BaiTapLab.Repository.UsersRepository;
+import com.BaiTapLab.Repository.UserRepository;
 import com.BaiTapLab.Service.UsersService;
 
-@CrossOrigin("origins = http://localhost:3000")
 @RestController
+@RequestMapping("/api/users")
+@CrossOrigin(origins = { "http://localhost:3000" })
 public class UsersRestController {
-	@Autowired
-	UsersRepository usersRepository;
-	
-	@Autowired
-	UsersService usersService;
-	
-	@PostMapping("/login")
-	public ResponseEntity<Map<String, Object>> login(@RequestParam String accountID, @RequestParam String password) {
-	    Optional<Users> user = usersRepository.findByAccountIDAndPassword(accountID, password);
-	    
-	    Map<String, Object> response = new HashMap<>();
 
-	    if (user.isPresent()) {
-	        response.put("message", "Đăng nhập thành công!"); 
-	        //response.put(user.get().getHinh_anh(), response);
-	        response.put("roles", user.get().getRoles().stream()
-	                .map(Roles::getTen_vai_tro)
-	                .collect(Collectors.toList())); // Thêm vai trò vào phản hồi
-	        return ResponseEntity.ok(response);
-	    } else {
-	        response.put("message", "Sai tài khoản hoặc mật khẩu!");
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-	    }
+	private static final Logger logger = LoggerFactory.getLogger(UsersRestController.class);
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private UsersService usersService;
+
+	@GetMapping
+	public List<Users> getAllUsers() {
+		return userRepository.findAll();
 	}
 
-	
-	@PostMapping("/create")
-	public Users createUserWithImageAndDetails(
-	    @RequestParam("accountID") String accountID,
-	    @RequestParam("password") String password,
-	    @RequestParam("hovaten") String hovaten,
-	    @RequestParam("email") String email,
-	    @RequestParam("so_dien_thoai") String soDienThoai,
-	    @RequestParam("vai_tro") String vaiTro,
-	    @RequestParam("dia_chi") String diaChi,
-	    @RequestParam(value = "hinh_anh", required = false) MultipartFile hinhAnh
-	) throws IOException {
-	    Users user = new Users();
-	    user.setAccountID(accountID);
-	    user.setPassword(password);
-	    user.setHovaten(hovaten);
-	    user.setEmail(email);
-	    user.setSo_dien_thoai(soDienThoai);
+	@PostMapping
+	public ResponseEntity<Map<String, Object>> createUserWithImageAndDetails(
+			@RequestParam("accountID") String accountID, @RequestParam("password") String password,
+			@RequestParam("hovaten") String hovaten, @RequestParam("so_dien_thoai") String soDienThoai,
+			@RequestParam("vai_tro") String vaiTro, @RequestParam("dia_chi") String diaChi,
+			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhAnh) {
+		Map<String, Object> response = new HashMap<>();
 
-	    // Nếu có ảnh, lấy tên ảnh và lưu vào đối tượng Users
+		// Validate required fields
+		if (accountID == null || password == null || hovaten == null || soDienThoai == null || vaiTro == null
+				|| diaChi == null) {
+			response.put("message", "Tất cả các trường là bắt buộc!");
+			return ResponseEntity.badRequest().body(response); // 400 Bad Request
+		}
+
+		// Create user entity
+		Users user = new Users();
+		user.setAccountID(accountID);
+		user.setPassword(password);
+		user.setHovaten(hovaten);
+		user.setSo_dien_thoai(soDienThoai);
+
+		// Create role and address entities
+		Roles role = new Roles();
+		role.setTen_vai_tro(vaiTro);
+
+		DiaChi diaChiEntity = new DiaChi();
+		diaChiEntity.setDia_chi(diaChi);
+
+		// Attempt to save user details with service
+		try {
+			Users createdUser = usersService.createUserWithImageAndDetails(user, role, diaChiEntity, hinhAnh);
+			response.put("message", "Người dùng đã được tạo thành công!");
+			response.put("user", createdUser); // Đảm bảo không tiết lộ mật khẩu
+			return new ResponseEntity<>(response, HttpStatus.CREATED); // 201 Created
+		} catch (IOException e) {
+			logger.error("Error while saving user", e);
+			response.put("message", "Không thể lưu người dùng!");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 Internal Server Error
+		}
+	}
+	@PutMapping("/{accountId}")
+	public ResponseEntity<Map<String, Object>> update2(
+			@RequestParam("accountID") String accountID, @RequestParam("password") String password,
+			@RequestParam("hovaten") String hovaten, @RequestParam("so_dien_thoai") String soDienThoai,
+			@RequestParam("vai_tro") String vaiTro, @RequestParam("dia_chi") String diaChi,
+			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhAnh) throws IllegalStateException, IOException {
+		Map<String, Object> response = new HashMap<>();
+		
+		// Validate required fields
+		if (accountID == null || password == null || hovaten == null || soDienThoai == null || vaiTro == null
+				|| diaChi == null) {
+			response.put("message", "Tất cả các trường là bắt buộc!");
+			return ResponseEntity.badRequest().body(response); // 400 Bad Request
+		}
+			
+		// Create user entity
+		Users user = new Users();
+		user.setAccountID(accountID);
+		user.setPassword(password);
+		user.setHovaten(hovaten);
+		user.setSo_dien_thoai(soDienThoai);
+		
+		  // Nếu có ảnh, lấy tên ảnh và lưu vào đối tượng Users
 	    if (hinhAnh != null && !hinhAnh.isEmpty()) {
 	    	// Lưu ảnh vào thư mục public/images (từ thư mục gốc của dự án)
-	        String filePath = "D:\\DuAnTotNghiep\\Khanhfrontedn\\public\\images\\" + hinhAnh.getOriginalFilename();
+	        String filePath = "C:\\Users\\DELL\\Downloads\\LoiFrontend\\public\\images" + hinhAnh.getOriginalFilename();
 	        hinhAnh.transferTo(new File(filePath)); // Lưu ảnh vào server
 	        user.setHinh_anh(hinhAnh.getOriginalFilename()); // Lưu tên file vào cơ sở dữ liệu
 	    }
-
-	    Roles role = new Roles();
-	    role.setTen_vai_tro(vaiTro);
-
-	    DiaChi diaChiEntity = new DiaChi();
-	    diaChiEntity.setDia_chi(diaChi);
-
-	    // Gọi service để lưu thông tin người dùng, vai trò và địa chỉ
-	    return usersService.createUserWithImageAndDetails(user, role, diaChiEntity, hinhAnh);
+		// Create role and address entities
+		Roles role = new Roles();
+		role.setTen_vai_tro(vaiTro);
+		
+		DiaChi diaChiEntity = new DiaChi();
+		diaChiEntity.setDia_chi(diaChi);
+		
+		// Attempt to save user details with service
+		try {
+			Users createdUser = usersService.createUserWithImageAndDetails(user, role, diaChiEntity, hinhAnh);
+			response.put("message", "Người dùng đã được tạo thành công!");
+			response.put("user", createdUser); // Đảm bảo không tiết lộ mật khẩu
+			return new ResponseEntity<>(response, HttpStatus.CREATED); // 201 Created
+		} catch (IOException e) {
+			logger.error("Error while saving user", e);
+			response.put("message", "Không thể lưu người dùng!");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 Internal Server Error
+		}
 	}
 
-
-
+	@DeleteMapping("/{accountId}")
+	public ResponseEntity<Void> deleteUser(@PathVariable String accountId) {
+		if (!userRepository.existsById(accountId)) {
+			return ResponseEntity.notFound().build();
+		}
+		userRepository.deleteById(accountId);
+		return ResponseEntity.noContent().build();
+	}
 }

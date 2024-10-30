@@ -1,5 +1,7 @@
 package com.BaiTapLab.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,5 +23,6 @@ public class Roles {
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
+	 @JsonBackReference
 	public Users users;
 }

@@ -19,22 +19,26 @@ import lombok.Data;
 @Entity
 @Table(name = "banner")
 public class Banner {
-	@Id
-	public String bannerId;
-	
-	public String hinh_anh;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hoat_dong;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String trnag_thai_xoa;
-	
-	@OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
-	@JsonIgnore
-	public List<DanhMuc> danhmuc;
-	
-	@ManyToOne
-	@JoinColumn(name = "accountID")
-	public Users users;
+    @Id
+    public String bannerId;
+
+    public String hinh_anh;
+
+    @Column(columnDefinition = "NVARCHAR(255)")
+    public String hoat_dong;
+
+    @Column(columnDefinition = "NVARCHAR(255)")
+    public String trang_thai_xoa;
+
+    public LocalDate ngay_tao;  // Added field for creation date
+
+    public LocalDate ngay_het_han; // Added field for expiration date
+
+    @OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
+    @JsonIgnore
+    public List<DanhMuc> danhmuc;
+
+    @ManyToOne
+    @JoinColumn(name = "accountID")
+    public Users users;
 }

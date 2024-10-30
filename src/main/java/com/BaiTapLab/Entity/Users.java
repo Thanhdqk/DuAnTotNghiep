@@ -1,38 +1,15 @@
 package com.BaiTapLab.Entity;
 
-<<<<<<< HEAD
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Data
-@jakarta.persistence.Entity
-@Table(name = "users")
-public class Users {
-    @Id
-    private String accountID;
-
-    
-    private String password;
-
-    @Column(columnDefinition = "NVARCHAR(255)")
-    private String hovaten;
-
-    private String hinh_anh;
-
-    @Column(columnDefinition = "NVARCHAR(255)")
-    private String vai_tro;
-
-    private String so_dien_thoai;
-    private String email;
-
-    @Column(columnDefinition = "NVARCHAR(255)")
-    private String dia_chi;
-=======
 import java.util.List;
 
 
@@ -67,7 +44,7 @@ public class Users {
 	public String hinh_anh;
 	
 	public String so_dien_thoai;
-	public String email;
+	
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
@@ -76,7 +53,7 @@ public class Users {
 	public String vi_pham;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JsonIgnore
+	@JsonManagedReference
     private List<Roles> roles;  
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
@@ -136,7 +113,7 @@ public class Users {
 	public List<PhanHoiDanhGia> phanhoidanhgia;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
+	@JsonManagedReference
 	public List<DiaChi> diachi;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
@@ -146,5 +123,5 @@ public class Users {
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<ThuongHieu> thuonghieu;
->>>>>>> refs/heads/backend
+
 }

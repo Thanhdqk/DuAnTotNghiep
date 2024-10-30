@@ -2,6 +2,7 @@ package com.BaiTapLab.Entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -33,5 +34,7 @@ public class DiaChi {
 	
 	@ManyToOne
     @JoinColumn(name = "accountID")
-    public Users users;
+	 @JsonBackReference
+    public Users users; 
+	
 }

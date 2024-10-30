@@ -2,7 +2,9 @@ package com.BaiTapLab.Entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -33,7 +35,7 @@ public class NhaCungCap {
 	public String dia_chi;
 	
 	@OneToMany(mappedBy = "nhacungcap", cascade = CascadeType.ALL)
-	@JsonIgnore
+	@JsonBackReference
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
 	@ManyToOne

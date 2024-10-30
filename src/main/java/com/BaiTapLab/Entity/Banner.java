@@ -24,6 +24,8 @@ public class Banner {
 	
 	public String hinh_anh;
 	
+	public LocalDate ngay_tao;
+	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
 	

@@ -20,7 +20,10 @@ public class BaiDang {
 	public String hinh_anh;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String tieu_de;
+	public String tieu_de_phu;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String tieu_de_chinh;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String noi_dung;

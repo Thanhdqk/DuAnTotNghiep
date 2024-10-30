@@ -1,5 +1,6 @@
 package com.BaiTapLab.Entity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,6 +24,8 @@ public class PhuongThucTT {
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ten_phuong_thuc;
+	
+	public LocalDate ngay_tao;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ten_loai;

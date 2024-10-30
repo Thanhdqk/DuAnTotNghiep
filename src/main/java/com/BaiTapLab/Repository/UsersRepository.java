@@ -21,4 +21,12 @@ public interface UsersRepository extends JpaRepository<Users, String> {
 	           "JOIN us.diachi dc")
 	List<Object[]> findAllUserWithAddress();
 
+	@Query("SELECT u.accountID, u.hinh_anh, u.hoat_dong, u.hovaten, u.password, u.so_dien_thoai, " +
+		       "d.dia_chi, r.ten_vai_tro " +
+		       "FROM Users u " +
+		       "JOIN u.roles r " +
+		       "JOIN u.diachi d")
+	List<Object[]> listUsers();
+	
+	boolean existsByAccountID(String accountID);
 }

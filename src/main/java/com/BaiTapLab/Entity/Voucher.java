@@ -28,6 +28,8 @@ public class Voucher {
 	
 	public String hinh_anh;
 	
+	public LocalDate ngay_tao;
+	
 	public LocalDate han_su_dung;
 	
 	public int so_luot_SD;
@@ -42,6 +44,9 @@ public class Voucher {
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hanh_dong;
 	
 	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
 	@JsonIgnore
@@ -58,6 +63,7 @@ public class Voucher {
                 ", so_tien_giam='" + so_tien_giam + '\'' +
                 ", don_hang_toi_thieu='" + don_hang_toi_thieu + '\'' +
                 ", hinh_anh='" + hinh_anh + '\'' +
+                ", ngay_tao=" + ngay_tao +
                 ", han_su_dung=" + han_su_dung +
                 ", so_luot_SD=" + so_luot_SD +
                 ", so_luong=" + so_luong +

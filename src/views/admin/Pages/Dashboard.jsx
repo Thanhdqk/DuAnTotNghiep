@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -16,22 +15,38 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Add, Restore, Edit, Delete } from "@mui/icons-material";
-import './SupplierManagement.css'; // Ensure the CSS file name is correct
+import axios from 'axios';
 
 const SupplierManagement = () => {
   const [tabValue, setTabValue] = useState(0);
   const [formData, setFormData] = useState({
-    maNhaCungCap: '',
-    tenNhaCungCap: '',
-    tenMatHang: '',
-    soDienThoai: '',
+    nha_cung_capID: '',
+    ten_nhaCC: '',
+    ten_mat_hang: '',
+    so_dien_thoai: '',
     dia_chi: '',
-    ngayTao: '',
+    accountID: '',
   });
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('Tất cả');
+  const [suppliers, setSuppliers] = useState([]);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+
+  useEffect(() => {
+    fetchSuppliers();
+  }, []);
+
+  const fetchSuppliers = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/nhacungcap');
+      setSuppliers(response.data);
+    } catch (error) {
+      handleSnackbar("Có lỗi xảy ra khi lấy danh sách nhà cung cấp!", 'error');
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -40,15 +55,14 @@ const SupplierManagement = () => {
 
   const resetForm = () => {
     setFormData({
-      maNhaCungCap: '',
-      tenNhaCungCap: '',
-      tenMatHang: '',
-      soDienThoai: '',
+      nha_cung_capID: '',
+      ten_nhaCC: '',
+      ten_mat_hang: '',
+      so_dien_thoai: '',
       dia_chi: '',
-      ngayTao: '',
+      accountID: '',
     });
     setSearchTerm('');
-    setFilterStatus('Tất cả');
   };
 
   const handleTabChange = (event, newValue) => {
@@ -56,24 +70,53 @@ const SupplierManagement = () => {
     resetForm();
   };
 
-  const suppliers = [
-    { maNhaCungCap: '001', tenNhaCungCap: 'Nhà Cung Cấp 1', tenMatHang: 'Mặt hàng 1', soDienThoai: '0901234567', dia_chi: 'Ghi chú 1', ngayTao: '01/01/2024' },
-    { maNhaCungCap: '002', tenNhaCungCap: 'Nhà Cung Cấp 2', tenMatHang: 'Mặt hàng 2', soDienThoai: '0987654321', dia_chi: 'Ghi chú 2', ngayTao: '02/01/2024' },
-  ];
-
-  const filteredSuppliers = suppliers.filter(supplier => {
-    const matchesSearch = supplier.tenNhaCungCap.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'Tất cả';
-    return matchesSearch && matchesFilter;
-  });
+  const filteredSuppliers = suppliers.filter(supplier => 
+    supplier.ten_nhaCC.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleEdit = (supplier) => {
-    setFormData(supplier);
+    setFormData({
+      nha_cung_capID: supplier.nha_cung_capID,
+      ten_nhaCC: supplier.ten_nhaCC,
+      ten_mat_hang: supplier.ten_mat_hang,
+      so_dien_thoai: supplier.so_dien_thoai,
+      dia_chi: supplier.dia_chi,
+      accountID: supplier.accountID,
+    });
     setTabValue(1);
   };
 
-  const handleDelete = (maNhaCungCap) => {
-    alert(`Xóa nhà cung cấp với mã: ${maNhaCungCap}`);
+  const handleDelete = async (nha_cung_capID) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa nhà cung cấp này?")) {
+      try {
+        await axios.delete(`http://localhost:8080/api/nhacungcap/${nha_cung_capID}`);
+        fetchSuppliers();
+        handleSnackbar("Xóa nhà cung cấp thành công!", 'success');
+      } catch (error) {
+        handleSnackbar("Có lỗi xảy ra khi xóa nhà cung cấp!", 'error');
+      }
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:8080/api/nhacungcap', formData);
+      fetchSuppliers();
+      resetForm();
+      setTabValue(0);
+      handleSnackbar("Thêm nhà cung cấp thành công!", 'success');
+    } catch (error) {
+      handleSnackbar("Có lỗi xảy ra khi lưu nhà cung cấp!", 'error');
+    }
+  };
+
+  const handleSnackbar = (message, severity) => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -90,15 +133,14 @@ const SupplierManagement = () => {
           </Tabs>
         </AppBar>
 
-        {tabValue === 0 && ( // Tab "Danh Sách Nhà Cung Cấp"
+        {tabValue === 0 && (
           <div>
             <Typography variant="h6" align="center" style={{ marginTop: '16px' }}>
               Danh Sách Nhà Cung Cấp
             </Typography>
 
-            {/* Search and filter fields above the table */}
             <Grid container spacing={2} className="search-filter-container" style={{ marginTop: '16px' }}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   label="Tìm kiếm theo tên nhà cung cấp"
                   variant="outlined"
@@ -107,23 +149,8 @@ const SupplierManagement = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  select
-                  label="Lọc trạng thái"
-                  variant="outlined"
-                  fullWidth
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  SelectProps={{ native: true }}
-                >
-                  <option value="Tất cả">Tất cả</option>
-                  {/* Additional filter options can be added here */}
-                </TextField>
-              </Grid>
             </Grid>
 
-            {/* Display the supplier list below the search and filter fields */}
             <TableContainer component={Paper} style={{ marginTop: '16px', color: '#1976d2' }}>
               <Table>
                 <TableHead>
@@ -133,30 +160,30 @@ const SupplierManagement = () => {
                     <TableCell>Tên Mặt Hàng</TableCell>
                     <TableCell>Số Điện Thoại</TableCell>
                     <TableCell>Địa Chỉ</TableCell>
-                    <TableCell>Ngày Tạo</TableCell>
+                    <TableCell>Account ID</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredSuppliers.map((supplier) => (
-                    <TableRow key={supplier.maNhaCungCap}>
-                      <TableCell>{supplier.maNhaCungCap}</TableCell>
-                      <TableCell>{supplier.tenNhaCungCap}</TableCell>
-                      <TableCell>{supplier.tenMatHang}</TableCell>
-                      <TableCell>{supplier.soDienThoai}</TableCell>
+                    <TableRow key={supplier.nha_cung_capID}>
+                      <TableCell>{supplier.nha_cung_capID}</TableCell>
+                      <TableCell>{supplier.ten_nhaCC}</TableCell>
+                      <TableCell>{supplier.ten_mat_hang}</TableCell>
+                      <TableCell>{supplier.so_dien_thoai}</TableCell>
                       <TableCell>{supplier.dia_chi}</TableCell>
-                      <TableCell>{supplier.ngayTao}</TableCell>
+                      <TableCell>{supplier.accountID}</TableCell>
                       <TableCell>
-                      <Button onClick={() => handleEdit(supplier)}>
+                        <Button onClick={() => handleEdit(supplier)}>
                           <Edit />
                         </Button>
                         <Button
-                          onClick={() => handleDelete(supplier.maNhaCungCap)}
+                          onClick={() => handleDelete(supplier.nha_cung_capID)}
                           sx={{ color: "secondary" }}
                         >
                           <Delete />
                         </Button>
-</TableCell>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -165,83 +192,77 @@ const SupplierManagement = () => {
           </div>
         )}
 
-        {tabValue === 1 && ( // Tab "Thêm Nhà Cung Cấp"
-          <form>
+        {tabValue === 1 && (
+          <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  name="maNhaCungCap"
+                  name="nha_cung_capID"
                   label="Mã Nhà Cung Cấp"
                   variant="outlined"
                   fullWidth
                   required
-                  value={formData.maNhaCungCap}
+                  value={formData.nha_cung_capID}
                   onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  name="tenNhaCungCap"
+                  name="ten_nhaCC"
                   label="Tên Nhà Cung Cấp"
                   variant="outlined"
                   fullWidth
                   required
-                  value={formData.tenNhaCungCap}
+                  value={formData.ten_nhaCC}
                   onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  name="tenMatHang"
+                  name="ten_mat_hang"
                   label="Tên Mặt Hàng"
                   variant="outlined"
                   fullWidth
                   required
-                  value={formData.tenMatHang}
+                  value={formData.ten_mat_hang}
                   onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  name="soDienThoai"
+                  name="so_dien_thoai"
                   label="Số Điện Thoại"
                   variant="outlined"
                   fullWidth
                   required
-                  value={formData.soDienThoai}
+                  value={formData.so_dien_thoai}
                   onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   name="dia_chi"
-                  label="địa chỉ"
+                  label="Địa Chỉ"
                   variant="outlined"
                   fullWidth
-                  value={formData.ghiChu}
+                  value={formData.dia_chi}
                   onChange={handleInputChange}
-                  
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  name="ngayTao"
-                  label="Ngày Tạo"
+                  name="accountID"
+                  label="Account ID"
                   variant="outlined"
                   fullWidth
-                  type="date"
-                  required
-                  value={formData.ngayTao}
+                  value={formData.accountID}
                   onChange={handleInputChange}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
                 />
               </Grid>
               <Grid item xs={12} container spacing={2}>
                 <Grid item xs={6}>
                   <Button
-                    type="button"
+                    type="submit"
                     variant="contained"
                     color="primary"
                     fullWidth
@@ -266,6 +287,12 @@ const SupplierManagement = () => {
             </Grid>
           </form>
         )}
+
+        <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Paper>
     </Container>
   );

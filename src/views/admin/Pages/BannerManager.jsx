@@ -80,7 +80,7 @@ const BannerManager = () => {
     setFormData({
       bannerId: '',
       hinhAnh: null,
-      hoatDong: ' ',
+      hoatDong: '',
       ngayTao: '',
       ngayHetHan: '',
       trangThaiXoa: 'Chưa xóa',
@@ -326,24 +326,24 @@ const BannerManager = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-  <Select
-    name="hoatDong"
-    label="Trạng Thái Hoạt Động"
-    variant="outlined"
-    fullWidth
-    required
-    value={formData.hoatDong}
-    onChange={handleInputChange}
-    displayEmpty
-    inputProps={{ 'aria-label': 'Trạng Thái Hoạt Động' }}
-  >
-    <MenuItem value="">
-      <em>Chọn trạng thái</em>
-    </MenuItem>
-    <MenuItem value="Ngừng hoạt động">Ngừng hoạt động</MenuItem>
-    <MenuItem value="Hoạt động">Hoạt động</MenuItem>
-  </Select>
-</Grid>
+                <Select
+                  name="hoatDong"
+                  label="Trạng Thái Hoạt Động"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={formData.hoatDong}
+                  onChange={handleInputChange}
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Trạng Thái Hoạt Động' }}
+                >
+                  <MenuItem value="">
+                    <em>Chọn trạng thái hoạt động</em>
+                  </MenuItem>
+                  <MenuItem value="Hoạt động">Hoạt động</MenuItem>
+                  <MenuItem value="Ngừng hoạt động">Ngừng hoạt động</MenuItem>
+                </Select>
+              </Grid>
               <Grid item xs={12}>
                 <TextField
                   name="trangThaiXoa"
@@ -387,7 +387,7 @@ const BannerManager = () => {
                     fullWidth
                     startIcon={<Add />}
                   >
-                    {formData.bannerId ? "CẬP NHẬT BANNER" : "THÊM BANNER"}
+                    {formData.bannerId ? "THÊM BANNER" : "CẬP NHẬT BANNER"}
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
@@ -463,21 +463,21 @@ const BannerManager = () => {
                       <TableCell>{banner.ngay_tao}</TableCell>
                       <TableCell>{banner.ngay_het_han}</TableCell>
                       <TableCell>{banner.trang_thai_xoa}</TableCell>
-                      <TableCell>{banner.accountId}</TableCell>
+                      <TableCell>{banner.users ? banner.users.accountID : ""}</TableCell>
                       <TableCell>
                         <Button
                           onClick={() => handleRestore(banner.bannerId)}
                           sx={{ color: "primary", marginRight: 1 }}
                           startIcon={<Restore />}
                         >
-                          Khôi phục
+                          
                         </Button>
                         <Button
                           onClick={() => handleDelete(banner.bannerId)}
                           sx={{ color: "error" }}
                           startIcon={<Delete />}
                         >
-                          Xóa
+                         
                         </Button>
                       </TableCell>
                     </TableRow>

@@ -1,5 +1,10 @@
 package com.BaiTapLab.Entity;
 
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -21,6 +26,9 @@ public class BaiDang {
 	public String tieu_de;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
+	public String tieu_de_phu;
+	
+	@Column(columnDefinition = "NVARCHAR(555)")
 	public String noi_dung;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
@@ -29,7 +37,11 @@ public class BaiDang {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public LocalDate ngay_tao;
+	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
+	@JsonManagedReference
 	public Users users;
 }

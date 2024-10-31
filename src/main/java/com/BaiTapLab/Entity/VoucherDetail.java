@@ -2,6 +2,10 @@ package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,9 +25,11 @@ public class VoucherDetail {
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
+	
 	public Users users;
 	
 	@ManyToOne
 	@JoinColumn(name = "voucherID")
+	
 	public Voucher voucher;
 }

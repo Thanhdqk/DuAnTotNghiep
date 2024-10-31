@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -45,4 +46,6 @@ public class Voucher {
 	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<VoucherDetail> voucherdetail;
+	
+	public int don_hang_toi_thieu;
 }

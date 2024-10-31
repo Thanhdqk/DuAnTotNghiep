@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -92,7 +93,8 @@ public class Users {
 	public List<NhaCungCap> nhacungcap;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
+	
+	@JsonBackReference
 	public List<BaiDang> baidang;
 
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)

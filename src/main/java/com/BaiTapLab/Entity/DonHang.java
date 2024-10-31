@@ -51,13 +51,16 @@ public class DonHang {
 	
     @ManyToOne
     @JoinColumn(name = "accountID")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Users users;
     
     @ManyToOne
     @JoinColumn(name = "voucherID")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Voucher voucher;
     
     @ManyToOne
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JoinColumn(name = "dia_chiID")
     public DiaChi diachi;
 }

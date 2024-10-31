@@ -26,95 +26,113 @@ import lombok.Setter;
 public class Users {
 	@Id
 	public String accountID;
-	
+
 	public String password;
-	
+
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hovaten;
-	
+
 	public String hinh_anh;
-	
+
 	public String so_dien_thoai;
 	public String email;
-	
+
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String vi_pham;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonIgnore
-    private List<Roles> roles;  
-	
-	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<DonHang> donhang;
-	
-	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<DanhMuc> danhmuc;
-	
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private List<Roles> roles;
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private List<DonHang> donhang;
+
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private List<DanhMuc> danhmuc;
+
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<SanPham> sanpham;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<Popup> popup;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<Respone> respone;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<Feedback> feedback;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<LichSuTimKiem> lichsutimkiem;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<DanhGia> danhgia;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<PhuongThucTT> phuongthucTT;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<VoucherDetail> voucherDetail;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonBackReference
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<YeuThich> yeuthich;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<NhaCungCap> nhacungcap;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonBackReference
 	public List<BaiDang> baidang;
 
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<PhanHoiDanhGia> phanhoidanhgia;
-	
-	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	 @JsonBackReference
-	 
-	public List<DiaChi> diachi;
-	
-	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
-	public List<Banner> banner;
-	
-	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
-	public List<ThuongHieu> thuonghieu;
-	
+
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonBackReference
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
+	public List<DiaChi> diachi;
+
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
+	public List<Banner> banner;
+
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	public List<ThuongHieu> thuonghieu;
+
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonBackReference
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<GioHang> giohang;
 }

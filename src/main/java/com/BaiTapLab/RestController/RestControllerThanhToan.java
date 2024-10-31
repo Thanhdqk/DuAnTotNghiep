@@ -81,8 +81,7 @@ public class RestControllerThanhToan {
 		donhang.setDon_hangid(getnew_donhangId());
 
 		donhang.setDiachi(diaChiRepository.findbyUserid(userid));
-
-		donhang.setDiachi(diaChiRepository.getDiaChiByIdUser1(userid));
+		donhang.setUsers(usersRepository.findByAccountID(userid));
 
 		List<DonHangChiTiet> list_dhct = new ArrayList<DonHangChiTiet>();
 		for (int i = 0; i < productids.size(); i++) {
@@ -101,20 +100,20 @@ public class RestControllerThanhToan {
 		System.out.println(productids);
 		System.out.println(quantity);
 
-//		try {
-//			donHangRepository.save(donhang);
-//			for (DonHangChiTiet donHangChiTiet : list_dhct) {
-//				donHangChiTietService.save(donHangChiTiet);
-//			}
-//			for (int i = 0; i < productids.size(); i++) {
-//				SanPham sp = spService.FindProductByID(productids.get(i));
-//				sp.setSo_luong(sp.getSo_luong() - Integer.parseInt(quantity.get(i)));
-//				gioHangRepository.delete(gioHangRepository.findByUserIdAndSanPhamId(userid, productids.get(i)));
-//				SanphamRepository.save(sp);
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		try {
+			donHangRepository.save(donhang);
+			for (DonHangChiTiet donHangChiTiet : list_dhct) {
+				donHangChiTietService.save(donHangChiTiet);
+			}
+			for (int i = 0; i < productids.size(); i++) {
+				SanPham sp = spService.FindProductByID(productids.get(i));
+				sp.setSo_luong(sp.getSo_luong() - Integer.parseInt(quantity.get(i)));
+				gioHangRepository.delete(gioHangRepository.findByUserIdAndSanPhamId(userid, productids.get(i)));
+				SanphamRepository.save(sp);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		if (paymentmethod.equals("2")) {
 			return vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee);

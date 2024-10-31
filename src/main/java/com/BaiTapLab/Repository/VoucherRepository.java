@@ -4,7 +4,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.BaiTapLab.Entity.Voucher;
 
+import java.util.List;
 
-public interface VoucherRepository extends JpaRepository<Voucher, String>{
+import org.springframework.data.jpa.repository.Query;
+
+public interface VoucherRepository extends JpaRepository<Voucher, String> {
+	@Query("SELECT vd.voucher.voucherID FROM VoucherDetail vd WHERE vd.users.accountID = :accountID")
+	List<String> findVoucherIDsByAccountID(String accountID);
 
 }

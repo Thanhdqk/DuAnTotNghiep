@@ -51,4 +51,6 @@ public class Voucher {
 	@JsonIgnore
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<VoucherDetail> voucherdetail;
+	
+	public int don_hang_toi_thieu;
 }

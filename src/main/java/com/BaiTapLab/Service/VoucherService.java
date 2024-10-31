@@ -7,23 +7,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.BaiTapLab.Entity.Voucher;
-import com.BaiTapLab.Entity.VoucherDetail;
-import com.BaiTapLab.Repository.VoucherDetailRepository;
 import com.BaiTapLab.Repository.VoucherRepository;
 
 @Service
 public class VoucherService {
-	@Autowired
-	private VoucherRepository voucherRepository;
 	
-	
-	public List<Voucher> findAll(){
-		return voucherRepository.findAll();
-	}
-	
-	public Voucher findByVoucherID(String voucherID) {
-		Optional<Voucher> vc = voucherRepository.findById(voucherID);
-		return vc.orElseThrow(() -> new RuntimeException("Không tồn tại!"));
-	}
-	
+		 @Autowired
+		 VoucherRepository VoucherRepository;
+		 
+		 public List<Voucher> findAll(){
+				return VoucherRepository.findAll();
+			}
+			
+			public Voucher findByVoucherID(String voucherID) {
+				Optional<Voucher> vc = VoucherRepository.findById(voucherID);
+				return vc.orElseThrow(() -> new RuntimeException("Không tồn tại!"));
+			}
+			
+			 public List<Voucher> findUnSavedVouchers(String accountID) {
+			        List<String> savedVoucherIDs = VoucherRepository.findVoucherIDsByAccountID(accountID);
+			        return VoucherRepository.findAll().stream()
+			                                .filter(voucher -> !savedVoucherIDs.contains(voucher.getVoucherID()))
+			                                .toList();
+			    }
+		 
 }

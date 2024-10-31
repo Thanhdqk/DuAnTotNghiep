@@ -48,4 +48,6 @@ public class RestcontrollerDiaChi {
 		public Users getMethodName(@RequestParam String id) {
 			return UsersRepository.findByAccountID(id);
 		}
+
 }
+

@@ -3,6 +3,9 @@ package com.BaiTapLab.Service;
 import com.BaiTapLab.Entity.GioHang;
 import com.BaiTapLab.Repository.GioHangRepository;
 import com.BaiTapLab.Repository.UsersRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +55,10 @@ public class GioHangService {
 
     public void deleteGioHang(Integer gioHangId) {
         gioHangRepository.deleteById(gioHangId);
+    }
+    
+    @Transactional
+    public void ClearAll(String userid) {
+    	gioHangRepository.deleteByUserId(userid);
     }
 }

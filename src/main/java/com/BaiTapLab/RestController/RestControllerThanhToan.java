@@ -22,9 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.BaiTapLab.Entity.DonHang;
 import com.BaiTapLab.Entity.DonHangChiTiet;
 import com.BaiTapLab.Entity.SanPham;
+import com.BaiTapLab.Repository.DiaChiRepository;
 import com.BaiTapLab.Repository.GioHangRepository;
 import com.BaiTapLab.Repository.SanphamRepository;
-import com.BaiTapLab.Service.DiachiService;
+import com.BaiTapLab.Service.DiaChiService;
 import com.BaiTapLab.Service.DonHangChiTietService;
 import com.BaiTapLab.Service.DonHangService;
 import com.BaiTapLab.Service.SanPhamService;
@@ -44,7 +45,7 @@ public class RestControllerThanhToan {
 	@Autowired
 	UsersService uservice;
 	@Autowired
-	DiachiService diachiService;
+	DiaChiService diachiService;
 	@Autowired
 	DonHangChiTietService donHangChiTietService;
 	@Autowired
@@ -53,6 +54,8 @@ public class RestControllerThanhToan {
 	SanphamRepository SanphamRepository;
 	@Autowired
 	GioHangRepository gioHangRepository;
+	@Autowired
+	DiaChiRepository diaChiRepository;
 
 
 	@Autowired
@@ -71,7 +74,7 @@ public class RestControllerThanhToan {
 		ajaxServlet vnpay = new ajaxServlet();
 		
 		donhang.setDon_hangid(getnew_donhangId());
-		donhang.setDiachi(diachiService.findbyUserid(userid));
+		donhang.setDiachi(diaChiRepository.getDiaChiByIdUser1(userid));
 		List<DonHangChiTiet> list_dhct = new ArrayList<DonHangChiTiet>();
 		for (int i = 0; i < productids.size(); i++) {
 			DonHangChiTiet dhct = new DonHangChiTiet();

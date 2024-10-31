@@ -130,4 +130,10 @@ public class RestControllerGioHang {
 		return ResponseEntity.noContent().build();
 	}
 
+	@DeleteMapping("Clear/{Iduser}")
+	public ResponseEntity<Void> ClearGioHang(@PathVariable String Iduser) {
+		gioHangService.ClearAll(Iduser);
+		return ResponseEntity.noContent().build();
+	}
+
 }

@@ -3,7 +3,9 @@ package com.BaiTapLab.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -57,6 +59,9 @@ public class SanPham {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String nhap_hang;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hanh_dong;
+	
 	public double tien_nhap_hang;
 	
 	public double chieu_cao;
@@ -72,7 +77,8 @@ public class SanPham {
 	public List<DonHangChiTiet> donhangchitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonManagedReference
 	public List<DanhGia> danhgia;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
@@ -80,11 +86,13 @@ public class SanPham {
 	public List<PhuongthucTTChiTiet> phuongthucTTChitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	public List<YeuThich> yeuthich;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonManagedReference
 	public List<HinhAnh> hinhanh;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
@@ -92,15 +100,18 @@ public class SanPham {
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonManagedReference
 	public List<PhanHoiDanhGia> phanhoidanhgia;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	public List<GioHang> giohang;
 	
 	@ManyToOne
 	@JoinColumn(name = "popupID")
+	@JsonBackReference
 	public Popup popup;
 
 	@ManyToOne

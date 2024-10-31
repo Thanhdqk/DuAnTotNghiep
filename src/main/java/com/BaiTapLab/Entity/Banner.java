@@ -30,7 +30,10 @@ public class Banner {
 	public String hoat_dong;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String trnag_thai_xoa;
+	public String trang_thai_xoa;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hanh_dong;
 	
 	@OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
 	@JsonIgnore

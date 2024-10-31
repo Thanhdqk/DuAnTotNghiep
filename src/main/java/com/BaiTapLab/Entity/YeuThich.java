@@ -23,11 +23,6 @@ public class YeuThich {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
     public int id;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ten_san_pham;
-	
-	public LocalDate ngay_tao;
-	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;

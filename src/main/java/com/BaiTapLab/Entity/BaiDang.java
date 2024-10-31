@@ -36,6 +36,9 @@ public class BaiDang {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hanh_dong;
+	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;

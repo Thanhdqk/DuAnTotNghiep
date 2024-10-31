@@ -20,7 +20,9 @@ import lombok.Data;
 @Table(name = "voucher")
 public class Voucher {
 	@Id
-	public String voucherID;
+	public String voucherID; // Cho cái này tự tăng
+	
+	public String ma_voucher;
 	
 	public int so_tien_giam;
 	

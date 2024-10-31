@@ -27,6 +27,15 @@ public class DiaChi {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String dia_chi;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String phuong;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String quan;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String thanh_pho;
+	
 	@OneToMany(mappedBy = "diachi", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<DonHang> donhang;

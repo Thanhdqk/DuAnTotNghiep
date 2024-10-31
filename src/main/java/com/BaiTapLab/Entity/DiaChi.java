@@ -2,7 +2,9 @@ package com.BaiTapLab.Entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
@@ -35,7 +37,9 @@ public class DiaChi {
 	public List<DonHang> donhang;
 	
 	@ManyToOne
-	
     @JoinColumn(name = "accountID")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonManagedReference
+	
     public Users users;
 }

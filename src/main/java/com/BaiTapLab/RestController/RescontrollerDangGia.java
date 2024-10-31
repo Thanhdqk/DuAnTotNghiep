@@ -27,4 +27,20 @@ public class RescontrollerDangGia {
 		
 	}
 	
+	@GetMapping("FindDangGiaByIdSanPhamWithSoSao")
+	public List<DanhGia> FindDangGiaByIdSanPhamWithSosao(@RequestParam("id") String id,@RequestParam("sosao") int sosao) {
+		
+		
+		return DanhGiaService.FindDanhGiaByIdSanPhamWithSoSao(id, sosao);
+		
+	}
+	
+	@GetMapping("FindDangGiaByIdSanPhamWithDay")
+	public List<DanhGia> FindDangGiaByIdSanPhamWithDay(@RequestParam("id")String id) {
+		
+		
+		return DanhGiaService.FindDanhGiaByIdSanPhamWithDay(id);
+		
+	}
+	
 }

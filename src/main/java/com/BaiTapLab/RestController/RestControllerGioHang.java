@@ -4,6 +4,9 @@ import com.BaiTapLab.Entity.GioHang;
 import com.BaiTapLab.Entity.SanPham;
 import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Service.GioHangService;
+
+import lombok.Getter;
+
 import com.BaiTapLab.Repository.SanphamRepository;
 import com.BaiTapLab.Repository.UsersRepository;
 
@@ -69,6 +72,12 @@ public class RestControllerGioHang {
 		}
 
 		return null;
+	}
+
+	@GetMapping("getnumber")
+	public Integer getMethodName(@RequestParam Integer number) {
+		System.out.println("jdkajskd"+number);
+		return number;
 	}
 
 	@PostMapping("AddCart1/{userId}/{sanphamId}/{soluong}")

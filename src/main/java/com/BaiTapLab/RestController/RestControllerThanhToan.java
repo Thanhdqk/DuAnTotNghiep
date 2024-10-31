@@ -1,7 +1,5 @@
 package com.BaiTapLab.RestController;
 
-
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,13 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.BaiTapLab.Entity.DonHang;
 import com.BaiTapLab.Entity.DonHangChiTiet;
 import com.BaiTapLab.Entity.SanPham;
+import com.BaiTapLab.Repository.DonHangChiTietRepository;
 import com.BaiTapLab.Repository.GioHangRepository;
 import com.BaiTapLab.Repository.SanphamRepository;
-import com.BaiTapLab.Service.DiachiService;
-import com.BaiTapLab.Service.DonHangChiTietService;
-import com.BaiTapLab.Service.DonHangService;
+import com.BaiTapLab.Repository.DiaChiRepository;
+import com.BaiTapLab.Repository.DonHangRepository;
+import com.BaiTapLab.Repository.UsersRepository;
+
 import com.BaiTapLab.Service.SanPhamService;
-import com.BaiTapLab.Service.UsersService;
+
 import com.BaiTapLab.Service.ajaxServlet;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServlet;
@@ -40,38 +40,36 @@ import ch.qos.logback.core.joran.sanity.SanityChecker;
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class RestControllerThanhToan {
 	@Autowired
-	DonHangService donhangService;
+	DonHangRepository donHangRepository;
 	@Autowired
-	UsersService uservice;
+	UsersRepository usersRepository;
 	@Autowired
-	DiachiService diachiService;
+	DiaChiRepository diaChiRepository;
 	@Autowired
-	DonHangChiTietService donHangChiTietService;
+	DonHangChiTietRepository donHangChiTietService;
 	@Autowired
 	SanPhamService spService;
 	@Autowired
 	SanphamRepository SanphamRepository;
 	@Autowired
 	GioHangRepository gioHangRepository;
-
-
 	@Autowired
 	HttpServletRequest servletRequest;
 	@Autowired
 	ServletContext servletContext;
 	@Autowired
 	HttpSession httpSession;
-	
 
 	@RequestMapping(value = "/createpayment", method = RequestMethod.POST, produces = "application/json; charset=utf-8", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public DonHang postMethodName(@RequestBody DonHang donhang, @RequestParam("userid") String userid,
+	public String postMethodName(@RequestBody DonHang donhang, @RequestParam("userid") String userid,
 			@RequestParam("spid") List<String> productids, @RequestParam("quantity") List<String> quantity,
-			@RequestParam("total") String totalfee) throws UnsupportedEncodingException {
+			@RequestParam("total") String totalfee, @RequestParam("method") String paymentmethod)
+			throws UnsupportedEncodingException {
 
 		ajaxServlet vnpay = new ajaxServlet();
-		
+
 		donhang.setDon_hangid(getnew_donhangId());
-		donhang.setDiachi(diachiService.findbyUserid(userid));
+		donhang.setDiachi(diaChiRepository.findbyUserid(userid));
 		List<DonHangChiTiet> list_dhct = new ArrayList<DonHangChiTiet>();
 		for (int i = 0; i < productids.size(); i++) {
 			DonHangChiTiet dhct = new DonHangChiTiet();
@@ -83,16 +81,14 @@ public class RestControllerThanhToan {
 		}
 
 		System.out.println(vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee));
-		
+		String url = vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee);
 		System.out.println(list_dhct.get(0));
 		System.out.println("Đơn hàng" + donhang.toString());
 		System.out.println(productids);
 		System.out.println(quantity);
-		
-		
-//
+
 //		try {
-//			donhangService.save(donhang);
+//			donHangRepository.save(donhang);
 //			for (DonHangChiTiet donHangChiTiet : list_dhct) {
 //				donHangChiTietService.save(donHangChiTiet);
 //			}
@@ -106,11 +102,15 @@ public class RestControllerThanhToan {
 //			e.printStackTrace();
 //		}
 
-		return null;
+		if (paymentmethod.equals("2")) {
+			return vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee);
+		}
+
+		return url;
 	}
 
 	public String getnew_donhangId() {
-		DonHang dh = donhangService.findlastedDH();
+		DonHang dh = donHangRepository.findlastedDH();
 		String substring = dh.getDon_hangid().substring(Math.max(dh.getDon_hangid().length() - 1, 0));
 		int id = Integer.parseInt(substring) + 1;
 		String.valueOf(id).length();

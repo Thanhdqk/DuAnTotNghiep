@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.BaiTapLab.Entity.Roles;
 import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.UsersRepository;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @CrossOrigin("origins = http://localhost:5173")
 @RestController
@@ -43,6 +45,9 @@ public class UsersRestController {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	    }
 	}
+	
+	
+	
 
 
 

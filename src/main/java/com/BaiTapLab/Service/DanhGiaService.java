@@ -17,4 +17,14 @@ public class DanhGiaService {
 	{
 		return DanhGiaRepository.findDangGiaByidSanPham(id);
 	}
+	
+	public List<DanhGia> FindDanhGiaByIdSanPhamWithSoSao(String id ,int sosao)
+	{
+		return DanhGiaRepository.findDangGiaByidSanPhamWithSoSao(id, sosao);
+	}
+	
+	public List<DanhGia> FindDanhGiaByIdSanPhamWithDay(String id)
+	{
+		return DanhGiaRepository.findAllDanhGiasOrderedByDate(id);
+	}
 }

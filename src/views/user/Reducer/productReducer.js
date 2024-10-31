@@ -43,7 +43,7 @@ export const Call_API_Products = () => {
     dispatch(turnonloading)
     const [ListProductThisWeekAPI, ListProductTopSaleAPI, ListProductDiscountAPI] = await Promise.all([
       axios({ url: 'http://localhost:8080/FindProductThisWeek', method: 'GET' }),
-      axios({ url: 'http://localhost:8080/FindProductThisWeek', method: 'GET' }),
+      axios({ url: 'http://localhost:8080/FindProductTopSell', method: 'GET' }),
       axios({ url: 'http://localhost:8080/FindProductDiscount', method: 'GET' })
      
       

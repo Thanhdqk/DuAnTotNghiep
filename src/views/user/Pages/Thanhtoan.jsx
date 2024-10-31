@@ -7,6 +7,11 @@ import axios from "axios";
 import { Formik, useFormik } from 'formik';
 import { useSelector } from "react-redux";
 const userId = localStorage.getItem('account_id');
+const shipfee = localStorage.getItem('shipfee');
+const total = localStorage.getItem('totalamount');
+const totalafterdiscount = localStorage.getItem('shipfee_discount');
+const discount = localStorage.getItem('discount');
+console.log(discount)
 const options = [
     {
         label: (
@@ -14,7 +19,7 @@ const options = [
                 <img style={{ marginRight: '8px' }} width="24" height="24" src="https://img.icons8.com/office/40/wallet.png" alt="wallet" /> Thanh toán trực tiếp
             </div>
         ),
-        value: 'Thanh toán trực tiếp',
+        value: '1',
     },
     {
         label: (
@@ -22,7 +27,7 @@ const options = [
                 <img width={24} height={24} src="/images/vnpay.png" alt="" /> Ví Vnpay
             </div>
         ),
-        value: 'Ví Vnpay',
+        value: '2',
     }
 ];
 const labelRender = (props) => {
@@ -74,7 +79,7 @@ function Thanhtoan() {
     const [diachivalue, setdiachivalue] = useState("");
     const [diachivalue2, setdiachivalue2] = useState("");
     const [shipvalue, setshipvalue] = useState("");
-
+    const [method, setmethod] = useState(1);
     const redirect = useNavigate();
 
     const btn3click = () => {
@@ -100,8 +105,8 @@ function Thanhtoan() {
         cod_value: parseInt(0),
     };
     const apishippingfee = async () => {
-       
-       
+
+
         const res = await axios({
             url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', method: 'POST',
             headers: {
@@ -110,7 +115,7 @@ function Thanhtoan() {
             }, data: JSON.stringify(data),
 
         }); setshipvalue(res.data.data.total);
- 
+
         setdiachivalue(diachi.current.innerHTML);
         let firstindex = diachivalue.indexOf("tinh");
         console.log(firstindex);
@@ -126,25 +131,14 @@ function Thanhtoan() {
         }
 
         let formatnumber = res.data.data.total.format(2, 3, '.', ',');;
-        shippingfee.current.innerHTML = formatnumber + "đ";
+        // shippingfee.current.innerHTML = formatnumber + "đ";
     };
 
-
-
-
-    Number.prototype.format = function (n, x, s, c) {
-        var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')',
-            num = this.toFixed(Math.max(0, ~~n));
-
-        return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
-    };
-
-
-    function createpayment() {
-        let res = axios({
-            url: `http://localhost:8080/createpayment?userid=${userId}&spid=${product_id_params}&quantity=${product_quantity_params}&total=${totalAmount + shipvalue}`, method: 'POST',
+    const apipayment = async () => {
+        const res = await axios({
+            url: `http://localhost:8080/createpayment?userid=${userId}&spid=${product_id_params}&quantity=${product_quantity_params}&total=${totalAmount + shipvalue}&method=${method}`, method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json"
             }, data: {
                 'don_hangid': null,
                 'trang_thai': "chờ xử lí",
@@ -155,17 +149,91 @@ function Thanhtoan() {
                 'ghi_chu': null,
                 'phi_ship': shipvalue,
                 'thanh_tien': totalAmount + shipvalue
+
             }
         });
+        console.log('m', method);
+        if(method === "2"){
+            window.open(res.data, "_blank");
+        }
+        // window.open(res.data, "_blank");
+        //     alert(res.data);
+        
         console.log(res.data);
     }
+
+
+    Number.prototype.format = function (n, x, s, c) {
+        var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')',
+            num = this.toFixed(Math.max(0, ~~n));
+
+        return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
+    };
+
+
+    async function createpayment() {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/createpayment?userid=${userId}&spid=${product_id_params}&quantity=${product_quantity_params}&total=${totalAmount + shipvalue}&method=${method}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'don_hangid': null,
+                    'trang_thai': "chờ xử lí",
+                    'ngay_tao': new Date(),
+                    'thoi_gianXN': null,
+                    'dia_chi': diachi.current.innerHTML,
+                    'so_dien_thoai': sodt.current.innerHTML,
+                    'ghi_chu': null,
+                    'phi_ship': shipvalue,
+                    'thanh_tien': totalAmount + shipvalue
+                })
+            }
+            );
+            const result = await response.json();
+            console.log('Method:', method);
+
+            console.log('respone', response.json());
+
+            // window.open(result, '_blank');
+
+        } catch (error) {
+            // console.error('Error:', error);
+
+        }
+
+
+
+        // let res = axios({
+        //     url: `http://localhost:8080/createpayment?userid=${userId}&spid=${product_id_params}&quantity=${product_quantity_params}&total=${totalAmount + shipvalue}&method=${method}`, method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     }, data: {
+        //         'don_hangid': null,
+        //         'trang_thai': "chờ xử lí",
+        //         'ngay_tao': new Date(),
+        //         'thoi_gianXN': null,
+        //         'dia_chi': diachi.current.innerHTML,
+        //         'so_dien_thoai': sodt.current.innerHTML,
+        //         'ghi_chu': null,
+        //         'phi_ship': shipvalue,
+        //         'thanh_tien': totalAmount + shipvalue
+        //     }
+
+        // });
+
+    }
+
+
 
 
 
     useEffect(() => {
         api();
         apishippingfee();
-    
+        console.log('method', method);
 
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
@@ -182,7 +250,7 @@ function Thanhtoan() {
             window.removeEventListener('scroll', handleScroll);
 
         };
-    }, []);
+    }, [method]);
 
 
     const handleInputClick = () => {
@@ -301,6 +369,9 @@ function Thanhtoan() {
                                     width: '100%',
                                 }}
                                 options={options}
+                                onChange={(value) => {
+                                    setmethod(value)
+                                }}
                             />
                         </div>
                         <div className="d-flex justify-content-between align-items-center mt-4" style={{ height: '45px' }}>
@@ -308,7 +379,7 @@ function Thanhtoan() {
                                 <p style={{ margin: '0', color: '#777e90' }}>Tổng giá trị đơn hàng</p>
                             </div>
                             <div className="fw-bolder">
-                                100.000 ₫
+                                {(total).toLocaleString()} ₫
                             </div>
                         </div>
                         <div className="d-flex justify-content-between align-items-center" style={{ height: '45px' }}>
@@ -316,7 +387,7 @@ function Thanhtoan() {
                                 <p style={{ margin: '0', color: '#777e90' }}>Phí vận chuyển</p>
                             </div>
                             <div className="fw-bolder">
-                                <p ref={shippingfee}></p>
+                                {(shipfee).toLocaleString()} đ
                             </div>
                         </div>
                         <div className="d-flex justify-content-between align-items-center" style={{ height: '45px' }}>
@@ -324,17 +395,20 @@ function Thanhtoan() {
                                 <p style={{ margin: '0', fontWeight: 'bolder' }}>Thành tiền</p>
                             </div>
                             <div className="fw-bolder" style={{ color: 'red' }}>
-                                {(totalAmount + shipvalue).toLocaleString()} ₫
+                                <span className="text-decoration-line-through me-2"> {(parseInt(total) + parseInt(shipfee)).toLocaleString()}</span>
+                                {totalafterdiscount > 0 ? (totalafterdiscount).toLocaleString() : (parseInt(total) + parseInt(shipfee)).toLocaleString()} ₫
                             </div>
                         </div>
-                        <div data-bs-toggle="modal" data-bs-target="#exampleModal2" className="col-12 mt-2 thanhtoan" >
-                            <button ref={btn} onClick={createpayment} style={{
+                        <div  className="col-12 mt-2 thanhtoan" >
+                            <button ref={btn} onClick={apipayment} style={{
                                 width: '100%', height: '45px',
                                 borderRadius: '5px', border: 'none', backgroundColor: 'red',
                                 color: 'white', fontWeight: 'bolder'
                             }}>Đặt hàng</button>
                         </div>
-                        <div>
+
+                        {/* data-bs-toggle="modal" data-bs-target="#exampleModal2" */}
+                        {/* <div>
                             <div className="modal fade" id="exampleModal2" tabIndex={-1} >
                                 <div className="modal-dialog modal-dialog-centered" >
                                     <div className="modal-content">
@@ -347,7 +421,7 @@ function Thanhtoan() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

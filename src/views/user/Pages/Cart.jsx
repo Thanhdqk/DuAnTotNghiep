@@ -1,4 +1,4 @@
-import React, { useRef, forwardRef,useCallback } from "react";
+import React, { useRef, forwardRef, useCallback } from "react";
 import { useEffect, useState } from "react";
 import { json, NavLink } from "react-router-dom";
 import { Checkbox, Button, Modal, Input } from 'antd';
@@ -7,9 +7,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { ClearCart, DecreaseItem, IncreaseItem, RemoveItem, AddSpthanhtoan, Clear, DecreaseSpthanhtoan, DeleteSpthanhtoan, IncreaseSpthanhtoan, RemoveSpthanhtoan, Thanhtoan, CallAPI_Cart, increaseItem, decreaseItem, removeItem } from "../Reducer/cartReducer";
 import axios from "axios";
 import { Card, Col, Container, Row } from 'react-bootstrap';
+
 function Cart() {
     const [vouchers, setVouchers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const addressCurent = localStorage.getItem('addressCurent') ? JSON.parse(localStorage.getItem('addressCurent')) : null;
     const userId = localStorage.getItem('account_id');
     const [change, setchange] = useState(0)
     const [showPopup, setShowPopup] = useState(false);
@@ -23,42 +25,42 @@ function Cart() {
     const [sum, Setsum] = useState(0);
     const [spchecked, setspchecked] = useState([]);
     const [listprovince, setlistprovince] = useState([]);
+    const [listDistrict, setlistDistrict] = useState([]);
     const Diachiref = useRef(null);
     const shippingfee = React.useRef(null);
     const btnforapplyvoucher = React.useRef([]);
-    const [diachivalue, setdiachivalue] = useState("");
+    // const [diachivalue, setdiachivalue] = useState(addressCurent.dia_chi);
+    const diachivalue = addressCurent.dia_chi;
     const [diachivalue2, setdiachivalue2] = useState("");
+    const [diachivalue3, setdiachivalue3] = useState("");
     let [shipvalue, setshipvalue] = useState("");
     let [shipvalue_discount, setshipvalue_discount] = useState("");
     let [ship, setship] = useState(0);
     let [click1, setclick1] = useState(-1);
-
+    const [AddressCurrent, SetaddressCurrent] = useState({});
+    const [addressList, SetaddressList] = useState([]);
+    const [addressList2, SetaddressList2] = useState([]);
     let formatnumber;
     const [voucherApplied, setvoucherApplied] = useState(false);
-    // const onButtonClick = () => {
-    //     setdiachivalue(Diachiref.current.innerHTML);
-    //     let firstindex = diachivalue.indexOf("tỉnh");
-    //     console.log(firstindex);
-    //     let diachitemp = diachivalue.substring(firstindex, diachivalue.lastIndexOf(','));
-    //     let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).trim();
-    //     console.log(diachitemp);
-    //     console.log(diachitemp2);
-    //     for (let i = 0; i < listprovince.length; i++) {
-    //         if (listprovince[i].ProvinceName === diachitemp2) {
-    //             console.log("ddas", listprovince[i].ProvinceID);
-    //             setdiachivalue2(listprovince[i].ProvinceID);
-    //         }
-    //     }
-    // };
+
+    const [wei, setwei] = useState(0);
 
 
-    const applyVoucher = (selectedvoucher, index) => {
+
+
+
+
+
+    const applyVoucher = (selectedvoucher, index, a, b) => {
         setIsModalVoucherOpen(false)
 
         const nodeList = document.querySelectorAll(".voucher-btn");
+        const amount = document.querySelectorAll(".amount")
 
-
-
+        console.log('h', a, b);
+        console.log(parseFloat(amount[0].innerHTML.substring(0, amount[0].innerHTML.length - 1)));
+        console.log(amount[0].innerHTML.substring(amount[0].innerHTML.indexOf(',') + 1, amount[0].innerHTML.length));
+        const stringtemp = parseInt(amount[0].innerHTML.substring(0, amount[0].innerHTML.length - 1)) * 1000;
         console.log(index);
         if (!voucherApplied) {
             for (let i = 0; i < nodeList.length; i++) {
@@ -68,10 +70,15 @@ function Cart() {
             setvoucherApplied(true)
             btnforapplyvoucher.current[index].innerHTML = "Đã áp dụng"
 
-            const ship_discount = shipvalue - selectedvoucher.so_tien_giam;
+            let ship_discount = (a + b) - selectedvoucher.so_tien_giam;
+
+            console.log('discount', ship_discount);
             setshipvalue_discount(ship_discount)
             setclick1(index);
-
+            localStorage.setItem('totalamount', JSON.stringify(totalAmount));
+            localStorage.setItem('shipfee', JSON.stringify(b));
+            localStorage.setItem('shipfee_discount', JSON.stringify(ship_discount));
+            localStorage.setItem('discount', JSON.stringify(parseInt(selectedvoucher.so_tien_giam)));
             console.log("ship_discount", ship_discount);
             console.log("shipvalue", shipvalue);
         } else {
@@ -89,6 +96,7 @@ function Cart() {
 
     };
     function testSelector(selector = '') {
+
         const [type, ...classNames] = selector.split('.');
         return instance => {
             if (type && instance.type !== type) {
@@ -113,11 +121,53 @@ function Cart() {
             setLoading(false);
         }
     };
+    const apishippingfee = async (idprovince, iddistrict, a, b, c, d) => {
+        console.log('fee', idprovince, iddistrict, a, b, c, d);
+        if (a != 0) {
+            const res = await axios({
+                url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', method: 'POST',
+                headers: {
+                    'Token': data.token,
+                    'Content-Type': 'application/json',
+                }, data: {
+                    "token": "b20158be-5619-11ef-8e53-0a00184fe694",
+                    "shop_id": 193308,
+                    "service_type_id": 2,
+                    "service_id": 53320,
+                    "insurance_value": 100000,
+                    "coupon": null,
+                    "cod_failed_amount": 2000,
+                    "from_district_id": 1454,
+                    "from_ward_code": "21211",
+                    "to_district_id": 2090,
+                    "to_ward_code": "22407",
+                    "weight": parseInt(a),
+                    "length": parseInt(b),
+                    "width": parseInt(c),
+                    "height": parseInt(d),
+                    "cod_value": parseInt(0),
+                },
 
+            }).catch(error => {
+                console.log(error);
+            });
+            console.log(res.data.data);
+            setshipvalue(res.data.data.total);
+            formatnumber = res.data.data.total.format(0, 3, '.', ',');
+        }
+
+
+        // shippingfee.current.innerHTML = formatnumber + "đ";
+
+
+
+
+
+    };
     const data = {
         token: "b20158be-5619-11ef-8e53-0a00184fe694",
         shop_id: 193308,
-        service_type_id: null,
+        service_type_id: 2,
         service_id: 53320,
         insurance_value: 100000,
         coupon: null,
@@ -126,30 +176,96 @@ function Cart() {
         from_ward_code: "21211",
         to_district_id: 1452,
         to_ward_code: "21012",
-        weight: parseInt(15),
-        length: parseInt(50),
+        weight: parseInt(1),
+        length: parseInt(5),
         width: parseInt(50),
         height: parseInt(50),
         cod_value: parseInt(0),
     };
 
-    const api2 = async () => {
 
+
+    const getProvince = (province, list) => {
+        let firstindex = province.indexOf("tinh");
+        // console.log(firstindex);
+        let diachitemp = province.substring(firstindex, province.length);
+        let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).replace(/ /g, '').toLowerCase();
+        // console.log(diachitemp);
+        // console.log(diachitemp2);
+        let result = "";
+        for (let i = 0; i < list.length; i++) {
+            for (let j = 0; j < list[i].NameExtension.length; j++) {
+                if (list[i].NameExtension[j] === diachitemp2) {
+                    console.log("user province id", list[i].ProvinceID);
+                    setdiachivalue2(list[i].ProvinceID);
+                    return list[i].ProvinceID
+                }
+            }
+
+        }
+        return result;
+    };
+    const getward = (district, list) => {
+        // console.log('provinceid', list);
+        let firstindex = district.lastIndexOf("huyen");
+        console.log('district', firstindex);
+        let diachitemp = district.substring(firstindex + 5, district.indexOf(','));
+        let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).replace(/ /g, '').toLowerCase();
+        // console.log('district', diachitemp);
+        // console.log('district 2', diachitemp2);
+        // console.log(list[11]);
+        for (let i = 0; i < list.length; i++) {
+            for (let j = 0; j < list[i].NameExtension.length; j++) {
+                if (list[i].NameExtension[j] === diachitemp2) {
+                    console.log("user district id", list[i].DistrictID);
+                    setdiachivalue3(list[i].DistrictID);
+                    return list[i].DistrictID
+                }
+            }
+        }
+        return "";
+    }
+
+    const fechtProvince = async () => {
         const res = await axios({
             url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province', method: 'GET',
             headers: {
                 "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
             }
         });
+        console.log(res.data.data);
         setlistprovince(res.data.data);
+        // fechdistrict(getProvince(diachivalue, res.data.data));
+
+    }
+    const getnumber = async () => {
+        const res = await axios({
+            url: `http://localhost:8080/getnumber?number=${totalAmount}`, method: 'GET'
+        });
+        return res.data;
+
     }
 
 
+    const fechdistrict = async (a, b, c, d) => {
+        const res1 = await axios({
+            url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province', method: 'GET',
+            headers: {
+                "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
+            }
+        });
 
+        const res2 = await axios({
+            url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district', method: 'POST',
+            headers: {
+                "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
+                "Content-Type": "application/json"
+            }, data: JSON.stringify({ token: "b20158be-5619-11ef-8e53-0a00184fe694", province_id: getProvince(diachivalue, res1.data.data) }),
+        });
 
-
-
-
+        setlistDistrict(res2.data.data);
+        apishippingfee(getProvince(diachivalue, res1.data.data), getward(diachivalue, res2.data.data), a, b, c, d);
+    }
 
     Number.prototype.format = function (n, x, s, c) {
         var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')',
@@ -157,36 +273,7 @@ function Cart() {
 
         return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
     };
-    const apishippingfee = async () => {
-        // setdiachivalue(Diachiref.current.innerHTML);
-        let firstindex = diachivalue.indexOf("tỉnh");
-        console.log(firstindex);
-        let diachitemp = diachivalue.substring(firstindex, diachivalue.lastIndexOf(','));
-        let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).trim();
-        console.log(diachitemp);
-        console.log(diachitemp2);
-        for (let i = 0; i < listprovince.length; i++) {
-            if (listprovince[i].ProvinceName === diachitemp2) {
-                console.log("ddas", listprovince[i].ProvinceID);
-                setdiachivalue2(listprovince[i].ProvinceID);
-            }
-        }
-        const res = await axios({
-            url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', method: 'POST',
-            headers: {
-                'Token': data.token,
-                'Content-Type': 'application/json',
-            }, data: JSON.stringify(data),
 
-        }).catch(error => {
-            console.log(error);
-        });
-        console.log(res.data.data);
-        setshipvalue(res.data.data.total);
-        formatnumber = res.data.data.total.format(0, 3, '.', ',');
-        // shippingfee.current.innerHTML = formatnumber + "đ";
-
-    };
 
     const handleToggle = (index) => {
         const newChecked = [...isChecked];
@@ -223,6 +310,68 @@ function Cart() {
     };
 
 
+
+
+
+
+
+
+
+    const ListCart = useSelector(state => state.cart.CartDatabase);
+    const ListSPChecked = useSelector(state => state.cart.ListSpthanhtoan) || [];
+
+
+
+
+    const totalAmount = Array.isArray(ListSPChecked)
+        ? ListSPChecked.reduce((total, Spthanhtoan) => {
+            // Nếu `gia_km` lớn hơn 0, dùng `gia_km`, nếu không dùng `gia_goc`
+            const price = Spthanhtoan.sanpham.gia_km > 0 ? Spthanhtoan.sanpham.gia_km : Spthanhtoan.sanpham.gia_goc;
+            return (total + (Spthanhtoan.so_luong * price));
+        }, 0)
+        : 0;
+    const totallength = Array.isArray(ListSPChecked)
+        ? ListSPChecked.reduce((total, Spthanhtoan) => {
+            return total + Spthanhtoan.sanpham.chieu_dai;
+        }, 0)
+        : 0;
+    const totalheight = Array.isArray(ListSPChecked)
+        ? ListSPChecked.reduce((total, Spthanhtoan) => {
+            return total + Spthanhtoan.sanpham.chieu_cao;
+        }, 0)
+        : 0;
+    const totalweight = Array.isArray(ListSPChecked)
+        ? ListSPChecked.reduce((total, Spthanhtoan) => {
+            return total + Spthanhtoan.sanpham.khoi_luong;
+        }, 0)
+        : 0;
+    const totalwidth = Array.isArray(ListSPChecked)
+        ? ListSPChecked.reduce((total, Spthanhtoan) => {
+            return total + Spthanhtoan.sanpham.chieu_rong;
+        }, 0)
+        : 0;
+
+
+
+    console.log("total", totalheight, totalweight, totalwidth, totallength, totalAmount);
+
+
+    const InformationUser = async () => {
+        const res = await axios({ url: `http://localhost:8080/FindDiaChiByID?id=${userId}`, method: "GET" })
+        SetaddressList(res.data)
+        if (addressCurent != null) {
+            SetaddressCurrent(addressCurent);
+        }
+        else {
+            SetaddressCurrent(res.data[0]);
+        }
+    }
+
+
+    const dispatch = useDispatch();
+    dispatch(Thanhtoan(ListSPChecked))
+
+
     const handleCheckItemChange = (index, cart) => (e) => {
         const newCheckedItems = [...checkedItems];
         newCheckedItems[index] = e.target.checked;
@@ -234,6 +383,10 @@ function Cart() {
         if (e.target.checked) {
             const api = AddSpthanhtoan(cart);
             dispatch(api)
+            // setwei(totalAmount);
+            // fechdistrict(totalAmount);
+            // setwei(totalAmount,fechdistrict(totalAmount));
+            getnumber();
 
         }
         else {
@@ -246,22 +399,6 @@ function Cart() {
 
 
 
-
-    const ListCart = useSelector(state => state.cart.CartDatabase);
-    const ListSPChecked = useSelector(state => state.cart.ListSpthanhtoan) || [];
-
-    const totalAmount = Array.isArray(ListSPChecked)
-        ? ListSPChecked.reduce((total, Spthanhtoan) => {
-            // Nếu `gia_km` lớn hơn 0, dùng `gia_km`, nếu không dùng `gia_goc`
-            const price = Spthanhtoan.sanpham.gia_km > 0 ? Spthanhtoan.sanpham.gia_km : Spthanhtoan.sanpham.gia_goc;
-            return (total + (Spthanhtoan.so_luong * price));
-        }, 0)
-        : 0;
-
-
-
-    const dispatch = useDispatch();
-    dispatch(Thanhtoan(ListSPChecked))
 
     const handleCheckAllChange = (e) => {
         const isChecked = e.target.checked;
@@ -295,41 +432,65 @@ function Cart() {
         if (node !== null) {
             node.innerHTML = '123';
         }
-      }, []);
+    }, [totalAmount]);
+
+
+    const handleSubmitADDFORM = async (e) => {
+        e.preventDefault()
+        const name = document.querySelector('input[name="name"]').value;
+        const phone = document.querySelector('input[name="phone"]').value;
+        const address = document.querySelector('input[name="address"]').value;
+        const queryParams = new URLSearchParams({
+            name: name,
+            phone: phone,
+            address: address,
+            iduser: userId
+        });
+        try {
+            const res = await axios.post(`http://localhost:8080/DiaChi/Add?${queryParams.toString()}`);
+            const resList = await axios({ url: `http://localhost:8080/FindDiaChiByID?id=${userId}`, method: "GET" })
+            SetaddressList(resList.data)
+        } catch (error) {
+
+        } finally {
+            setIsModalAddOpen(false);
+        }
+    }
 
     useEffect(() => {
-        console.log('cart run')
-        apishippingfee();
-        api2();
 
+        fechdistrict(totalweight, totalheight, totallength, totalwidth);
+
+    }, [totalAmount]);
+
+
+
+
+    useEffect(() => {
+
+        console.log('cart run')
+
+        InformationUser()
         setCheckedItems(Array(ListCart.length).fill(false));
         dispatch(CallAPI_Cart(userId))
         fetchVouchers();
-
 
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
                 setShowPopup(false);
             }
         };
-
         const handleScroll = () => {
             setShowPopup(false);
         };
-
         document.addEventListener('mousedown', handleClickOutside);
         window.addEventListener('scroll', handleScroll);
-
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('scroll', handleScroll);
             dispatch(Clear())
-
         };
     }, []);
-
-
-
 
 
     return (
@@ -343,59 +504,82 @@ function Cart() {
                             <p className="tieude" >Thông tin người nhận:</p>
                             <p className="noidung" style={{ paddingLeft: '200px' }}>Thành | 0984762140</p>
                             <button className="thaydoidiachi" onClick={showModal}>Thay đổi địa chỉ</button>
-                           
+
                             <Modal width={1000}
                                 title="Địa chỉ giao hàng của tôi" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                                 <Button onClick={showModalAdd}>Thêm địa chỉ giao hàng
                                     <PlusOutlined />
                                 </Button>
+                                <div >
+                                    {addressList.map((address, index) => {
+                                        return <div className="mt-2 py-2 ps-2" key={address.dia_chiID} style={{ border: '1px solid #d4d7de' }}>
 
-                                <div className="mt-2 py-2 ps-2" style={{ border: '1px solid #d4d7de' }}>
-                                    <div className="d-flex align-items-center" style={{ height: '40px' }}>
-                                        <img width={32} height={32} src="https://img.icons8.com/windows/32/user-male-circle.png" alt="user" className="icon" />
-                                        <p style={{ fontWeight: 'bold', margin: '0', paddingRight: '50px' }}>Thông tin người nhận:</p>
-                                        <p style={{ margin: '0' }} >Thành | 0984762140</p>
-                                    </div>
-                                    <div className="d-flex align-items-center" style={{ height: '40px' }}>
-                                        <img width={32} height={32} src="https://img.icons8.com/windows/32/home.png" alt="home" className="icon" />
-                                        <p style={{ fontWeight: 'bold', margin: '0', paddingRight: '80px' }}>Địa chỉ giao hàng:</p>
-                                        <p style={{ margin: '0' }}>đường số 10, Campuchia, tỉnh Đắc Lắk, làng Nủ</p>
-                                    
-                                    </div>
-                                    <div className="d-flex align-items-center" style={{ height: '40px' }}>
-                                        <img width={32} height={32} src="https://img.icons8.com/fluency-systems-regular/50/online-store.png" alt="store" className="icon" />
-                                        <p style={{ fontWeight: 'bold', margin: '0', paddingRight: '130px' }}>Cửa hàng:</p>
-                                        <p style={{ margin: '0' }}>Quận 7</p>
-                                    
-                                     
-                                    </div>
+                                            <div className="d-flex align-items-center" style={{ height: '40px' }}>
+                                                <img width={32} height={32} src="https://img.icons8.com/windows/32/user-male-circle.png" alt="user" className="icon" />
+                                                <p style={{ fontWeight: 'bold', margin: '0', paddingRight: '50px' }}>Thông tin người nhận:</p>
+                                                <p style={{ margin: '0' }} >{address.users.hovaten} | {address.users.so_dien_thoai}</p>
+                                            </div>
+                                            <div className="d-flex align-items-center" style={{ height: '40px' }}>
+                                                <img width={32} height={32} src="https://img.icons8.com/windows/32/home.png" alt="home" className="icon" />
+                                                <p style={{ fontWeight: 'bold', margin: '0', paddingRight: '80px' }}>Địa chỉ giao hàng:</p>
+                                                <p style={{ margin: '0' }}>{address.dia_chi}</p>
+                                            </div>
+
+                                            {AddressCurrent?.dia_chiID !== address.dia_chiID ? <div className="d-flex align-items-center" style={{ height: '60px' }}>
+                                                <button onClick={() => {
+                                                    const dataJSON = JSON.stringify(address);
+
+
+                                                    localStorage.setItem('addressCurent', dataJSON);
+                                                    SetaddressCurrent(JSON.parse(localStorage.getItem('addressCurent')))
+                                                }} className="btn btn-primary m-3">Dùng địa chỉ này</button>
+                                            </div> : <>
+                                            </>}
+
+                                        </div>
+                                    })}
+
                                 </div>
 
                             </Modal>
                             <Modal width={1000}
                                 title="Thêm địa chỉ mới" open={isModalAddOpen} onOk={handleOkAdd} onCancel={handleCancelAdd}>
-                                <div>
-                                    <div className="mb-3">
-                                        <label style={{ fontWeight: 'bold' }} htmlFor="">Tên người nhận <span style={{ color: 'red' }}>*</span></label>
-                                        <Input size="large" placeholder="Nhập tên người nhận" prefix={<UserOutlined />} />
-                                    </div>
+
+                                {AddressCurrent != null ? <form onSubmit={handleSubmitADDFORM}> <div className="mb-3">
+                                    <label style={{ fontWeight: 'bold' }} htmlFor="">Tên người nhận <span style={{ color: 'red' }}>*</span></label>
+                                    <Input size="large" name="name" placeholder="Nhập tên người nhận" value={AddressCurrent?.users?.hovaten} prefix={<UserOutlined />} />
+                                </div>
                                     <div className="mb-3">
                                         <label style={{ fontWeight: 'bold' }} htmlFor="">Số điện thoại <span style={{ color: 'red' }}>*</span></label>
-                                        <Input size="large" placeholder="Nhập số điện thoại" prefix={<PhoneOutlined />} />
+                                        <Input size="large" name="phone" placeholder="Nhập số điện thoại" value={AddressCurrent?.users?.so_dien_thoai} prefix={<PhoneOutlined />} />
                                     </div>
                                     <div>
                                         <label style={{ fontWeight: 'bold' }} htmlFor="">Địa chỉ giao hàng <span style={{ color: 'red' }}>*</span></label>
-                                        <Input size="large" placeholder="Nhập địa chỉ giao hàng" prefix={<HomeOutlined />} />
+                                        <Input size="large" name="address" required placeholder="Nhập địa chỉ giao hàng" prefix={<HomeOutlined />} />
+                                    </div>  <button type="submit" onClick={() => {
+
+                                    }} className="btn btn-primary m-3">Thêm địa chỉ</button>  </form> :
+
+                                    <form> <div className="mb-3">
+                                        <label style={{ fontWeight: 'bold' }} htmlFor="">Tên người nhận <span style={{ color: 'red' }}>*</span></label>
+                                        <Input size="large" placeholder="Nhập tên người nhận" value={''} prefix={<UserOutlined />} />
                                     </div>
-                                </div>
+                                        <div className="mb-3">
+                                            <label style={{ fontWeight: 'bold' }} htmlFor="">Số điện thoại <span style={{ color: 'red' }}>*</span></label>
+                                            <Input size="large" placeholder="Nhập số điện thoại" value={''} prefix={<PhoneOutlined />} />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontWeight: 'bold' }} htmlFor="">Địa chỉ giao hàng <span style={{ color: 'red' }}>*</span></label>
+                                            <Input size="large" placeholder="Nhập địa chỉ giao hàng" prefix={<HomeOutlined />} />
+                                        </div>  </form>}
+
                             </Modal>
                         </div>
 
                         <div className="hangthuhai">
                             <img width={32} height={32} src="https://img.icons8.com/windows/32/home.png" alt="home" className="icon" />
                             <p className="tieude">Địa chỉ giao hàng:</p>
-                            <p className="noidung" style={{ paddingLeft: '233px' }}>đường số 10, Campuchia, tỉnh Đắc Lắk, làng Nủ</p>
-                            <p ref={measuredRef} style={{ margin: '0' }}>3123u1y3287</p>
+                            <p className="noidung" style={{ paddingLeft: '233px' }}>{AddressCurrent?.dia_chi ? AddressCurrent?.dia_chi : <span className="text-danger fw-bold">Chưa nhập địa chỉ</span>}</p>
                         </div>
 
                         <div className="hangthuba">
@@ -528,7 +712,7 @@ function Cart() {
 
                                                             <button ref={ref => btnforapplyvoucher.current[index] = ref} className="btn btn-primary voucher-btn"
                                                                 onClick={() => {
-                                                                    applyVoucher(voucher, index);
+                                                                    applyVoucher(voucher, index, totalAmount, shipvalue);
                                                                 }}
                                                             >
                                                                 Áp dụng
@@ -575,15 +759,15 @@ function Cart() {
                                     <p style={{ margin: '0', color: '#777e90' }}>Phí vận chuyển</p>
                                 </div>
                                 <div ref={shippingfee} className="fw-bolder">
-                                    {shipvalue_discount > 0 ? shipvalue_discount.toLocaleString() : shipvalue.toLocaleString()} ₫
+                                    {shipvalue.toLocaleString()} ₫
                                 </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center" style={{ height: '45px' }}>
                                 <div>
                                     <p style={{ margin: '0', fontWeight: 'bolder' }}>Thành tiền</p>
                                 </div>
-                                <div className="fw-bolder" style={{ color: 'red' }}>
-                                    {shipvalue_discount > 0 ? (totalAmount + shipvalue_discount).toLocaleString() : (totalAmount + shipvalue).toLocaleString()} ₫
+                                <div className="fw-bolder amount" style={{ color: 'red' }}>
+                                    {shipvalue_discount > 0 ? (shipvalue_discount).toLocaleString() : (totalAmount + shipvalue).toLocaleString()} ₫
                                 </div>
                             </div>
                             <div className="col-12 mt-2 thanhtoan" >

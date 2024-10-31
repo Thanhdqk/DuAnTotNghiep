@@ -198,10 +198,7 @@ const cartReducer = createSlice({
 
         AddSpthanhtoan: (state, action) => {
             const newProduct = action.payload;
-
-
             if (Array.isArray(state.ListSpthanhtoan)) {
-
                 state.ListSpthanhtoan.push(newProduct);
             } else {
                 console.error("ListSpthanhtoan is not an array");

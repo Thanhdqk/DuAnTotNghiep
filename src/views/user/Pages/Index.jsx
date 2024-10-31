@@ -104,9 +104,9 @@ const Index = () => {
 
       {/* // list product */}
       {/* <ListStore></ListStore> */}
-      <ListProduct products={ListProductDiscount} ></ListProduct>
+      <ListProduct products={ListProductTopSale} ></ListProduct>
       <div className="col-md-12 text-center">
-        <NavLink to={'allproduct/FindProductThisWeek'}    >  <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
+        <NavLink to={'allproduct/FindProductTopSell'}    >  <button className='gradient-button-2' >Xem tất cả sản phẩm</button></NavLink>
       </div>
 
       <div className='row '>

@@ -32,6 +32,7 @@ import Cart from './views/user/Pages/Cart';
 import Thanhtoan from './views/user/Pages/Thanhtoan';
 import Loading from './views/user/Pages/Loading';
 import DonHang2 from './views/user/Pages/DonHang'
+import YeuThichSanPham from './views/user/Pages/YeuThichSanPham';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -61,6 +62,7 @@ root.render(
 
           <Route path='Thanhtoan' element={<Thanhtoan></Thanhtoan>}></Route>
           <Route path='Thanhtoan2' element={<DonHang2></DonHang2>}></Route>
+          <Route path='Sanphamyeuthich' element={<YeuThichSanPham></YeuThichSanPham>}></Route>
 
         </Route>
 

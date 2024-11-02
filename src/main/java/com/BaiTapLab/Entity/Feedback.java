@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,7 +19,8 @@ import lombok.Data;
 @Table(name = "feedback")
 public class Feedback {
 	@Id
-	public String feedbackID;
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	public int feedbackID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String loai_yeu_cau;
@@ -26,6 +29,8 @@ public class Feedback {
 	public String noi_dung;
 	
 	public String hinh_anh;
+	
+	public LocalDate ngay_tao;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai;

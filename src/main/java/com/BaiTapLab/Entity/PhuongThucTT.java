@@ -39,9 +39,9 @@ public class PhuongThucTT {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hanh_dong;
 	
-	@OneToMany(mappedBy = "phuongthuctt", cascade = CascadeType.ALL)
-	@JsonIgnore
-	public List<PhuongthucTTChiTiet> phuongthucTTChiTiet;
+//	@OneToMany(mappedBy = "phuongthuctt", cascade = CascadeType.ALL)
+//	@JsonIgnore
+//	public List<PhuongthucTTChiTiet> phuongthucTTChiTiet;
 	
 	@OneToMany(mappedBy = "phuongthuctt", cascade = CascadeType.ALL)
 	@JsonIgnore

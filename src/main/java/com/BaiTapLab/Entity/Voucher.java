@@ -62,6 +62,7 @@ public class Voucher {
     public String toString() {
         return "Voucher{" +
                 "voucherID='" + voucherID + '\'' +
+                "ma_voucher='" + ma_voucher + '\'' +
                 ", so_tien_giam='" + so_tien_giam + '\'' +
                 ", don_hang_toi_thieu='" + don_hang_toi_thieu + '\'' +
                 ", hinh_anh='" + hinh_anh + '\'' +

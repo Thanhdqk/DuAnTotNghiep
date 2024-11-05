@@ -21,8 +21,17 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+  web:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force-response: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
 paypal:
   client:
     id: AbWy2B4tWfcKdb0qv6UzhoJuC2qWYpa8TwNCz-mGLynovI0bZClkwHyFyU1IEuE-KPrpZaW3Cp5avneH
     secret: EAssZAWtf6BkDmId6KYB1KrrVoxrFTWHIW7UiA_gRpAbqEy7S2_dRqjLT8zu0twefBbdPPEUDGcQDf13
   mode: sandbox # hoặc 'live' cho môi trường sản xuất
+

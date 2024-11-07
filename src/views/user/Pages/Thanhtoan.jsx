@@ -6,12 +6,18 @@ import { DeleteOutlined, EditOutlined, CreditCardOutlined, WalletOutlined } from
 import axios from "axios";
 import { Formik, useFormik } from 'formik';
 import { useSelector } from "react-redux";
+
 const userId = localStorage.getItem('account_id');
-const shipfee = localStorage.getItem('shipfee');
-const total = localStorage.getItem('totalamount');
-const totalafterdiscount = localStorage.getItem('shipfee_discount');
-const discount = localStorage.getItem('discount');
-console.log(discount)
+let shipfee = localStorage.getItem('shippingfee');
+let total = localStorage.getItem('totalamount');
+let totalafterdiscount = localStorage.getItem('total_after');
+let discount = localStorage.getItem('discount');
+
+const AddressCurrent = localStorage.getItem('addressCurent') ? JSON.parse(localStorage.getItem('addressCurent')) : null;
+
+console.log('test', (((parseInt(total) + parseInt(shipfee)) * 0.00003951).toString()));
+console.log(Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(
+    ((parseInt(total) + parseInt(shipfee)) * 0.00003951)).toString());
 const options = [
     {
         label: (
@@ -42,7 +48,7 @@ const labelRender = (props) => {
         </span>);
 };
 function Thanhtoan() {
-
+    const [token, settoken] = useState("");
     const ListSPChecked = useSelector(state => state.cart.ListSpthanhtoan2) || [];
     console.log(ListSPChecked);
     const product_id_params = ListSPChecked.map(item => item.sanpham.san_phamId);
@@ -68,7 +74,6 @@ function Thanhtoan() {
             }
         });
         setlistprovince(res.data.data);
-
     }
 
     const diachi = React.useRef(null);
@@ -105,8 +110,6 @@ function Thanhtoan() {
         cod_value: parseInt(0),
     };
     const apishippingfee = async () => {
-
-
         const res = await axios({
             url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', method: 'POST',
             headers: {
@@ -115,7 +118,6 @@ function Thanhtoan() {
             }, data: JSON.stringify(data),
 
         }); setshipvalue(res.data.data.total);
-
         setdiachivalue(diachi.current.innerHTML);
         let firstindex = diachivalue.indexOf("tinh");
         console.log(firstindex);
@@ -129,36 +131,40 @@ function Thanhtoan() {
                 setdiachivalue2(listprovince[i].ProvinceID);
             }
         }
-
         let formatnumber = res.data.data.total.format(2, 3, '.', ',');;
-        // shippingfee.current.innerHTML = formatnumber + "đ";
     };
 
-    const apipayment = async () => {
+
+
+
+    const apipayment = async (id) => {
+        console.log('run save');
+        console.log(method);
         const res = await axios({
-            url: `http://localhost:8080/createpayment?userid=${userId}&spid=${product_id_params}&quantity=${product_quantity_params}&total=${totalAmount + shipvalue}&method=${method}`, method: 'POST',
+            url: `http://localhost:8080/createpayment?userid=${userId}&spid=${product_id_params}&quantity=${product_quantity_params}&total=${totalAmount + shipvalue}&method=${method}&paypalid=${id}`, method: 'POST',
             headers: {
                 "Content-Type": "application/json"
             }, data: {
                 'don_hangid': null,
-                'trang_thai': "chờ xử lí",
+                'trang_thai': method === "1" ? "chờ xử lí" : "chờ thanh toán",
                 'ngay_tao': new Date(),
                 'thoi_gianXN': null,
-                'dia_chi': diachi.current.innerHTML,
-                'so_dien_thoai': sodt.current.innerHTML,
+                'dia_chi': AddressCurrent.dia_chi,
+                'so_dien_thoai': AddressCurrent.users.so_dien_thoai,
                 'ghi_chu': null,
-                'phi_ship': shipvalue,
-                'thanh_tien': totalAmount + shipvalue
-
+                'phi_ship': shipfee,
+                'tong_tien': parseInt(totalAmount )+parseInt(shipfee),
+                'users': {
+                    'accountID': AddressCurrent.users.accountID,
+                },
+                'diachi': {
+                    'dia_chiID': AddressCurrent.dia_chiID
+                },
+                'phuongthuctt': {
+                    'phuong_thucTTID': method === '1' ? "ptt01" : "ptt02"
+                }
             }
         });
-        console.log('m', method);
-        if(method === "2"){
-            window.open(res.data, "_blank");
-        }
-        // window.open(res.data, "_blank");
-        //     alert(res.data);
-        
         console.log(res.data);
     }
 
@@ -169,6 +175,85 @@ function Thanhtoan() {
 
         return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
     };
+
+    const getPaypalAccessToken = async () => {
+        const res = await axios({
+            method: 'post',
+            url: 'https://api.sandbox.paypal.com/v1/oauth2/token',
+            data: 'grant_type=client_credentials', // => this is mandatory x-www-form-urlencoded. DO NOT USE json format for this
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',// => needed to handle data parameter
+                'Accept-Language': 'en_US',
+            },
+            auth: {
+                username: "AUuoahug326XM8PupIWATfSZph2ulLyvj714hnfx7DV-Z9MNjC9hSehpDh4VqE6mvtS6ExGgNSkhML2K",
+                password: "EBRxibct4O7BsLjLUR0iAELmNHPVzI0UCU5HQ-LOzW-w3EUVOWRYhiLP4bZK4zM0YNX-IkWs_blvqV8c"
+            },
+
+        });
+
+        localStorage.setItem('paypal_token', res.data.access_token);
+        console.log('paypal access token', res.data.access_token);
+        settoken(res.data.access_token);
+    }
+
+    const capturepayment = async (orderid) => {
+        const res = await axios({
+            url: `https://api-m.sandbox.paypal.com/v2/checkout/orders/69S924224Y991290R/capture`,
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            }, data: {
+
+            }
+        });
+    }
+
+    const paypal_CreateOrder = async () => {
+        console.log("create paypal order");
+        console.log(getPaypalAccessToken());
+        const res = await axios({
+            url: `https://api-m.sandbox.paypal.com/v2/checkout/orders `, method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            }, data: {
+                "intent": "AUTHORIZE",
+                "purchase_units": [
+                    {
+                        "amount": {
+                            "currency_code": "USD",
+                            "value": Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(
+                                ((parseInt(total) + parseInt(shipfee)) * 0.00003951)).toString()
+                        }
+                    }
+                ],
+                "application_context": {
+                    "return_url": "http://localhost:3000/paymentreturn",
+                    "cancel_url": "http://localhost:3000/paymentreturn",
+                    "shipping_preference": "NO_SHIPPING",
+                    "user_action": "PAY_NOW"
+                }
+            }
+
+        });
+        apipayment(res.data.id);
+        console.log('paypal', res.data.links.find(link => link.rel === "approve").href);
+        if (method === "2") {
+
+            console.log('run paypal');
+            window.open(res.data.links.find(link => link.rel === "approve").href, "_blank");
+            localStorage.setItem('paypal_order_id', res.data.id);
+        }
+    }
+
+
+
+
+
 
 
     async function createpayment() {
@@ -188,7 +273,11 @@ function Thanhtoan() {
                     'so_dien_thoai': sodt.current.innerHTML,
                     'ghi_chu': null,
                     'phi_ship': shipvalue,
-                    'thanh_tien': totalAmount + shipvalue
+                    'thanh_tien': totalAmount + shipvalue,
+                    'Users': {
+                        'accountID': 'phat@gmail.com'
+                    }
+
                 })
             }
             );
@@ -225,14 +314,14 @@ function Thanhtoan() {
         // });
 
     }
-
-
-
-
-
     useEffect(() => {
         api();
-        apishippingfee();
+        // apishippingfee();
+        getPaypalAccessToken();
+        shipfee = localStorage.getItem('shippingfee');
+        total = localStorage.getItem('totalamount');
+        totalafterdiscount = localStorage.getItem('total_after');
+        discount = localStorage.getItem('discount');
         console.log('method', method);
 
         const handleClickOutside = (event) => {
@@ -250,7 +339,7 @@ function Thanhtoan() {
             window.removeEventListener('scroll', handleScroll);
 
         };
-    }, [method]);
+    }, [method, discount]);
 
 
     const handleInputClick = () => {
@@ -305,7 +394,7 @@ function Thanhtoan() {
                     <div className="hangthuhai">
                         <img width={32} height={32} src="https://img.icons8.com/windows/32/home.png" alt="home" className="icon" />
                         <p className="tieude">Địa chỉ giao hàng:</p>
-                        <p ref={diachi} className="noidung" style={{ paddingLeft: '233px' }}>đường số 10, Campuchia, tỉnh Long An, làng Nủ</p>
+                        <p className="noidung" style={{ paddingLeft: '233px' }}>{AddressCurrent?.dia_chi ? AddressCurrent?.dia_chi : <span className="text-danger fw-bold">Chưa nhập địa chỉ</span>}</p>
                     </div>
 
                     <div className="hangthuba">
@@ -396,19 +485,29 @@ function Thanhtoan() {
                             </div>
                             <div className="fw-bolder" style={{ color: 'red' }}>
                                 <span className="text-decoration-line-through me-2"> {(parseInt(total) + parseInt(shipfee)).toLocaleString()}</span>
-                                {totalafterdiscount > 0 ? (totalafterdiscount).toLocaleString() : (parseInt(total) + parseInt(shipfee)).toLocaleString()} ₫
+                                {discount > 0 ? (totalafterdiscount).toLocaleString() : (parseInt(total) + parseInt(shipfee)).toLocaleString()} ₫
                             </div>
                         </div>
-                        <div  className="col-12 mt-2 thanhtoan" >
-                            <button ref={btn} onClick={apipayment} style={{
+                        <div className="col-12 mt-2 thanhtoan" >
+                            <button data-bs-toggle="modal" data-bs-target="#exampleModal2" ref={btn} onClick={() => {
+                                paypal_CreateOrder()
+
+                            }} style={{
                                 width: '100%', height: '45px',
                                 borderRadius: '5px', border: 'none', backgroundColor: 'red',
                                 color: 'white', fontWeight: 'bolder'
                             }}>Đặt hàng</button>
                         </div>
+                        {/* <div className="col-12 mt-2 thanhtoan" >
+                            <button onClick={paypal_CreateOrder} style={{
+                                width: '100%', height: '45px',
+                                borderRadius: '5px', border: 'none', backgroundColor: 'red',
+                                color: 'white', fontWeight: 'bolder'
+                            }}>Đặt hàng</button>
+                        </div> */}
 
-                        {/* data-bs-toggle="modal" data-bs-target="#exampleModal2" */}
-                        {/* <div>
+
+                        <div>
                             <div className="modal fade" id="exampleModal2" tabIndex={-1} >
                                 <div className="modal-dialog modal-dialog-centered" >
                                     <div className="modal-content">
@@ -421,7 +520,7 @@ function Thanhtoan() {
                                     </div>
                                 </div>
                             </div>
-                        </div> */}
+                        </div>
                     </div>
                 </div>
             </div>

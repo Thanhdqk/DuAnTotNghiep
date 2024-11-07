@@ -1,15 +1,14 @@
-import React, { useEffect } from 'react'
-import { GetALLPost } from '../Reducer/postReducer'
-import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios';
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { GetALLPost } from '../Reducer/postReducer';
 import { NavLink } from 'react-router-dom';
 
-
-const Post = () => {
-    const dispatch = useDispatch();
+const PagePost = () => {
+  const dispatch = useDispatch();
     const listPOST = useSelector(state => state.post.listPost);
     const List2POST = async()=>{
-        const res = await axios({url:'http://localhost:8080/Find2NewBaiDang',method:'GET'})
+        const res = await axios({url:'http://localhost:8080/FindAllBaiDang',method:'GET'})
         const api = GetALLPost(res.data);
         dispatch(api);
       }
@@ -21,9 +20,13 @@ const Post = () => {
 
       },[])
   return (
-    <div className='container-fluid '>
+    <div className='container'>
 
-    {listPOST?.map((post,index)=>{
+      <div className="row mt-3 mb-4">
+      
+      </div>
+
+{listPOST?.map((post,index)=>{
         return <NavLink to={`/bai-dang/detail/${post.bai_dangID}`} style={{textDecoration:'none'}} className="row mt-5" key={index}>
 
         <div className="col-md-6 d-flex justify-content-center">
@@ -42,10 +45,9 @@ const Post = () => {
 
     </NavLink>
     })}
-    
 
     </div>
   )
 }
 
-export default Post
+export default PagePost

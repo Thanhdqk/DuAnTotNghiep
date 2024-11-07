@@ -9,6 +9,8 @@ import bannerReducer from './bannerReducer'
 import LoadingReducer from './LoadingReducer'
 import { ContentPopup } from './popupReducer'
 import YeuthichReducer from './YeuthichReducer'
+import postReducer from './postReducer'
+import voucherReducer from './voucherReducer'
 export const store = configureStore({
 
     reducer:{
@@ -22,7 +24,9 @@ export const store = configureStore({
         banner : bannerReducer,
         Loadingga:LoadingReducer,
         ListPopup:ContentPopup,
-        Yeuthich :YeuthichReducer
+        Yeuthich :YeuthichReducer,
+        post: postReducer,
+        voucher : voucherReducer
     }
 
 

@@ -53,6 +53,19 @@ background-color: rgb(244, 245, 246);
   top: 0;
   right: 0
 }
+.borderRadiousRight1 {
+  width: 40px; /* Hoặc điều chỉnh theo kích thước bạn muốn */
+  height: 40px; /* Hoặc điều chỉnh theo kích thước bạn muốn */
+  background-color: rgb(57, 219, 74);
+  border-bottom-left-radius: 20px; /* Điều chỉnh góc nếu cần */
+  position: absolute;
+  top: 10px; /* Điều chỉnh theo ý muốn */
+  right: 10px; /* Điều chỉnh theo ý muốn */
+  display: flex; /* Để sử dụng flexbox */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  cursor: pointer; /* Hiện con trỏ tay khi hover */
+}
 
 .bg-green{
   background-color: rgb(57, 219, 74);
@@ -564,3 +577,77 @@ header {
 }
 
 /*Kết thúc giỏ hàng*/
+.nav1-link {
+  text-decoration: none; /* Loại bỏ gạch chân */
+  color: inherit; /* Sử dụng màu văn bản của phần tử cha */
+}
+
+/* Card styling */
+.voucher-card {
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative; /* Để đặt nút ở góc */
+}
+
+/* Image styling */
+.voucher-image-wrapper {
+  flex-shrink: 0;
+  width: 100px; /* Đặt chiều rộng cố định cho hình ảnh */
+  margin-right: 15px;
+}
+
+.voucher-image {
+  width: 100%;
+  height: auto; /* Giữ tỉ lệ hình ảnh */
+  object-fit: cover;
+  border-radius: 10px 0 0 10px;
+}
+
+/* Content styling */
+.voucher-content {
+  flex: 1;
+}
+
+/* Để căn chỉnh nội dung chính xác hơn */
+.voucher-title {
+  background-color: #008080;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.voucher-discount {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.voucher-minimum-order,
+.voucher-exclusive,
+.voucher-expiry {
+  font-size: 16px;
+}
+
+/* Button styling */
+.voucher-button-wrapper {
+  position: absolute; /* Để đặt nút ở vị trí tùy chỉnh */
+  top: 10px; /* Đặt nút cách trên */
+  right: 10px; /* Đặt nút cách bên phải */
+}
+
+.voucher-button {
+  font-size: 14px;
+}
+.link-button {
+  background: none; /* Không có nền */
+  color: blue; /* Màu giống liên kết */
+  text-decoration: underline; /* Gạch chân */
+  border: none; /* Không có viền */
+  cursor: pointer; /* Con trỏ khi hover */
+  padding: 0; /* Không có padding */
+}
+
+

@@ -4,17 +4,20 @@ import { useParams } from 'react-router-dom'
 import axios from 'axios';
 import SimilarProduct from './SimilarProduct';
 import { AddItem, addItemToCart } from '../Reducer/cartReducer';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import DanhGia from './DanhGia';
+import { addFavotite } from '../Reducer/YeuthichReducer';
 
 const ProductDetail = () => {
-
+    const userId = localStorage.getItem('account_id');
     const params = useParams();
+    
     const [averageRating, setAverageRating] = useState(0);
     const [ProductDetail, SetProductDetail] = useState({});
     const [Danhgia, SetDanhGia] = useState([]);
     const [ProductsSimilar, SetProductsSimilar] = useState([])
     const [QuantityProduct, SetQuantityProduct] = useState(1);
+    const Yeuthich1 = useSelector(state => state.Yeuthich.sanphamfavorited)
     const dispatch = useDispatch();
 
     const handleAddCart = (e) => {
@@ -50,25 +53,54 @@ const ProductDetail = () => {
         }
     }
 
+    const Yeuthich = async () => {
+        if (userId) {
+            const res1 = await axios({ url: `http://localhost:8080/checkyeuthich/${params.id}/${userId}`, method: "GET" })
+            if (res1.data != "") {
+
+                dispatch(addFavotite(res1.data))
+
+                console.log(" có yêu thích", res1.data)
+              
+            }
+            else {
+                dispatch(addFavotite(""))
+
+                console.log("Chưa có yêu thích")
+            }
+
+
+        }
+        else {
+            console.log("không có id")
+        }
+       
+    }
+
     useEffect(() => {
 
         API_Product_Detail()
-       
+        Yeuthich()
+        
         window.scrollTo(0, 0);
 
+      
+
     }, [params.id])
+
+   
 
 
 
     return (
-        
+
         <div className='container mb-5'>
             <div className='row mb-5' >
                 <hr className='text-green' />
 
 
                 <div className="col-md-6  ">
-                    
+
                     {ProductDetail?.hinhanh?.length > 0 ? <img className='img-fluid image1' style={{ minHeight: 350, minWidth: 300 }} src={`/images/${ProductDetail.hinhanh[0].ten_hinh}`} alt="" /> : null}
 
                     <div className='row mx-auto'>
@@ -88,7 +120,7 @@ const ProductDetail = () => {
                     <h3 className='mt-5 fw-bold'>{ProductDetail.ten_san_pham}</h3>
                     <span  ><i class="bi bi-star-fill text-warning fs-5 me-1"></i>  ({averageRating})  |  <a className='ms-3'> {Danhgia.length} Đánh giá</a> </span>
 
-                    {ProductDetail.phantram_GG>0 ?<h2 className="fw-bold mt-3">{ProductDetail.gia_km} đ</h2> : <h2 className="fw-bold mt-3">{ProductDetail.gia_goc} đ</h2>}
+                    {ProductDetail.phantram_GG > 0 ? <h2 className="fw-bold mt-3">{ProductDetail.gia_km} đ</h2> : <h2 className="fw-bold mt-3">{ProductDetail.gia_goc} đ</h2>}
 
                     <h6 className="fw-bold mt-2">{ProductDetail.mo_ta}</h6>
 
@@ -114,9 +146,21 @@ const ProductDetail = () => {
 
                     <div className='d-flex mt-5'>
 
-                        <button className='btn btn-outline-dark text-danger ' onClick={()=>{
-                            alert(`id sản phẩm ${params.id} và `)
-                        }}><i class="bi bi-heart-fill fs-3"></i></button>
+                        {Yeuthich1?.yeu_thichID >= 0 ? 
+                        <button className='btn btn-outline-dark text-danger ' onClick={async () => {
+                            alert(`id sản phẩm ${params.id} và ${userId}`)
+                            await axios({ url: `http://localhost:8080/DELETE/Yeuthich?idyt=${Yeuthich1?.yeu_thichID}&iduser=${userId}`, method: 'GET' })
+                            dispatch(addFavotite(""))
+
+                        }}><i class="bi bi-heart-fill fs-3"></i>
+                        </button> : 
+                        <button className='btn btn-outline-dark text-danger ' onClick={async () => {
+                            alert(`id sản phẩm ${params.id} và ${userId}`)
+                            const res=  await axios({ url: `http://localhost:8080/ADD/Yeuthich?idsp=${params.id}&iduser=${userId}`, method: 'POST' })
+                            dispatch(addFavotite(res.data))
+                            console.log('data',res.data)
+                            
+                        }}><i class="bi bi-heart fs-3"></i></button>}
 
                         <button className='btn btn-outline-dark text-danger ms-3'><i class="fa fa-cart-plus fs-3"></i></button>
 
@@ -144,7 +188,7 @@ const ProductDetail = () => {
 
             </div>
 
-            <DanhGia DanhGias={Danhgia} ></DanhGia>
+            <DanhGia DanhGias={Danhgia} id={params.id} ></DanhGia>
             <div className="row">
                 <div className="col-md-12">
 

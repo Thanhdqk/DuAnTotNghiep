@@ -33,6 +33,11 @@ import Thanhtoan from './views/user/Pages/Thanhtoan';
 import Loading from './views/user/Pages/Loading';
 import DonHang2 from './views/user/Pages/DonHang'
 import YeuThichSanPham from './views/user/Pages/YeuThichSanPham';
+
+import PagePost from './views/user/Pages/PagePost'
+import PostDetail from './views/user/Pages/PostDetail';
+import Voucher from './views/user/Pages/Voucher';
+import ResultPayment from './views/user/Pages/ResultPayment';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -60,9 +65,13 @@ root.render(
 
           <Route path='Cart' element={<Cart></Cart>}></Route>
 
+          <Route path='bai-dang' element={<PagePost></PagePost>}></Route>
+          <Route path='bai-dang/detail/:id' element={<PostDetail></PostDetail>}></Route>
+          <Route path='voucher' element={<Voucher></Voucher>}></Route>
           <Route path='Thanhtoan' element={<Thanhtoan></Thanhtoan>}></Route>
           <Route path='Thanhtoan2' element={<DonHang2></DonHang2>}></Route>
           <Route path='Sanphamyeuthich' element={<YeuThichSanPham></YeuThichSanPham>}></Route>
+          <Route path='paymentreturn' element={<ResultPayment></ResultPayment>}></Route>
 
         </Route>
 

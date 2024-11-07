@@ -1,10 +1,10 @@
 import React, { useRef, forwardRef, useCallback } from "react";
 import { useEffect, useState } from "react";
 import { json, NavLink } from "react-router-dom";
-import { Checkbox, Button, Modal, Input } from 'antd';
+import { Checkbox, Button, Modal, Input, Select } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, UserOutlined, PhoneOutlined, HomeOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from "react-redux";
-import { ClearCart, DecreaseItem, IncreaseItem, RemoveItem, AddSpthanhtoan, Clear, DecreaseSpthanhtoan, DeleteSpthanhtoan, IncreaseSpthanhtoan, RemoveSpthanhtoan, Thanhtoan, CallAPI_Cart, increaseItem, decreaseItem, removeItem } from "../Reducer/cartReducer";
+import { ClearCart, DecreaseItem, IncreaseItem, RemoveItem, AddSpthanhtoan, Clear, DecreaseSpthanhtoan, DeleteSpthanhtoan, IncreaseSpthanhtoan, RemoveSpthanhtoan, Thanhtoan, CallAPI_Cart, increaseItem, decreaseItem, removeItem, clearItem } from "../Reducer/cartReducer";
 import axios from "axios";
 import { Card, Col, Container, Row } from 'react-bootstrap';
 
@@ -12,6 +12,7 @@ function Cart() {
     const [vouchers, setVouchers] = useState([]);
     const [loading, setLoading] = useState(true);
     const addressCurent = localStorage.getItem('addressCurent') ? JSON.parse(localStorage.getItem('addressCurent')) : null;
+    console.log('current',addressCurent);
     const userId = localStorage.getItem('account_id');
     const [change, setchange] = useState(0)
     const [showPopup, setShowPopup] = useState(false);
@@ -26,6 +27,7 @@ function Cart() {
     const [spchecked, setspchecked] = useState([]);
     const [listprovince, setlistprovince] = useState([]);
     const [listDistrict, setlistDistrict] = useState([]);
+    const [listWard, setlistWard] = useState([]);
     const Diachiref = useRef(null);
     const shippingfee = React.useRef(null);
     const btnforapplyvoucher = React.useRef([]);
@@ -39,9 +41,11 @@ function Cart() {
     let [click1, setclick1] = useState(-1);
     const [AddressCurrent, SetaddressCurrent] = useState({});
     const [addressList, SetaddressList] = useState([]);
-    const [addressList2, SetaddressList2] = useState([]);
+
     let formatnumber;
     const [voucherApplied, setvoucherApplied] = useState(false);
+    const [Ward, setWard] = useState(null);
+    const [District, setDistrict] = useState(null);
 
     const [wei, setwei] = useState(0);
 
@@ -69,20 +73,18 @@ function Cart() {
             }
             setvoucherApplied(true)
             btnforapplyvoucher.current[index].innerHTML = "Đã áp dụng"
-
-            let ship_discount = (a + b) - selectedvoucher.so_tien_giam;
-
-            console.log('discount', ship_discount);
-            setshipvalue_discount(ship_discount)
+            let total = (a + b) - selectedvoucher.so_tien_giam;
+            console.log('discount', total);
+            setshipvalue_discount(total)
             setclick1(index);
-            localStorage.setItem('totalamount', JSON.stringify(totalAmount));
-            localStorage.setItem('shipfee', JSON.stringify(b));
-            localStorage.setItem('shipfee_discount', JSON.stringify(ship_discount));
-            localStorage.setItem('discount', JSON.stringify(parseInt(selectedvoucher.so_tien_giam)));
-            console.log("ship_discount", ship_discount);
+            localStorage.setItem('total_after', JSON.stringify(total));
+            localStorage.setItem('discount',parseInt(selectedvoucher.so_tien_giam));
+            console.log("ship_discount", total);
             console.log("shipvalue", shipvalue);
         } else {
             setvoucherApplied(false)
+            localStorage.setItem('discount', 0);
+            localStorage.setItem('total_after', JSON.stringify(0));
             for (let i = 0; i < nodeList.length; i++) {
                 nodeList[i].disabled = false;
                 nodeList[index].disabled = false;
@@ -94,6 +96,31 @@ function Cart() {
 
 
 
+    };
+    const onChange = (value) => {
+        const address = document.querySelector('input[id^=ward]').value;
+        console.log('ward selected', address)
+        console.log(`selected ${value}`);
+    };
+    const onChangeDistrict = (value) => {
+        console.log(value);
+        const address = document.querySelector('.ant-select-selection-item');
+        address.innerHTML = " ";
+    console.log(address);
+        fechtWard(value.value);
+        setDistrict(value.label + '-' + value.value);
+    };
+    const onChangeWard = (value) => {
+        try {
+            setWard(value.label + '-' + value.value);
+        }
+        catch (error) {
+            console.log(error)
+        }
+
+    };
+    const onSearch = (value) => {
+        console.log('search:', value);
     };
     function testSelector(selector = '') {
 
@@ -121,8 +148,8 @@ function Cart() {
             setLoading(false);
         }
     };
-    const apishippingfee = async (idprovince, iddistrict, a, b, c, d) => {
-        console.log('fee', idprovince, iddistrict, a, b, c, d);
+    const apishippingfee = async (a, b, c, d) => {
+        console.log('fee', a, b, c, d);
         if (a != 0) {
             const res = await axios({
                 url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', method: 'POST',
@@ -139,8 +166,8 @@ function Cart() {
                     "cod_failed_amount": 2000,
                     "from_district_id": 1454,
                     "from_ward_code": "21211",
-                    "to_district_id": 2090,
-                    "to_ward_code": "22407",
+                    "to_district_id": parseInt((addressCurent.quan).substring(addressCurent.quan.indexOf('-') + 1, addressCurent.quan.length)),
+                    "to_ward_code": (addressCurent.phuong).substring(addressCurent.phuong.indexOf('-') + 1, addressCurent.phuong.length),
                     "weight": parseInt(a),
                     "length": parseInt(b),
                     "width": parseInt(c),
@@ -153,6 +180,7 @@ function Cart() {
             });
             console.log(res.data.data);
             setshipvalue(res.data.data.total);
+            localStorage.setItem('shippingfee', res.data.data.total);
             formatnumber = res.data.data.total.format(0, 3, '.', ',');
         }
 
@@ -185,46 +213,46 @@ function Cart() {
 
 
 
-    const getProvince = (province, list) => {
-        let firstindex = province.indexOf("tinh");
-        // console.log(firstindex);
-        let diachitemp = province.substring(firstindex, province.length);
-        let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).replace(/ /g, '').toLowerCase();
-        // console.log(diachitemp);
-        // console.log(diachitemp2);
-        let result = "";
-        for (let i = 0; i < list.length; i++) {
-            for (let j = 0; j < list[i].NameExtension.length; j++) {
-                if (list[i].NameExtension[j] === diachitemp2) {
-                    console.log("user province id", list[i].ProvinceID);
-                    setdiachivalue2(list[i].ProvinceID);
-                    return list[i].ProvinceID
-                }
-            }
+    // const getProvince = (province, list) => {
+    //     let firstindex = province.indexOf("tinh");
+    //     // console.log(firstindex);
+    //     let diachitemp = province.substring(firstindex, province.length);
+    //     let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).replace(/ /g, '').toLowerCase();
+    //     // console.log(diachitemp);
+    //     // console.log(diachitemp2);
+    //     let result = "";
+    //     for (let i = 0; i < list.length; i++) {
+    //         for (let j = 0; j < list[i].NameExtension.length; j++) {
+    //             if (list[i].NameExtension[j] === diachitemp2) {
+    //                 console.log("user province id", list[i].ProvinceID);
+    //                 setdiachivalue2(list[i].ProvinceID);
+    //                 return list[i].ProvinceID
+    //             }
+    //         }
 
-        }
-        return result;
-    };
-    const getward = (district, list) => {
-        // console.log('provinceid', list);
-        let firstindex = district.lastIndexOf("huyen");
-        console.log('district', firstindex);
-        let diachitemp = district.substring(firstindex + 5, district.indexOf(','));
-        let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).replace(/ /g, '').toLowerCase();
-        // console.log('district', diachitemp);
-        // console.log('district 2', diachitemp2);
-        // console.log(list[11]);
-        for (let i = 0; i < list.length; i++) {
-            for (let j = 0; j < list[i].NameExtension.length; j++) {
-                if (list[i].NameExtension[j] === diachitemp2) {
-                    console.log("user district id", list[i].DistrictID);
-                    setdiachivalue3(list[i].DistrictID);
-                    return list[i].DistrictID
-                }
-            }
-        }
-        return "";
-    }
+    //     }
+    //     return result;
+    // };
+    // const getward = (district, list) => {
+    //     // console.log('provinceid', list);
+    //     let firstindex = district.lastIndexOf("huyen");
+    //     console.log('district', firstindex);
+    //     let diachitemp = district.substring(firstindex + 5, district.indexOf(','));
+    //     let diachitemp2 = diachitemp.substring(diachitemp.indexOf(' ')).replace(/ /g, '').toLowerCase();
+    //     // console.log('district', diachitemp);
+    //     // console.log('district 2', diachitemp2);
+    //     // console.log(list[11]);
+    //     for (let i = 0; i < list.length; i++) {
+    //         for (let j = 0; j < list[i].NameExtension.length; j++) {
+    //             if (list[i].NameExtension[j] === diachitemp2) {
+    //                 console.log("user district id", list[i].DistrictID);
+    //                 setdiachivalue3(list[i].DistrictID);
+    //                 return list[i].DistrictID
+    //             }
+    //         }
+    //     }
+    //     return "";
+    // }
 
     const fechtProvince = async () => {
         const res = await axios({
@@ -235,36 +263,32 @@ function Cart() {
         });
         console.log(res.data.data);
         setlistprovince(res.data.data);
-        // fechdistrict(getProvince(diachivalue, res.data.data));
-
     }
-    const getnumber = async () => {
+    const fechtWard = async (id) => {
+        console.log('id', id);
         const res = await axios({
-            url: `http://localhost:8080/getnumber?number=${totalAmount}`, method: 'GET'
+            url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id', method: 'POST',
+            headers: {
+                "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
+                "Content-Type": "application/json"
+            }, data: JSON.stringify({ token: "b20158be-5619-11ef-8e53-0a00184fe694", district_id: id }),
         });
-        return res.data;
-
+        console.log('ward', res.data.data);
+        setlistWard(res.data.data);
     }
 
 
     const fechdistrict = async (a, b, c, d) => {
-        const res1 = await axios({
-            url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province', method: 'GET',
-            headers: {
-                "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
-            }
-        });
-
         const res2 = await axios({
             url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district', method: 'POST',
             headers: {
                 "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
                 "Content-Type": "application/json"
-            }, data: JSON.stringify({ token: "b20158be-5619-11ef-8e53-0a00184fe694", province_id: getProvince(diachivalue, res1.data.data) }),
+            }, data: JSON.stringify({ token: "b20158be-5619-11ef-8e53-0a00184fe694", province_id: 202 }),
         });
-
         setlistDistrict(res2.data.data);
-        apishippingfee(getProvince(diachivalue, res1.data.data), getward(diachivalue, res2.data.data), a, b, c, d);
+        // setlistDistrict(res2.data.data);
+        // apishippingfee(getProvince(diachivalue, res1.data.data), getward(diachivalue, res2.data.data), a, b, c, d);
     }
 
     Number.prototype.format = function (n, x, s, c) {
@@ -281,6 +305,7 @@ function Cart() {
         setIsChecked(newChecked); // Cập nhật lại state
 
     };
+
     const showModal = () => {
         setIsModalOpen(true);
     };
@@ -330,6 +355,7 @@ function Cart() {
             return (total + (Spthanhtoan.so_luong * price));
         }, 0)
         : 0;
+  
     const totallength = Array.isArray(ListSPChecked)
         ? ListSPChecked.reduce((total, Spthanhtoan) => {
             return total + Spthanhtoan.sanpham.chieu_dai;
@@ -375,27 +401,21 @@ function Cart() {
     const handleCheckItemChange = (index, cart) => (e) => {
         const newCheckedItems = [...checkedItems];
         newCheckedItems[index] = e.target.checked;
-
         setCheckedItems(newCheckedItems);
-
 
         setCheckedAll(newCheckedItems.every((item) => item));
         if (e.target.checked) {
             const api = AddSpthanhtoan(cart);
             dispatch(api)
-            // setwei(totalAmount);
-            // fechdistrict(totalAmount);
-            // setwei(totalAmount,fechdistrict(totalAmount));
-            getnumber();
+     
 
         }
         else {
             const api = DeleteSpthanhtoan(cart);
             dispatch(api)
-
-
         }
     };
+
 
 
 
@@ -440,11 +460,15 @@ function Cart() {
         const name = document.querySelector('input[name="name"]').value;
         const phone = document.querySelector('input[name="phone"]').value;
         const address = document.querySelector('input[name="address"]').value;
+
         const queryParams = new URLSearchParams({
             name: name,
             phone: phone,
             address: address,
-            iduser: userId
+            iduser: userId,
+            province: 202,
+            district: District,
+            ward: Ward
         });
         try {
             const res = await axios.post(`http://localhost:8080/DiaChi/Add?${queryParams.toString()}`);
@@ -459,7 +483,7 @@ function Cart() {
 
     useEffect(() => {
 
-        fechdistrict(totalweight, totalheight, totallength, totalwidth);
+        apishippingfee(totalweight, totallength, totalwidth, totalheight);
 
     }, [totalAmount]);
 
@@ -469,12 +493,12 @@ function Cart() {
     useEffect(() => {
 
         console.log('cart run')
-
         InformationUser()
         setCheckedItems(Array(ListCart.length).fill(false));
         dispatch(CallAPI_Cart(userId))
         fetchVouchers();
-
+        fechdistrict();
+        fechtProvince();
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
                 setShowPopup(false);
@@ -491,8 +515,7 @@ function Cart() {
             dispatch(Clear())
         };
     }, []);
-
-
+    console.log(listDistrict);
     return (
         <>
             <div className="container-fluid">
@@ -519,17 +542,22 @@ function Cart() {
                                                 <p style={{ fontWeight: 'bold', margin: '0', paddingRight: '50px' }}>Thông tin người nhận:</p>
                                                 <p style={{ margin: '0' }} >{address.users.hovaten} | {address.users.so_dien_thoai}</p>
                                             </div>
-                                            <div className="d-flex align-items-center" style={{ height: '40px' }}>
-                                                <img width={32} height={32} src="https://img.icons8.com/windows/32/home.png" alt="home" className="icon" />
-                                                <p style={{ fontWeight: 'bold', margin: '0', paddingRight: '80px' }}>Địa chỉ giao hàng:</p>
-                                                <p style={{ margin: '0' }}>{address.dia_chi}</p>
+
+
+
+                                            <div className="" style={{ height: '40px' }}>
+                                                <div className="d-flex align-items-center">
+                                                    <img width={32} height={32} src="https://img.icons8.com/windows/32/home.png" alt="home" className="icon" />
+                                                    <p style={{ fontWeight: 'bold', margin: '0', paddingRight: '80px' }}>Địa chỉ giao hàng:</p>
+                                                    <p style={{ margin: '0' }}>{address.dia_chi}, {(address.phuong).substring(0, (address.phuong).indexOf('-'))},  {(address.quan).substring(0, (address.quan).indexOf('-'))} , {address.thanh_pho ==="202" ? 'Hồ Chi Minh' : address.thanh_pho}</p>
+                                                </div>
                                             </div>
+
+
 
                                             {AddressCurrent?.dia_chiID !== address.dia_chiID ? <div className="d-flex align-items-center" style={{ height: '60px' }}>
                                                 <button onClick={() => {
                                                     const dataJSON = JSON.stringify(address);
-
-
                                                     localStorage.setItem('addressCurent', dataJSON);
                                                     SetaddressCurrent(JSON.parse(localStorage.getItem('addressCurent')))
                                                 }} className="btn btn-primary m-3">Dùng địa chỉ này</button>
@@ -552,6 +580,56 @@ function Cart() {
                                     <div className="mb-3">
                                         <label style={{ fontWeight: 'bold' }} htmlFor="">Số điện thoại <span style={{ color: 'red' }}>*</span></label>
                                         <Input size="large" name="phone" placeholder="Nhập số điện thoại" value={AddressCurrent?.users?.so_dien_thoai} prefix={<PhoneOutlined />} />
+                                    </div>
+                                    <div className="d-flex  " style={{ height: '40px' }}>
+                                        <div className="me-3">
+                                            <Select
+                                                style={{ width: '170px' }}
+                                                showSearch
+                                                placeholder="Chọn phường"
+                                                id="ward"
+                                                optionFilterProp="label"
+                                                onChange={onChangeWard}
+                                                labelInValue
+                                                onSearch={onSearch}
+
+                                                options={listWard.map((item) => ({ value: item.WardCode, label: item.WardName }))}
+                                                allowClear
+                                            />
+                                        </div>
+                                        <div className="me-3">
+                                            <Select
+                                                style={{ width: '170px' }}
+                                                showSearch
+                                                placeholder="Quận"
+                                                id="district"
+                                                optionFilterProp="label"
+                                                labelInValue
+                                                onChange={onChangeDistrict}
+                                                onSearch={onSearch}
+                                                options={listDistrict.map((item) => ({ value: item.DistrictID, label: item.DistrictName }))}
+                                            />
+                                        </div>
+                                        <div className="me-3">
+                                            <Select
+                                                showSearch
+                                                placeholder="Tỉnh/Thành Phố"
+                                                optionFilterProp="label"
+                                                onChange={onChange}
+                                                id="province"
+                                                onSearch={onSearch}
+                                                defaultValue="Thành phố Hồ Chí Minh"
+                                                options={[
+                                                    {
+                                                        value: '202',
+                                                        label: 'Thành phố Hồ Chí Minh',
+                                                    },
+
+                                                ]}
+                                            />
+                                        </div>
+
+
                                     </div>
                                     <div>
                                         <label style={{ fontWeight: 'bold' }} htmlFor="">Địa chỉ giao hàng <span style={{ color: 'red' }}>*</span></label>
@@ -604,8 +682,7 @@ function Cart() {
                             <div className="navsotiennd">
                                 Số tiền
                                 <DeleteOutlined onClick={() => {
-                                    const clear = ClearCart();
-                                    dispatch(clear)
+                                    dispatch(clearItem(userId))
                                 }} style={{ paddingLeft: '115px' }} />
                             </div>
                         </div>
@@ -772,7 +849,15 @@ function Cart() {
                             </div>
                             <div className="col-12 mt-2 thanhtoan" >
                                 <NavLink to="/thanhtoan">
-                                    <button disabled={ListSPChecked.length === 0} style={{
+                                    <button onClick={
+                                        () => {
+                                            localStorage.setItem('totalamount', JSON.stringify(totalAmount)); 
+                                            if(!voucherApplied){
+                                                localStorage.setItem('discount', 0);
+                                                localStorage.setItem('total_after', JSON.stringify(0));
+                                            }
+                                        }
+                                    } disabled={ListSPChecked.length === 0} style={{
                                         width: '100%', height: '45px',
                                         borderRadius: '5px', border: 'none',
                                         backgroundColor: ListSPChecked.length === 0 ? 'black' : 'red',
@@ -780,6 +865,7 @@ function Cart() {
                                     }}>Thanh toán</button>
                                 </NavLink>
                             </div>
+
                         </div>
                     </div>
                 </div>

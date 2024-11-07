@@ -10,38 +10,38 @@ const Voucher = () => {
   const [savedVouchers, setSavedVouchers] = useState(new Set()); // State để theo dõi voucher đã lưu
 
   useEffect(() => {
-    console.log('cc', accountID);
-    const fetchVouchers = async () => {
+    const fetchUnsavedVouchers = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/loadVoucher');
+        const response = await axios.get('http://localhost:8080/loadUnsavedVouchers', {
+          params: { accountID: accountID }
+        });
         setVouchers(response.data);
       } catch (error) {
-        console.error('Error loading vouchers:', error);
+        console.error('Error loading unsaved vouchers:', error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchVouchers();
-  }, []);
+  
+    fetchUnsavedVouchers();
+  }, [accountID]);  
 
   const handleSave = async (voucherID) => {
     try {
-      const voucherDetail = {
-        voucher: { voucherID: voucherID },  // Gửi voucherID
-        users: { accountID: accountID }      // Gửi accountID từ localStorage
-      };
-  
-      const response = await axios.post('http://localhost:8080/addVoucherDetail', voucherDetail);
-      console.log(response.data);
-      
-      // Cập nhật trạng thái savedVouchers
+      const response = await axios.post('http://localhost:8080/addVoucherDetail', null, {
+        params: {
+          voucherID: voucherID,
+          accountID: accountID
+        }
+      });
+      console.log(response.data); 
       setSavedVouchers(prev => new Set(prev).add(voucherID)); // Thêm voucherID vào Set
       alert('Voucher saved successfully!');
     } catch (error) {
       console.error('Error saving voucher:', error);
     }
   };
+  
   
 
   if (loading) {
@@ -65,7 +65,7 @@ const Voucher = () => {
 
                 <div className="voucher-content">
                   <div className="voucher-title">FREESHIP EXTRA</div>
-                  <p className="voucher-discount">Giảm tối đa {voucher.so_tien_giam}</p>
+                  <p className="voucher-discount">Giảm tối đa {voucher.so_tien_giam} VNĐ</p>
                   <p className="voucher-minimum-order">Đơn Tối Thiểu 0₫</p>
                   <p className="voucher-exclusive">Dành riêng cho bạn</p>
                   <p className="voucher-expiry">

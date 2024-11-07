@@ -5,6 +5,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   PlusOutlined,
+  ReloadOutlined
 } from "@ant-design/icons";
 import { useState, useEffect, useRef } from "react";
 import { data } from "jquery";
@@ -13,14 +14,6 @@ import * as XLSX from "xlsx";
 
 const onChange = (key) => {
   console.log(key);
-};
-
-const handleChange = (value) => {
-  console.log(`selected ${value}`);
-};
-
-const handleTrangThaiXoaChange = (value2) => {
-  console.log(`selected ${value2}`);
 };
 
 const getCurrentDate = () => {
@@ -42,8 +35,10 @@ const getBase64 = (file) =>
 const Thuonghieu = () => {
   const [thuonghieuData, setThuonghieuData] = useState([]);
   const [hoatDong, setHoatDong] = useState("Hoạt động");
-  const [trangThaiXoa, setTrangThaiXoa] = useState("Chưa xóa");
-  const [selectedThuongHieu, setSelectedThuongHieu] = useState(null);
+  const [selectedThuongHieu, setSelectedThuongHieu] = useState({
+    hoat_dong: "Hoạt động",
+    hanh_dong: "Thêm",
+  });
   const [activeKey, setActiveKey] = useState("1");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -101,7 +96,7 @@ const Thuonghieu = () => {
       status: "done", // Đã tải xong
       url: image.startsWith("http")
         ? image // Nếu là URL tuyệt đối, dùng luôn
-        : `http://localhost:8080/images/${image}`, // URL đầy đủ
+        : `http://localhost:8080/uploads/${image}`, // URL đầy đủ
     }));
 
     setFileList(initialFileList);
@@ -109,11 +104,11 @@ const Thuonghieu = () => {
   };
 
   const handleChange = (value) => {
-    setHoatDong(value); // Cập nhật trạng thái hoạt động
-  };
-
-  const handleTrangThaiXoaChange = (value2) => {
-    setTrangThaiXoa(value2);
+    console.log("Selected option:", value); // Log để kiểm tra
+    setSelectedThuongHieu((prev) => ({
+      ...prev,
+      hoat_dong: value, // Cập nhật trạng thái hoat_dong
+    }));
   };
 
   const fetchThuongHieuData = async () => {
@@ -129,7 +124,9 @@ const Thuonghieu = () => {
         hoat_dong: item.hoat_dong,
         trang_thai_xoa: item.trang_thai_xoa,
         hinh_anh: item.hinh_anh,
+        hanh_dong: item.hanh_dong,
         accountID: item.users.accountID,
+        nha_cung_capID: item.nhacungcap.nha_cung_capID
       }));
       setThuonghieuData(formattedData);
     } catch (error) {
@@ -147,19 +144,21 @@ const Thuonghieu = () => {
       thuong_hieuID: document.getElementById("thuong_hieuID").value,
       ten_thuong_hieu: document.getElementById("ten_thuong_hieu").value,
       ngay_tao: document.getElementById("ngay_tao").value,
-      hoat_dong: hoatDong,
-      trang_thai_xoa: trangThaiXoa,
+      hoat_dong: selectedThuongHieu.hoat_dong,
       accountID: document.getElementById("accountID").value,
+      nha_cung_capID: document.getElementById("nha_cung_capID").value,
     };
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
     thuonghieuChung();
 
     const formData = new FormData();
     for (const key in thuonghieu) {
       formData.append(key, thuonghieu[key]);
     }
+    formData.append("hanh_dong", "Thêm");
 
     // Sử dụng ref để lấy file
     fileList.forEach((file) => {
@@ -196,6 +195,8 @@ const Thuonghieu = () => {
     for (const key in thuonghieu) {
       formData.append(key, thuonghieu[key]);
     }
+
+    formData.append("hanh_dong", "Cập nhật");
 
     // Nếu có hình ảnh mới, thêm vào formData
     fileList.forEach((file) => {
@@ -235,12 +236,14 @@ const Thuonghieu = () => {
     document.getElementById("ten_thuong_hieu").value = "";
     document.getElementById("ngay_tao").value = "";
 
-    setSelectedThuongHieu(null);
+    setSelectedThuongHieu({
+      hoat_dong: "Hoạt động",
+      trang_thai_xoa: "Chưa xoá",
+    });
 
     setFileList([]);
-    setHoatDong("Hoạt động");
-    setTrangThaiXoa("Chưa xóa");
     document.getElementById("accountID").value = "";
+    document.getElementById("nha_cung_capID").value = "";
   }
   const handelClear = () => {
     clear();
@@ -302,6 +305,76 @@ const Thuonghieu = () => {
       console.error("Lỗi khi gọi API:", error);
     }
   };
+
+  const handleReload = async (thuong_hieuID) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/thuonghieu/reloadFromGarbage/${thuong_hieuID}`,
+        {
+          method: "PUT",
+        }
+      );
+  
+      if (response.ok) {
+        alert("Phục hồi thương hiệu thành công!");
+        fetchThuongHieuData(); // Tải lại dữ liệu thương hiệu
+      } else {
+        alert("Lỗi khi phục hồi thương hiệu.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+    }
+  };
+
+  const handleDeleteThuongHieuToGarbage = async (thuong_hieuID) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/thuonghieu/deleteToGarbage/${thuong_hieuID}`,
+        {
+          method: "PUT",
+        }
+      );
+  
+      if (response.ok) {
+        alert("Thương hiệu đã được xóa thành công!");
+        fetchThuongHieuData(); // Tải lại dữ liệu thương hiệu
+      } else {
+        alert("Lỗi khi xóa thương hiệu.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+    }
+  };
+
+  const handleDeleteThuongHieuToGarbageInput = (thuong_hieuID) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa voucher này?")) {
+      // Gọi API xóa voucher
+      deleteThuongHieuToGarbageInput(thuong_hieuID);
+    }
+  };
+
+  const deleteThuongHieuToGarbageInput = async () => {
+    thuonghieuChung();
+    try {
+      const response = await fetch(
+        `http://localhost:8080/thuonghieu/deleteToGarbage/${thuonghieu.thuong_hieuID}`,
+        {
+          method: "PUT",
+        }
+      );
+  
+      if (response.ok) {
+        alert("Thương hiệu đã được xóa thành công!");
+        fetchThuongHieuData(); // Tải lại dữ liệu thương hiệu
+        clear();
+      } else {
+        alert("Lỗi khi xóa thương hiệu.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+    }
+  };
+  
   // Cấu hình cột cho bảng
   const columns = [
     {
@@ -310,7 +383,7 @@ const Thuonghieu = () => {
       key: "thuong_hieuID",
     },
     {
-      title: "Tên thuong hiệu",
+      title: "Tên thương hiệu",
       dataIndex: "ten_thuong_hieu",
       key: "ten_thuong_hieu",
     },
@@ -325,7 +398,7 @@ const Thuonghieu = () => {
       key: "hoat_dong",
     },
     {
-      title: "Trạng thái xoa",
+      title: "Trạng thái xóa",
       dataIndex: "trang_thai_xoa",
       key: "trang_thai_xoa",
     },
@@ -335,7 +408,7 @@ const Thuonghieu = () => {
       key: "hinh_anh",
       render: (text) => (
         <img
-          src={`http://localhost:8080/images/${text}`}
+          src={`http://localhost:8080/uploads/${text}`}
           alt="Thương hiệu"
           style={{ width: 50, height: 50 }}
         />
@@ -345,6 +418,11 @@ const Thuonghieu = () => {
       title: "Account ID",
       dataIndex: "accountID",
       key: "accountID",
+    },
+    {
+      title: "Nhà cung cấp ID",
+      dataIndex: "nha_cung_capID",
+      key: "nha_cung_capID",
     },
     {
       title: "Hành động",
@@ -358,6 +436,74 @@ const Thuonghieu = () => {
           />
           <DeleteOutlined
             style={{ cursor: "pointer", color: "red" }}
+            onClick={() => handleDeleteThuongHieuToGarbage(record.thuong_hieuID)}
+          />
+        </div>
+      ),
+    },
+  ];
+
+  // Cấu hình cột cho bảng đã xóa
+  const columns2 = [
+    {
+      title: "Mã thương hiệu",
+      dataIndex: "thuong_hieuID",
+      key: "thuong_hieuID",
+    },
+    {
+      title: "Tên thương hiệu",
+      dataIndex: "ten_thuong_hieu",
+      key: "ten_thuong_hieu",
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "ngay_tao",
+      key: "ngay_tao",
+    },
+    {
+      title: "Hoạt động",
+      dataIndex: "hoat_dong",
+      key: "hoat_dong",
+    },
+    {
+      title: "Trạng thái xóa",
+      dataIndex: "trang_thai_xoa",
+      key: "trang_thai_xoa",
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "hinh_anh",
+      key: "hinh_anh",
+      render: (text) => (
+        <img
+          src={`http://localhost:8080/uploads/${text}`}
+          alt="Thương hiệu"
+          style={{ width: 50, height: 50 }}
+        />
+      ),
+    },
+    {
+      title: "Account ID",
+      dataIndex: "accountID",
+      key: "accountID",
+    },
+    {
+      title: "Nhà cung cấp ID",
+      dataIndex: "nha_cung_capID",
+      key: "nha_cung_capID",
+    },
+    {
+      title: "Hành động",
+      dataIndex: "hanhdong",
+      key: "hanhdong",
+      render: (text, record) => (
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <ReloadOutlined
+            style={{ cursor: "pointer", color: "#1890ff" }}
+            onClick={() => handleReload(record.thuong_hieuID)}
+          />
+          <DeleteOutlined
+            style={{ cursor: "pointer", color: "red" }}
             onClick={() => handleDeleteTable(record.thuong_hieuID)}
           />
         </div>
@@ -365,10 +511,78 @@ const Thuonghieu = () => {
     },
   ];
 
-  // Lọc trạng thái
-  const filteredThuongHieuData = searchStatus
-    ? thuonghieuData.filter((thuonghieu) => thuonghieu.hoat_dong === searchStatus)
-    : thuonghieuData; // Nếu không có trạng thái tìm kiếm, hiển thị tất cả
+  const columns3 = [
+    {
+      title: "Mã thương hiệu",
+      dataIndex: "thuong_hieuID",
+      key: "thuong_hieuID",
+    },
+    {
+      title: "Tên thương hiệu",
+      dataIndex: "ten_thuong_hieu",
+      key: "ten_thuong_hieu",
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "ngay_tao",
+      key: "ngay_tao",
+    },
+    {
+      title: "Hoạt động",
+      dataIndex: "hoat_dong",
+      key: "hoat_dong",
+    },
+    {
+      title: "Trạng thái xóa",
+      dataIndex: "trang_thai_xoa",
+      key: "trang_thai_xoa",
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "hinh_anh",
+      key: "hinh_anh",
+      render: (text) => (
+        <img
+          src={`http://localhost:8080/uploads/${text}`}
+          alt="Thương hiệu"
+          style={{ width: 50, height: 50 }}
+        />
+      ),
+    },
+    {
+      title: "Account ID",
+      dataIndex: "accountID",
+      key: "accountID",
+    },
+    {
+      title: "Nhà cung cấp ID",
+      dataIndex: "nha_cung_capID",
+      key: "nha_cung_capID",
+    },
+    {
+      title: "Hành động",
+      dataIndex: "hanh_dong",
+      key: "hanh_dong",
+    },
+  ];
+
+  const filteredThuongHieuData = thuonghieuData.filter((thuonghieu) => {
+    return (
+      thuonghieu.trang_thai_xoa === null && 
+      (!searchStatus || thuonghieu.hoat_dong === searchStatus)
+    );
+  });
+  
+  console.log("Danh sách thương hiệu", filteredThuongHieuData);  
+
+      
+  const filteredThuongHieuDataGarbage = thuonghieuData.filter((thuonghieu) => {
+    console.log(`trang_thai_xoa: ${thuonghieu.trang_thai_xoa}`);
+      return thuonghieu.trang_thai_xoa === "Xóa";
+    });
+  console.log("Thùng rác", filteredThuongHieuDataGarbage); 
+  
+  const filteredNhatKyThuongHieuData = thuonghieuData; 
 
   // Xuất file Excel
   const exportToExcel = () => {
@@ -445,6 +659,21 @@ const Thuonghieu = () => {
                     }
                   />
                 </div>
+                <div className="form-group">
+                  <label htmlFor="productName">Nhà cung cấp ID</label>
+                  <input
+                    type="text"
+                    id="nha_cung_capID"
+                    className="form-control"
+                    value={selectedThuongHieu?.nha_cung_capID || ""}
+                    onChange={(e) =>
+                      setSelectedThuongHieu({
+                        ...selectedThuongHieu,
+                        nha_cung_capID: e.target.value,
+                      })
+                    }
+                  />
+                </div>
               </div>
 
               <div className="input-container">
@@ -467,33 +696,25 @@ const Thuonghieu = () => {
                 <div className="form-group">
                   <label htmlFor="warehouseStatus">Hoạt động</label>
                   <Select
-                    value={hoatDong}
-                    style={{
-                      width: "100%",
-                      borderRadius: "8px",
-                      height: "40px",
-                    }}
-                    onChange={handleChange}
+                    value={selectedThuongHieu.hoat_dong || "Hoạt động"} // Đồng bộ với state selectedVoucher
+                    onChange={(value) =>
+                      setSelectedThuongHieu({
+                        ...selectedThuongHieu,
+                        hoat_dong: value, // Cập nhật đúng giá trị vào state
+                      })
+                    }
                     options={[
                       { value: "Hoạt động", label: "Hoạt động" },
                       { value: "Ngừng hoạt động", label: "Ngừng hoạt động" },
                     ]}
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="warehouseStatus">Trạng thái xóa</label>
-                  <Select
-                    value={trangThaiXoa}
-                    style={{
-                      width: "100%",
-                      borderRadius: "8px",
-                      height: "40px",
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        width: "100%",
+                        borderRadius: "8px",
+                        height: "40px",
+                      }),
                     }}
-                    onChange={handleTrangThaiXoaChange}
-                    options={[
-                      { value: "Chưa xóa", label: "Chưa xóa" },
-                      { value: "Đã xóa", label: "Đã xóa" },
-                    ]}
                   />
                 </div>
               </div>
@@ -522,7 +743,7 @@ const Thuonghieu = () => {
                 <div className="form-group">
                   <button
                     className="button"
-                    onClick={() => handleDeleteInput(thuonghieu.thuong_hieuID)}
+                    onClick={() => handleDeleteThuongHieuToGarbageInput(thuonghieu.thuong_hieuID)}
                   >
                     Xóa
                   </button>
@@ -541,7 +762,7 @@ const Thuonghieu = () => {
           key: "2",
           children: (
             <div className="tab-content">
-              <h1>Danh sách voucher</h1>
+              <h1>Danh sách thương hiệu</h1>
               <button
                 style={{
                   marginBottom: "20px",
@@ -577,6 +798,33 @@ const Thuonghieu = () => {
               />
             </div>
           ),
+        },
+        {
+          label: `Lịch sử xóa`,
+          key: "3",
+          children: (
+            <div className="tab-content">
+              <h1>Danh Sách Đã Xóa</h1>
+              <Table
+                dataSource={filteredThuongHieuDataGarbage}
+                columns={columns2}
+                pagination={false}
+              />
+            </div>
+              ),
+        },
+        {
+          label: `Nhật ký hoạt động`,
+          key: "4",
+          children: (
+            <div className="tab-content">
+              <Table
+                dataSource={filteredNhatKyThuongHieuData}
+                columns={columns3}
+                pagination={false}
+              />
+            </div>
+              ),
         },
       ]}
     />

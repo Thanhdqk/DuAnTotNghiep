@@ -3,7 +3,9 @@ package com.BaiTapLab.RestController;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.Entity.ThuongHieu;
+import com.BaiTapLab.Repository.NhaCungCapRepository;
 import com.BaiTapLab.Repository.ThuongHieuRepository;
 import com.BaiTapLab.Repository.UserRepository;
 import com.BaiTapLab.Service.ThuongHieuService;
@@ -29,6 +32,9 @@ public class ThuongHieuRestController {
     @Autowired
     UserRepository userRepository;
     
+    @Autowired
+    NhaCungCapRepository nhaCungCapRepository;
+    
     @GetMapping("/loadAll")
     public ResponseEntity<List<ThuongHieu>> getThuongHieu(){
 		List<ThuongHieu> listThuongHieu = thuonghieuRepository.findAll();
@@ -36,6 +42,11 @@ public class ThuongHieuRestController {
 		return ResponseEntity.ok(listThuongHieu);
 	}
     
+    @GetMapping("/edit/thuonghieu/{thuong_hieuID}")
+	public ResponseEntity<ThuongHieu> getSanPhamById(@PathVariable String thuong_hieuID){
+		Optional<ThuongHieu> thuonghieu = thuonghieuRepository.findById(thuong_hieuID);
+	    return thuonghieu.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+	}
 
     @PostMapping("/thuonghieu/add")
 	public ResponseEntity<?> addThuongHieu(
@@ -43,9 +54,9 @@ public class ThuongHieuRestController {
 	        @RequestParam("ten_thuong_hieu") String ten_thuong_hieu,
 	        @RequestParam("ngay_tao") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngay_tao,
 	        @RequestParam("hoat_dong") String hoat_dong,
-	        @RequestParam("trang_thai_xoa") String trang_thai_xoa,
 	        @RequestParam(value = "hinh_anh", required = false) MultipartFile[] hinh_anh,
-    		@RequestParam("accountID") String accountID){
+    		@RequestParam("accountID") String accountID,
+    		@RequestParam("nha_cung_capID") String nha_cung_capID){
 
 	    try {
 	        // Tạo đối tượng Thương Hiệu từ các tham số
@@ -54,8 +65,9 @@ public class ThuongHieuRestController {
 	        thuonghieu.setTen_thuong_hieu(ten_thuong_hieu);
 	        thuonghieu.setNgay_tao(ngay_tao);
 	        thuonghieu.setHoat_dong(hoat_dong);
-	        thuonghieu.setTrang_thai_xoa(trang_thai_xoa);
 	        thuonghieu.setUsers(userRepository.findByAccountID(accountID));
+	        thuonghieu.setNhacungcap(nhaCungCapRepository.findByNha_cung_capID(nha_cung_capID));
+	        thuonghieu.setHanh_dong("Thêm");
 	        // Xử lý file ảnh nếu được upload
 	        if (hinh_anh != null && hinh_anh.length > 0) {
 	            String tenHinhAnh = hinh_anh[0].getOriginalFilename();
@@ -99,9 +111,9 @@ public class ThuongHieuRestController {
 	        @RequestParam("ten_thuong_hieu") String ten_thuong_hieu,
 	        @RequestParam("ngay_tao") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngay_tao,
 	        @RequestParam("hoat_dong") String hoat_dong,
-	        @RequestParam("trang_thai_xoa") String trang_thai_xoa,
 	        @RequestParam(value = "hinh_anh", required = false) MultipartFile[] hinh_anh,
-    		@RequestParam("accountID") String accountID) {
+    		@RequestParam("accountID") String accountID,
+    		@RequestParam("nha_cung_capID") String nha_cung_capID) {
 
 	    try {
 	        // Tìm voucher theo ID
@@ -112,8 +124,9 @@ public class ThuongHieuRestController {
 	        thuonghieu.setTen_thuong_hieu(ten_thuong_hieu);
 	        thuonghieu.setNgay_tao(ngay_tao);
 	        thuonghieu.setHoat_dong(hoat_dong);
-	        thuonghieu.setTrang_thai_xoa(trang_thai_xoa);
 	        thuonghieu.setUsers(userRepository.findByAccountID(accountID));
+	        thuonghieu.setNhacungcap(nhaCungCapRepository.findByNha_cung_capID(nha_cung_capID));
+	        thuonghieu.setHanh_dong("Cập nhật");
 
 	        // Xử lý file ảnh nếu được upload
 	        if (hinh_anh != null && hinh_anh.length > 0) {
@@ -147,7 +160,7 @@ public class ThuongHieuRestController {
 	    } catch (Exception e) {
 	        // Xử lý lỗi chung
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Lỗi khi cập nhật voucher: " + e.getMessage());
+	                .body("Lỗi khi cập nhật thương hiệu: " + e.getMessage());
 	    }
 	}
 
@@ -167,6 +180,30 @@ public class ThuongHieuRestController {
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                .body("Lỗi khi xóa voucher: " + e.getMessage());
+	    }
+	}
+    
+    @PutMapping("/thuonghieu/deleteToGarbage/{thuong_hieuID}")
+	public ResponseEntity<Object> deleteThuongHieuToGarbage(@PathVariable String thuong_hieuID) {
+	    boolean isDeleted = thuonghieuService.deleteThuongHieuById(thuong_hieuID);
+	    if (isDeleted) {
+	        // Trả về một đối tượng JSON
+	        return ResponseEntity.ok(Collections.singletonMap("message", "Thương hiệu đã được cập nhật trạng thái xóa"));
+	    } else {
+	        // Trả về một đối tượng JSON chứa thông báo lỗi
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Không tìm thấy thương hiệu với ID: " + thuong_hieuID));
+	    }
+	}
+
+	@PutMapping("/thuonghieu/reloadFromGarbage/{thuong_hieuID}")
+	public ResponseEntity<Object> deleteThuongHieuToGarbageNull(@PathVariable String thuong_hieuID) {
+	    boolean isDeleted = thuonghieuService.reloadThuongHieuById(thuong_hieuID);
+	    if (isDeleted) {
+	        // Trả về một đối tượng JSON
+	        return ResponseEntity.ok(Collections.singletonMap("message", "Thương hiệu đã được cập nhật trạng thái chưa xóa"));
+	    } else {
+	        // Trả về một đối tượng JSON chứa thông báo lỗi
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Không tìm thấy thương hiệu với ID: " + thuong_hieuID));
 	    }
 	}
 }

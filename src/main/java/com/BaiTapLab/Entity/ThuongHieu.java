@@ -2,6 +2,7 @@ package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -35,6 +36,9 @@ public class ThuongHieu {
 	
 	public String hinh_anh;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hanh_dong;
+	
 	@OneToMany(mappedBy = "thuonghieu", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<SanPham> sanpham;
@@ -43,6 +47,10 @@ public class ThuongHieu {
 	@JoinColumn(name = "accountID")
 	public Users users;
 	
+	@ManyToOne
+	@JoinColumn(name = "nha_cung_capID")
+	public NhaCungCap nhacungcap;
+
 	@Override
 	public String toString() {
 	    return "ThuongHieu{" +
@@ -53,6 +61,7 @@ public class ThuongHieu {
 	            ", trang_thai_xoa='" + trang_thai_xoa + '\'' +
 	            ", hinh_anh='" + hinh_anh + '\'' +
 	            ", users=" + (users != null ? users.getAccountID() : "null") + // Giả sử bạn muốn hiển thị tên người dùng
+	            ", nhacungcap=" + (nhacungcap != null ? nhacungcap.getNha_cung_capID() : "null") +
 	            '}';
 	}
 

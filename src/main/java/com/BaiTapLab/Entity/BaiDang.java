@@ -25,7 +25,7 @@ public class BaiDang {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String tieu_de_chinh;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
+	@Column(columnDefinition = "NVARCHAR(555)")
 	public String noi_dung;
 	
 	public LocalDate ngay_tao;

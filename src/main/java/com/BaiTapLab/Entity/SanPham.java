@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -77,7 +78,6 @@ public class SanPham {
 	public List<DonHangChiTiet> donhangchitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	//@JsonIgnore
 	@JsonManagedReference
 	public List<DanhGia> danhgia;
 	
@@ -86,12 +86,10 @@ public class SanPham {
 	public List<PhuongthucTTChiTiet> phuongthucTTChitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	//@JsonIgnore
 	@JsonBackReference
 	public List<YeuThich> yeuthich;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	//@JsonIgnore
 	@JsonManagedReference
 	public List<HinhAnh> hinhanh;
 	
@@ -100,22 +98,17 @@ public class SanPham {
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	//@JsonIgnore
 	@JsonManagedReference
 	public List<PhanHoiDanhGia> phanhoidanhgia;
-	
-	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	//@JsonIgnore
-	@JsonBackReference
-	public List<GioHang> giohang;
 	
 	@ManyToOne
 	@JoinColumn(name = "popupID")
 	@JsonBackReference
 	public Popup popup;
-
+	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
+	@JsonManagedReference
 	public Users users;
 	
 	@ManyToOne
@@ -124,5 +117,10 @@ public class SanPham {
 	
 	@ManyToOne
 	@JoinColumn(name = "thuong_hieuID")
+	@JsonBackReference
 	public ThuongHieu thuonghieu;
+	
+	@OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<GioHangChiTiet> gioHangChiTiet;
 }

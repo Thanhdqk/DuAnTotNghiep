@@ -29,7 +29,7 @@ const CategoryNew = ({ids}) => {
        
       }}>
         {ListCategory.map((object,index)=>{
-          return <NavLink to={`/product/danhmuc/${object.danh_mucId}`} className="card mx-4 text-center" key={object.danh_mucId} style={object.danh_mucId == ids ?{ width: '90px', height: '90px', borderRadius: '20px',margin:25,backgroundColor:'red'  } : { width: '90px', height: '90px', borderRadius: '20px',margin:25,  }} >
+          return <NavLink to={`/product/danhmuc/${object.danh_mucId}`} className="card mx-4 text-center" key={object.danh_mucId} style={object.danh_mucId == ids ?{ width: '90px', height: '90px', borderRadius: '20px',margin:25,border:'1px solid red'  } : { width: '90px', height: '90px', borderRadius: '20px',margin:25,  }} >
           <div className='cycleBlueLight mx-auto mt-3'>
             <img src={`/images/${object.hinh_anh}`}  className='img-fluid' alt="" />
 

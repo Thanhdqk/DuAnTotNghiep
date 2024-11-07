@@ -167,7 +167,7 @@ const Index = () => {
       <ListDanhHieu></ListDanhHieu>
       
 
-      <ListProduct products={ListProductDiscount} ></ListProduct>
+     
      {/* // post */}
     <Post></Post>
 

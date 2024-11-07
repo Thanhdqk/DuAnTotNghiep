@@ -189,10 +189,10 @@ const ProductDetail = () => {
 
                     <div className='d-flex mt-5'>
 
-                        {Yeuthich1?.yeu_thichID >= 0 ? 
+                        {Yeuthich1 !== "" ? 
                         <button className='btn btn-outline-dark text-danger ' onClick={async () => {
                           
-                            await axios({ url: `http://localhost:8080/DELETE/Yeuthich?idyt=${Yeuthich1?.yeu_thichID}&iduser=${userId}`, method: 'GET' })
+                            await axios({ url: `http://localhost:8080/DELETE/Yeuthich?idyt=${Yeuthich1?.id}&iduser=${userId}`, method: 'GET' })
                             dispatch(addFavotite(""))
 
                         }}><i class="bi bi-heart-fill fs-3"></i>

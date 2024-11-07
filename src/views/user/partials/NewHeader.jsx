@@ -9,13 +9,13 @@ import { CallAPI_Cart } from '../Reducer/cartReducer';
 const NewHeader = () => {
     const userId = localStorage.getItem('account_id');
     const [showPopup, setShowPopup] = useState(false);
-    const [historySearch,SethistorySearch] = useState([]);
+    const [historySearch, SethistorySearch] = useState([]);
     const danhmuc = useSelector(state => state.textSearch.Danhmuc);
     const TextSearch = useSelector(state => state.textSearch.Text);
     const sosao = useSelector(state => state.textSearch.sosao);
-    
+    const mostpbuyed = useSelector(state => state.product.ListProductTopSale);
 
-    const [Text,SetText] = useState("");
+    const [Text, SetText] = useState("");
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -24,14 +24,14 @@ const NewHeader = () => {
     // Xử lý khi click bên ngoài để đóng popup
     useEffect(() => {
         dispatch(CallAPI_Cart(userId))
-       SethistorySearch(JSON.parse(localStorage.getItem("HistorySearch")) || [])
+        SethistorySearch(JSON.parse(localStorage.getItem("HistorySearch")) || [])
         const handleClickOutside = (event) => {
             if (
-                !event.target.closest('.search-container') && 
+                !event.target.closest('.search-container') &&
                 !event.target.closest('.popup') &&
                 !event.target.closest('.card') // Thêm điều kiện cho phần tử card
             ) {
-                
+
                 setShowPopup(false);
             }
         };
@@ -53,29 +53,27 @@ const NewHeader = () => {
         setShowPopup(true);
     };
 
-    const handleSubmit =    async (event) =>{
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const value = document.querySelector(".search").value;
-        
-        const res = await axios({url:`http://localhost:8080/Product/FindbyName?name=${value}`,method:'GET'})
+
+        const res = await axios({ url: `http://localhost:8080/Product/FindbyName?name=${value}`, method: 'GET' })
         const api = ListProductSearch(res.data);
-        console.log('data',res.data)
+        console.log('data', res.data)
         dispatch(api);
 
-        if(danhmuc != "")
-        {
-            const res = await axios({url:`http://localhost:8080/Product/FindbyNameandDanhmuc?id=${danhmuc}&name=${value}`,method:'GET'})
+        if (danhmuc != "") {
+            const res = await axios({ url: `http://localhost:8080/Product/FindbyNameandDanhmuc?id=${danhmuc}&name=${value}`, method: 'GET' })
             const api = ListProductSearch(res.data);
-            console.log('data',res.data)
+            console.log('data', res.data)
             dispatch(api);
         }
-        
 
-        if(value !=='')
-        {
-            
-            
-            let updateHistory = [Text,...historySearch];
+
+        if (value !== '') {
+
+
+            let updateHistory = [Text, ...historySearch];
             SethistorySearch(updateHistory);
             localStorage.setItem("HistorySearch", JSON.stringify(updateHistory));
             dispatch(SetTEXT(Text));
@@ -98,11 +96,10 @@ const NewHeader = () => {
 
                         {/* Tìm kiếm */}
                         <form className="col-4 col-md-6 mt-2 mt-md-0 d-flex justify-content-center mt-2" onSubmit={handleSubmit}>
-                            <input type="text" className="form-control me-2 search" placeholder="Tìm kiếm" value={Text} onChange={(e)=>{
+                            <input type="text" className="form-control me-2 search" placeholder="Tìm kiếm" value={Text} onChange={(e) => {
                                 SetText(e.target.value)
-                                if(e.target.value ==='')
-                                {dispatch(SetTEXT(''));}
-                            }}  onClick={handleInputClick} />
+                                if (e.target.value === '') { dispatch(SetTEXT('')); }
+                            }} onClick={handleInputClick} />
                             <button className="btn btn-outline-secondary" type="submit">
                                 <i className="bi bi-search"></i>
                             </button>
@@ -113,7 +110,7 @@ const NewHeader = () => {
                             <NavLink className="nav-link active position-relative me-4" to={'Cart'}>
                                 <i className='fa fa-cart-plus fs-5 mt-1'></i>
                                 <span className="position-absolute top-3 start-100 translate-middle badge rounded-pill bg-danger"
-                                      style={{ fontSize: '0.6em', padding: '0.2em 0.4em', minWidth: '1.5em', height: '1.5em' }}>
+                                    style={{ fontSize: '0.6em', padding: '0.2em 0.4em', minWidth: '1.5em', height: '1.5em' }}>
                                     {cart?.gioHangChiTiet?.length}
                                 </span>
                             </NavLink>
@@ -142,7 +139,7 @@ const NewHeader = () => {
                             </li>
                             <li className="nav-item">
                                 <NavLink className="nav-link" to="/search" activeClassName="active">
-                                   Tìm kiếm
+                                    Tìm kiếm
                                 </NavLink>
                             </li>
                             <li className="nav-item">
@@ -152,7 +149,7 @@ const NewHeader = () => {
                             </li>
                             <li className="nav-item">
                                 <NavLink className="nav-link" to="/bai-dang" activeClassName="active">
-                                   Bài đăng
+                                    Bài đăng
                                 </NavLink>
                             </li>
                             <li className="nav-item">
@@ -165,7 +162,7 @@ const NewHeader = () => {
                                     Hàng Mới
                                 </NavLink>
                             </li>
-                           
+
                         </ul>
                     </div>
                 </div>
@@ -174,44 +171,53 @@ const NewHeader = () => {
                         position: 'absolute',
                         top: '20%',
                         left: '30%',
-                        zIndex: 999, 
+                        zIndex: 999,
                         borderRadius: '20px',
                         boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.5)',
                         backgroundColor: 'white',
-                        width: '600px',
+                        width: '620px',
                         padding: '20px',
                     }}>
                         <div className="popup-content">
                             <div className="history row mx-auto">
-                                <div className="col-md-6 " style={{borderRight:'1px solid black'}}>
-                                    <h5 style={{fontWeight:'bold', marginBottom: '1rem', color: '#333' }}>Lịch sử</h5>
+                                <div className="col-md-6 " style={{ borderRight: '1px solid black' }}>
+                                    <h5 style={{ fontWeight: 'bold', marginBottom: '1rem', color: '#333' }}>Lịch sử</h5>
                                     <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                                       {historySearch.slice(0,10).map((object,index)=>{
-                                            return  <li onClick={ async ()=>{
-                                               
-                                                const res = await axios({url:`http://localhost:8080/Product/FindbyName?name=${object}`,method:'GET'})
+                                        {historySearch.slice(0, 10).map((object, index) => {
+                                            return <li onClick={async () => {
+
+                                                const res = await axios({ url: `http://localhost:8080/Product/FindbyName?name=${object}`, method: 'GET' })
                                                 const api = ListProductSearch(res.data);
-                                               SetText(object)
+                                                SetText(object)
                                                 dispatch(api);
                                                 dispatch(SetTEXT(object));
                                                 setShowPopup(false);
                                                 navigate('/search')
-                                            }} style={{ marginBottom: '0.5rem', color: '#555',cursor: 'pointer'  }}>{object}</li>
-                                       })}
+                                            }} style={{ marginBottom: '0.5rem', color: '#555', cursor: 'pointer' }}>{object}</li>
+                                        })}
                                     </ul>
                                 </div>
                                 <div className="col-md-6">
                                     <div className="keywords ms-1">
-                                        <h5 style={{fontWeight:'bold', marginBottom: '1rem', color: '#333' }}>Từ khóa phổ biến</h5>
+                                        <h5 style={{ fontWeight: 'bold', marginBottom: '1rem', color: '#333' }}>Sản phẩm mua nhiều nhất</h5>
                                         <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                                            <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
-                                            <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
-                                            <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
-                                            <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
-                                            <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
-                                            <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
-                                            <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
-                                            <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
+                                            {mostpbuyed.map((sp, index) => {
+                                                return <li key={sp.san_phamId} onClick={async () => {
+
+                                                    const res = await axios({ url: `http://localhost:8080/Product/FindbyName?name=${sp.ten_san_pham}`, method: 'GET' })
+                                                    const api = ListProductSearch(res.data);
+                                                    SetText(sp.ten_san_pham)
+                                                    dispatch(api);
+                                                    dispatch(SetTEXT(sp.ten_san_pham));
+                                                    setShowPopup(false);
+                                                    let updateHistory = [sp.ten_san_pham, ...historySearch];
+                                                    SethistorySearch(updateHistory);
+                                                    localStorage.setItem("HistorySearch", JSON.stringify(updateHistory));
+                                                    navigate('/search')
+                                                }} style={{ marginBottom: '0.5rem', color: '#555', cursor: 'pointer' }}> <b className='me-2'>{index + 1}</b>  {sp.ten_san_pham}</li>
+                                            })}
+
+
                                         </ul>
                                     </div>
                                 </div>

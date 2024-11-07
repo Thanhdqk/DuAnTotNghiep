@@ -76,16 +76,16 @@ function Cart() {
 
         // Kiểm tra xem tất cả checkbox có được chọn không
         const allChecked = newCheckedItems.every(item => item === true);
-        setCheckedAll(allChecked); 
+        setCheckedAll(allChecked);
 
-    // Dispatch action tương ứng
-    if (e.target.checked) {
-        const api = AddSpthanhtoan(cart);
-        dispatch(api);
-    } else {
-        const api = DeleteSpthanhtoan(cart);
-        dispatch(api);
-    }
+        // Dispatch action tương ứng
+        if (e.target.checked) {
+            const api = AddSpthanhtoan(cart);
+            dispatch(api);
+        } else {
+            const api = DeleteSpthanhtoan(cart);
+            dispatch(api);
+        }
     };
 
     const handleSubmitADDFORM = async (e) => {
@@ -118,7 +118,7 @@ function Cart() {
 
 
 
-    
+
     const ListSPChecked = useSelector(state => state.cart.ListSpthanhtoan) || [];
 
 
@@ -137,29 +137,29 @@ function Cart() {
 
     const handleCheckAllChange = (e) => {
         const isChecked = e.target.checked;
-    setCheckedAll(isChecked);
+        setCheckedAll(isChecked);
 
-   
-    const newCheckedItems = ListCart.gioHangChiTiet.map(cart => cart.sanPham.so_luong > 0 ? isChecked : false);
-    setCheckedItems(newCheckedItems);
 
-    if (isChecked) {
-      
-        ListCart.gioHangChiTiet.forEach(cart => {
-            if (cart.sanPham.so_luong > 0) {
-                const api = AddSpthanhtoan(cart);
-                dispatch(api);
-            }
-        });
-    } else {
-       
-        ListCart.gioHangChiTiet.forEach(cart => {
-            if (cart.sanPham.so_luong > 0) {
-                const api = DeleteSpthanhtoan(cart);
-                dispatch(api);
-            }
-        });
-    }
+        const newCheckedItems = ListCart.gioHangChiTiet.map(cart => cart.sanPham.so_luong > 0 ? isChecked : false);
+        setCheckedItems(newCheckedItems);
+
+        if (isChecked) {
+
+            ListCart.gioHangChiTiet.forEach(cart => {
+                if (cart.sanPham.so_luong > 0) {
+                    const api = AddSpthanhtoan(cart);
+                    dispatch(api);
+                }
+            });
+        } else {
+
+            ListCart.gioHangChiTiet.forEach(cart => {
+                if (cart.sanPham.so_luong > 0) {
+                    const api = DeleteSpthanhtoan(cart);
+                    dispatch(api);
+                }
+            });
+        }
     };
 
     const InformationUser = async () => {
@@ -178,14 +178,14 @@ function Cart() {
 
 
     }
-   
+
 
 
 
     useEffect(() => {
         console.log('cart run')
         InformationUser()
-       
+
         dispatch(CallAPI_Cart(userId))
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
@@ -443,6 +443,13 @@ function Cart() {
                             }} style={{ paddingTop: '70px', paddingLeft: '65px' }} />
                         </div>
                     })}
+
+                    {ListCart?.gioHangChiTiet?.length == 0 &&
+                        <div className="col-md-12 mt-5 text-center">
+
+                            <h4 className='fw-bold'>Rất tiếc !</h4>
+                            <h6>Bạn chưa thêm sản phẩm nào vào giỏ hàng</h6>
+                            <img src="/images/img-comment.svg" alt="" /></div>}
 
 
                 </div>

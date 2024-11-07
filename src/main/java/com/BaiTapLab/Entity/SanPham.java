@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,8 +18,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sanpham")
 public class SanPham {
@@ -58,6 +62,11 @@ public class SanPham {
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String nhap_hang;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hanh_dong;
+	
+	public double tien_nhap_hang;
 	
 	public double chieu_cao;
 	public double chieu_dai;
@@ -110,6 +119,7 @@ public class SanPham {
 	
 	@ManyToOne
 	@JoinColumn(name = "thuong_hieuID")
+	@JsonBackReference
 	public ThuongHieu thuonghieu;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)

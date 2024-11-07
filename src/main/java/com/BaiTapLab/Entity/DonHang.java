@@ -33,34 +33,41 @@ public class DonHang {
 	
 	public LocalDate thoi_gianXN;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String dia_chi;
-	
 	public String so_dien_thoai;
+	
+	public String hinh_anh;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ghi_chu;
 	
 	public double phi_ship;
-
+	
+	public double tong_tien;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hanh_dong;
 	
 	@OneToMany(mappedBy = "donhang", cascade = CascadeType.ALL)
-	@JsonIgnore
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonIgnore
 	public List<DonHangChiTiet> donhangchitiet;
 	
     @ManyToOne
     @JoinColumn(name = "accountID")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(value="users")
     public Users users;
     
     @ManyToOne
     @JoinColumn(name = "voucherID")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(value="voucher",access = JsonProperty.Access.READ_ONLY)
     public Voucher voucher;
     
     @ManyToOne
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JoinColumn(name = "dia_chiID")
+    @JsonProperty(value="users",access = JsonProperty.Access.READ_ONLY)
     public DiaChi diachi;
+    
+    @ManyToOne
+    @JoinColumn(name = "phuong_thucTTID")
+    public PhuongThucTT phuongthuctt;
 }

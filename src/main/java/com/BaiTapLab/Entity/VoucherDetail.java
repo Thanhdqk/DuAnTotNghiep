@@ -2,8 +2,6 @@ package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Entity;
@@ -25,11 +23,11 @@ public class VoucherDetail {
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
-	
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public Users users;
 	
 	@ManyToOne
 	@JoinColumn(name = "voucherID")
-	
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public Voucher voucher;
 }

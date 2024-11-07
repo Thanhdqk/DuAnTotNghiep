@@ -14,7 +14,4 @@ public interface YeuthichRepository extends JpaRepository<YeuThich, Integer> {
 	
 	@Query("SELECT y FROM YeuThich y WHERE y.sanpham.san_phamId = ?1 AND y.users.accountID = ?2")
 	YeuThich Check(String idsp,String iduser);
-
 }
-
-

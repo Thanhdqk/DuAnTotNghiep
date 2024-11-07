@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BaiTapLab.Entity.SanPham;
+import com.BaiTapLab.Repository.SanphamRepository;
 import com.BaiTapLab.Service.SanPhamService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
@@ -20,6 +22,8 @@ public class RescontrollerSanPham {
 
 	@Autowired
 	SanPhamService SanPhamService;
+	@Autowired
+	SanphamRepository repo;
 
 	// tìm kiếm sản phẩm theo tuần mới nhất
 	@GetMapping("FindProductThisWeek")
@@ -128,6 +132,12 @@ public class RescontrollerSanPham {
 	@GetMapping("Product/FindbySosao5")
 	public List<SanPham> FindbySosao1() {
 		return SanPhamService.findSanPhamByTotalSoSaoEquals5();
+	}
+
+	@GetMapping("Product/findall")
+	@ResponseBody
+	public List<SanPham> getall() {
+		return repo.findAll() ;
 	}
 
 }

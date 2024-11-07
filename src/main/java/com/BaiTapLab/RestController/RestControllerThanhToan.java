@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -73,15 +74,20 @@ public class RestControllerThanhToan {
 	@RequestMapping(value = "/createpayment", method = RequestMethod.POST, produces = "application/json; charset=utf-8", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String postMethodName(@RequestBody DonHang donhang, @RequestParam("userid") String userid,
 			@RequestParam("spid") List<String> productids, @RequestParam("quantity") List<String> quantity,
-			@RequestParam("total") String totalfee, @RequestParam("method") String paymentmethod)
+			@RequestParam("total") String totalfee, @RequestParam("method") String paymentmethod,@RequestParam("paypalid")String paypalid)
 			throws UnsupportedEncodingException {
-
+		if (paymentmethod.equals("2")) {
+			donhang.setDon_hangid("dh-"+paypalid);
+		} else {
+			donhang.setDon_hangid(getnew_donhangId() != null ? getnew_donhangId() : "dh001");
+		}
+		
 		ajaxServlet vnpay = new ajaxServlet();
-
-		donhang.setDon_hangid(getnew_donhangId());
-
+		
 		donhang.setDiachi(diaChiRepository.findbyUserid(userid));
-		donhang.setUsers(usersRepository.findByAccountID(userid));
+		System.out.println(donhang.getPhuongthuctt().getPhuong_thucTTID());
+
+		System.out.println("dh: " + donhang.toString());
 
 		List<DonHangChiTiet> list_dhct = new ArrayList<DonHangChiTiet>();
 		for (int i = 0; i < productids.size(); i++) {
@@ -92,14 +98,12 @@ public class RestControllerThanhToan {
 			dhct.setTong_tien(Double.parseDouble(totalfee));
 			list_dhct.add(dhct);
 		}
-
 		System.out.println(vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee));
 		String url = vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee);
 		System.out.println(list_dhct.get(0));
 		System.out.println("Đơn hàng" + donhang.toString());
 		System.out.println(productids);
 		System.out.println(quantity);
-
 		try {
 			donHangRepository.save(donhang);
 			for (DonHangChiTiet donHangChiTiet : list_dhct) {
@@ -115,23 +119,41 @@ public class RestControllerThanhToan {
 			e.printStackTrace();
 		}
 
-		if (paymentmethod.equals("2")) {
-			return vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee);
-		}
-
-		return url;
+		return null;
 	}
 
 	public String getnew_donhangId() {
-		DonHang dh = donHangRepository.findlastedDH();
-		String substring = dh.getDon_hangid().substring(Math.max(dh.getDon_hangid().length() - 1, 0));
-		int id = Integer.parseInt(substring) + 1;
-		String.valueOf(id).length();
-		String newid = dh.getDon_hangid().substring(
-				Math.max(dh.getDon_hangid().length() - String.valueOf(id).length(), String.valueOf(id).length()))
-				+ String.valueOf(id);
 		String idtemp = "dh0";
+		int id = 0;
+		try {
+			if (donHangRepository.findlastedDH() == null) {
+				return "dh001";
+			} else {
+				DonHang dh = donHangRepository.findlastedDH();
+				String substring = dh.getDon_hangid().substring(Math.max(dh.getDon_hangid().length() - 1, 0));
+				id = Integer.parseInt(substring) + 1;
+				String.valueOf(id).length();
+				String newid = dh.getDon_hangid().substring(Math
+						.max(dh.getDon_hangid().length() - String.valueOf(id).length(), String.valueOf(id).length()))
+						+ String.valueOf(id);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return idtemp + String.valueOf(id);
+	}
+	@PutMapping("updatestatus")
+	public void UpdateStatus(@RequestParam("id")String paypalid) {
+	    try {
+	    	System.out.println("id :"+paypalid);
+			DonHang dh = donHangRepository.findById(paypalid).get();
+			System.out.println("find dh"+dh);
+			dh.setTrang_thai("Đã thanh toán");
+			donHangRepository.save(dh);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

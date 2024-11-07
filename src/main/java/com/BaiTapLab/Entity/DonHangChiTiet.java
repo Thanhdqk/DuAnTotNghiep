@@ -1,9 +1,5 @@
 package com.BaiTapLab.Entity;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Entity;
@@ -14,11 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "donhangchitiet")
 public class DonHangChiTiet {
@@ -29,14 +22,14 @@ public class DonHangChiTiet {
 	
 	public int so_luong;
 	public double tong_tien;
-	
+
 	@ManyToOne
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JoinColumn(name = "don_hangid")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public DonHang donhang;
 	
 	@ManyToOne
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JoinColumn(name = "san_phamId")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public SanPham sanpham;
 }

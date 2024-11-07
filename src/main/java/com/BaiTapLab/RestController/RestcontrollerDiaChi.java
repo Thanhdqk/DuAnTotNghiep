@@ -14,40 +14,41 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class RestcontrollerDiaChi {
-	
+
 	@Autowired
 	DiaChiService DiaChiService;
-	
+
 	@Autowired
 	UsersRepository UsersRepository;
-	
+
 	@GetMapping("FindDiaChiByID")
 	public List<DiaChi> FindDiaChiByID(@RequestParam("id") String id) {
-		
-		
-		return  DiaChiService.FindDiaChiByID(id);
-	}
-	
-	
-	 @PostMapping("DiaChi/Add")
-	    public DiaChi addAddress(@RequestParam String name,@RequestParam String phone,@RequestParam String address,@RequestParam String iduser) {
-	       
-		 Users user = UsersRepository.findByAccountID(iduser);
-	      DiaChi diachi = new DiaChi();
-	      diachi.setDia_chi(address);
-	      diachi.setUsers(user);
 
-	        return DiaChiService.AddDiaChi(diachi);
-	    }
-	 
-	 @GetMapping("FindUserByid")
-		public Users getMethodName(@RequestParam String id) {
-			return UsersRepository.findByAccountID(id);
-		}
+		return DiaChiService.FindDiaChiByID(id);
+	}
+
+	@PostMapping("DiaChi/Add")
+	public DiaChi addAddress(@RequestParam String name, @RequestParam String phone, @RequestParam String address,
+			@RequestParam String iduser, @RequestParam String province, @RequestParam String district,
+			@RequestParam String ward) {
+
+		Users user = UsersRepository.findByAccountID(iduser);
+		DiaChi diachi = new DiaChi();
+		diachi.setDia_chi(address);
+		diachi.setUsers(user);
+		diachi.setThanh_pho(province);
+		diachi.setQuan(district);
+		diachi.setPhuong(ward);
+
+		return DiaChiService.AddDiaChi(diachi);
+	}
+
+	@GetMapping("FindUserByid")
+	public Users getMethodName(@RequestParam String id) {
+		return UsersRepository.findByAccountID(id);
+	}
 
 }
-

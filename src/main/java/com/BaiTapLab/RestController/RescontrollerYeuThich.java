@@ -60,7 +60,7 @@ public class RescontrollerYeuThich {
 			return null;
 		} else {
 			LocalDate now = LocalDate.now();
-			yt.setNgay_tao(now);
+			
 			yt.setSanpham(sp);
 			yt.setUsers(us);
 			return YeuThichService.ADD(yt);

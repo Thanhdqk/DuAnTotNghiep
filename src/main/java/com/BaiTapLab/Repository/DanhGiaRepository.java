@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.BaiTapLab.Entity.DanhGia;
 
-public interface DanhGiaRepository extends JpaRepository<DanhGia, String> {
+public interface DanhGiaRepository extends JpaRepository<DanhGia, Integer> {
 	
 	@Query("SELECT d FROM DanhGia d WHERE d.sanpham.san_phamId = ?1")
 	List<DanhGia > findDangGiaByidSanPham(String id);

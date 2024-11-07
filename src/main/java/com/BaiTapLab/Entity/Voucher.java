@@ -24,11 +24,17 @@ import lombok.Setter;
 @Table(name = "voucher")
 public class Voucher {
 	@Id
-	public String voucherID;
+	public String voucherID; // Cho cái này tự tăng
 	
-	public String so_tien_giam;
+	public String ma_voucher;
+	
+	public int so_tien_giam;
+	
+	public int don_hang_toi_thieu;
 	
 	public String hinh_anh;
+	
+	public LocalDate ngay_tao;
 	
 	public LocalDate han_su_dung;
 	
@@ -42,6 +48,12 @@ public class Voucher {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String trang_thai_xoa;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hanh_dong;
+	
 	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
 	@JsonIgnore
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -52,5 +64,19 @@ public class Voucher {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<VoucherDetail> voucherdetail;
 	
-	public int don_hang_toi_thieu;
+	@Override
+    public String toString() {
+        return "Voucher{" +
+                "voucherID='" + voucherID + '\'' +
+                ", so_tien_giam='" + so_tien_giam + '\'' +
+                ", don_hang_toi_thieu='" + don_hang_toi_thieu + '\'' +
+                ", hinh_anh='" + hinh_anh + '\'' +
+                ", ngay_tao=" + ngay_tao +
+                ", han_su_dung=" + han_su_dung +
+                ", so_luot_SD=" + so_luot_SD +
+                ", so_luong=" + so_luong +
+                ", dieu_kien='" + dieu_kien + '\'' +
+                ", hoat_dong='" + hoat_dong + '\'' +
+                '}';
+    }
 }

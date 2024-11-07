@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,14 +24,19 @@ public class Banner {
 	
 	public String hinh_anh;
 	
+	public LocalDate ngay_tao;
+	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String trnag_thai_xoa;
+	public String trang_thai_xoa;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hanh_dong;
 	
 	@OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
-	 @JsonManagedReference
+	@JsonIgnore
 	public List<DanhMuc> danhmuc;
 	
 	@ManyToOne

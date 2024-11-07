@@ -12,23 +12,33 @@ import com.BaiTapLab.Service.PopupService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class RescontrollerPopup {
 	@Autowired
 	PopupService PopupService;
-	
+	@Autowired
+	PopupRepository repo;
+
 	@GetMapping("FindAllPopUp")
+
 	public List<Popup> getMethodName() {
 		return PopupService.FindALL();
 	}
-	
+
 	@GetMapping("FindAllPopUpSpare")
 	public List<Popup> sparegetMethodName(@RequestParam("id") String id) {
 		return PopupService.FindALLSpare("PopUp_1");
 	}
-	
+
+	@GetMapping("all")
+	@ResponseBody
+	public List<Popup> all1() {
+		
+		return repo.findAll();
+
+	}
 
 }

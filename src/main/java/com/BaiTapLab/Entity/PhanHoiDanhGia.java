@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -22,6 +23,9 @@ public class PhanHoiDanhGia {
 	public String noi_dung;
 	
 	public LocalDate ngay_tao;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hanh_dong;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

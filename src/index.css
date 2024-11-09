@@ -220,7 +220,7 @@ header {
   background-color: #fff;
 }
 
-input[type="text"] {
+.input-img {
   max-width:  350px;
   min-width: 100px;
 }

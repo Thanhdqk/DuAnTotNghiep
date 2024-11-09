@@ -26,6 +26,7 @@ const Banner = () => {
     const ListAllBanner = async()=>{
       const res = await axios({url:'http://localhost:8080/FindAllBanner',method:'GET'})
       const api = ListAll(res.data);
+      console.log("banner",res.data)
       dispatch(api);
     }
 

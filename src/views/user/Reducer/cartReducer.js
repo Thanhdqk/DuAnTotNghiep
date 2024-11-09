@@ -296,7 +296,7 @@ const cartReducer = createSlice({
             const { action: decreaseAction, data, index } = action.payload;
             if (decreaseAction === 'remove') {
                 if (index !== -1) {
-                    console.log('ádsadsa',index)
+                    
                     state.ListSpthanhtoan.splice(index, 1); // Xóa sản phẩm khỏi danh sách thanh toán
                 }
                 state.CartDatabase = data; // Cập nhật CartDatabase sau khi xóa

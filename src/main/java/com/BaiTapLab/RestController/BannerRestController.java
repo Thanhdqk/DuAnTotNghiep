@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.Entity.Banner;
+import com.BaiTapLab.Entity.NhaCungCap;
+import com.BaiTapLab.Repository.BannerRepository;
 import com.BaiTapLab.Service.BannerService;
 
 @RestController
@@ -29,11 +31,24 @@ public class BannerRestController {
 
     @Autowired
     private BannerService bannerService;
-
+    
+    @Autowired
+    BannerRepository bannerRepository;
+    
     @GetMapping
     public List<Banner> getAllBanners() {
         return bannerService.getAllBanners();
     }
+    
+    @GetMapping("/delete/{id}")  
+    public void getAllAccountID(@PathVariable("id")String id) {
+  	bannerRepository.markAsDeleted(id);
+    }
+    @GetMapping("/back/{id}")
+    public void back(@PathVariable("id")String id) {
+    	bannerRepository.back(id);
+    }
+    
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createBanner(
@@ -60,7 +75,7 @@ public class BannerRestController {
         banner.setTrang_thai_xoa(trangThaiXoa);
         banner.setNgay_het_han(LocalDate.parse(ngayHetHan));
         banner.setNgay_tao(LocalDate.parse(ngayTao));
-
+        banner.setHanh_dong("Thêm");
         // Xử lý lưu ảnh nếu có
         if (hinhFile != null && !hinhFile.isEmpty()) {
             String filePath = IMAGE_DIR + File.separator + hinhFile.getOriginalFilename();
@@ -99,7 +114,7 @@ public class BannerRestController {
         Map<String, Object> response = new HashMap<>();
 
         // Tìm banner theo ID
-        Optional<Banner> existingBannerOpt = bannerService.getBannerById(bannerId);
+        Optional<Banner> existingBannerOpt = Optional.ofNullable(bannerService.getBannerById(bannerId));
         if (existingBannerOpt.isEmpty()) {
             response.put("message", "Banner không tồn tại!");
             return ResponseEntity.notFound().build();
@@ -111,6 +126,7 @@ public class BannerRestController {
         banner.setTrang_thai_xoa(trangThaiXoa);
         banner.setNgay_het_han(LocalDate.parse(ngayHetHan));
         banner.setNgay_tao(LocalDate.parse(ngayTao));
+        banner.setHanh_dong("Cập Nhật");
 
         // Xử lý lưu ảnh nếu có
         if (hinhFile != null && !hinhFile.isEmpty()) {

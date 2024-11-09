@@ -22,7 +22,9 @@ public class Voucher {
 	@Id
 	public String voucherID;
 	
-	public String so_tien_giam;
+	public int so_tien_giam;
+	
+	public int don_hang_toi_thieu;
 	
 	public String hinh_anh;
 	
@@ -38,6 +40,9 @@ public class Voucher {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String trang_thai_xoa;
+	
 	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<DonHang> donhang;
@@ -45,4 +50,19 @@ public class Voucher {
 	@OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<VoucherDetail> voucherdetail;
+	
+	@Override
+    public String toString() {
+        return "Voucher{" +
+                "voucherID='" + voucherID + '\'' +
+                ", so_tien_giam='" + so_tien_giam + '\'' +
+                ", don_hang_toi_thieu='" + don_hang_toi_thieu + '\'' +
+                ", hinh_anh='" + hinh_anh + '\'' +
+                ", han_su_dung=" + han_su_dung +
+                ", so_luot_SD=" + so_luot_SD +
+                ", so_luong=" + so_luong +
+                ", dieu_kien='" + dieu_kien + '\'' +
+                ", hoat_dong='" + hoat_dong + '\'' +
+                '}';
+    }
 }

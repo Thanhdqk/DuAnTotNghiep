@@ -1,5 +1,6 @@
 package com.BaiTapLab.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.BaiTapLab.Entity.SanPham;
 import com.BaiTapLab.Service.SanPhamService;
+
+
+
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -230,8 +235,18 @@ public class RescontrollerSanPham {
 //                           start tìm theo thương hiệu
 		
 		@GetMapping("Product/findSanPhamByThuonghieuId")
-		public List<SanPham> getMethodName(@RequestParam("id") String id) {
+		public List<SanPham> getMethodName111(@RequestParam("id") String id) {
+			System.out.println("id"+id);
 			return SanPhamService.findSanPhamByThuonghieuId(id);
+		}
+		
+		
+		@GetMapping("Product/findAllBySan_phamIdIn")
+		public List<SanPham> findAllByDanhMucIds(@RequestParam String ids) {
+			List<String> idList = Arrays.asList(ids.split(","));
+		    System.out.println(idList);
+			  List<SanPham> sanPhams = SanPhamService.findAllByDanhMucIds(idList);
+			return sanPhams;
 		}
 		
 		

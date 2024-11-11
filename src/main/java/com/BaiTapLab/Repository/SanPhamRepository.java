@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.BaiTapLab.Entity.SanPham;
 
@@ -166,7 +167,9 @@ List<SanPham> findSanPhamByThuongHieuId(String id);
 //                   END Thương hiệu
 
 
-
+// tìm theo nhiều id
+@Query("SELECT s FROM SanPham s WHERE s.danhmuc.danh_mucId IN :ids")
+List<SanPham> findAllByDanhMucIds(@Param("ids") List<String> danhMucIds);
 
 
 }

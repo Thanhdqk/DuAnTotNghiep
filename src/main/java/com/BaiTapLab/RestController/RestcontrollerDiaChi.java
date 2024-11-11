@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BaiTapLab.Entity.DiaChi;
@@ -11,6 +12,7 @@ import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.DiaChiService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -48,4 +50,10 @@ public class RestcontrollerDiaChi {
 		public Users getMethodName(@RequestParam String id) {
 			return UsersRepository.findByAccountID(id);
 		}
+	 
+	 @DeleteMapping("DiaChi/Delete/{id}")
+	 public void DeleteDiaChi(@PathVariable("id")String id)
+	 {
+		 DiaChiService.Delete_DiaChi(id);
+	 }
 }

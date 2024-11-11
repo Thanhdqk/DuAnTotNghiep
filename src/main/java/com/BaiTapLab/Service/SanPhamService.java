@@ -24,7 +24,7 @@ public class SanPhamService {
 	
 	
 	public List<SanPham> FindProductThisWeek(){
-		LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
+		LocalDate sevenDaysAgo = LocalDate.now().minusDays(9);
 		
 		return SanphamRepository.findSanPhamLast7Days(sevenDaysAgo);
 	}
@@ -198,6 +198,11 @@ public class SanPhamService {
 	public List<SanPham> findSanPhamByThuonghieuId(String id)
 	{
 		return SanphamRepository.findSanPhamByThuongHieuId(id);
+	}
+	
+	public List<SanPham> findAllByDanhMucIds(List<String> ids )
+	{
+		 return SanphamRepository.findAllByDanhMucIds(ids);
 	}
 	
 }

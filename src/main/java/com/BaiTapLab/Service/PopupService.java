@@ -23,4 +23,14 @@ public class PopupService {
 	{
 		return  PopupRepository.findAllByIdNot(id);
 	}
+	
+	public void ADD_PopUP(Popup popup)
+	{
+		
+	}
+	
+	public void Delete(String id)
+	{
+		
+	}
 }

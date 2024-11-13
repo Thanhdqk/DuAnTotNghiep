@@ -19,6 +19,9 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
  @Query("SELECT s FROM SanPham s WHERE s.ngay_tao BETWEEN  ?1 AND CURRENT_DATE")
  List<SanPham> findSanPhamLast7Days(LocalDate now);
  
+ @Query("SELECT s FROM SanPham s WHERE s.ngay_tao BETWEEN  ?1 AND CURRENT_DATE")
+ List<SanPham> findSanPhamLast7DaysTOP10(LocalDate now,Pageable page);
+ 
 // @Query("SELECT s FROM SanPham s")
 // List<SanPham> findall();
  
@@ -28,6 +31,9 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
  // tìm các sản phẩm có khuyến mãi
  @Query("SELECT s FROM SanPham s WHERE s.phantram_GG > 0")
  List<SanPham> findSanPhamphantramGG();
+ 
+ @Query("SELECT s FROM SanPham s WHERE s.phantram_GG > 0")
+ List<SanPham> findSanPhamphantramGGTOP10(Pageable page);
  
  // tìm sản phẩm cùng loại categoty
  @Query("SELECT s FROM SanPham s where s.danhmuc.danh_mucId = ?1")
@@ -84,19 +90,207 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
  
  @Query("SELECT s FROM SanPham s WHERE s.ngay_tao BETWEEN ?1 AND CURRENT_DATE ORDER BY s.luot_mua DESC")
  List<SanPham> findSanPhamLast7DaysWith(LocalDate startDate);
- 
+ 												
+                                         //start  tìm sản phẩm theo giá default 						
  
 // tìm sản phẩm theo giá default 
  @Query("SELECT p FROM SanPham p  WHERE p.gia_goc BETWEEN  ?1 AND  ?2")
  List<SanPham> findSanPhamByPriceDefault(Long Default1 ,Long Default2);
  
+ // Theo price (khoảng giá) và danhmuc
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3")
+ List<SanPham> findSanPhamByPriceDefaultAndDanhMuc(Long Default1, Long Default2, String danhmuc);
+ 
+ //Theo price (khoảng giá) và text
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.ten_san_pham = ?3")
+ List<SanPham> findSanPhamByPriceDefaultAndText(Long Default1, Long Default2, String text);
+
+ //Theo price (khoảng giá) và isChecked (có giảm giá)
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.phantram_GG > 0")
+ List<SanPham> findSanPhamByPriceDefaultAndDiscount(Long Default1, Long Default2);
+ 
+ //Theo price (khoảng giá) và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND d.so_sao = ?3")
+ List<SanPham> findSanPhamByPriceDefaultAndSosao(Long Default1, Long Default2, int sosao);
+
+ //Theo price (khoảng giá), danhmuc, và text
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.ten_san_pham = ?4")
+ List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndText(Long Default1, Long Default2, String danhmuc, String text);
+
+ // Theo price (khoảng giá), danhmuc, và isChecked (có giảm giá)
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.phantram_GG > 0")
+ List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndDiscount(Long Default1, Long Default2, String danhmuc);
+
+ // Theo price (khoảng giá), danhmuc, và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND d.so_sao = ?4")
+ List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndSosao(Long Default1, Long Default2, String danhmuc, int sosao);
+
+ //Theo price (khoảng giá), text, và isChecked (có giảm giá)
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.ten_san_pham = ?3 AND p.phantram_GG > 0")
+ List<SanPham> findSanPhamByPriceDefaultAndTextAndDiscount(Long Default1, Long Default2, String text);
+ 
+ //Theo price (khoảng giá), text, và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.ten_san_pham = ?3 AND d.so_sao = ?4")
+ List<SanPham> findSanPhamByPriceDefaultAndTextAndSosao(Long Default1, Long Default2, String text, int sosao);
+ 
+ //Theo price (khoảng giá), isChecked (có giảm giá), và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.phantram_GG > 0 AND d.so_sao = ?3")
+ List<SanPham> findSanPhamByPriceDefaultAndDiscountAndSosao(Long Default1, Long Default2, int sosao);
+
+ //. Theo price (khoảng giá), danhmuc, text, và isChecked (có giảm giá)
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.ten_san_pham = ?4 AND p.phantram_GG > 0")
+ List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndTextAndDiscount(Long Default1, Long Default2, String danhmuc, String text);
+
+ //Theo price (khoảng giá), danhmuc, text, và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.ten_san_pham = ?4 AND d.so_sao = ?5")
+ List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndTextAndSosao(Long Default1, Long Default2, String danhmuc, String text, int sosao);
+
+ //Theo price (khoảng giá), danhmuc, isChecked (có giảm giá), và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.phantram_GG > 0 AND d.so_sao = ?4")
+ List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndDiscountAndSosao(Long Default1, Long Default2, String danhmuc, int sosao);
+
+ //Theo price (khoảng giá), text, isChecked (có giảm giá), và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.ten_san_pham = ?3 AND p.phantram_GG > 0 AND d.so_sao = ?4")
+ List<SanPham> findSanPhamByPriceDefaultAndTextAndDiscountAndSosao(Long Default1, Long Default2, String text, int sosao);
+
+ //Theo tất cả các điều kiện: price (khoảng giá), danhmuc, text, isChecked (có giảm giá), và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.ten_san_pham = ?4 AND p.phantram_GG > 0 AND d.so_sao = ?5")
+ List<SanPham> findSanPhamByAllConditionsWithPriceDefault(Long Default1, Long Default2, String danhmuc, String text, int sosao);
+
+ 
+                                         //end  tìm sản phẩm theo giá default 
+ 
+                                              //start tìm kiếm theo giá dưới 10000
+ 
 //tìm sản phẩm theo giá nhỏ hơn
  @Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1")
  List<SanPham> findSanPhamByPriceLess(Long price);
  
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2")
+ List<SanPham> findSanPhamByPriceLessHaveDanhMuc(Long price,String danhmuc);
+ 
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.ten_san_pham = ?2")
+ List<SanPham> findSanPhamByPriceLessHaveText(Long price,String text);
+ 
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.phantram_GG >0")
+ List<SanPham> findSanPhamByPriceLessHaveDiscount(Long price);
+ 
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND d.so_sao = ?2")
+ List<SanPham> findSanPhamByPriceLessHaveSosao(Long price,int sosao);
+ 
+// Theo price, danhmuc và text
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3")
+ List<SanPham> findSanPhamByPriceLessHaveDanhMucAndText(Long price, String danhmuc, String text);
+ 
+// Theo price, danhmuc và isChecked (có giảm giá)
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.phantram_GG > 0")
+ List<SanPham> findSanPhamByPriceLessHaveDanhMucAndDiscount(Long price, String danhmuc);
+
+// Theo price, danhmuc và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND d.so_sao = ?3")
+ List<SanPham> findSanPhamByPriceLessHaveDanhMucAndSosao(Long price, String danhmuc, int sosao);
+
+// Theo price, text và isChecked (có giảm giá)
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.ten_san_pham = ?2 AND p.phantram_GG > 0")
+ List<SanPham> findSanPhamByPriceLessHaveTextAndDiscount(Long price, String text);
+
+// . Theo price, text và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.ten_san_pham = ?2 AND d.so_sao = ?3")
+ List<SanPham> findSanPhamByPriceLessHaveTextAndSosao(Long price, String text, int sosao);
+ 
+// Theo price, isChecked (có giảm giá) và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.phantram_GG > 0 AND d.so_sao = ?2")
+ List<SanPham> findSanPhamByPriceLessHaveDiscountAndSosao(Long price, int sosao);
+
+// Theo price, danhmuc, text, và isChecked (có giảm giá)
+ @Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3 AND p.phantram_GG > 0")
+ List<SanPham> findSanPhamByPriceLessHaveDanhMucAndTextAndDiscount(Long price, String danhmuc, String text);
+
+// Theo price, danhmuc, text, và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3 AND d.so_sao = ?4")
+ List<SanPham> findSanPhamByPriceLessHaveDanhMucAndTextAndSosao(Long price, String danhmuc, String text, int sosao);
+
+// Theo price, danhmuc, isChecked (có giảm giá) và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.phantram_GG > 0 AND d.so_sao = ?3")
+ List<SanPham> findSanPhamByPriceLessHaveDanhMucAndDiscountAndSosao(Long price, String danhmuc, int sosao);
+
+// Theo price, text, isChecked (có giảm giá) và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.ten_san_pham = ?2 AND p.phantram_GG > 0 AND d.so_sao = ?3")
+ List<SanPham> findSanPhamByPriceLessHaveTextAndDiscountAndSosao(Long price, String text, int sosao);
+ 
+// Theo tất cả các điều kiện: price, danhmuc, text, isChecked (có giảm giá), và sosao
+ @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3 AND p.phantram_GG > 0 AND d.so_sao = ?4")
+ List<SanPham> findSanPhamByAllConditions(Long price, String danhmuc, String text, int sosao);
+ 
+ 							// end tìm kiếm theo giá dưới 10000
+ 								
+ 
+                            // start tìm sản phẩm theo giá lớn  hơn 100000
 //tìm sản phẩm theo giá lớn  hơn
 @Query("SELECT p FROM SanPham p WHERE p.gia_goc >= ?1")
 List<SanPham> findSanPhamByPriceMore(Long price);
+
+//Theo price lớn hơn và danhmuc
+@Query("SELECT p FROM SanPham p WHERE p.gia_goc >= ?1 AND p.danhmuc = ?2")
+List<SanPham> findSanPhamByPriceMoreAndDanhMuc(Long price, String danhmuc);
+
+//Theo price lớn hơn và text
+@Query("SELECT p FROM SanPham p WHERE p.gia_goc >= ?1 AND p.ten_san_pham = ?2")
+List<SanPham> findSanPhamByPriceMoreAndText(Long price, String text);
+
+//Theo price lớn hơn và isChecked (có giảm giá)
+@Query("SELECT p FROM SanPham p WHERE p.gia_goc >= ?1 AND p.phantram_GG > 0")
+List<SanPham> findSanPhamByPriceMoreAndDiscount(Long price);
+
+// Theo price lớn hơn và sosao
+@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc >= ?1 AND d.so_sao = ?2")
+List<SanPham> findSanPhamByPriceMoreAndSosao(Long price, int sosao);
+
+//Theo price lớn hơn, danhmuc và text
+@Query("SELECT p FROM SanPham p WHERE p.gia_goc >= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3")
+List<SanPham> findSanPhamByPriceMoreAndDanhMucAndText(Long price, String danhmuc, String text);
+
+//Theo price lớn hơn, danhmuc và isChecked (có giảm giá)
+@Query("SELECT p FROM SanPham p WHERE p.gia_goc >= ?1 AND p.danhmuc = ?2 AND p.phantram_GG > 0")
+List<SanPham> findSanPhamByPriceMoreAndDanhMucAndDiscount(Long price, String danhmuc);
+
+//Theo price lớn hơn, danhmuc và sosao
+@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc >= ?1 AND p.danhmuc = ?2 AND d.so_sao = ?3")
+List<SanPham> findSanPhamByPriceMoreAndDanhMucAndSosao(Long price, String danhmuc, int sosao);
+
+//Theo price lớn hơn, text và isChecked (có giảm giá)
+@Query("SELECT p FROM SanPham p WHERE p.gia_goc >= ?1 AND p.ten_san_pham = ?2 AND p.phantram_GG > 0")
+List<SanPham> findSanPhamByPriceMoreAndTextAndDiscount(Long price, String text);
+
+//Theo price lớn hơn, text và sosao
+@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc >= ?1 AND p.ten_san_pham = ?2 AND d.so_sao = ?3")
+List<SanPham> findSanPhamByPriceMoreAndTextAndSosao(Long price, String text, int sosao);
+
+//Theo price lớn hơn, isChecked (có giảm giá) và sosao
+@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc >= ?1 AND p.phantram_GG > 0 AND d.so_sao = ?2")
+List<SanPham> findSanPhamByPriceMoreAndDiscountAndSosao(Long price, int sosao);
+
+// Theo price lớn hơn, danhmuc, text, và isChecked (có giảm giá)
+@Query("SELECT p FROM SanPham p WHERE p.gia_goc >= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3 AND p.phantram_GG > 0")
+List<SanPham> findSanPhamByPriceMoreAndDanhMucAndTextAndDiscount(Long price, String danhmuc, String text);
+
+//Theo price lớn hơn, danhmuc, text, và sosao
+@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc >= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3 AND d.so_sao = ?4")
+List<SanPham> findSanPhamByPriceMoreAndDanhMucAndTextAndSosao(Long price, String danhmuc, String text, int sosao);
+
+//Theo price lớn hơn, danhmuc, isChecked (có giảm giá) và sosao
+@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc >= ?1 AND p.danhmuc = ?2 AND p.phantram_GG > 0 AND d.so_sao = ?3")
+List<SanPham> findSanPhamByPriceMoreAndDanhMucAndDiscountAndSosao(Long price, String danhmuc, int sosao);
+
+//Theo price lớn hơn, text, isChecked (có giảm giá) và sosao
+@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc >= ?1 AND p.ten_san_pham = ?2 AND p.phantram_GG > 0 AND d.so_sao = ?3")
+List<SanPham> findSanPhamByPriceMoreAndTextAndDiscountAndSosao(Long price, String text, int sosao);
+
+//Theo tất cả các điều kiện: price lớn hơn, danhmuc, text, isChecked (có giảm giá) và sosao
+@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc >= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3 AND p.phantram_GG > 0 AND d.so_sao = ?4")
+List<SanPham> findSanPhamByAllConditionsWithPriceMore(Long price, String danhmuc, String text, int sosao);
+
+                            //end tìm sản phẩm theo giá lớn  hơn 100000
  
 // tìm kiếm sản phẩn theo tên và số sao có GG
 @Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE d.so_sao = ?1 AND p.ten_san_pham LIKE %?2% AND p.phantram_GG >0")
@@ -128,7 +322,6 @@ List<SanPham> findSanPhamBySoSaoHaveDiscount(int sosao);
 
 
 //            tìm theo 5 SAO
-
 
 //tìm kiếm sản phẩn theo tên và số sao có GG
 @Query("SELECT p FROM SanPham p JOIN p.danhgia d GROUP BY p HAVING AVG(d.so_sao) = 5 AND p.ten_san_pham LIKE %?1% AND p.phantram_GG >0")

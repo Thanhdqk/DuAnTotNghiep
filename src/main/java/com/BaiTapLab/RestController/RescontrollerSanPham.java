@@ -33,6 +33,12 @@ public class RescontrollerSanPham {
 		
 		return SanPhamService.FindProductThisWeek();
 	}
+	
+	@GetMapping("FindProductThisWeekTOP10")
+	public List<SanPham> FindProductThisWeekTOP10() {
+		
+		return SanPhamService.FindProductThisWeekTOP10(PageRequest.of(0, 10));
+	}
 	// tìm kiếm các sản phẩm bán nhiều nhất
 	@GetMapping("FindProductTopSell")
 	public List<SanPham> FindProductTopSell() {
@@ -45,6 +51,12 @@ public class RescontrollerSanPham {
 	public List<SanPham> FindProductDiscount() {
 		
 		return SanPhamService.FindProductDiscount();
+	}
+	
+	@GetMapping("FindProductDiscountTOP10")
+	public List<SanPham> FindProductDiscountTOP10() {
+		
+		return SanPhamService.FindProductDiscountTOP10(PageRequest.of(0, 10));
 	}
 	
 	// tìm kiếm sản phẩm theo id sản phẩm
@@ -139,21 +151,133 @@ public class RescontrollerSanPham {
 		public List<SanPham> FindbySosao1() {
 			return SanPhamService.findSanPhamByTotalSoSaoEquals5();
 		}
-		// tìm theo giá
+		// start tìm theo giá
 		@GetMapping("Product/FindbyPrice")
 		public List<SanPham> FindbyPrice(@RequestParam("price1")Long Default1, @RequestParam("price2")Long Default2) {
 			return SanPhamService.FindSanPhamByGiaDefault(Default1, Default2);
 		}
+		
+		// end tìm theo giá
+		
 		// tìm theo giá nhỏ hơn
 		@GetMapping("Product/FindbyPriceLess")
 		public List<SanPham> FindbyPriceLess(@RequestParam("price")Long Default) {
 			return SanPhamService.FindSanPhamByPriceLESS(Default);
 		}
-		// tìm theo giá lớn hơn
+		
+//		@GetMapping("Product/FindByPriceLessAndCategory")
+//		public List<SanPham> findByPriceAndCategory(@RequestParam("price") Long price,
+//		                                            @RequestParam("category") String category) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveDanhMuc(price, category);
+//		}
+//		
+//		
+//		@GetMapping("Product/FindByPriceLessAndText")
+//		public List<SanPham> findByPriceAndText(@RequestParam("price") Long price,
+//		                                        @RequestParam("text") String text) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveText(price, text);
+//		}
+//		
+//		@GetMapping("Product/FindByPriceLessAndPromotion")
+//		public List<SanPham> findByPriceAndPromotion(@RequestParam("price") Long price) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveDiscount(price);
+//		}
+//		
+//		@GetMapping("Product/FindByPriceLessAndRating")
+//		public List<SanPham> findByPriceAndRating(@RequestParam("price") Long price,
+//		                                          @RequestParam("rating") int rating) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveSosao(price, rating);
+//		}
+//		
+//		@GetMapping("Product/FindByPriceLessAndCategoryAndText")
+//		public List<SanPham> findByPriceCategoryAndText(@RequestParam("price") Long price,
+//		                                                @RequestParam("category") String category,
+//		                                                @RequestParam("text") String text) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveDanhMucAndText(price, category, text);
+//		}
+//		
+//		@GetMapping("Product/FindByPriceLessAndCategoryAndPromotion")
+//		public List<SanPham> findByPriceCategoryAndPromotion(@RequestParam("price") Long price,
+//		                                                     @RequestParam("category") String category) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveDanhMucAndDiscount(price, category);
+//		}
+//
+//		@GetMapping("Product/FindByPriceLessAndCategoryAndRating")
+//		public List<SanPham> findByPriceCategoryAndRating(@RequestParam("price") Long price,
+//		                                                  @RequestParam("category") String category,
+//		                                                  @RequestParam("rating") int rating) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveDanhMucAndSosao(price, category, rating);
+//		}
+//
+//		@GetMapping("Product/FindByPriceLessAndTextAndPromotion")
+//		public List<SanPham> findByPriceTextAndPromotion(@RequestParam("price") Long price,
+//		                                                 @RequestParam("text") String text) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveTextAndDiscount(price, text);
+//		}
+//
+//		@GetMapping("Product/FindByPriceLessAndTextAndRating")
+//		public List<SanPham> findByPriceTextAndRating(@RequestParam("price") Long price,
+//		                                              @RequestParam("text") String text,
+//		                                              @RequestParam("rating") int rating) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveTextAndSosao(price, text, rating);
+//		}
+//
+//		@GetMapping("Product/FindByPriceLessAndPromotionAndRating")
+//		public List<SanPham> findByPricePromotionAndRating(@RequestParam("price") Long price,
+//		                                                   @RequestParam("rating") int rating) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveDiscountAndSosao(price, rating);
+//		}
+//
+//		@GetMapping("Product/FindByPriceLessAndCategoryAndTextAndPromotion")
+//		public List<SanPham> findByPriceCategoryTextAndPromotion(@RequestParam("price") Long price,
+//		                                                         @RequestParam("category") String category,
+//		                                                         @RequestParam("text") String text) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveDanhMucAndTextAndDiscount(price, category, text);
+//		}
+//
+//		@GetMapping("Product/FindByPriceLessAndCategoryAndTextAndRating")
+//		public List<SanPham> findByPriceCategoryTextAndRating(@RequestParam("price") Long price,
+//		                                                      @RequestParam("category") String category,
+//		                                                      @RequestParam("text") String text,
+//		                                                      @RequestParam("rating") int rating) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveDanhMucAndTextAndSosao(price, category, text, rating);
+//		}
+//
+//		@GetMapping("Product/FindByPriceLessAndCategoryAndPromotionAndRating")
+//		public List<SanPham> findByPriceCategoryPromotionAndRating(@RequestParam("price") Long price,
+//		                                                           @RequestParam("category") String category,
+//		                                                           @RequestParam("rating") int rating) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveDanhMucAndDiscountAndSosao(price, category, rating);
+//		}
+//
+//		@GetMapping("Product/FindByPriceLessAndTextAndPromotionAndRating")
+//		public List<SanPham> findByPriceTextPromotionAndRating(@RequestParam("price") Long price,
+//		                                                       @RequestParam("text") String text,
+//		                                                       @RequestParam("rating") int rating) {
+//		    return SanPhamService.findSanPhamByPriceLessHaveTextAndDiscountAndSosao(price, text, rating);
+//		}
+//
+//		@GetMapping("Product/FindByAllConditions")
+//		public List<SanPham> findByAllConditions(@RequestParam("price") Long price,
+//		                                         @RequestParam("category") String category,
+//		                                         @RequestParam("text") String text,
+//		                                         @RequestParam("rating") int rating) {
+//		    return SanPhamService.findSanPhamByAllConditions(price, category, text, rating);
+//		}
+		
+		
+		// end tìm theo giá nhỏ hơn
+		
+		// start tìm theo giá lớn hơn
+		
+		
 		@GetMapping("Product/FindbyPriceMore")
 		public List<SanPham> FindbyPriceMore(@RequestParam("price")Long Default) {
 			return SanPhamService.FindSanPhamByPriceMORE(Default);
 		}
+		
+		// end start tìm theo giá lớn hơn
+		
 		
 		// tìm sản phẩm theo số sao và tên có gg
 		@GetMapping("Product/FindSanPhamBySoSaoAndNameHaveDisCount")

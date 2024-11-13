@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.BaiTapLab.Entity.Banner;
 import com.BaiTapLab.Entity.DanhMuc;
+import com.BaiTapLab.Entity.HanhDong;
 import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.BannerRepository;
 import com.BaiTapLab.Repository.DanhmucRepository;
+import com.BaiTapLab.Repository.HanhDongRepository;
 import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.DanhmucService;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,6 +42,9 @@ public class RescontrollerDanhmuc {
 	
 	@Autowired 
 	BannerRepository BannerRepository;
+	
+	@Autowired
+	HanhDongRepository HanhDongRepository;
 	
 	@GetMapping("findAllCategory")
 	public List<DanhMuc> getMethodName() {
@@ -77,6 +82,7 @@ public class RescontrollerDanhmuc {
 		
 		List<String> ids = DanhmucRepository.findAllIdsDesc();
 		String newid = generateNewId(ids);
+		HanhDong hanhdong = new HanhDong();
 		
 	    try {
 	    	Users user = UsersRepository.findByAccountID(iduser);
@@ -89,7 +95,7 @@ public class RescontrollerDanhmuc {
 		    DanhMuc danhmuc = new DanhMuc();
 		    danhmuc.setBanner(banner2);
 		    danhmuc.setUsers(user);
-		    danhmuc.setHanh_dong("Thêm");
+		  
 		    danhmuc.setTrang_thai_xoa(null);
 		    
 		    danhmuc.setHinh_anh(image);
@@ -99,6 +105,9 @@ public class RescontrollerDanhmuc {
 		    danhmuc.setDanh_mucId(newid);
 		    System.out.println("sadasd"+newid);
 		    DanhmucService.ADD_DanhMuc(danhmuc);
+		    hanhdong.setDanhmuc(danhmuc);
+		    hanhdong.setTen_hanh_dong("Thêm");
+		    HanhDongRepository.save(hanhdong);
 		    System.out.println("sadsadsadasdasdsad");
 		} catch (Exception e) {
 			System.out.println(e);
@@ -118,7 +127,7 @@ public class RescontrollerDanhmuc {
 	
 		
 		
-		
+		HanhDong hanhdong = new HanhDong();
 	    try {
 	    	Users user = UsersRepository.findByAccountID(iduser);
 		    Optional<Banner> banner = BannerRepository.findById(bannerId);
@@ -130,7 +139,7 @@ public class RescontrollerDanhmuc {
 		    DanhMuc danhmuc = new DanhMuc();
 		    danhmuc.setBanner(banner2);
 		    danhmuc.setUsers(user);
-		    danhmuc.setHanh_dong("Cập nhật");
+		  
 		    danhmuc.setTrang_thai_xoa(null);
 		    
 		    danhmuc.setHinh_anh(image);
@@ -141,6 +150,9 @@ public class RescontrollerDanhmuc {
 		    System.out.println("sadasd"+id);
 		    DanhmucService.ADD_DanhMuc(danhmuc);
 		    System.out.println("sadsadsadasdasdsad");
+		    hanhdong.setDanhmuc(danhmuc);
+		    hanhdong.setTen_hanh_dong("Cập Nhật");
+		    HanhDongRepository.save(hanhdong);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -150,12 +162,24 @@ public class RescontrollerDanhmuc {
 	@DeleteMapping("DanhMuc/DeleteDanhMuc/{id}")
 	public void DeleteDanhmuc(@PathVariable("id") String  id)
 	{
+		HanhDong hanhdong = new HanhDong();
+		Optional<DanhMuc> danhmuc = DanhmucRepository.findById(id);
+		DanhMuc newdanhmuc= danhmuc.get();
+		hanhdong.setDanhmuc(newdanhmuc);
+		hanhdong.setTen_hanh_dong("Xóa");
+		HanhDongRepository.save(hanhdong);
 		DanhmucService.Delete_DanhMuc(id);
 	}
 	
 	@DeleteMapping("DanhMuc/BackDeleteDanhMuc/{id}")
 	public void backDeleteDanhmuc(@PathVariable("id") String  id)
 	{
+		HanhDong hanhdong = new HanhDong();
+		Optional<DanhMuc> danhmuc = DanhmucRepository.findById(id);
+		DanhMuc newdanhmuc= danhmuc.get();
+		hanhdong.setDanhmuc(newdanhmuc);
+		hanhdong.setTen_hanh_dong("Quay Lại");
+		HanhDongRepository.save(hanhdong);
 		DanhmucService.Back_DanhMuc(id);
 	}
 	

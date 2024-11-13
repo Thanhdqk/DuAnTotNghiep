@@ -60,8 +60,7 @@ public class SanPham {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String nhap_hang;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
+	
 	
 	public double tien_nhap_hang;
 	

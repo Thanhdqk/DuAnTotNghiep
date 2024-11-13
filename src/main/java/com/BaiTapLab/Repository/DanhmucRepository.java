@@ -26,13 +26,13 @@ public interface DanhmucRepository extends JpaRepository<DanhMuc, String> {
 	
 	@Modifying
     @Transactional
-	@Query("UPDATE DanhMuc d SET d.trang_thai_xoa ='Đã xóa' , d.hanh_dong = 'Xóa' WHERE d.danh_mucId = ?1")
+	@Query("UPDATE DanhMuc d SET d.trang_thai_xoa ='Đã xóa' WHERE d.danh_mucId = ?1")
 	void markDanhMucAsDeletedById(String id);
 	
 	
 	@Modifying
     @Transactional
-	@Query("UPDATE DanhMuc d SET d.trang_thai_xoa = NULL , d.hanh_dong = 'Khôi Phục' WHERE d.danh_mucId = ?1")
+	@Query("UPDATE DanhMuc d SET d.trang_thai_xoa = NULL WHERE d.danh_mucId = ?1")
 	void backDanhMucAsDeletedById(String id);
 	
 	
@@ -42,7 +42,7 @@ public interface DanhmucRepository extends JpaRepository<DanhMuc, String> {
 	@Query("SELECT d FROM DanhMuc d WHERE d.trang_thai_xoa = 'Đã xóa' ")
 	List<DanhMuc> findDanhMucByTrangThaiDeleted();
 	
-	@Query("SELECT d FROM DanhMuc d WHERE d.hanh_dong != '' ")
+	@Query("SELECT d FROM DanhMuc d")
 	List<DanhMuc> findDanhMucHanhDong();
 	
 	

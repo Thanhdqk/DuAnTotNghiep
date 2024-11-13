@@ -40,8 +40,7 @@ public class DonHang {
 	
 	public double tong_tien;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
+	
 	
 	@OneToMany(mappedBy = "donhang", cascade = CascadeType.ALL)
 	@JsonIgnore

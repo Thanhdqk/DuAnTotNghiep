@@ -29,8 +29,7 @@ public class Respone {
 	
 	public LocalDate ngay_tao;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
+	
 	
 	@OneToOne
     @JoinColumn(name = "feedbackID", referencedColumnName = "feedbackID")

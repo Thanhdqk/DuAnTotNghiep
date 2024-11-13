@@ -27,8 +27,7 @@ public class PhanHoiDanhGia {
 	
 	public LocalDate ngay_tao;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
+	
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

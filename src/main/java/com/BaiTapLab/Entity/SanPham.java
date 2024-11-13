@@ -3,7 +3,9 @@ package com.BaiTapLab.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -57,6 +59,9 @@ public class SanPham {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String nhap_hang;
 	
+	
+	public double tien_nhap_hang;
+	
 	public double chieu_cao;
 	public double chieu_dai;
 	public double chieu_rong;
@@ -70,19 +75,22 @@ public class SanPham {
 	public List<DonHangChiTiet> donhangchitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonManagedReference
 	public List<DanhGia> danhgia;
 	
-	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
-	public List<PhuongthucTTChiTiet> phuongthucTTChitiet;
+//	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+//	@JsonIgnore
+//	public List<PhuongthucTTChiTiet> phuongthucTTChitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference(value = "yeuthich-reference")
 	public List<YeuThich> yeuthich;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonManagedReference
 	public List<HinhAnh> hinhanh;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
@@ -90,13 +98,24 @@ public class SanPham {
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonManagedReference
 	public List<PhanHoiDanhGia> phanhoidanhgia;
+	
+//	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+//	//@JsonIgnore
+//	@JsonBackReference(value = "giohang-reference")
+//	public List<GioHang> giohang;
+	
+	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<GioHangChiTiet> giohangchitiet;
 	
 	@ManyToOne
 	@JoinColumn(name = "popupID")
+	@JsonBackReference(value = "popup-reference")
 	public Popup popup;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
@@ -108,4 +127,32 @@ public class SanPham {
 	@ManyToOne
 	@JoinColumn(name = "thuong_hieuID")
 	public ThuongHieu thuonghieu;
+	
+	@Override
+	public String toString() {
+	    return "SanPham{" +
+	            "san_phamId='" + san_phamId + '\'' +
+	            ", ten_san_pham='" + ten_san_pham + '\'' +
+	            ", ngay_tao=" + ngay_tao +
+	            ", gia_goc=" + gia_goc +
+	            ", gia_km=" + gia_km +
+	            ", mo_ta='" + mo_ta + '\'' +
+	            ", phantram_GG=" + phantram_GG +
+	            ", so_luong=" + so_luong +
+	            ", han_gg=" + han_gg +
+	            ", trang_thai_kho='" + trang_thai_kho + '\'' +
+	            ", luot_mua=" + luot_mua +
+	            ", hoat_dong='" + hoat_dong + '\'' +
+	            ", phe_duyet='" + phe_duyet + '\'' +
+	            ", trang_thai_xoa='" + trang_thai_xoa + '\'' +
+	            ", nhap_hang='" + nhap_hang + '\'' +
+	            ", tien_nhap_hang=" + tien_nhap_hang +
+	            ", chieu_cao=" + chieu_cao +
+	            ", chieu_dai=" + chieu_dai +
+	            ", chieu_rong=" + chieu_rong +
+	            ", khoi_luong=" + khoi_luong +
+	            ", ghi_chu='" + ghi_chu + '\'' +
+	            '}';
+	}
+
 }

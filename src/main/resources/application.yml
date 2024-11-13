@@ -5,7 +5,7 @@ server:
 # Connect SQL Server
 spring:
   datasource:
-    url: jdbc:sqlserver://localhost;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;
+    url: jdbc:sqlserver://localhost;databaseName=DuAnTotNghiep5;encrypt=true;trustServerCertificate=true;
     username: sa
     password: 123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver

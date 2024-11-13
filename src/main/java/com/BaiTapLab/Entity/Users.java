@@ -2,8 +2,7 @@ package com.BaiTapLab.Entity;
 
 import java.util.List;
 
-
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -41,6 +40,10 @@ public class Users {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String vi_pham;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String trang_thai_xoa;
+	
+	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonIgnore
     private List<Roles> roles;  
@@ -71,10 +74,6 @@ public class Users {
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
-	public List<LichSuTimKiem> lichsutimkiem;
-	
-	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
 	public List<DanhGia> danhgia;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
@@ -86,7 +85,8 @@ public class Users {
 	public List<VoucherDetail> voucherDetail;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	public List<YeuThich> yeuthich;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
@@ -94,7 +94,8 @@ public class Users {
 	public List<NhaCungCap> nhacungcap;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	public List<BaiDang> baidang;
 
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
@@ -102,7 +103,8 @@ public class Users {
 	public List<PhanHoiDanhGia> phanhoidanhgia;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	public List<DiaChi> diachi;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
@@ -112,4 +114,23 @@ public class Users {
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<ThuongHieu> thuonghieu;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	//@JsonIgnore
+	@JsonBackReference
+	public List<GioHang> giohang;
+	
+//	@Override
+//	public String toString() {
+//	    return "Users{" +
+//	            "accountID='" + accountID + '\'' +
+//	            ", password='" + password + '\'' +
+//	            ", hovaten='" + hovaten + '\'' +
+//	            ", hinh_anh='" + hinh_anh + '\'' +
+//	            ", so_dien_thoai='" + so_dien_thoai + '\'' +
+//	            ", hoat_dong='" + hoat_dong + '\'' +
+//	            ", vi_pham='" + vi_pham + '\'' +
+//	            '}';
+//	}
+
 }

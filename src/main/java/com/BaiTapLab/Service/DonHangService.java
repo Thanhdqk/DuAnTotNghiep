@@ -34,12 +34,18 @@ public class DonHangService {
             throw new RuntimeException("Voucher không còn hiệu lực hoặc đã hết lượt sử dụng!");
         }
 
-        double giamGia = Double.parseDouble(voucher.getSo_tien_giam());
-        donHang.setPhi_ship(Math.max(donHang.getPhi_ship() - giamGia, 0)); // Không để phi_ship < 0
+        // Sử dụng kiểu int cho giamGia
+        int giamGia = voucher.getSo_tien_giam();
+        
+        // Cập nhật phí ship, không để phí ship < 0
+        donHang.setPhi_ship(Math.max(donHang.getPhi_ship() - giamGia, 0));
         donHang.setVoucher(voucher);
 
+        // Cập nhật lượt sử dụng và số lượng voucher
         voucher.setSo_luot_SD(voucher.getSo_luot_SD() - 1);
         voucher.setSo_luong(voucher.getSo_luong() - 1);
+        
+        // Lưu voucher và đơn hàng
         voucherRepository.save(voucher);
         return donHangRepository.save(donHang);
     }
@@ -50,7 +56,8 @@ public class DonHangService {
 
         // Nếu có voucher đang áp dụng, trả phí ship về giá trị ban đầu
         if (donHang.getVoucher() != null) {
-            double phiShipBanDau = donHang.getPhi_ship() + Double.parseDouble(donHang.getVoucher().getSo_tien_giam());
+            int giamGia = donHang.getVoucher().getSo_tien_giam(); // lấy giá trị giảm giá là int
+            double phiShipBanDau = donHang.getPhi_ship() + giamGia; // sử dụng kiểu int cho giamGia
             donHang.setPhi_ship(phiShipBanDau);
             donHang.setVoucher(null); // Reset voucher đã áp dụng
         }
@@ -58,9 +65,8 @@ public class DonHangService {
         return donHangRepository.save(donHang);
     }
 
-    
     public DonHang findByID(String don_hangid) {
-		Optional<DonHang> th = donHangRepository.findById(don_hangid);
-		return th.orElseThrow(() -> new RuntimeException("Không tồn tại!"));
-	}
+        Optional<DonHang> th = donHangRepository.findById(don_hangid);
+        return th.orElseThrow(() -> new RuntimeException("Không tồn tại!"));
+    }
 }

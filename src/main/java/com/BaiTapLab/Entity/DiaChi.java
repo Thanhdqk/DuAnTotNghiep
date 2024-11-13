@@ -21,11 +21,20 @@ import lombok.Data;
 @Table(name = "diachi")
 public class DiaChi {
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    public int dia_chiID;
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	public int dia_chiID;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String dia_chi;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String phuong;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String quan;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String thanh_pho;
 	
 	@OneToMany(mappedBy = "diachi", cascade = CascadeType.ALL)
 	@JsonIgnore

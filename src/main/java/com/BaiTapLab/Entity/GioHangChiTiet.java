@@ -1,11 +1,5 @@
 package com.BaiTapLab.Entity;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,15 +11,15 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "yeuthich")
-public class YeuThich {
+@Table(name = "giohangchitiet")
+public class GioHangChiTiet {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) 
-    public int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    public int gio_hangct_id;
 	
 	@ManyToOne
-	@JoinColumn(name = "accountID")
-	public Users users;
+	@JoinColumn(name = "gio_hangid")
+	public GioHang giohang;
 	
 	@ManyToOne
 	@JoinColumn(name = "san_phamId")

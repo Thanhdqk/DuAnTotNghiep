@@ -1,5 +1,7 @@
 package com.BaiTapLab.Entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -18,10 +20,15 @@ public class BaiDang {
 	public String hinh_anh;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String tieu_de;
+	public String tieu_de_phu;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
+	public String tieu_de_chinh;
+	
+	@Column(columnDefinition = "NVARCHAR(500)")
 	public String noi_dung;
+	
+	public LocalDate ngay_tao;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
@@ -29,7 +36,23 @@ public class BaiDang {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;
 	
+	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
+	
+	@Override
+	public String toString() {
+	    return "BaiDang{" +
+	            "bai_dangID='" + bai_dangID + '\'' +
+	            ", hinh_anh='" + hinh_anh + '\'' +
+	            ", tieu_de_phu='" + tieu_de_phu + '\'' +
+	            ", tieu_de_chinh='" + tieu_de_chinh + '\'' +
+	            ", noi_dung='" + noi_dung + '\'' +
+	            ", ngay_tao=" + ngay_tao +
+	            ", hoat_dong='" + hoat_dong + '\'' +
+	            ", trang_thai_xoa='" + trang_thai_xoa + '\'' +
+	            ", users=" + (users != null ? users.getAccountID() : "null") + // Giả sử bạn muốn hiển thị tên người dùng
+	            '}';
+	}
 }

@@ -24,11 +24,14 @@ public class Banner {
 	
 	public String hinh_anh;
 	
+	public LocalDate ngay_tao;
+	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String trnag_thai_xoa;
+	public String trang_thai_xoa;
+	
 	
 	@OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
 	@JsonIgnore

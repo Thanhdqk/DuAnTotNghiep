@@ -4,7 +4,10 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,11 +19,13 @@ import lombok.Data;
 @Table(name = "phanhoidanhgia")
 public class PhanHoiDanhGia {
 	@Id
-	public String phan_hoiID;
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	public int phan_hoiID;
 	
 	public String noi_dung;
 	
 	public LocalDate ngay_tao;
+	
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

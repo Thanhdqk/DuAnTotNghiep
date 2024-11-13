@@ -23,20 +23,16 @@ public class Popup {
 	@Id
 	public String popupID;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String ten_san_pham;
-	
-	public double gia_cu;
-	
-	public double gia_moi;
-	
-	public int phan_tramGG;
-	
-	public String hinh_anh;
-	
 	public LocalDate ngay_tao;
 	
 	public LocalDate han_su_dung;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hoat_dong;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String trang_thai_xoa;
+	
 	
 	@OneToMany(mappedBy = "popup", cascade = CascadeType.ALL)
 	@JsonIgnore

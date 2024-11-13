@@ -42,9 +42,9 @@ export const Call_API_Products = () => {
     const turnonloading = setLoading('block');
     dispatch(turnonloading)
     const [ListProductThisWeekAPI, ListProductTopSaleAPI, ListProductDiscountAPI] = await Promise.all([
-      axios({ url: 'http://localhost:8080/FindProductThisWeek', method: 'GET' }),
+      axios({ url: 'http://localhost:8080/FindProductThisWeekTOP10', method: 'GET' }),
       axios({ url: 'http://localhost:8080/FindProductTopSell', method: 'GET' }),
-      axios({ url: 'http://localhost:8080/FindProductDiscount', method: 'GET' })
+      axios({ url: 'http://localhost:8080/FindProductDiscountTOP10', method: 'GET' })
      
       
     ]);

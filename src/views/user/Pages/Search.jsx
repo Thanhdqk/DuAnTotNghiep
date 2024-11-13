@@ -46,6 +46,47 @@ const Search = () => {
 
   };
 
+  const findBySoSao = async (sosao) => {
+
+
+    // Hàm để xây dựng URL động
+    const buildUrl = (isChecked, sosao, TextSearch, danhmuc) => {
+      let baseUrl = 'http://localhost:8080/Product/';
+      if (isChecked) {
+        if (TextSearch && danhmuc) {
+          return `${baseUrl}FindSanPhamBySoSaoAndDanhMucAndNameHaveDisCount?sosao=${sosao}&id=${danhmuc}&name=${TextSearch}`;
+        } else if (TextSearch) {
+          return `${baseUrl}FindSanPhamBySoSaoAndNameHaveDisCount?sosao=${sosao}&name=${TextSearch}`;
+        } else if (danhmuc) {
+          return `${baseUrl}FindSanPhamBySoSaoAndDanhMucHaveDisCount?sosao=${sosao}&id=${danhmuc}`;
+        } else {
+          return `${baseUrl}FindSanPhamBySoSaoHaveDiscount?sosao=${sosao}`;
+        }
+      } else {
+        if (TextSearch && danhmuc) {
+          return `${baseUrl}FindSanPhamBySoSaoAndDanhMucAndName?sosao=${sosao}&id=${danhmuc}&name=${TextSearch}`;
+        } else if (TextSearch) {
+          return `${baseUrl}FindSanPhamBySoSaoAndName?sosao=${sosao}&name=${TextSearch}`;
+        } else if (danhmuc) {
+          return `${baseUrl}FindSanPhamBySoSaoAndDanhMuc?sosao=${sosao}&id=${danhmuc}`;
+        } else {
+          return `${baseUrl}FindbySosao?sosao=${sosao}`;
+        }
+      }
+    };
+
+    // Xây dựng URL và thực hiện yêu cầu
+    const url = buildUrl(isChecked, sosao, TextSearch, danhmuc);
+    try {
+      const res = await axios({ url, method: "GET" });
+      console.log('Kết quả:', res.data);
+      dispatch(SetSoSao(sosao));
+      dispatch(ListProductSearch(res.data));
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu:', error);
+    }
+  }
+
   useEffect(() => {
     API();
     console.log('sad', isChecked)
@@ -64,7 +105,7 @@ const Search = () => {
 
 
 
-                if (TextSearch === '' && sosao==="") {
+                if (TextSearch === '' && sosao === "") {
                   try {
                     const res = await axios({ url: `http://localhost:8080/Product/FindByCategory?id=${danhmuc}`, method: 'GET' })
                     const productsearch = ListProductSearch(res.data)
@@ -77,7 +118,7 @@ const Search = () => {
 
 
                 }
-                if (TextSearch === '' && isChecked && sosao==="") {
+                if (TextSearch === '' && isChecked && sosao === "") {
                   try {
                     const res = await axios({ url: `http://localhost:8080/Product/FindbyDanhmucWithDiscount?id=${danhmuc}`, method: 'GET' })
                     const productsearch = ListProductSearch(res.data)
@@ -90,8 +131,8 @@ const Search = () => {
 
                   catch (error) { }
                 }
-               
-                
+
+
                 else {
                   try {
                     const res = await axios({ url: `http://localhost:8080/Product/FindbyNameandDanhmuc?id=${danhmuc}&name=${TextSearch}`, method: 'GET' })
@@ -120,36 +161,34 @@ const Search = () => {
 
                 if (checked) {
 
-                  if (danhmuc === '' && TextSearch !== '' && sosao ==="") {
+                  if (danhmuc === '' && TextSearch !== '' && sosao === "") {
                     const All = await axios({ url: `http://localhost:8080/Product/FindbyNameWithDiscount?name=${TextSearch}`, method: 'GET' });
                     dispatch(ListProductSearch(All.data));
                     console.log("dm rỗng")
                   }
 
-                  else if (TextSearch === '' && danhmuc !== '' && sosao ==="") {
+                  else if (TextSearch === '' && danhmuc !== '' && sosao === "") {
                     const All = await axios({ url: `http://localhost:8080/Product/FindbyDanhmucWithDiscount?id=${danhmuc}`, method: 'GET' });
                     dispatch(ListProductSearch(All.data));
                     console.log("search rỗng")
                   }
-                  else if(sosao !=="" && TextSearch === '' && danhmuc === '')
-                    {
-                      if(sosao == 5)
-                      {
-                        const All = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5HaveDiscount`, method: 'GET' });
-                        dispatch(ListProductSearch(All.data));
-                      }
-                      else{
-                        const All = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoHaveDiscount?sosao=${sosao}`, method: 'GET' });
-                        dispatch(ListProductSearch(All.data));
-                      }
+                  else if (sosao !== "" && TextSearch === '' && danhmuc === '') {
+                    if (sosao == 5) {
+                      const All = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5HaveDiscount`, method: 'GET' });
+                      dispatch(ListProductSearch(All.data));
                     }
+                    else {
+                      const All = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoHaveDiscount?sosao=${sosao}`, method: 'GET' });
+                      dispatch(ListProductSearch(All.data));
+                    }
+                  }
                   else if (TextSearch === '' && danhmuc === '' && sosao === '') {
                     const All = await axios({ url: `http://localhost:8080/FindProductDiscount`, method: 'GET' });
                     dispatch(ListProductSearch(All.data));
                     console.log("tất cả rỗng")
                   }
 
-                  
+
 
                   else {
                     const All = await axios({ url: `http://localhost:8080/Product/FindbyNameandDanhmucWithDiscount?id=${danhmuc}&name=${TextSearch}`, method: 'GET' });
@@ -199,61 +238,7 @@ const Search = () => {
               <input onClick={async () => {
                 // start 1
 
-                if (isChecked) {
-                  if (TextSearch !== '' && danhmuc === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndNameHaveDisCount?sosao=1&name=${TextSearch}`, method: "GET" })
-                    console.log('res 1',res.data)
-                    dispatch(SetSoSao(1))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else if (danhmuc !== '' && TextSearch === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucHaveDisCount?sosao=1&id=${danhmuc}`, method: "GET" })
-                    console.log('res 2',res.data)
-                    dispatch(SetSoSao(1))
-                    dispatch(ListProductSearch(res.data));
-                  }
-
-                  else if (TextSearch !== '' && danhmuc !== "") {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucAndNameHaveDisCount?sosao=1&id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('res 3',res.data)
-                    dispatch(SetSoSao(1))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else {
-                    const res = await axios({ url: 'http://localhost:8080/Product/FindSanPhamBySoSaoHaveDiscount?sosao=1', method: "GET" })
-                    dispatch(SetSoSao(1))
-                    dispatch(ListProductSearch(res.data));
-                    alert("else")
-                  }
-
-                }
-                else {
-                  if (TextSearch !== ''  && danhmuc === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndName?sosao=1&name=${TextSearch}`, method: "GET" })
-                    console.log('res 1',res.data)
-                    dispatch(SetSoSao(1))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else if (danhmuc !== '' && TextSearch === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMuc?sosao=1&id=${danhmuc}`, method: "GET" })
-                    console.log('res 2',res.data)
-                    dispatch(SetSoSao(1))
-                    dispatch(ListProductSearch(res.data));
-                  }
-
-                  else if (TextSearch !== '' && danhmuc !== '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucAndName?sosao=1&id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('res 3',res.data)
-                    dispatch(SetSoSao(1))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else {
-                    const res = await axios({ url: 'http://localhost:8080/Product/FindbySosao?sosao=1', method: "GET" })
-                    dispatch(SetSoSao(1))
-                    dispatch(ListProductSearch(res.data));
-                    alert("else")
-                  }
-                }
+                findBySoSao(5)
 
                 // end 1
               }} className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" />
@@ -264,65 +249,9 @@ const Search = () => {
             </div>
             <div className="form-check">
               <input onClick={async () => {
-              
 
-                  // start 2
 
-                if (isChecked) {
-                  if (TextSearch !== '' && danhmuc === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndNameHaveDisCount?sosao=2&name=${TextSearch}`, method: "GET" })
-                    console.log('res 1',res.data)
-                    dispatch(SetSoSao(2))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else if (danhmuc !== '' && TextSearch === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucHaveDisCount?sosao=2&id=${danhmuc}`, method: "GET" })
-                    console.log('res 2',res.data)
-                    dispatch(SetSoSao(2))
-                    dispatch(ListProductSearch(res.data));
-                  }
-
-                  else if (TextSearch !== '' && danhmuc !== "") {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucAndNameHaveDisCount?sosao=2&id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('res 3',res.data)
-                    dispatch(SetSoSao(2))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else {
-                    const res = await axios({ url: 'http://localhost:8080/Product/FindSanPhamBySoSaoHaveDiscount?sosao=2', method: "GET" })
-                    dispatch(SetSoSao(2))
-                    dispatch(ListProductSearch(res.data));
-                    alert("else")
-                  }
-
-                }
-                else {
-                  if (TextSearch !== ''  && danhmuc === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndName?sosao=2&name=${TextSearch}`, method: "GET" })
-                    console.log('res 1',res.data)
-                    dispatch(SetSoSao(2))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else if (danhmuc !== '' && TextSearch === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMuc?sosao=2&id=${danhmuc}`, method: "GET" })
-                    console.log('res 2',res.data)
-                    dispatch(SetSoSao(2))
-                    dispatch(ListProductSearch(res.data));
-                  }
-
-                  else if (TextSearch !== '' && danhmuc !== '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucAndName?sosao=2&id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('res 3',res.data)
-                    dispatch(SetSoSao(2))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else {
-                    const res = await axios({ url: 'http://localhost:8080/Product/FindbySosao?sosao=2', method: "GET" })
-                    dispatch(SetSoSao(2))
-                    dispatch(ListProductSearch(res.data));
-                    alert("else")
-                  }
-                }
+                findBySoSao(2)
 
                 // end 2
 
@@ -335,62 +264,8 @@ const Search = () => {
             </div>
             <div className="form-check">
               <input onClick={async () => {
-                if (isChecked) {
-                  if (TextSearch !== '' && danhmuc === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndNameHaveDisCount?sosao=3&name=${TextSearch}`, method: "GET" })
-                    console.log('res 1',res.data)
-                    dispatch(SetSoSao(3))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else if (danhmuc !== '' && TextSearch === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucHaveDisCount?sosao=3&id=${danhmuc}`, method: "GET" })
-                    console.log('res 2',res.data)
-                    dispatch(SetSoSao(3))
-                    dispatch(ListProductSearch(res.data));
-                  }
 
-                  else if (TextSearch !== '' && danhmuc !== "") {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucAndNameHaveDisCount?sosao=3&id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('res 3',res.data)
-                    dispatch(SetSoSao(3))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else {
-                    const res = await axios({ url: 'http://localhost:8080/Product/FindSanPhamBySoSaoHaveDiscount?sosao=3', method: "GET" })
-                    dispatch(SetSoSao(3))
-                    dispatch(ListProductSearch(res.data));
-                    alert("else")
-                  }
-
-                }
-                else {
-                  if (TextSearch !== ''  && danhmuc === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndName?sosao=3&name=${TextSearch}`, method: "GET" })
-                    console.log('res 1',res.data)
-                    dispatch(SetSoSao(3))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else if (danhmuc !== '' && TextSearch === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMuc?sosao=3&id=${danhmuc}`, method: "GET" })
-                    console.log('res 2',res.data)
-                    dispatch(SetSoSao(3))
-                    dispatch(ListProductSearch(res.data));
-                  }
-
-                  else if (TextSearch !== '' && danhmuc !== '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucAndName?sosao=3&id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('res 3',res.data)
-                    dispatch(SetSoSao(3))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else {
-                    const res = await axios({ url: 'http://localhost:8080/Product/FindbySosao?sosao=3', method: "GET" })
-                    dispatch(SetSoSao(3))
-                    dispatch(ListProductSearch(res.data));
-                    alert("else")
-                  }
-                }
-
+                findBySoSao(3)
                 // end 3
 
               }} className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" />
@@ -405,66 +280,7 @@ const Search = () => {
             </div>
             <div className="form-check">
               <input onClick={async () => {
-                if (isChecked) {
-                  if (TextSearch !== '' && danhmuc === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndNameHaveDisCount?sosao=4&name=?${TextSearch}`, method: "GET" })
-                    console.log('res 1',res.data)
-                    dispatch(SetSoSao(4))
-                    dispatch(ListProductSearch(res.data));
-                    alert("danh muc")
-                  }
-                  else if (danhmuc !== '' && TextSearch === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucHaveDisCount?sosao=4&id=${danhmuc}`, method: "GET" })
-                    console.log('res 2',res.data)
-                    dispatch(SetSoSao(4))
-                    dispatch(ListProductSearch(res.data));
-                   
-                  }
-
-                  else if (TextSearch !== '' && danhmuc !== "") {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucAndNameHaveDisCount?sosao=4&id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('res 3',res.data)
-                    dispatch(SetSoSao(4))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else {
-                    const res = await axios({ url: 'http://localhost:8080/Product/FindSanPhamBySoSaoHaveDiscount?sosao=4', method: "GET" })
-                    dispatch(SetSoSao(4))
-                    dispatch(ListProductSearch(res.data));
-                    alert("else gg")
-                  }
-
-                }
-                else {
-                  if (TextSearch !== ''  && danhmuc === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndName?sosao=4&name=${TextSearch}`, method: "GET" })
-                    console.log('res 1',res.data)
-                    dispatch(SetSoSao(4))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else if (danhmuc !== '' && TextSearch === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMuc?sosao=4&id=${danhmuc}`, method: "GET" })
-                    console.log('res 2',res.data)
-                    dispatch(SetSoSao(4))
-                    dispatch(ListProductSearch(res.data));
-                  }
-
-                  else if (TextSearch !== '' && danhmuc !== '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoAndDanhMucAndName?sosao=4&id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('res 3',res.data)
-                    dispatch(SetSoSao(4))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  else {
-                    const res = await axios({ url: 'http://localhost:8080/Product/FindbySosao?sosao=4', method: "GET" })
-                    dispatch(SetSoSao(4))
-                    dispatch(ListProductSearch(res.data));
-                    alert("else")
-                  }
-                }
-
-                // end 3
-
+                findBySoSao(4)
               }} className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault4" />
               <label className="form-check-label" htmlFor="flexRadioDefault4">
                 <div>
@@ -481,20 +297,20 @@ const Search = () => {
                 if (isChecked) {
                   if (TextSearch !== '' && danhmuc === '') {
                     const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndNameHaveDisCount?name=${TextSearch}`, method: "GET" })
-                    console.log('res 1',res.data)
+                    console.log('res 1', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
                   else if (danhmuc !== '' && TextSearch === '') {
                     const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndDanhMucHaveDisCount?id=?${danhmuc}`, method: "GET" })
-                    console.log('res 2',res.data)
+                    console.log('res 2', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
 
                   else if (TextSearch !== '' && danhmuc !== "") {
                     const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndDanhMucAndNameHaveDisCount?id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('res 3',res.data)
+                    console.log('res 3', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
@@ -507,22 +323,22 @@ const Search = () => {
 
                 }
                 else {
-                  if (TextSearch !== ''  && danhmuc === '') {
+                  if (TextSearch !== '' && danhmuc === '') {
                     const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndName?name=${TextSearch}`, method: "GET" })
-                    console.log('res 1',res.data)
+                    console.log('res 1', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
                   else if (danhmuc !== '' && TextSearch === '') {
                     const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndDanhMuc?id=${danhmuc}`, method: "GET" })
-                    console.log('res 2',res.data)
+                    console.log('res 2', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
 
                   else if (TextSearch !== '' && danhmuc !== '') {
                     const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndDanhMucAndName?id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('res 3',res.data)
+                    console.log('res 3', res.data)
                     dispatch(SetSoSao(4))
                     dispatch(ListProductSearch(res.data));
                   }
@@ -530,7 +346,7 @@ const Search = () => {
                     const res = await axios({ url: 'http://localhost:8080/Product/FindbySosao5', method: "GET" })
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
-                    alert("else")
+
                   }
                 }
 
@@ -551,9 +367,40 @@ const Search = () => {
 
           <div className="form-check">
             <input onClick={async () => {
+
+              // let url = 'http://localhost:8080/Product/FindbyPriceLess?price=10000';
+
+              // // Cấu hình filters dựa trên điều kiện hiện tại
+              // const filters = {
+              //   danhmuc,
+              //   TextSearch,
+              //   isChecked,
+              //   sosao
+              // };
+
+
+              // if (filters.danhmuc) {
+              //   url += `&category=${filters.danhmuc}`;
+              // }
+              // if (filters.TextSearch) {
+              //   url += `&text=${filters.TextSearch}`;
+              // }
+              // if (filters.isChecked) {
+              //   url += `&promotion=true`;
+              // }
+              // if (filters.sosao) {
+              //   url += `&rating=${filters.sosao}`;
+              // }
+
+              // const res = await axios({ url, method: 'GET' });
+              // dispatch(ListProductSearch(res.data));
+              // dispatch(SetPrice(10000));
+
               const res = await axios({ url: `http://localhost:8080/Product/FindbyPriceLess?price=10000`, method: 'GET' })
               dispatch(ListProductSearch(res.data));
               dispatch(SetPrice(10000))
+
+
             }} className="form-check-input" type="radio" name="flexRadioDefault1" id="flexRadioDefault9" />
             <label className="form-check-label" htmlFor="flexRadioDefault9">
               <div>
@@ -565,6 +412,34 @@ const Search = () => {
 
           <div className="form-check">
             <input onClick={async () => {
+
+              // let url = "http://localhost:8080/Product/FindbyPrice?price1=50000&price2=100000";
+
+              // const filters = {
+              //   danhmuc,
+              //   TextSearch,
+              //   isChecked,
+              //   sosao
+              // };
+
+
+              // if (filters.danhmuc) {
+              //   url += `&category=${filters.danhmuc}`;
+              // }
+              // if (filters.TextSearch) {
+              //   url += `&text=${filters.TextSearch}`;
+              // }
+              // if (filters.isChecked) {
+              //   url += `&promotion=true`;
+              // }
+              // if (filters.sosao) {
+              //   url += `&rating=${filters.sosao}`;
+              // }
+
+              // const res = await axios({ url, method: 'GET' })
+              // dispatch(ListProductSearch(res.data));
+              // dispatch(SetPrice(10000))
+
               const res = await axios({ url: `http://localhost:8080/Product/FindbyPrice?price1=50000&price2=100000`, method: 'GET' })
               dispatch(ListProductSearch(res.data));
               dispatch(SetPrice(10000))
@@ -580,6 +455,34 @@ const Search = () => {
 
           <div className="form-check">
             <input onClick={async () => {
+
+              // let url = "http://localhost:8080/Product/FindbyPriceMore?price=50000";
+
+              // const filters = {
+              //   danhmuc,
+              //   TextSearch,
+              //   isChecked,
+              //   sosao
+              // };
+
+
+              // if (filters.danhmuc) {
+              //   url += `&category=${filters.danhmuc}`;
+              // }
+              // if (filters.TextSearch) {
+              //   url += `&text=${filters.TextSearch}`;
+              // }
+              // if (filters.isChecked) {
+              //   url += `&promotion=true`;
+              // }
+              // if (filters.sosao) {
+              //   url += `&rating=${filters.sosao}`;
+              // }
+
+              // const res = await axios({ url, method: 'GET' })
+              // dispatch(ListProductSearch(res.data));
+              // dispatch(SetPrice(10000))
+
               const res = await axios({ url: `http://localhost:8080/Product/FindbyPriceMore?price=50000`, method: 'GET' })
               dispatch(ListProductSearch(res.data));
               dispatch(SetPrice(10000))

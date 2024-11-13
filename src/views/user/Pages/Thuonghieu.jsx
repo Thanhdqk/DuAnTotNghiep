@@ -33,6 +33,7 @@ const getBase64 = (file) =>
   });
 
 const Thuonghieu = () => {
+  const [hanhdong,sethanhdong] = useState([]);
   const [thuonghieuData, setThuonghieuData] = useState([]);
   const [hoatDong, setHoatDong] = useState("Hoạt động");
   const [selectedThuongHieu, setSelectedThuongHieu] = useState({
@@ -80,10 +81,24 @@ const Thuonghieu = () => {
       </div>
     </button>
   );
-  const handleEdit = (thuonghieu) => {
-    setSelectedThuongHieu(thuonghieu);
-    setActiveKey("1");
-
+  const handleEdit = async (thuonghieu) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/edit/thuonghieu/${thuonghieu.thuong_hieuID}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setSelectedThuongHieu({
+          ...data,
+          accountID: data.users ? data.users.accountID : null,
+          nha_cung_capID: data.nhacungcap ? data.nhacungcap.nha_cung_capID : null
+        });
+        //console.log(data);
+        setActiveKey("1");
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin bài đăng:", error);
+    }
     // Chuyển đổi 'hinh_anh' thành mảng nếu cần
     const images = Array.isArray(thuonghieu.hinh_anh)
       ? thuonghieu.hinh_anh
@@ -100,6 +115,7 @@ const Thuonghieu = () => {
     }));
 
     setFileList(initialFileList);
+    
     console.log(thuonghieu);
   };
 
@@ -134,8 +150,32 @@ const Thuonghieu = () => {
     }
   };
 
+  const fetchHanhDongData = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/thuonghieu/gethanhdong");
+      const data = await response.json();
+      console.log("Dữ liệu là: ", data);
+      const formattedData = data.map((item) => ({
+        key: item.thuonghieu.thuong_hieuID,
+        thuong_hieuID: item.thuonghieu.thuong_hieuID,
+        ten_thuong_hieu: item.thuonghieu.ten_thuong_hieu,
+        ngay_tao: item.thuonghieu.ngay_tao,
+        hoat_dong: item.thuonghieu.hoat_dong,
+        trang_thai_xoa: item.thuonghieu.trang_thai_xoa,
+        hinh_anh: item.thuonghieu.hinh_anh,
+        hanh_dong: item.ten_HanhDong,
+        accountID: item.thuonghieu.users.accountID,
+        nha_cung_capID: item.thuonghieu.nhacungcap.nha_cung_capID
+      }));
+      sethanhdong(formattedData);
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu thương hiệu:", error);
+    }
+  };
+
   useEffect(() => {
     fetchThuongHieuData();
+    fetchHanhDongData();
   }, []);
 
   let thuonghieu = {};
@@ -158,7 +198,6 @@ const Thuonghieu = () => {
     for (const key in thuonghieu) {
       formData.append(key, thuonghieu[key]);
     }
-    formData.append("hanh_dong", "Thêm");
 
     // Sử dụng ref để lấy file
     fileList.forEach((file) => {
@@ -175,6 +214,7 @@ const Thuonghieu = () => {
         console.log("Thương hiệu đã được thêm thành công:", data);
         alert("Thêm thương hiệu thành công!");
         fetchThuongHieuData();
+        fetchHanhDongData()
         clear();
         console.log("URL ảnh:", data.imageUrl);
         console.log(selectedThuongHieu);
@@ -196,7 +236,6 @@ const Thuonghieu = () => {
       formData.append(key, thuonghieu[key]);
     }
 
-    formData.append("hanh_dong", "Cập nhật");
 
     // Nếu có hình ảnh mới, thêm vào formData
     fileList.forEach((file) => {
@@ -216,6 +255,7 @@ const Thuonghieu = () => {
         console.log("Thương hiệu đã được cập nhật thành công:", data);
         alert("Cập nhật thương hiệu thành công!");
         fetchThuongHieuData(); // Tải lại dữ liệu
+        fetchHanhDongData()
         clear();
       } else {
         const errorData = await response.json();
@@ -249,62 +289,62 @@ const Thuonghieu = () => {
     clear();
   };
 
-  const handleDeleteInput = (thuong_hieuID) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa voucher này?")) {
-      // Gọi API xóa voucher
-      deleteThuongHieuInput(thuong_hieuID);
-    }
-  };
+  // const handleDeleteInput = (thuong_hieuID) => {
+  //   if (window.confirm("Bạn có chắc chắn muốn xóa voucher này?")) {
+  //     // Gọi API xóa voucher
+  //     deleteThuongHieuInput(thuong_hieuID);
+  //   }
+  // };
 
-  const handleDeleteTable = (thuong_hieuID) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này?")) {
-      // Gọi API xóa voucher
-      deleteThuongHieuTable(thuong_hieuID);
-    }
-  };
+  // const handleDeleteTable = (thuong_hieuID) => {
+  //   if (window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này?")) {
+  //     // Gọi API xóa voucher
+  //     deleteThuongHieuTable(thuong_hieuID);
+  //   }
+  // };
 
-  const deleteThuongHieuInput = async () => {
-    thuonghieuChung();
-    try {
-      const response = await fetch(
-        `http://localhost:8080/thuonghieu/delete/${thuonghieu.thuong_hieuID}`,
-        {
-          method: "DELETE",
-        }
-      );
+  // const deleteThuongHieuInput = async () => {
+  //   thuonghieuChung();
+  //   try {
+  //     const response = await fetch(
+  //       `http://localhost:8080/thuonghieu/delete/${thuonghieu.thuong_hieuID}`,
+  //       {
+  //         method: "DELETE",
+  //       }
+  //     );
 
-      if (response.ok) {
-        alert("Thương hiệu đã được xóa thành công!");
-        fetchThuongHieuData();
-        clear();
-        // Cập nhật lại danh sách vouchers nếu cần
-      } else {
-        alert("Lỗi khi xóa thương hiệu.");
-      }
-    } catch (error) {
-      console.error("Lỗi khi gọi API:", error);
-    }
-  };
-  const deleteThuongHieuTable = async (thuong_hieuID) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/thuonghieu/delete/${thuong_hieuID}`,
-        {
-          method: "DELETE",
-        }
-      );
+  //     if (response.ok) {
+  //       alert("Thương hiệu đã được xóa thành công!");
+  //       fetchThuongHieuData();
+  //       clear();
+  //       // Cập nhật lại danh sách vouchers nếu cần
+  //     } else {
+  //       alert("Lỗi khi xóa thương hiệu.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Lỗi khi gọi API:", error);
+  //   }
+  // };
+  // const deleteThuongHieuTable = async (thuong_hieuID) => {
+  //   try {
+  //     const response = await fetch(
+  //       `http://localhost:8080/thuonghieu/delete/${thuong_hieuID}`,
+  //       {
+  //         method: "DELETE",
+  //       }
+  //     );
 
-      if (response.ok) {
-        alert("Thương hiệu đã được xóa thành công!");
-        fetchThuongHieuData();
-        // Cập nhật lại danh sách vouchers nếu cần
-      } else {
-        alert("Lỗi khi xóa thương hiệu.");
-      }
-    } catch (error) {
-      console.error("Lỗi khi gọi API:", error);
-    }
-  };
+  //     if (response.ok) {
+  //       alert("Thương hiệu đã được xóa thành công!");
+  //       fetchThuongHieuData();
+  //       // Cập nhật lại danh sách vouchers nếu cần
+  //     } else {
+  //       alert("Lỗi khi xóa thương hiệu.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Lỗi khi gọi API:", error);
+  //   }
+  // };
 
   const handleReload = async (thuong_hieuID) => {
     try {
@@ -318,6 +358,7 @@ const Thuonghieu = () => {
       if (response.ok) {
         alert("Phục hồi thương hiệu thành công!");
         fetchThuongHieuData(); // Tải lại dữ liệu thương hiệu
+        fetchHanhDongData()
       } else {
         alert("Lỗi khi phục hồi thương hiệu.");
       }
@@ -338,6 +379,7 @@ const Thuonghieu = () => {
       if (response.ok) {
         alert("Thương hiệu đã được xóa thành công!");
         fetchThuongHieuData(); // Tải lại dữ liệu thương hiệu
+        fetchHanhDongData()
       } else {
         alert("Lỗi khi xóa thương hiệu.");
       }
@@ -347,9 +389,16 @@ const Thuonghieu = () => {
   };
 
   const handleDeleteThuongHieuToGarbageInput = (thuong_hieuID) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa voucher này?")) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này?")) {
       // Gọi API xóa voucher
       deleteThuongHieuToGarbageInput(thuong_hieuID);
+    }
+  };
+
+  const handleDeleteThuongHieuToGarbageTable = (thuong_hieuID) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này?")) {
+      // Gọi API xóa voucher
+      handleDeleteThuongHieuToGarbage(thuong_hieuID);
     }
   };
 
@@ -366,6 +415,7 @@ const Thuonghieu = () => {
       if (response.ok) {
         alert("Thương hiệu đã được xóa thành công!");
         fetchThuongHieuData(); // Tải lại dữ liệu thương hiệu
+        fetchHanhDongData()
         clear();
       } else {
         alert("Lỗi khi xóa thương hiệu.");
@@ -436,7 +486,7 @@ const Thuonghieu = () => {
           />
           <DeleteOutlined
             style={{ cursor: "pointer", color: "red" }}
-            onClick={() => handleDeleteThuongHieuToGarbage(record.thuong_hieuID)}
+            onClick={() => handleDeleteThuongHieuToGarbageTable(record.thuong_hieuID)}
           />
         </div>
       ),
@@ -501,10 +551,6 @@ const Thuonghieu = () => {
           <ReloadOutlined
             style={{ cursor: "pointer", color: "#1890ff" }}
             onClick={() => handleReload(record.thuong_hieuID)}
-          />
-          <DeleteOutlined
-            style={{ cursor: "pointer", color: "red" }}
-            onClick={() => handleDeleteTable(record.thuong_hieuID)}
           />
         </div>
       ),
@@ -819,7 +865,7 @@ const Thuonghieu = () => {
           children: (
             <div className="tab-content">
               <Table
-                dataSource={filteredNhatKyThuongHieuData}
+                dataSource={hanhdong}
                 columns={columns3}
                 pagination={false}
               />

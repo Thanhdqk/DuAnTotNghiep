@@ -145,20 +145,21 @@ const CrudCategory = () => {
 
   const fetchDataHanhDong = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/findAllCategoryHanhDong'); // Replace with actual API endpoint
+      const response = await axios.get('http://localhost:8080/HanhDong/FindDanhMuc'); // Replace with actual API endpoint
       const formattedData = response.data.map((item, index) => ({
         key: index,
-        categoryId: item.danh_mucId,
-        categoryName: item.ten_loaiDM,
-        createdDate: item.ngay_tao,
-        imageUrl: item.hinh_anh,
-        userId: item?.users?.accountID,
-        bannerId: item?.banner?.bannerId,
-        status: item.trang_thai_xoa == null ? "Chưa xóa" : "cc",
-        active: item.hoat_dong,
-        actions: item.hanh_dong
+        categoryId: item.danhMuc.danh_mucId,
+        categoryName: item.danhMuc.ten_loaiDM,
+        createdDate: item.danhMuc.ngay_tao,
+        imageUrl: item.danhMuc.hinh_anh,
+        userId: item.danhMuc?.users?.accountID,
+        bannerId: item.danhMuc?.banner?.bannerId,
+        status: item.danhMuc.trang_thai_xoa == null ? "Chưa xóa" : "cc",
+        active: item.danhMuc.hoat_dong,
+        actions: item.tenHanhDong
       }));
       setdatahanhdong(formattedData)
+      console.log('dataaaaaaa',formattedData)
     } catch (error) {
       console.error("Error fetching data:", error);
     }

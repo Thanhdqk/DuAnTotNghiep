@@ -41,7 +41,7 @@ const ListStore = ({ Products, checked }) => {
               position: 'relative',
               overflow: 'hidden',
               textDecoration: 'none',
-              opacity: product.so_luong === 0 ? 0.5 : 1,
+
             }}
           >
             {product.so_luong > 0 ?
@@ -152,21 +152,39 @@ const ListStore = ({ Products, checked }) => {
               </NavLink>}
 
             {product.so_luong === 0 && (
-              <div className='fw-bold'
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  color: 'red',
-                  fontWeight: 'bold',
-                  fontSize: '18px',
-                  zIndex: 2,
-                }}
-              >
-                Hết hàng
-              </div>
+              <>
+
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '0',
+                    left: '0',
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                    zIndex: 1,
+                  }}
+                ></div>
+
+                <div
+                  className="fw-bold"
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    color: 'red',
+                    fontWeight: 'bold',
+                    fontSize: '18px',
+                    zIndex: 2,
+                    opacity: 1,
+                  }}
+                >
+                  Hết hàng
+                </div>
+              </>
             )}
+
 
             {product.so_luong > 0 && (
               <div className="text-center d-flex flex-column justify-content-center borderRadiousRight">
@@ -200,7 +218,7 @@ const ListStore = ({ Products, checked }) => {
               position: 'relative',
               overflow: 'hidden',
               textDecoration: 'none',
-              opacity: product.so_luong === 0 ? 0.5 : 1,
+
             }}
           >
             {product.so_luong > 0 ? <NavLink
@@ -310,20 +328,36 @@ const ListStore = ({ Products, checked }) => {
             }
 
             {product.so_luong === 0 && (
-              <div className='fw-bold'
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  color: 'red',
-                  fontWeight: 'bold',
-                  fontSize: '18px',
-                  zIndex: 2,
-                }}
-              >
-                Hết hàng
-              </div>
+              <>
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '0',
+                    left: '0',
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                    zIndex: 1,
+                  }}
+                ></div>
+
+                <div
+                  className="fw-bold"
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    color: 'red',
+                    fontWeight: 'bold',
+                    fontSize: '18px',
+                    zIndex: 2,
+                    opacity: 1,
+                  }}
+                >
+                  Hết hàng
+                </div>
+              </>
             )}
 
             {product.so_luong > 0 ? (

@@ -133,37 +133,55 @@ const NewHeader = () => {
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <NavLink className="nav-link" to="/" activeClassName="active">
+                                <NavLink
+                                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                                    to="/"
+                                >
                                     Danh Mục
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link" to="/search" activeClassName="active">
+                                <NavLink
+                                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                                    to="/search"
+                                >
                                     Tìm kiếm
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link" to="/voucher" activeClassName="active">
+                                <NavLink
+                                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                                    to="/voucher"
+                                >
                                     Voucher
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link" to="/bai-dang" activeClassName="active">
+                                <NavLink
+                                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                                    to="/bai-dang"
+                                >
                                     Bài đăng
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link" to="/allproduct/FindProductTopSell" activeClassName="active">
+                                <NavLink
+                                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                                    to="/allproduct/FindProductTopSell"
+                                >
                                     Bán Chạy
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link" to="/allproduct/FindProductThisWeek" activeClassName="active">
+                                <NavLink
+                                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                                    to="/allproduct/FindProductThisWeek"
+                                >
                                     Hàng Mới
                                 </NavLink>
                             </li>
-
                         </ul>
+
                     </div>
                 </div>
                 {showPopup && (

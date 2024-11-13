@@ -679,14 +679,28 @@ header {
   margin: 0;
 }
 .disabled-div {
-  pointer-events: none;
-  opacity: 0.5; /* Làm mờ div để hiển thị rằng nó đang bị vô hiệu hóa */
+  pointer-events: none; /* Vô hiệu hóa tương tác cho div */
+  opacity: 0.5; /* Làm mờ toàn bộ div */
+  position: relative; /* Cần thiết để sử dụng z-index cho các phần tử con */
+}
+
+.disabled-div .btn-interactive,
+.disabled-div .out-of-stock {
+  pointer-events: auto; /* Cho phép tương tác với nút và phần tử "Hết hàng" */
+  opacity: 1; /* Đảm bảo các phần tử này không bị mờ */
+  z-index: 2; /* Đặt z-index để các phần tử này nổi lên trên */
+}
+
+.disabled-div .out-of-stock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: red;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 2;
 }
 
 
-.disabled-div .btn-interactive {
-  pointer-events: auto; /* Cho phép tương tác với nút */
-  opacity: 1; /* Đảm bảo nút không bị mờ */
-  z-index: 1; /* Đặt z-index nếu cần thiết */
-}
 

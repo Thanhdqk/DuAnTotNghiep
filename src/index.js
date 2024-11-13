@@ -38,6 +38,9 @@ import PostDetail from './views/user/Pages/PostDetail';
 import Voucher from './views/user/Pages/Voucher';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import GoogleLoginButton from './views/user/Pages/GoogleLoginButton ';
+import SearchByBanner from './views/user/Pages/SearchByBanner';
+import RenderLogin from './views/user/Pages/RenderLogin'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -62,7 +65,7 @@ root.render(
           <Route path='allproduct/:kind' element={<AllProducts></AllProducts>}></Route>
 
           <Route path='product/danhmuc/:id' element={<SearchByDanhmuc></SearchByDanhmuc>}></Route>
-
+          <Route path='product/banner/:id' element={<SearchByBanner></SearchByBanner>}></Route>
           <Route path='Cart' element={<Cart></Cart>}></Route>
 
           <Route path='bai-dang' element={<PagePost></PagePost>}></Route>
@@ -70,6 +73,8 @@ root.render(
           <Route path='voucher' element={<Voucher></Voucher>}></Route>
           <Route path='Thanhtoan' element={<Thanhtoan></Thanhtoan>}></Route>
           <Route path='Sanphamyeuthich' element={<YeuThichSanPham></YeuThichSanPham>}></Route>
+          <Route path='google' element={<GoogleLoginButton></GoogleLoginButton>}></Route>
+          <Route path='success' element={<RenderLogin></RenderLogin>}></Route>
 
         </Route>
 

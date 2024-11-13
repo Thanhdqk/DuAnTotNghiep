@@ -1,17 +1,23 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { json, NavLink } from "react-router-dom";
-import { Checkbox, Button, Modal, Input } from 'antd';
+import { Checkbox, Button, Modal, Input, Select } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, UserOutlined, PhoneOutlined, HomeOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from "react-redux";
 import { ClearCart, DecreaseItem, IncreaseItem, RemoveItem, AddSpthanhtoan, Clear, DecreaseSpthanhtoan, DeleteSpthanhtoan, IncreaseSpthanhtoan, RemoveSpthanhtoan, Thanhtoan, CallAPI_Cart, increaseItem, decreaseItem, removeItem, clearItem } from "../Reducer/cartReducer";
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 
 
 function Cart() {
     const userId = localStorage.getItem('account_id');
     const ListCart = useSelector(state => state.cart.CartDatabase);
+    const [listprovince, setlistprovince] = useState([]);
+    const [listDistrict, setlistDistrict] = useState([]);
+    const [Ward, setWard] = useState(null);
+    const [District, setDistrict] = useState(null);
+    const [listWard, setlistWard] = useState([]);
     const addressCurent = localStorage.getItem('addressCurent') ? JSON.parse(localStorage.getItem('addressCurent')) : null;
     const [change, setchange] = useState(0)
     const [showPopup, setShowPopup] = useState(false);
@@ -68,6 +74,71 @@ function Cart() {
         }
     }, [ListCart.gioHangChiTiet]);
 
+    const fechtProvince = async () => {
+        const res = await axios({
+            url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province', method: 'GET',
+            headers: {
+                "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
+            }
+        });
+        console.log(res.data.data);
+        setlistprovince(res.data.data);
+    }
+    const fechtWard = async (id) => {
+        console.log('id', id);
+        const res = await axios({
+            url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id', method: 'POST',
+            headers: {
+                "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
+                "Content-Type": "application/json"
+            }, data: JSON.stringify({ token: "b20158be-5619-11ef-8e53-0a00184fe694", district_id: id }),
+        });
+        console.log('ward', res.data.data);
+        setlistWard(res.data.data);
+    }
+
+
+
+
+    const fechdistrict = async (a, b, c, d) => {
+        const res2 = await axios({
+            url: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district', method: 'POST',
+            headers: {
+                "Token": "b20158be-5619-11ef-8e53-0a00184fe694",
+                "Content-Type": "application/json"
+            }, data: JSON.stringify({ token: "b20158be-5619-11ef-8e53-0a00184fe694", province_id: 202 }),
+        });
+        setlistDistrict(res2.data.data);
+        // setlistDistrict(res2.data.data);
+        // apishippingfee(getProvince(diachivalue, res1.data.data), getward(diachivalue, res2.data.data), a, b, c, d);
+    }
+
+    const onChange = (value) => {
+        const address = document.querySelector('input[id^=ward]').value;
+        console.log('ward selected', address)
+        console.log(`selected ${value}`);
+    };
+    const onChangeDistrict = (value) => {
+        console.log(value);
+        const address = document.querySelector('.ant-select-selection-item');
+        address.innerHTML = " ";
+        console.log(address);
+        fechtWard(value.value);
+        setDistrict(value.label + '-' + value.value);
+    };
+    const onChangeWard = (value) => {
+        try {
+            setWard(value.label + '-' + value.value);
+        }
+        catch (error) {
+            console.log(error)
+        }
+
+    };
+    const onSearch = (value) => {
+        console.log('search:', value);
+    };
+
 
     const handleCheckItemChange = (index, cart) => (e) => {
         const newCheckedItems = [...checkedItems];
@@ -108,7 +179,7 @@ function Cart() {
             const resList = await axios({ url: `http://localhost:8080/FindDiaChiByID?id=${userId}`, method: "GET" })
 
             SetaddressList(resList.data)
-
+            toast.success("Thêm địa chỉ thành công")
         } catch (error) {
 
         } finally {
@@ -185,7 +256,7 @@ function Cart() {
     useEffect(() => {
         console.log('cart run')
         InformationUser()
-
+        fechdistrict()
         dispatch(CallAPI_Cart(userId))
         const handleClickOutside = (event) => {
             if (!event.target.closest('.search-container') || !event.target.closest('.popup')) {
@@ -252,7 +323,21 @@ function Cart() {
 
                                                 localStorage.setItem('addressCurent', dataJSON);
                                                 SetaddressCurrent(JSON.parse(localStorage.getItem('addressCurent')))
+                                                toast.success("Sử dụng địa chỉ thành công")
                                             }} className="btn btn-primary m-3">Dùng địa chỉ này</button>
+
+
+                                            <button onClick={async () => {
+
+                                                if (window.confirm("Bạn có muốn xóa địa chỉ này không")) {
+                                                    // console.log('sadsadsad',index)
+                                                    await axios({ url: `http://localhost:8080/DiaChi/Delete/${address.dia_chiID}`, method: 'DELETE' })
+                                                    const resList = await axios({ url: `http://localhost:8080/FindDiaChiByID?id=${userId}`, method: "GET" })
+
+                                                    SetaddressList(resList.data)
+                                                    toast.success("Xóa địa chỉ thành công")
+                                                }
+                                            }} className="btn btn-danger m-3" ><DeleteOutlined /> </button>
                                         </div> : <>
                                         </>}
 
@@ -272,6 +357,43 @@ function Cart() {
                                     <label style={{ fontWeight: 'bold' }} htmlFor="">Số điện thoại <span style={{ color: 'red' }}>*</span></label>
                                     <Input size="large" name="phone" placeholder="Nhập số điện thoại" value={AddressCurrent?.users?.so_dien_thoai} prefix={<PhoneOutlined />} />
                                 </div>
+                                <div className="d-flex  " style={{ height: '40px' }}>
+                                    <div className="me-3">
+                                        <Select
+                                            style={{ width: '170px' }}
+                                            showSearch
+                                            placeholder="Chọn phường"
+                                            id="ward"
+                                            optionFilterProp="label"
+                                            onChange={onChangeWard}
+                                            labelInValue
+                                            onSearch={onSearch}
+
+                                            options={listWard.map((item) => ({ value: item.WardCode, label: item.WardName }))}
+                                            allowClear
+                                        />
+                                    </div>
+                                    <div className="me-3">
+                                        <Select
+                                            style={{ width: '170px' }}
+                                            showSearch
+                                            placeholder="Quận"
+                                            id="district"
+                                            optionFilterProp="label"
+                                            labelInValue
+                                            onChange={onChangeDistrict}
+                                            onSearch={onSearch}
+                                            options={listDistrict.map((item) => ({ value: item.DistrictID, label: item.DistrictName }))}
+                                        />
+                                    </div>
+                                    <div className="me-3">
+                                       <select className="form-select form-select-sm province" >
+                                            <option value={'202'} label="Thành phó Hồ Chí Minh" selected>Thành phố Hồ Chí Minh</option>
+                                        </select>
+                                    </div>
+
+
+                                </div>
                                 <div>
                                     <label style={{ fontWeight: 'bold' }} htmlFor="">Địa chỉ giao hàng <span style={{ color: 'red' }}>*</span></label>
                                     <Input size="large" name="address" required placeholder="Nhập địa chỉ giao hàng" prefix={<HomeOutlined />} />
@@ -287,6 +409,10 @@ function Cart() {
                                         <label style={{ fontWeight: 'bold' }} htmlFor="">Số điện thoại <span style={{ color: 'red' }}>*</span></label>
                                         <Input size="large" placeholder="Nhập số điện thoại" value={''} prefix={<PhoneOutlined />} />
                                     </div>
+
+
+
+
                                     <div>
                                         <label style={{ fontWeight: 'bold' }} htmlFor="">Địa chỉ giao hàng <span style={{ color: 'red' }}>*</span></label>
                                         <Input size="large" placeholder="Nhập địa chỉ giao hàng" prefix={<HomeOutlined />} />

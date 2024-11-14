@@ -26,11 +26,9 @@ import { Add, Restore, Edit, Delete } from "@mui/icons-material";
 import "./BannerManager.css";
 import Banner from './../../user/Pages/Banner';
 
-const SupplierManagement = () => {
+const BannerManager = () => {
   const userid = localStorage.getItem("account_id")
   console.log("dsadasdsa",userid)
-}
-const BannerManager = () => {
   const [tabValue, setTabValue] = useState(0);
   const [formData, setFormData] = useState({
     bannerId: "",
@@ -51,15 +49,22 @@ const BannerManager = () => {
   const [deletedFilterStatus, setDeletedFilterStatus] = useState("Tất cả");
   const [banners, setBanners] = useState([]);
   const [deletedBanners, setDeletedBanners] = useState([]);
+  const [listDataHd,setlistDataHD] = useState([])
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
   });
+  const apilistDataHd = async () =>{
+    const res = await axios({url:"http://localhost:8080/api/users/gethanhdong",method:"GET"})
+    setlistDataHD(res.data)
+    console.log('sdsadsadfas',res.data)
+  }
 
   useEffect(() => {
     fetchBanners();
     fetchDeletedBanners();
+    apilistDataHd();
   }, []);
 
   const fetchBanners = async () => {
@@ -250,8 +255,8 @@ const filteredDeletedBannerss = banners.filter((banner) => {
           <Tabs value={tabValue} onChange={handleTabChange} centered>
             <Tab label="Danh Sách Banner" />
             <Tab label="Thêm Banner" />
-            <Tab label="Lịch Sử Xóa" />
-            <Tab label="Nhật Kí Hoạt Động" />
+            <Tab onClick={()=>{fetchBanners()}} label="Lịch Sử Xóa" />
+            <Tab onClick={()=>{apilistDataHd()}} label=" Hành Động" />
           </Tabs>
         </AppBar>
 
@@ -640,7 +645,7 @@ const filteredDeletedBannerss = banners.filter((banner) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredPosts
+                  {listDataHd
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((post) => (
                       <TableRow key={post.bannerId}>
@@ -662,7 +667,7 @@ const filteredDeletedBannerss = banners.filter((banner) => {
                         <TableCell>
                         {post.users ? post.users.accountID : ""}
                       </TableCell>
-                        <TableCell>{post.hanh_dong}</TableCell>
+                        <TableCell>{post.tenHanhDong}</TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -672,7 +677,7 @@ const filteredDeletedBannerss = banners.filter((banner) => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={filteredPosts.length}
+              count={listDataHd.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}

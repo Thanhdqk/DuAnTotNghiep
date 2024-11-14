@@ -32,6 +32,7 @@ import UserForm from './views/admin/Pages/UserManagement'
 import BannerManager from './views/admin/Pages/BannerManager'
 import SupplierManagement from './views/admin/Pages/Dashboard'
 import Thuonghieu from './views/admin/Pages/thuonghieu';
+import EnhancedTable from './views/admin/Pages/TestTable';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -59,7 +60,7 @@ root.render(
         <Route path='ga1' element={<Test></Test>}></Route>
         <Route path='thuonghieu' element={<Thuonghieu></Thuonghieu>}></Route>
         <Route path='danhmuc' element={<CrudCategory></CrudCategory>}></Route>
-       
+        <Route path='test' element={<EnhancedTable/>}></Route>
         <Route path='popup' element={<CrudPOPUP></CrudPOPUP>}></Route>
         <Route path='admin/user-management' element={<UserForm/>}></Route>
         <Route path='admin/orders' element={<SupplierManagement/>}></Route>

@@ -27,7 +27,7 @@ const SupplierManagement = () => {
   const userid = localStorage.getItem("account_id")
   console.log("dsadasdsa",userid)
   const [tabValue, setTabValue] = useState(0);
-  const [currentUser, setCurrentUser] = useState(null);
+  
   const [formData, setFormData] = useState({
     nha_cung_capID: "",
     ten_nhaCC: "",
@@ -43,14 +43,22 @@ const SupplierManagement = () => {
   const [banners, setBanners] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [suppliers, setSuppliers] = useState([]);
+  const [listDatahd,setlistDataHD] = useState([])
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
   });
+  const apilistDatahd = async () =>{
+    const res = await axios({url:"http://localhost:8080/api/users/gethanhdong",method:"GET"})
+    setlistDataHD(res.data)
+    console.log('sdsadsadfas',res.data)
+  }
+
 
   useEffect(() => {
     fetchSuppliers();
+    apilistDatahd();
   }, []);
 
   const fetchSuppliers = async () => {
@@ -385,7 +393,7 @@ const SupplierManagement = () => {
                     fullWidth
                     startIcon={<Add />}
                   >
-                     {currentUser ? "CẬP NHẬT NGƯỜI DÙNG" : "THÊM NGƯỜI DÙNG"}
+                    {formData.nha_cung_capID ? "CẬP NHẬT BANNER" : "THÊM BANNER"}
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
@@ -533,7 +541,7 @@ const SupplierManagement = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredSuppliers
+                  {listDatahd
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((supplier) => (
                     <TableRow key={supplier.nha_cung_capID}>
@@ -550,7 +558,7 @@ const SupplierManagement = () => {
                       <TableCell>
                         {supplier.users ? supplier.users.accountID : ""}
                       </TableCell>
-                      <TableCell>{supplier.hanh_dong}</TableCell>
+                      <TableCell>{supplier.tenHanhDong}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -559,7 +567,7 @@ const SupplierManagement = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={filteredSuppliers.length}
+              count={listDatahd.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}

@@ -49,9 +49,15 @@ const UserForm = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [tabValue, setTabValue] = useState(0);
-
+  const [listDataHD,setlistDataHD] = useState([])
+  const apilistDataHD = async () =>{
+    const res = await axios({url:"http://localhost:8080/api/users/gethanhdong",method:"GET"})
+    setlistDataHD(res.data)
+    console.log('sdsadsadfas',res.data)
+  }
   useEffect(() => {
     fetchUsers();
+    apilistDataHD()
   }, []);
 
   const fetchUsers = async () => {
@@ -282,21 +288,20 @@ const handleDelete = async (accountID) => {
     
   };
   console.log(formData)
-
   const filteredData = list.filter((user) => {
     const matchesSearchTerm =
       (user.hovaten &&
         user.hovaten.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (user.accountID &&
         user.accountID.toLowerCase().includes(searchTerm.toLowerCase()));
-
-        const matchesRoleFilter = roleFilter 
-        ? user.roles?.some(role => role.ten_vai_tro === roleFilter) 
-        : true;
-      const setTrangThaiXoa = user.trang_thai_xoa === null
-
-
-
+  
+    const matchesRoleFilter = roleFilter
+      ? user.roles?.some(role => role.ten_vai_tro === roleFilter)
+      : true;
+  
+    // Kiểm tra tồn tại của `trang_thai_xoa` trước khi so sánh
+    const setTrangThaiXoa = user.trang_thai_xoa === null;
+  
     return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
   });
 
@@ -312,7 +317,22 @@ const handleDelete = async (accountID) => {
         : true;
       const setTrangThaiXoa = user.trang_thai_xoa === "Xóa"
 
+    return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
+  });
+  useEffect(() => {
+    console.log("FilerData nè: ", listDataHD);
+  }, [listDataHD]);
+  const filteredDataHoatDong = list.filter((user) => {
+    const matchesSearchTerm =
+      (user.hovaten &&
+        user.hovaten.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.accountID &&
+        user.accountID.toLowerCase().includes(searchTerm.toLowerCase()));
 
+        const matchesRoleFilter = roleFilter 
+        ? user.roles?.some(role => role.ten_vai_tro === roleFilter) 
+        : true;
+      const setTrangThaiXoa = user.trang_thai_xoa === null || user.trang_thai_xoa !== null
 
     return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
   });
@@ -348,8 +368,8 @@ const handleDelete = async (accountID) => {
           >
             <Tab label="Danh Sách Người Dùng" />
             <Tab label="Thêm Người Dùng" />
-            <Tab label="Lịch Sử Xóa" />
-            <Tab label="Trạng Thái Hành Động" />
+            <Tab onClick={()=>{fetchUsers()}} label="Lịch Sử Xóa" />
+            <Tab onClick={()=>{apilistDataHD()}} label=" Hành Động" />
           </Tabs>
         </AppBar>
 
@@ -713,12 +733,6 @@ const handleDelete = async (accountID) => {
                 <Button onClick={() => handleRestore(user)}>
                   <Restore />
                 </Button>
-                <Button
-                  onClick={() => handleDelete(user.accountID)}
-                  sx={{ color: "secondary" }}
-                >
-                  <Delete />
-                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -739,7 +753,7 @@ const handleDelete = async (accountID) => {
   {tabValue === 3 && (
           <TableContainer component={Paper} className="table-container">
             <Typography variant="h6" align="center" className="table-title">
-              Submitted User Data
+              Nhật ký hoạt động
             </Typography>
             <Grid container spacing={2} style={{ alignItems: "center" }}>
               <Grid item xs={6}>
@@ -793,21 +807,20 @@ const handleDelete = async (accountID) => {
                   <TableCell>Số Điện Thoại</TableCell>
                   <TableCell>Địa Chỉ</TableCell>
                   <TableCell>Mật Khẩu</TableCell>
-                  <TableCell>Trạng Thái Xóa</TableCell>
                   <TableCell>Hành Động</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredData
+                {listDataHD
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((user, index) => (
                     <TableRow key={index}>
-                      <TableCell>{user.accountID}</TableCell>
-                      <TableCell>{user.hovaten}</TableCell>
+                      <TableCell>{user.user.accountID}</TableCell>
+                      <TableCell>{user.user.hovaten}</TableCell>
                       <TableCell>
-                        {user.hinh_anh ? (
+                        {user.user.hinh_anh ? (
                           <img
-                            src={`/images/${user.hinh_anh}`}
+                            src={`/images/${user.user.hinh_anh}`}
                             alt="Hình ảnh"
                             style={{ width: 50, height: 50 }}
                           />
@@ -815,24 +828,23 @@ const handleDelete = async (accountID) => {
                           "No Image"
                         )}
                       </TableCell>
-                      <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
+                      <TableCell>{user.user?.roles[0]?.ten_vai_tro}</TableCell>
                       {/* Hiển thị vai trò */}
-                      <TableCell>{user.so_dien_thoai}</TableCell>
-                      <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
+                      <TableCell>{user.user.so_dien_thoai}</TableCell>
+                      <TableCell>{user.user?.diachi[0]?.dia_chi}</TableCell>
                       {/* Hiển thị địa chỉ */}
                       
-                      <TableCell>{user.password}</TableCell>
-                      <TableCell>{user.trang_thai_xoa == null ? 'Chưa Xóa' : user.trang_thai_xoa}</TableCell>
-                      <TableCell>{user.hanh_dong}</TableCell>
+                      <TableCell>{user.user.password}</TableCell>
+                      <TableCell>{user.tenHanhDong}</TableCell>
                     </TableRow>
                   ))}
               </TableBody>
             </Table>
 
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[5, 10, 50]}
               component="div"
-              count={filteredData.length}
+              count={listDataHD.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}

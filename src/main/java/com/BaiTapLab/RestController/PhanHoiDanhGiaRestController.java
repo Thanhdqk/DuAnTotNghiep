@@ -1,0 +1,54 @@
+package com.BaiTapLab.RestController;
+
+import java.time.LocalDate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.BaiTapLab.Entity.DanhGia;
+import com.BaiTapLab.Entity.PhanHoiDanhGia;
+import com.BaiTapLab.Entity.SanPham;
+import com.BaiTapLab.Entity.Users;
+import com.BaiTapLab.Repository.PhanHoiDanhGiaRepository;
+
+@RestController
+@RequestMapping("/api/phanhoidanhgia")
+@CrossOrigin(origins = "http://localhost:3000")
+public class PhanHoiDanhGiaRestController {
+	@Autowired
+	PhanHoiDanhGiaRepository phanhoiDanhGiaRepository;
+	
+	@PostMapping("/save")
+	public ResponseEntity<PhanHoiDanhGia> savePhanHoi(
+			@RequestParam("danh_giaID") Integer danh_giaID,
+			@RequestParam("ngay_tao") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngay_tao,
+			@RequestParam("noi_dung") String noi_dung,
+			@RequestParam("san_phamId") String san_phamId,
+			@RequestParam("accountID") String accountID){
+	DanhGia danhgia = new DanhGia();
+	danhgia.setDanh_giaID(danh_giaID);
+	
+	SanPham sanpham = new SanPham();
+	sanpham.setSan_phamId(san_phamId);
+	
+	Users users = new Users();
+	users.setAccountID(accountID);
+	
+	PhanHoiDanhGia phanhoidanhgia = new PhanHoiDanhGia();
+	phanhoidanhgia.setDanhgia(danhgia);
+	phanhoidanhgia.setNgay_tao(ngay_tao);
+	phanhoidanhgia.setNoi_dung(noi_dung);
+	phanhoidanhgia.setSanpham(sanpham);
+	phanhoidanhgia.setUsers(users);
+	phanhoiDanhGiaRepository.save(phanhoidanhgia);
+	return ResponseEntity.ok(phanhoidanhgia);
+		
+	}
+}

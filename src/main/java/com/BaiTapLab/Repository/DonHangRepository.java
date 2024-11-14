@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.BaiTapLab.Entity.DonHang;
+
+import jakarta.transaction.Transactional;
 
 public interface DonHangRepository extends JpaRepository<DonHang, String> {
     
@@ -98,5 +101,64 @@ public interface DonHangRepository extends JpaRepository<DonHang, String> {
 
     @Query("SELECT d.trang_thai, COUNT(d) FROM DonHang d WHERE FUNCTION('MONTH', d.ngay_tao) = :month AND FUNCTION('YEAR', d.ngay_tao) = :year GROUP BY d.trang_thai")
     List<Object[]> countByTrangThaiAndMonthAndYear(@Param("month") int month, @Param("year") int year);
+    
+//    @Query(value = "SELECT dh.don_hangid, dh.ghi_chu, dhct.so_luong as soLuongDonHang, " +
+//            "dhct.tong_tien as tienSanPham, pttt.ten_phuong_thuc, sp.ten_san_pham, " +
+//            "dh.tong_tien as tongTienDonHang, MIN(ha.ten_hinh) as tenHinh, vc.ma_voucher, dh.accountid, " +
+//            "dh.thoi_gian_du_kien, dh.trang_thai, dh.phi_ship, us.so_dien_thoai, " +
+//            "dc.dia_chi, dc.phuong, dc.quan, dc.thanh_pho " +
+//            "FROM donhang dh " +
+//            "JOIN donhangchitiet dhct ON dh.don_hangid = dhct.don_hangid " +
+//            "JOIN phuongthuctt pttt ON dh.phuong_thucttid = pttt.phuong_thucttid " +
+//            "JOIN sanpham sp ON dhct.san_pham_id = sp.san_pham_id " +
+//            "JOIN hinhanh ha ON sp.san_pham_id = ha.san_pham_id " +
+//            "JOIN voucher vc ON vc.voucherid = dh.voucherid " +
+//            "JOIN users us ON us.accountid = dh.accountid " +
+//            "JOIN diachi dc ON dc.accountid = dh.accountid " +
+//            "WHERE dh.don_hangid = :donHangId " +
+//            "GROUP BY dh.don_hangid, dh.ghi_chu, dhct.so_luong, dhct.tong_tien, " +
+//            "pttt.ten_phuong_thuc, sp.ten_san_pham, dh.tong_tien, vc.ma_voucher, dh.accountid, " +
+//            "dh.thoi_gian_du_kien, dh.trang_thai, dh.phi_ship, us.so_dien_thoai, " +
+//            "dc.dia_chi, dc.phuong, dc.quan, dc.thanh_pho",
+//    nativeQuery = true)
+//    List<Object[]> getDonHangDetailById(@Param("donHangId") String donHangId);
+    
+    @Query(value = "SELECT dh.don_hangid, dh.ghi_chu, dhct.so_luong AS soLuongDonHang, " +
+            "dhct.tong_tien AS tienSanPham, pttt.ten_phuong_thuc, sp.ten_san_pham, us.hovaten, dh.ngay_tao, dh.thoi_gianxn, " +
+            "dh.tong_tien AS tongTienDonHang, " +
+            "(SELECT TOP 1 ha.ten_hinh " +
+            " FROM hinhanh ha " +
+            " WHERE ha.san_pham_id = sp.san_pham_id " +
+            " ORDER BY ha.id ASC) AS tenHinh, " +
+            "vc.ma_voucher, dh.accountid, dh.thoi_gian_du_kien, dh.trang_thai, dh.phi_ship, " +
+            "us.so_dien_thoai, dc.dia_chi, dc.phuong, dc.quan, dc.thanh_pho " +
+            "FROM donhang dh " +
+            "JOIN donhangchitiet dhct ON dh.don_hangid = dhct.don_hangid " +
+            "JOIN phuongthuctt pttt ON dh.phuong_thucttid = pttt.phuong_thucttid " +
+            "JOIN sanpham sp ON dhct.san_pham_id = sp.san_pham_id " +
+            "LEFT JOIN voucher vc ON vc.voucherid = dh.voucherid " +
+            "JOIN users us ON us.accountid = dh.accountid " +
+            "JOIN diachi dc ON dc.accountid = dh.accountid " +
+            "WHERE dh.don_hangid = :donHangId " +
+            "GROUP BY dh.don_hangid, dh.ghi_chu, dhct.so_luong, dhct.tong_tien, " +
+            "pttt.ten_phuong_thuc, sp.ten_san_pham, dh.tong_tien, vc.ma_voucher, dh.accountid, " +
+            "dh.thoi_gian_du_kien, dh.trang_thai, dh.phi_ship, us.so_dien_thoai, " +
+            "dc.dia_chi, dc.phuong, dc.quan, dc.thanh_pho, sp.san_pham_id, us.hovaten, dh.ngay_tao, dh.thoi_gianxn",
+	    nativeQuery = true)
+	List<Object[]> getDonHangDetailById(@Param("donHangId") String donHangId);
      
+     @Modifying
+     @Transactional
+     @Query("update DonHang d set d.trang_thai = :trangThai where d.don_hangid = :donHangId")
+     int updateTrangThaiDonHang(@Param("trangThai") String trangThai, @Param("donHangId") String donHangId);
+	
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE DonHang d SET d.trang_thai = :trangThai, " +
+	       "d.thoi_gianXN = :thoiGianXacNhan " +
+	       "WHERE d.don_hangid = :donHangId")
+	int updateTrangThaiDonHangDaXacNhan(@Param("trangThai") String trangThai, 
+	                           @Param("thoiGianXacNhan") LocalDate thoiGianXacNhan, 
+	                           @Param("donHangId") String donHangId);
 }

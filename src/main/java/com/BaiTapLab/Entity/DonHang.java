@@ -29,6 +29,8 @@ public class DonHang {
 	
 	public LocalDate thoi_gianXN;
 	
+	public LocalDate thoi_gian_du_kien;
+	
 	public String so_dien_thoai;
 	
 	public String hinh_anh;
@@ -42,6 +44,9 @@ public class DonHang {
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hanh_dong;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String ly_do;
 	
 	@OneToMany(mappedBy = "donhang", cascade = CascadeType.ALL)
 	@JsonIgnore

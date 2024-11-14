@@ -43,6 +43,7 @@ public class SanPham {
 	
 	public LocalDate han_gg;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_kho;
 	
 	public int luot_mua;
@@ -80,10 +81,6 @@ public class SanPham {
 	//@JsonIgnore
 	@JsonManagedReference
 	public List<DanhGia> danhgia;
-	
-//	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-//	@JsonIgnore
-//	public List<PhuongthucTTChiTiet> phuongthucTTChitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
 	//@JsonIgnore

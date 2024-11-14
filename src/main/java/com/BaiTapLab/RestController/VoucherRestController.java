@@ -269,6 +269,7 @@ public class VoucherRestController {
 	        
 	        // Cập nhật các thuộc tính của voucher
 	        voucher.setDieu_kien(dieu_kien);
+	        voucher.setMa_voucher(ma_voucher);
 	        voucher.setDon_hang_toi_thieu(don_hang_toi_thieu);
 	        voucher.setHan_su_dung(han_su_dung);
 	        voucher.setHoat_dong(hoat_dong);

@@ -78,9 +78,9 @@ public class Users {
 	@JsonIgnore
 	public List<DanhGia> danhgia;
 	
-	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
-	public List<PhuongThucTT> phuongthucTT;
+//	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+//	@JsonIgnore
+//	public List<PhuongThucTT> phuongthucTT;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore

@@ -34,6 +34,8 @@ public class DanhGia {
 	
 	public LocalDate ngay_tao;
 	
+	public String trang_thaiPH;
+	
 	@OneToMany(mappedBy = "danhgia", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<PhanHoiDanhGia> phanhoidanhgia;

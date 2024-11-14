@@ -3,6 +3,7 @@ package com.BaiTapLab.RestController;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.BaiTapLab.DTO.SanPhamDTO;
 import com.BaiTapLab.Entity.SanPham;
 import com.BaiTapLab.Repository.SanPhamRepository;
 
@@ -26,11 +28,47 @@ public class SanPhamRestController {
 	@Autowired
 	SanPhamRepository sanPhamRepository;
 	
+//	@GetMapping("/listSanPham")
+//	public ResponseEntity<List<SanPham>> getSanPham(){
+//		List<SanPham> listSanPham = sanPhamRepository.findAll();
+//		return ResponseEntity.ok(listSanPham);
+//	}
+	
 	@GetMapping("/listSanPham")
-	public ResponseEntity<List<SanPham>> getSanPham(){
-		List<SanPham> listSanPham = sanPhamRepository.findAll();
-		return ResponseEntity.ok(listSanPham);
+	public ResponseEntity<List<SanPhamDTO>> getSanPham() {
+	    // Lấy tất cả sản phẩm từ cơ sở dữ liệu
+	    List<SanPham> listSanPham = sanPhamRepository.findAll();
+
+	    // Chuyển đổi các đối tượng SanPham thành SanPhamDTO
+	    List<SanPhamDTO> listSanPhamDTO = listSanPham.stream()
+	            .map(sanPham -> new SanPhamDTO(
+	                    sanPham.getSan_phamId(),
+	                    sanPham.getTen_san_pham(),
+	                    sanPham.getNgay_tao(),
+	                    sanPham.getGia_goc(),
+	                    sanPham.getGia_km(),
+	                    sanPham.getHan_gg(),  // Thêm thông tin "han_gg"
+	                    sanPham.getLuot_mua(), // Thêm thông tin "luot_mua"
+	                    sanPham.getMo_ta(),    // Thêm thông tin "mo_ta"
+	                    sanPham.getPhantram_GG(),  // Thêm thông tin "phantram_GG"
+	                    sanPham.getSo_luong(),
+	                    sanPham.getTrang_thai_kho(),
+	                    sanPham.getHoat_dong(),
+	                    sanPham.getPhe_duyet(),
+	                    sanPham.getTrang_thai_xoa(),
+	                    sanPham.getHanh_dong(),
+	                    sanPham.getTien_nhap_hang(),
+	                    sanPham.getChieu_cao(),
+	                    sanPham.getChieu_dai(),
+	                    sanPham.getChieu_rong(),
+	                    sanPham.getKhoi_luong()
+	            ))
+	            .collect(Collectors.toList());
+
+	    // Trả về danh sách SanPhamDTO
+	    return ResponseEntity.ok(listSanPhamDTO);
 	}
+
 	
 	@GetMapping("/edit/sanpham/{san_phamId}")
 	public ResponseEntity<SanPham> getSanPhamById(@PathVariable String san_phamId){

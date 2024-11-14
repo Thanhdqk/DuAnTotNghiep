@@ -1,51 +1,74 @@
-//package com.BaiTapLab.RestController;
-//
-//import java.io.File;
-//import java.io.IOException;
-//import java.time.LocalDate;
-//import java.util.List;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.format.annotation.DateTimeFormat;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.CrossOrigin;
-//import org.springframework.web.bind.annotation.DeleteMapping;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PathVariable;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.PutMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.RestController;
-//import org.springframework.web.multipart.MultipartFile;
-//
-//import com.BaiTapLab.Entity.ThuongHieu;
-//import com.BaiTapLab.Repository.ThuongHieuRepository;
-//import com.BaiTapLab.Repository.UsersRepository;
-//import com.BaiTapLab.Service.ThuongHieuService;
-//
-//@RestController
-//@CrossOrigin("*")
-//@RequestMapping("api")
-//public class ThuongHieuRestController {
+package com.BaiTapLab.RestController;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.BaiTapLab.Entity.ThuongHieu;
+import com.BaiTapLab.Repository.ThuongHieuRepository;
+import com.BaiTapLab.Repository.UsersRepository;
+
+
+@RestController
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/thuonghieu")
+public class ThuongHieuRestController {
 //	@Autowired
 //    ThuongHieuService thuonghieuService;
-//    
-//    @Autowired
-//    ThuongHieuRepository thuonghieuRepository;
-//    
-//    @Autowired
-//    UsersRepository userRepository;
-//    
-//    @GetMapping("/thuonghieu/loadAll")
-//    public ResponseEntity<List<ThuongHieu>> getThuongHieu(){
-//		List<ThuongHieu> listThuongHieu = thuonghieuRepository.findAll();
-//		System.out.println(listThuongHieu);
-//		return ResponseEntity.ok(listThuongHieu);
-//	}
-//    
-//
+    
+    @Autowired
+    ThuongHieuRepository thuonghieuRepository;
+    
+    @Autowired
+    UsersRepository userRepository;
+    
+//    @GetMapping("/getTenThuongHieu")
+//    public ResponseEntity<?> getTenThuongHieu(){
+//    	List<Object[]> thuonghieu = thuonghieuRepository.listgetTenThuongHieu();
+//    	return ResponseEntity.ok(thuonghieu);
+//    }
+    
+    @GetMapping("/getTenThuongHieu")
+	public List<Map<String, Object>> getUsersWithAddress() {
+	    List<Object[]> results = thuonghieuRepository.listgetTenThuongHieu();
+	    
+	    List<Map<String, Object>> response = new ArrayList <>();
+	    
+	    for (Object[] row : results) {
+	        Map<String, Object> ten_thuong_hieu = new HashMap<>();
+	        ten_thuong_hieu.put("ten_thuong_hieu", row[0]);
+	        response.add(ten_thuong_hieu);
+	    }
+	    return response;
+	}
+    
+    @GetMapping("/thuonghieu/loadAll")
+    public ResponseEntity<List<ThuongHieu>> getThuongHieu(){
+		List<ThuongHieu> listThuongHieu = thuonghieuRepository.findAll();
+		System.out.println(listThuongHieu);
+		return ResponseEntity.ok(listThuongHieu);
+	}
+    
+
 //    @PostMapping("/thuonghieu/add")
 //	public ResponseEntity<?> addThuongHieu(
 //	        @RequestParam("thuong_hieuID") String thuong_hieuID,
@@ -85,7 +108,7 @@
 //	        }
 //
 //	        // Lưu voucher vào DB qua service
-//	        ThuongHieu savedThuongHieu = thuonghieuService.createThuongHieu(thuonghieu);
+//	        //ThuongHieu savedThuongHieu = thuonghieuService.createThuongHieu(thuonghieu);
 //
 //	        // Trả về thông tin voucher đã lưu
 //	        return ResponseEntity.ok(savedThuongHieu);
@@ -100,8 +123,8 @@
 //	                .body("Lỗi khi tạo thương hiệu: " + e.getMessage());
 //	    }
 //	}
-//    
-//
+    
+
 //    @PutMapping("/thuonghieu/update/{thuong_hieuID}")
 //	public ResponseEntity<?> updateThuongHieu(
 //	        @PathVariable String thuong_hieuID,
@@ -159,7 +182,7 @@
 //	                .body("Lỗi khi cập nhật voucher: " + e.getMessage());
 //	    }
 //	}
-//
+
 //    @DeleteMapping("/thuonghieu/delete/{thuong_hieuID}")
 //	public ResponseEntity<?> deleteThuongHieu(@PathVariable String thuong_hieuID) {
 //	    try {
@@ -178,4 +201,4 @@
 //	                .body("Lỗi khi xóa voucher: " + e.getMessage());
 //	    }
 //	}
-//}
+}

@@ -30,12 +30,12 @@ public interface UsersRepository extends JpaRepository<Users, String> {
     
     @Modifying
 	@Transactional
-	@Query("UPDATE Users u SET u.trang_thai_xoa = 'Xóa' ,u.hanh_dong = 'Xóa' WHERE u.accountID = ?1")
+	@Query("UPDATE Users u SET u.trang_thai_xoa = 'Xóa' WHERE u.accountID = ?1")
 	void markAsDeleted(String userid);
     
     @Modifying
 	@Transactional
-	@Query("UPDATE Users u SET u.trang_thai_xoa = NULL , u.hanh_dong = 'Reload' WHERE u.accountID = ?1")
+	@Query("UPDATE Users u SET u.trang_thai_xoa = NULL WHERE u.accountID = ?1")
 	void back(String userid);
 	
     @Modifying

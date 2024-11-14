@@ -37,8 +37,7 @@ public class Banner {
     @OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
     @JsonIgnore
     public List<DanhMuc> danhmuc;
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
+
 	
 
     @ManyToOne

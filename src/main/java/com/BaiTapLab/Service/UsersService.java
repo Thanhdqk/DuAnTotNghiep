@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.Entity.DiaChi;
+import com.BaiTapLab.Entity.HanhDong;
 import com.BaiTapLab.Entity.Roles;
 import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.DiaChiRepository;
+import com.BaiTapLab.Repository.HanhDongReopository;
 import com.BaiTapLab.Repository.RoleRepository;
 import com.BaiTapLab.Repository.UsersRepository;
 
@@ -32,6 +34,9 @@ public class UsersService {
 
     @Autowired
     private DiaChiRepository diaChiRepository;
+    
+    @Autowired
+	HanhDongReopository HanhDongReopository;
 
     private static final String UPLOAD_DIR = "uploads/";
 
@@ -67,6 +72,13 @@ public class UsersService {
         // Save the address associated with the user
         diaChi.setUsers(savedUser);
         diaChiRepository.save(diaChi);
+		// luu hanh dong
+    	HanhDong hd = new HanhDong();
+		hd.setUsers(user);
+		hd.setTen_hanh_dong("Thêm");
+		HanhDongReopository.save(hd);
+//		 end luu hanh dong
+		
 
         return savedUser;
     }
@@ -75,6 +87,37 @@ public class UsersService {
     public List<Users> findAll() {
         return usersRepository.findAll();
     }
+    @Transactional
+    public Users createUserWithImageAndDetailss(Users user, Roles role, DiaChi diaChi, MultipartFile image) throws IOException {
+        // Save the user to the database
+        Users savedUser = usersRepository.save(user);
+
+        // Handle image upload
+        if (image != null && !image.isEmpty()) {
+            String imageFileName = saveImage(image);
+            savedUser.setHinh_anh(imageFileName); // Store the file name in the user entity
+        }
+
+        // Save the role associated with the user
+        role.setUsers(savedUser);
+        rolesRepository.save(role);
+
+        // Save the address associated with the user
+        diaChi.setUsers(savedUser);
+        diaChiRepository.save(diaChi);
+		// luu hanh dong
+    	HanhDong hd = new HanhDong();
+		hd.setUsers(user);
+		hd.setTen_hanh_dong("Upload");
+		HanhDongReopository.save(hd);
+//		 end luu hanh dong
+		
+
+        return savedUser;
+    }
+
+    // Other methods to manage users, roles, and add	resses...
+    
 
     public Users findById(String accountId) {
         Optional<Users> user = usersRepository.findById(accountId);

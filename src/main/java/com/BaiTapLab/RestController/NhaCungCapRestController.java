@@ -1,7 +1,12 @@
 package com.BaiTapLab.RestController;
 
+/*import com.BaiTapLab.DTO.NhaCungCapDTO;*/
+import com.BaiTapLab.DTO.UserDTO;
+import com.BaiTapLab.Entity.HanhDong;
 import com.BaiTapLab.Entity.NhaCungCap;
 import com.BaiTapLab.Entity.Users;
+import com.BaiTapLab.Repository.BannerRepository;
+import com.BaiTapLab.Repository.HanhDongReopository;
 import com.BaiTapLab.Repository.NhaCungCapRepository;
 import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.NhaCungCapService;
@@ -24,10 +29,16 @@ public class NhaCungCapRestController {
 	UsersRepository userrepository;
 	
 	@Autowired
+	HanhDongReopository HanhDongReopository; 
+	
+	@Autowired
 	NhaCungCapRepository nhacupcaprepository;
 	
     @Autowired
     private NhaCungCapService nhaCungCapService;
+	/*
+	 * @Autowired NhaCungCapDTO NhaCungCapDTO;
+	 */
 
     @GetMapping
     public List<NhaCungCap> getAllNhaCungCap() {
@@ -40,15 +51,29 @@ public class NhaCungCapRestController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    @GetMapping("/delete/{id}")  
-    public void getAllAccountID(@PathVariable("id")String id) {
-  	nhacupcaprepository.markAsDeleted(id);
-    }
+    @GetMapping("/delete/{id}")
+	public void getAllAccountID(@PathVariable("id")String id) {
+		Optional<NhaCungCap> nhacungcap = nhacupcaprepository.findById(id);
+		NhaCungCap uservip = nhacungcap.get();
+		HanhDong hd = new HanhDong();
+		hd.setNhacungcap(uservip);
+		hd.setTen_hanh_dong("Xóa");
+		HanhDongReopository.save(hd);
+		 nhacupcaprepository.markAsDeleted(id);
+	}
+	
+	@GetMapping("/back/{id}")
+	public void back(@PathVariable("id")String id) {
+		Optional<NhaCungCap> nhacungcap = nhacupcaprepository.findById(id);
+		NhaCungCap uservip = nhacungcap.get();
+		HanhDong hd = new HanhDong();
+		hd.setNhacungcap(uservip);
+		hd.setTen_hanh_dong("Reload");
+		HanhDongReopository.save(hd);
+		 nhacupcaprepository.back(id);
+	}
 
-    @GetMapping("/back/{id}")
-    public void back(@PathVariable("id")String id) {
-    nhacupcaprepository.back(id);
-    }
+
     
 //    @PostMapping("/save")
 //    public ResponseEntity<Map<String, Object>> createNhaCungCap(@RequestBody NhaCungCap nhaCungCap) {
@@ -118,7 +143,6 @@ public class NhaCungCapRestController {
        cc.setTen_nhaCC(ten_nhaCC);
        cc.setTen_mat_hang(ten_mat_hang);
        cc.setTrang_thai_xoa(trang_thai_xoa);
-       cc.setHanh_dong("Thêm");
       nhacupcaprepository.save(cc);
       System.out.println("ccccccccccccc");
     
@@ -142,4 +166,8 @@ public class NhaCungCapRestController {
         response.put("message", "Nhà cung cấp đã được xóa thành công!");
         return ResponseEntity.ok(response);
     }
+//    @GetMapping("/ncchanhdong")
+//	public List<NhaCungCapDTO> getMethodName() {
+//		return HanhDongReopository.findNhaCungCap();
+//	}
 }

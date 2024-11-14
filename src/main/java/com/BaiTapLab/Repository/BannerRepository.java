@@ -18,12 +18,12 @@ public interface BannerRepository extends JpaRepository<Banner, String> {
     
     @Modifying
 	@Transactional
-	@Query("UPDATE Banner u SET u.trang_thai_xoa = NULL	, u.hanh_dong = 'Xóa' WHERE u.bannerId = ?1")
+	@Query("UPDATE Banner u SET u.trang_thai_xoa = 'Xóa' WHERE u.bannerId = ?1")
 	public void markAsDeleted(String userid);
     
     @Modifying
 	@Transactional
-	@Query("UPDATE Banner u SET u.trang_thai_xoa = NULL, u.hanh_dong = 'Reload' WHERE u.bannerId = ?1")
+	@Query("UPDATE Banner u SET u.trang_thai_xoa = NULL WHERE u.bannerId = ?1")
 	public void back(String userid);
 	
 	@Modifying

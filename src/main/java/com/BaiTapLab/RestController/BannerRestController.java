@@ -16,9 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+/*import com.BaiTapLab.DTO.BannerDTO;*/
+import com.BaiTapLab.DTO.UserDTO;
 import com.BaiTapLab.Entity.Banner;
-import com.BaiTapLab.Entity.NhaCungCap;
+import com.BaiTapLab.Entity.HanhDong;
+import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.BannerRepository;
+import com.BaiTapLab.Repository.HanhDongReopository;
+import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.BannerService;
 
 @RestController
@@ -32,14 +37,20 @@ public class BannerRestController {
     @Autowired
     private BannerService bannerService;
     
+
+	@Autowired
+	UsersRepository userrepository;
+	
     @Autowired
     BannerRepository bannerRepository;
+    
+    @Autowired
+    HanhDongReopository HanhDongReopository;
     
     @GetMapping
     public List<Banner> getAllBanners() {
         return bannerService.getAllBanners();
     }
-    
     @GetMapping("/delete/{id}")  
     public void getAllAccountID(@PathVariable("id")String id) {
   	bannerRepository.markAsDeleted(id);
@@ -48,7 +59,6 @@ public class BannerRestController {
     public void back(@PathVariable("id")String id) {
     	bannerRepository.back(id);
     }
-    
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createBanner(
@@ -67,7 +77,6 @@ public class BannerRestController {
             response.put("message", "Tất cả các trường là bắt buộc!");
             return ResponseEntity.badRequest().body(response);
         }
-
         // Tạo đối tượng Banner
         Banner banner = new Banner();
         banner.setBannerId(bannerId);
@@ -75,7 +84,6 @@ public class BannerRestController {
         banner.setTrang_thai_xoa(trangThaiXoa);
         banner.setNgay_het_han(LocalDate.parse(ngayHetHan));
         banner.setNgay_tao(LocalDate.parse(ngayTao));
-        banner.setHanh_dong("Thêm");
         // Xử lý lưu ảnh nếu có
         if (hinhFile != null && !hinhFile.isEmpty()) {
             String filePath = IMAGE_DIR + File.separator + hinhFile.getOriginalFilename();
@@ -119,14 +127,12 @@ public class BannerRestController {
             response.put("message", "Banner không tồn tại!");
             return ResponseEntity.notFound().build();
         }
-
         // Cập nhật thông tin banner
         Banner banner = existingBannerOpt.get();
         banner.setHoat_dong(hoatDong);
         banner.setTrang_thai_xoa(trangThaiXoa);
         banner.setNgay_het_han(LocalDate.parse(ngayHetHan));
         banner.setNgay_tao(LocalDate.parse(ngayTao));
-        banner.setHanh_dong("Cập Nhật");
 
         // Xử lý lưu ảnh nếu có
         if (hinhFile != null && !hinhFile.isEmpty()) {
@@ -162,4 +168,8 @@ public class BannerRestController {
         bannerService.deleteBanner(bannerId);
         return ResponseEntity.noContent().build();
     }
+//    @GetMapping("/bannerhanhdong")
+//	public List<BannerDTO> getMethodName() {
+//		return HanhDongReopository.findBanner();
+//	}
 }

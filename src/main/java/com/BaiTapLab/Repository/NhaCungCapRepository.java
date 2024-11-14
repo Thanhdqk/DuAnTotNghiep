@@ -19,12 +19,12 @@ public interface NhaCungCapRepository extends JpaRepository<NhaCungCap, String> 
     
     @Modifying
 	@Transactional
-	@Query("UPDATE NhaCungCap u SET u.trang_thai_xoa = NULL, u.hanh_dong = 'Reload' WHERE u.nha_cung_capID = ?1")
+	@Query("UPDATE NhaCungCap u SET u.trang_thai_xoa = 'Xóa' WHERE u.nha_cung_capID = ?1")
 	public void markAsDeleted(String userid);
     
     @Modifying
 	@Transactional
-	@Query("UPDATE NhaCungCap u SET u.trang_thai_xoa = NULL, u.hanh_dong = 'Reload' WHERE u.nha_cung_capID = ?1")
+	@Query("UPDATE NhaCungCap u SET u.trang_thai_xoa = NULL WHERE u.nha_cung_capID = ?1")
 	public void back(String userid);
 	
 	@Modifying

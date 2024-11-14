@@ -1,6 +1,7 @@
 package com.BaiTapLab.Service;
 
 import com.BaiTapLab.Entity.NhaCungCap;
+import com.BaiTapLab.Repository.HanhDongReopository;
 import com.BaiTapLab.Repository.NhaCungCapRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,8 @@ public class NhaCungCapService {
 
     @Autowired
     private NhaCungCapRepository nhaCungCapRepository;
+    @Autowired
+    HanhDongReopository HanhDongReopository;
 
     public List<NhaCungCap> findAll() {
         return nhaCungCapRepository.findAll();
@@ -23,7 +26,9 @@ public class NhaCungCapService {
     }
 
     public NhaCungCap save(NhaCungCap nhaCungCap) {
+    	
         return nhaCungCapRepository.save(nhaCungCap);
+      
     }
 
     public void deleteById(String id) {

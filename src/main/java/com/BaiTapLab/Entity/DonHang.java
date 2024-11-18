@@ -15,11 +15,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "donhang")
 public class DonHang {
@@ -40,12 +37,17 @@ public class DonHang {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ghi_chu;
 	
+	private String shipper_id;
+	
+	private String trang_thai_nhan_hang;
+	
 	public double phi_ship;
 	
 	public double tong_tien;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
+	public String online_payment_id;
+	
+
 	
 	@OneToMany(mappedBy = "donhang", cascade = CascadeType.ALL)
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -57,14 +59,17 @@ public class DonHang {
     @JsonProperty(value="users")
     public Users users;
     
+    
+    public String  thoi_gian_du_kien;
+    
     @ManyToOne
     @JoinColumn(name = "voucherID")
-    @JsonProperty(value="voucher",access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(value="voucher")
     public Voucher voucher;
     
     @ManyToOne
     @JoinColumn(name = "dia_chiID")
-    @JsonProperty(value="users",access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(value="dia_chi",access = JsonProperty.Access.READ_ONLY)
     public DiaChi diachi;
     
     @ManyToOne

@@ -36,7 +36,7 @@ public class NhaCungCap {
 	public String trang_thai_xoa;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
+	public String hoat_dong;
 	
 	@OneToMany(mappedBy = "nhacungcap", cascade = CascadeType.ALL)
 	@JsonIgnore

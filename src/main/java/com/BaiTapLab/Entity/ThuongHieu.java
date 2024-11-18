@@ -3,7 +3,6 @@ package com.BaiTapLab.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -36,8 +35,7 @@ public class ThuongHieu {
 	
 	public String hinh_anh;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
+
 	
 	@OneToMany(mappedBy = "thuonghieu", cascade = CascadeType.ALL)
 	@JsonManagedReference

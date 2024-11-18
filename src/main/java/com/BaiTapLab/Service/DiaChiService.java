@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.BaiTapLab.Entity.DiaChi;
 import com.BaiTapLab.Repository.DiaChiRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class DiaChiService {
 	
@@ -22,5 +24,11 @@ public class DiaChiService {
 	public DiaChi AddDiaChi(DiaChi diachi)
 	{
 		return DiaChiRepository.save(diachi);
+	}
+	
+	@Transactional
+	public void Delete_DiaChi(String id)
+	{
+		DiaChiRepository.DeleteDiaChiById(id);
 	}
 }

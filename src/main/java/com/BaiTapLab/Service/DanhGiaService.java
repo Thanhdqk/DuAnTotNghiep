@@ -12,19 +12,20 @@ import com.BaiTapLab.Repository.DanhGiaRepository;
 public class DanhGiaService {
 	@Autowired
 	DanhGiaRepository DanhGiaRepository;
-	
-	public List<DanhGia> FindDanhGiaByIdSanPham(String id)
-	{
+
+	public DanhGia saveReview(DanhGia danhGia) {
+		return DanhGiaRepository.save(danhGia);
+	}
+
+	public List<DanhGia> FindDanhGiaByIdSanPham(String id) {
 		return DanhGiaRepository.findDangGiaByidSanPham(id);
 	}
-	
-	public List<DanhGia> FindDanhGiaByIdSanPhamWithSoSao(String id ,int sosao)
-	{
+
+	public List<DanhGia> FindDanhGiaByIdSanPhamWithSoSao(String id, int sosao) {
 		return DanhGiaRepository.findDangGiaByidSanPhamWithSoSao(id, sosao);
 	}
-	
-	public List<DanhGia> FindDanhGiaByIdSanPhamWithDay(String id)
-	{
+
+	public List<DanhGia> FindDanhGiaByIdSanPhamWithDay(String id) {
 		return DanhGiaRepository.findAllDanhGiasOrderedByDate(id);
 	}
 }

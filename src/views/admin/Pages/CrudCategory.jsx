@@ -524,7 +524,9 @@ const CrudCategory = () => {
 
 
 
-                  <img className='img-fluid' style={{ height: "80px" }} src={`images/${formik.values.image}`} alt="" />
+                  <img className='img-fluid' style={{ height: "80px" }} onDoubleClick={()=>{
+                    formik.setFieldValue('image', "");
+                  }} src={`images/${formik.values.image}`} alt="" />
 
 
                 </label>}

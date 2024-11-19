@@ -308,13 +308,14 @@ function Cart() {
                                         <div className="d-flex align-items-center" style={{ height: '40px' }}>
                                             <img width={32} height={32} src="https://img.icons8.com/windows/32/user-male-circle.png" alt="user" className="icon" />
                                             <p style={{ fontWeight: 'bold', margin: '0', paddingRight: '50px' }}>Thông tin người nhận:</p>
-                                            <p style={{ margin: '0' }} >{address.users.hovaten} | {address.users.so_dien_thoai}</p>
+                                            <p style={{ margin: '0' }} >{address?.users?.hovaten} | {address?.users?.so_dien_thoai}</p>
                                         </div>
                                         <div className="d-flex align-items-center" style={{ height: '40px' }}>
                                             <img width={32} height={32} src="https://img.icons8.com/windows/32/home.png" alt="home" className="icon" />
                                             <p style={{ fontWeight: 'bold', margin: '0', paddingRight: '80px' }}>Địa chỉ giao hàng:</p>
-                                            <p style={{ margin: '0' }}>{address.dia_chi}</p>
+                                            <p style={{ margin: '0' }}>{address?.dia_chi}</p>
                                         </div>
+
 
                                         {AddressCurrent?.dia_chiID !== address.dia_chiID ? <div className="d-flex align-items-center" style={{ height: '60px' }}>
                                             <button onClick={() => {
@@ -387,7 +388,7 @@ function Cart() {
                                         />
                                     </div>
                                     <div className="me-3">
-                                       <select className="form-select form-select-sm province" >
+                                        <select className="form-select form-select-sm province" >
                                             <option value={'202'} label="Thành phó Hồ Chí Minh" selected>Thành phố Hồ Chí Minh</option>
                                         </select>
                                     </div>
@@ -432,6 +433,14 @@ function Cart() {
                         <p className="tieude">Cửa hàng:</p>
                         <p className="noidung" style={{ paddingLeft: '293px' }}>Quận 7</p>
                     </div>
+                    {AddressCurrent?.dia_chi != "" && AddressCurrent?.users?.hovaten != "" && AddressCurrent?.users?.so_dien_thoai != "" ?
+                      <></>
+                        :  <div className="d-flex align-items-center" style={{ height: '40px' }}>
+
+
+                        <p className="text-danger fw-bold" style={{ margin: '0', paddingLeft: '400px' }}>Hãy nhập đầy đủ thông tin để có thể thanh toán</p>
+                    </div>  
+                    }
                 </div>
             </div>
 
@@ -699,10 +708,10 @@ function Cart() {
                         </div>
                         <div className="col-12 mt-2 thanhtoan" >
                             <NavLink to="/thanhtoan">
-                                <button disabled={ListSPChecked.length === 0} style={{
+                                <button disabled={ListSPChecked.length === 0 && AddressCurrent?.dia_chi == "" && AddressCurrent?.users?.hovaten == "" && AddressCurrent?.users?.so_dien_thoai == ""} style={{
                                     width: '100%', height: '45px',
                                     borderRadius: '5px', border: 'none',
-                                    backgroundColor: ListSPChecked.length === 0 ? 'black' : 'red',
+                                    backgroundColor: ListSPChecked.length === 0 || AddressCurrent?.dia_chi == "" || AddressCurrent?.users?.hovaten == "" || AddressCurrent?.users?.so_dien_thoai == ""  ? 'black' : 'red',
                                     color: 'white', fontWeight: 'bolder'
 
                                 }}>Thanh toán</button>

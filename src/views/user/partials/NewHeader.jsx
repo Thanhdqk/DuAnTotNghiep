@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { ListProductSearch } from '../Reducer/productReducer';
@@ -16,15 +16,54 @@ const NewHeader = () => {
     const mostpbuyed = useSelector(state => state.product.ListProductTopSale);
 
     const [Text, SetText] = useState("");
-
+    const [suggest, Setsuggest] = useState([]);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const cart = useSelector(state => state.cart.CartDatabase)
+
+    const api_Suggest = async (name) => {
+        if (name.trim() === '') {
+            Setsuggest([]); // Xóa gợi ý khi ô tìm kiếm trống
+            return;
+        }
+        try {
+            const res = await axios({ url: `http://localhost:8080/Product/FindByKeyWord?name=${name}`, method: "GET" });
+            Setsuggest(res.data); // Lưu dữ liệu vào state suggest
+            console.log("render suggest")
+        } catch (error) {
+            console.error("Lỗi API:", error); // Xử lý lỗi
+        }
+    }
+
+
+    // Hàm debounce để trì hoãn việc gọi API
+    const debounce = (func, delay) => {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                func(...args); // Gọi hàm func sau delay
+            }, delay);
+        };
+    };
+
+    // Tạo hàm debouncedApiSuggest từ api_Suggest với debounce 1.5 giây (1500ms)
+    const debouncedApiSuggest = useCallback(debounce(api_Suggest, 1000), []);
+
+    const highlightText = (text, keyword) => {
+        if (!keyword) return text; // Nếu không có từ khóa, trả về văn bản gốc
+        const regex = new RegExp(`(${keyword})`, 'gi'); // Tạo biểu thức chính quy không phân biệt chữ hoa/thường
+        return text.replace(regex, (match) => `<span class="highlight">${match}</span>`); // Bao quanh từ khóa tìm được bằng <span> có class "highlight"
+    };
     // Xử lý khi click bên ngoài để đóng popup
     useEffect(() => {
         dispatch(CallAPI_Cart(userId))
         SethistorySearch(JSON.parse(localStorage.getItem("HistorySearch")) || [])
+
+
+
+
         const handleClickOutside = (event) => {
             if (
                 !event.target.closest('.search-container') &&
@@ -46,6 +85,7 @@ const NewHeader = () => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('scroll', handleScroll);
+
         };
     }, []);
 
@@ -98,7 +138,11 @@ const NewHeader = () => {
                         <form className="col-4 col-md-6 mt-2 mt-md-0 d-flex justify-content-center mt-2" onSubmit={handleSubmit}>
                             <input type="text" className="form-control me-2 search" placeholder="Tìm kiếm" value={Text} onChange={(e) => {
                                 SetText(e.target.value)
-                                if (e.target.value === '') { dispatch(SetTEXT('')); }
+                                if (e.target.value === '') {
+                                    dispatch(SetTEXT(''));
+                                }
+                                debouncedApiSuggest(e.target.value)
+
                             }} onClick={handleInputClick} />
                             <button className="btn btn-outline-secondary" type="submit">
                                 <i className="bi bi-search"></i>
@@ -198,11 +242,11 @@ const NewHeader = () => {
                     }}>
                         <div className="popup-content">
                             <div className="history row mx-auto">
-                                <div className="col-md-6 " style={{ borderRight: '1px solid black' }}>
+                                {Text == "" ? <div className="col-md-6 " style={{ borderRight: '1px solid black' }}>
                                     <h5 style={{ fontWeight: 'bold', marginBottom: '1rem', color: '#333' }}>Lịch sử</h5>
                                     <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
                                         {historySearch.slice(0, 10).map((object, index) => {
-                                            return <li onClick={async () => {
+                                            return <li key={index} onClick={async () => {
 
                                                 const res = await axios({ url: `http://localhost:8080/Product/FindbyName?name=${object}`, method: 'GET' })
                                                 const api = ListProductSearch(res.data);
@@ -210,11 +254,35 @@ const NewHeader = () => {
                                                 dispatch(api);
                                                 dispatch(SetTEXT(object));
                                                 setShowPopup(false);
+                                                let updateHistory = [object, ...historySearch];
+                                                SethistorySearch(updateHistory);
+                                                localStorage.setItem("HistorySearch", JSON.stringify(updateHistory));
                                                 navigate('/search')
                                             }} style={{ marginBottom: '0.5rem', color: '#555', cursor: 'pointer' }}>{object}</li>
                                         })}
                                     </ul>
                                 </div>
+                                    :
+                                    <div className="col-md-6 " style={{ borderRight: '1px solid black' }}>
+                                        <h5 style={{ fontWeight: 'bold', marginBottom: '1rem', color: '#333' }}>Gợi ý tìm kiếm</h5>
+                                        <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+                                            {suggest.map((object, index) => {
+                                                return <li key={index} dangerouslySetInnerHTML={{ __html: highlightText(object, Text) }} onClick={async () => {
+
+                                                    const res = await axios({ url: `http://localhost:8080/Product/FindbyName?name=${object}`, method: 'GET' })
+                                                    const api = ListProductSearch(res.data);
+                                                    SetText(object)
+                                                    dispatch(api);
+                                                    dispatch(SetTEXT(object));
+                                                    setShowPopup(false);
+                                                    let updateHistory = [object, ...historySearch];
+                                                    SethistorySearch(updateHistory);
+                                                    localStorage.setItem("HistorySearch", JSON.stringify(updateHistory));
+                                                    navigate('/search')
+                                                }} style={{ marginBottom: '0.5rem', color: '#555', cursor: 'pointer' }}></li>
+                                            })}
+                                        </ul>
+                                    </div>}
                                 <div className="col-md-6">
                                     <div className="keywords ms-1">
                                         <h5 style={{ fontWeight: 'bold', marginBottom: '1rem', color: '#333' }}>Sản phẩm mua nhiều nhất</h5>

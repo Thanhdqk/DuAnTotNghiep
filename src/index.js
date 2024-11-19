@@ -41,6 +41,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import GoogleLoginButton from './views/user/Pages/GoogleLoginButton ';
 import SearchByBanner from './views/user/Pages/SearchByBanner';
 import RenderLogin from './views/user/Pages/RenderLogin'
+import CRUDAnh from './views/admin/Pages/CRUDAnh';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -84,6 +85,7 @@ root.render(
         <Route path='/admin/login' element={<AdminLogin></AdminLogin>} />
         <Route path='ga1' element={<Test></Test>}></Route>
         <Route path='danhmuc' element={<CrudCategory></CrudCategory>}></Route>
+        <Route path='hinhanh' element={<CRUDAnh></CRUDAnh>}></Route>
         <Route path='popup' element={<CrudPOPUP></CrudPOPUP>}></Route>
        
         

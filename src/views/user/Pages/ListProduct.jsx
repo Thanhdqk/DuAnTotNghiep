@@ -86,7 +86,7 @@ const ListProduct = ({ products }) => {
             {product.so_luong > 0 ? (
                 <NavLink to={`/product/detail/${product.san_phamId}`} className="nav1-link">
                     <img
-                        src={`/images/${product.hinhanh[0].ten_hinh}`}
+                        src={`/images/${product?.hinhanh[0]?.ten_hinh}`}
                         className="img-fluid mx-auto"
                         style={{ maxWidth: 200, maxHeight: 200 }}
                         alt=""

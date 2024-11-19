@@ -708,7 +708,7 @@ function Cart() {
                         </div>
                         <div className="col-12 mt-2 thanhtoan" >
                             <NavLink to="/thanhtoan">
-                                <button disabled={ListSPChecked.length === 0 && AddressCurrent?.dia_chi == "" && AddressCurrent?.users?.hovaten == "" && AddressCurrent?.users?.so_dien_thoai == ""} style={{
+                                <button disabled={ListSPChecked.length === 0 || AddressCurrent?.dia_chi == "" || AddressCurrent?.users?.hovaten == "" || AddressCurrent?.users?.so_dien_thoai == ""} style={{
                                     width: '100%', height: '45px',
                                     borderRadius: '5px', border: 'none',
                                     backgroundColor: ListSPChecked.length === 0 || AddressCurrent?.dia_chi == "" || AddressCurrent?.users?.hovaten == "" || AddressCurrent?.users?.so_dien_thoai == ""  ? 'black' : 'red',

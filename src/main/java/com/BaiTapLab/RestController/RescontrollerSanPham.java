@@ -34,6 +34,12 @@ public class RescontrollerSanPham {
 		return SanPhamService.FindProductThisWeek();
 	}
 	
+	@GetMapping("FindNameSP")
+	public List<String> getMethodNameSanPham() {
+		return SanPhamService.findALLname();
+	}
+	
+	
 	@GetMapping("FindProductThisWeekTOP10")
 	public List<SanPham> FindProductThisWeekTOP10() {
 		
@@ -82,6 +88,14 @@ public class RescontrollerSanPham {
 		
 		return SanPhamService.FindSanPhamByDanhMucID(id);
 	}
+	
+	// tìm kiếm sản phẩm theo id danh mục
+		@GetMapping("Product/FindByKeyWord")
+		public List<String> FindByKeyWord(@RequestParam("name")String name) {
+			
+			
+			return SanPhamService.FindProductSuggest(name,PageRequest.of(0, 10));
+		}
 	
 	//tìm sản phẩm theo tên % %
 	@GetMapping("Product/FindbyName")

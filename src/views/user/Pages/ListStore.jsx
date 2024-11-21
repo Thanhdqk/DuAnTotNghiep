@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom';
 import { addItemToCart } from '../Reducer/cartReducer';
-
+import { Pagination } from 'antd';
 const ListStore = ({ Products, checked }) => {
   const listProduct = useSelector(state => state.product.ListProductSearch);
   const TextSearch = useSelector(state => state.textSearch.Text);
@@ -12,13 +12,35 @@ const ListStore = ({ Products, checked }) => {
   const [firstSearch, SetfirstSearch] = useState(true);
   const dispatch = useDispatch();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(9); // Số lượng sản phẩm mỗi trang
+
+  // Lấy danh sách sản phẩm hiện tại dựa trên phân trang
+  const currentProducts = Products.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const currentlistProduct = listProduct.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const handlePageChange = (page, pageSize) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+
+  };
+
   useEffect(() => {
+    console.log("gay")
     if (TextSearch || danhmuc || sosao || checked || price) {
       SetfirstSearch(false);
     }
-  }, [TextSearch, sosao, danhmuc, checked, price]);
+  }, [TextSearch, sosao, danhmuc, checked, price,Products]);
 
   return (
+    <>   
     <div style={{
       display: 'flex',
       justifyContent: 'center',
@@ -26,12 +48,12 @@ const ListStore = ({ Products, checked }) => {
       gap: '10px',
       marginTop: '20px'
     }}>
-      {firstSearch ? Products.map((product) => {
+      {firstSearch ? currentProducts.map((product) => {
         const totalStars = product.danhgia.reduce((sum, rating) => sum + rating.so_sao, 0);
         const averageStars = product.danhgia.length > 0 ? (totalStars / product.danhgia.length).toFixed(1) : 0;
 
         return (
-          <div
+          <> <div
             className="card-container card mx-4 mt-3"
             key={product.san_phamId}
             style={{
@@ -201,9 +223,14 @@ const ListStore = ({ Products, checked }) => {
                 ></i>
               </div>
             )}
+            
           </div>
+        
+           
+           
+            </>
         );
-      }) : listProduct.length > 0 ? listProduct.map((product) => {
+      }) : listProduct.length > 0 ? currentlistProduct.map((product) => {
         const totalStars = product.danhgia.reduce((sum, rating) => sum + rating.so_sao, 0);
         const averageStars = product.danhgia.length > 0 ? (totalStars / product.danhgia.length).toFixed(1) : 0;
 
@@ -391,7 +418,29 @@ const ListStore = ({ Products, checked }) => {
           </div>
         </div>
       )}
+
+
+     
     </div>
+   
+    {firstSearch == true || listProduct.length >0 ?  
+      <div className="col-md-12 d-flex justify-content-center align-items-center mt-1 mb-4">
+            <Pagination 
+        current={currentPage}
+        pageSize={pageSize}
+        total={firstSearch ==true ?  Products.length : listProduct.length }
+        onChange={handlePageChange}
+        showSizeChanger
+        pageSizeOptions={['8', '16', '24']}
+        style={{ textAlign: 'center', marginTop: '20px' }}
+      />
+      
+            </div>
+    :
+    null
+    }
+    
+    </>
   );
 };
 

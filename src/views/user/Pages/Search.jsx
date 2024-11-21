@@ -24,7 +24,7 @@ const Search = () => {
 
     try {
       const API_Danhmuc = await axios({ url: 'http://localhost:8080/findAllCategory', method: 'GET' });
-      const API_SanPham = await axios({ url: 'http://localhost:8080/FindProductThisWeek', method: 'GET' });
+      const API_SanPham = await axios({ url: 'http://localhost:8080/FindProductTopSell', method: 'GET' });
 
       SetDanhmuc(API_Danhmuc.data);
       SetProduct(API_SanPham.data)
@@ -36,9 +36,88 @@ const Search = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    const res = await axios({ url: `http://localhost:8080/Product/FindbyPrice?price1=${minPrice}&price2=${maxPrice}`, method: 'GET' })
-    dispatch(ListProductSearch(res.data));
-    dispatch(SetPrice(10000))
+    
+   
+    const Default1 = minPrice;
+    const Default2 = maxPrice;
+
+const apiMapWithDiscount = {
+"danhmuc_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}`,
+"text_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndTextWithDiscount?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}`,
+"sosao_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&sosao=${sosao}`,
+"name_sosao": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndTextAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}&sosao=${sosao}`,
+"name_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndTextWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}`,
+"sosao_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&sosao=${sosao}`,
+"name_sosao_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndTextAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}&sosao=${sosao}`,
+"no_filters": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDiscount?Default1=${Default1}&Default2=${Default2}`
+};
+
+
+
+const apiMapWithoutDiscount = {
+"danhmuc_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMuc?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}`,
+"text_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndText?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}`,
+"sosao_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndSosao?Default1=${Default1}&Default2=${Default2}&sosao=${sosao}`,
+"name_sosao": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndTextAndSosao?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}&sosao=${sosao}`,
+"name_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndText?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}`,
+"sosao_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndSosao?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&sosao=${sosao}`,
+"name_sosao_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndTextAndSosao?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}&sosao=${sosao}`,
+"no_filters": `http://localhost:8080/Product/FindSanPhamByPriceDefault?Default1=${Default1}&Default2=${Default2}`
+};
+
+
+
+    const getApiKey = () => {
+
+      if (isChecked) {
+        if (TextSearch === '' && sosao === "" && danhmuc !== "") return "danhmuc_only";
+        if (TextSearch !== '' && sosao === "" && danhmuc == "") return "text_only";
+        if (TextSearch === '' && sosao != "" && danhmuc == "") return "sosao_only";
+
+        if (TextSearch !== '' && sosao !== "" && danhmuc == "") return "name_sosao";
+        if (TextSearch == '' && sosao != "" && danhmuc != "") return "sosao_danhmuc";
+        if (TextSearch !== '' && sosao == "" && danhmuc != "") return "name_danhmuc";
+
+        if (TextSearch !== '' && sosao !== "" && danhmuc != "") return "name_sosao_danhmuc";
+        if (danhmuc === "" && TextSearch === "" && sosao === "") return "no_filters";
+      } else {  // Trường hợp không có giảm giá
+        if (TextSearch === '' && sosao === "" && danhmuc !== "") return "danhmuc_only";
+        if (TextSearch !== '' && sosao === "" && danhmuc == "") return "text_only";
+        if (TextSearch === '' && sosao != "" && danhmuc == "") return "sosao_only";
+
+        if (TextSearch !== '' && sosao !== "" && danhmuc == "") return "name_sosao";
+        if (TextSearch == '' && sosao != "" && danhmuc != "") return "sosao_danhmuc";
+        if (TextSearch !== '' && sosao == "" && danhmuc != "") return "name_danhmuc";
+
+        if (TextSearch !== '' && sosao !== "" && danhmuc != "") return "name_sosao_danhmuc";
+        if (danhmuc === "" && TextSearch === "" && sosao === "") return "no_filters";
+      }
+      return null; // Trường hợp không có điều kiện nào thỏa mãn
+    };
+
+    const apiKey = getApiKey(); // Lấy khóa API từ hàm getApiKey
+
+    if (apiKey) {
+      try {
+        // Chọn đúng apiMap dựa trên trạng thái có giảm giá hay không
+        const apiUrl = isChecked ? apiMapWithDiscount[apiKey] : apiMapWithoutDiscount[apiKey];
+        console.log("dataaa",apiUrl)
+        const res = await axios({
+          url: apiUrl, // Sử dụng URL tương ứng
+          method: 'GET',
+        });
+
+        const productsearch = ListProductSearch(res.data);
+        dispatch(productsearch);
+      } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+      }
+      dispatch(SetPrice(10000))
+
+    }
+  
+
+
     const radioButtonPrice = document.querySelectorAll('input[name="flexRadioDefault1"]');
     radioButtonPrice.forEach((radio) => {
       radio.checked = false;
@@ -105,48 +184,131 @@ const Search = () => {
 
 
 
-                if (TextSearch === '' && sosao === "") {
-                  try {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindByCategory?id=${danhmuc}`, method: 'GET' })
-                    const productsearch = ListProductSearch(res.data)
-                    dispatch(productsearch)
-                    dispatch(SetDanhMuc(danhmuc))
-                    SetDanhmucCurrent(danhmuc)
+                if (isChecked) {
+                  if (TextSearch === '' && sosao === "") {
+                    // Tìm kiếm sản phẩm theo danh mục
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindByCategoryWithDiscount?id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      SetDanhmucCurrent(danhmuc);
+                      dispatch(SetDanhMuc(danhmuc));
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo danh mục:", error);
+                    }
                   }
-
-                  catch (error) { }
-
-
-                }
-                if (TextSearch === '' && isChecked && sosao === "") {
-                  try {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindbyDanhmucWithDiscount?id=${danhmuc}`, method: 'GET' })
-                    const productsearch = ListProductSearch(res.data)
-                    SetDanhmucCurrent(danhmuc)
-                    dispatch(SetDanhMuc(danhmuc))
-                    dispatch(productsearch)
-
-
+                  if (TextSearch !== '' && sosao === "") {
+                    // Tìm kiếm sản phẩm theo tên
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbyNameandDanhmucWithDiscount2?name=${TextSearch}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                      SetDanhmucCurrent(danhmuc);
+                      dispatch(SetDanhMuc(danhmuc))
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo tên:", error);
+                    }
                   }
-
-                  catch (error) { }
-                }
-
-
-                else {
-                  try {
-                    const res = await axios({ url: `http://localhost:8080/Product/FindbyNameandDanhmuc?id=${danhmuc}&name=${TextSearch}`, method: 'GET' })
-                    const productsearch = ListProductSearch(res.data)
-                    SetDanhmucCurrent(danhmuc)
-                    dispatch(SetDanhMuc(danhmuc))
-                    dispatch(productsearch)
-
+                  if (TextSearch === '' && sosao !== "") {
+                    // Tìm kiếm sản phẩm theo số sao
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbySoSaoandDanhmucWithDiscount?sosao=${sosao}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                      SetDanhmucCurrent(danhmuc);
+                      dispatch(SetDanhMuc(danhmuc))
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo số sao:", error);
+                    }
                   }
-
-                  catch (error) { }
-
-
+                  if (TextSearch !== '' && sosao !== "") {
+                    // Tìm kiếm sản phẩm theo tên và số sao
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbySoSaoandDanhmucandNameWithDiscount?name=${TextSearch}&sosao=${sosao}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                      SetDanhmucCurrent(danhmuc);
+                      dispatch(SetDanhMuc(danhmuc))
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo tên và số sao:", error);
+                    }
+                  }
+                } else {
+                  // Trường hợp: Không giảm giá
+                  if (TextSearch === '' && sosao === "") {
+                    // Tìm kiếm sản phẩm theo danh mục
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindByCategory?id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      SetDanhmucCurrent(danhmuc);
+                      dispatch(SetDanhMuc(danhmuc));
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo danh mục:", error);
+                    }
+                  }
+                  if (TextSearch !== '' && sosao === "") {
+                    // Tìm kiếm sản phẩm theo tên
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbyNameandDanhmuc?name=${TextSearch}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                      SetDanhmucCurrent(danhmuc);
+                      dispatch(SetDanhMuc(danhmuc))
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo tên:", error);
+                    }
+                  }
+                  if (TextSearch === '' && sosao !== "") {
+                    // Tìm kiếm sản phẩm theo số sao
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbySoSaoandDanhmuc?sosao=${sosao}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                      SetDanhmucCurrent(danhmuc);
+                      dispatch(SetDanhMuc(danhmuc))
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo số sao:", error);
+                    }
+                  }
+                  if (TextSearch !== '' && sosao !== "") {
+                    // Tìm kiếm sản phẩm theo tên và số sao
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbySoSaoandDanhmucandName?name=${TextSearch}&sosao=${sosao}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                      SetDanhmucCurrent(danhmuc);
+                      dispatch(SetDanhMuc(danhmuc))
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo tên và số sao:", error);
+                    }
+                  }
                 }
+
 
               }} key={d.danh_mucId} data-value={`${d.danh_mucId}`} style={danhmuc === d.danh_mucId ? { backgroundColor: 'blue', color: 'white' } : null}  >{d.ten_loaiDM} </li>
             })}
@@ -159,69 +321,228 @@ const Search = () => {
                 const checked = e.target.checked;
                 setIsChecked(checked);
 
+
                 if (checked) {
 
-                  if (danhmuc === '' && TextSearch !== '' && sosao === "") {
-                    const All = await axios({ url: `http://localhost:8080/Product/FindbyNameWithDiscount?name=${TextSearch}`, method: 'GET' });
-                    dispatch(ListProductSearch(All.data));
-                    console.log("dm rỗng")
+                  if (TextSearch === '' && sosao === "" && danhmuc !== "") {
+                    // Tìm kiếm sản phẩm theo danh mục
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindByCategoryWithDiscount?id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      SetDanhmucCurrent(danhmuc);
+                      dispatch(SetDanhMuc(danhmuc));
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo danh mục:", error);
+                    }
                   }
-
-                  else if (TextSearch === '' && danhmuc !== '' && sosao === "") {
-                    const All = await axios({ url: `http://localhost:8080/Product/FindbyDanhmucWithDiscount?id=${danhmuc}`, method: 'GET' });
-                    dispatch(ListProductSearch(All.data));
-                    console.log("search rỗng")
+                  if (TextSearch !== '' && sosao === "" && danhmuc !== "") {
+                    // Tìm kiếm sản phẩm theo tên
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbyNameandDanhmucWithDiscount2?name=${TextSearch}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo tên:", error);
+                    }
                   }
-                  else if (sosao !== "" && TextSearch === '' && danhmuc === '') {
+                  if (TextSearch === '' && sosao !== "" && danhmuc !== "") {
+                    // Tìm kiếm sản phẩm theo số sao
                     if (sosao == 5) {
-                      const All = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5HaveDiscount`, method: 'GET' });
-                      dispatch(ListProductSearch(All.data));
+
                     }
-                    else {
-                      const All = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoHaveDiscount?sosao=${sosao}`, method: 'GET' });
-                      dispatch(ListProductSearch(All.data));
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbySoSaoandDanhmucWithDiscount?sosao=${sosao}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo số sao:", error);
                     }
                   }
-                  else if (TextSearch === '' && danhmuc === '' && sosao === '') {
-                    const All = await axios({ url: `http://localhost:8080/FindProductDiscount`, method: 'GET' });
-                    dispatch(ListProductSearch(All.data));
-                    console.log("tất cả rỗng")
+                  if (TextSearch !== '' && sosao !== "" && danhmuc !== "") {
+                    // Tìm kiếm sản phẩm theo tên và số sao
+                    if (sosao == 5) {
+
+                    }
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbySoSaoandDanhmucandNameWithDiscount?name=${TextSearch}&sosao=${sosao}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo tên và số sao:", error);
+                    }
                   }
 
+                  if (danhmuc == "" && TextSearch == "" && sosao == "") {
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/FindProductDiscount`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo tên và số sao:", error);
+                    }
 
+                  }
+                } else {
+                  // Trường hợp: Không giảm giá
+                  if (TextSearch === '' && sosao === "" && danhmuc !== "") {
+                    // Tìm kiếm sản phẩm theo danh mục
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindByCategory?id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      SetDanhmucCurrent(danhmuc);
+                      dispatch(SetDanhMuc(danhmuc));
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo danh mục:", error);
+                    }
+                  }
+                  if (TextSearch !== '' && sosao === "" && danhmuc !== "") {
+                    // Tìm kiếm sản phẩm theo tên
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbyNameandDanhmuc?name=${TextSearch}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo tên:", error);
+                    }
+                  }
+                  if (TextSearch === '' && sosao !== "" && danhmuc !== "") {
+                    // Tìm kiếm sản phẩm theo số sao
 
-                  else {
-                    const All = await axios({ url: `http://localhost:8080/Product/FindbyNameandDanhmucWithDiscount?id=${danhmuc}&name=${TextSearch}`, method: 'GET' });
-                    dispatch(ListProductSearch(All.data));
+                    if (sosao == 5) {
+
+                    }
+
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbySoSaoandDanhmuc?sosao=${sosao}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo số sao:", error);
+                    }
+                  }
+                  if (TextSearch !== '' && sosao !== "" && danhmuc !== "") {
+                    // Tìm kiếm sản phẩm theo tên và số sao
+
+                    if (sosao == 5) {
+
+                    }
+
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/Product/FindbySoSaoandDanhmucandName?name=${TextSearch}&sosao=${sosao}&id=${danhmuc}`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo tên và số sao:", error);
+                    }
                   }
 
+                  if (danhmuc == "" && TextSearch == "" && sosao == "") {
+                    try {
+                      const res = await axios({
+                        url: `http://localhost:8080/FindProductTopSell`,
+                        method: 'GET',
+                      });
+                      const productsearch = ListProductSearch(res.data);
+                      dispatch(productsearch);
+                    } catch (error) {
+                      console.error("Lỗi khi tìm kiếm sản phẩm theo tên và số sao:", error);
+                    }
+
+                  }
                 }
-                else {
 
-                  if (danhmuc === '' && TextSearch !== '') {
-                    const All = await axios({ url: `http://localhost:8080/Product/findSanPhamByTenWithOutGG?name=${TextSearch}`, method: 'GET' });
-                    dispatch(ListProductSearch(All.data));
-                    console.log("dm rỗng")
-                  }
+                // if (checked) {
 
-                  else if (TextSearch === '' && danhmuc !== '') {
-                    const All = await axios({ url: `http://localhost:8080/Product/findSanPhamByDandMucAndWithOutGG?id=${danhmuc}`, method: 'GET' });
-                    dispatch(ListProductSearch(All.data));
-                    console.log("search rỗng")
-                  }
-                  else if (TextSearch !== '' && danhmuc !== '') {
-                    const All = await axios({ url: `http://localhost:8080/Product/FindbyNameandDanhmucWithoutDiscount?id=${danhmuc}&name=${TextSearch}`, method: 'GET' });
-                    dispatch(ListProductSearch(All.data));
-                    console.log("search rỗng")
-                  }
-                  else if (TextSearch === '' && danhmuc === '') {
-                    const All = await axios({ url: `http://localhost:8080/FindProductThisWeek`, method: 'GET' });
-                    dispatch(ListProductSearch(All.data));
-                    console.log("rỗng")
+                //   if (danhmuc === '' && TextSearch !== '' && sosao === "") {
+                //     const All = await axios({ url: `http://localhost:8080/Product/FindbyNameWithDiscount?name=${TextSearch}`, method: 'GET' });
+                //     dispatch(ListProductSearch(All.data));
+                //     console.log("dm rỗng")
+                //   }
 
-                  }
+                //   else if (TextSearch === '' && danhmuc !== '' && sosao === "") {
+                //     const All = await axios({ url: `http://localhost:8080/Product/FindbyDanhmucWithDiscount?id=${danhmuc}`, method: 'GET' });
+                //     dispatch(ListProductSearch(All.data));
+                //     console.log("search rỗng")
+                //   }
+                //   else if (sosao !== "" && TextSearch === '' && danhmuc === '') {
+                //     if (sosao == 5) {
+                //       const All = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5HaveDiscount`, method: 'GET' });
+                //       dispatch(ListProductSearch(All.data));
+                //     }
+                //     else {
+                //       const All = await axios({ url: `http://localhost:8080/Product/FindSanPhamBySoSaoHaveDiscount?sosao=${sosao}`, method: 'GET' });
+                //       dispatch(ListProductSearch(All.data));
+                //     }
+                //   }
+                //   else if (TextSearch === '' && danhmuc === '' && sosao === '') {
+                //     const All = await axios({ url: `http://localhost:8080/FindProductDiscount`, method: 'GET' });
+                //     dispatch(ListProductSearch(All.data));
+                //     console.log("tất cả rỗng")
+                //   }
 
-                }
+
+
+                //   else {
+                //     const All = await axios({ url: `http://localhost:8080/Product/FindbyNameandDanhmucWithDiscount?id=${danhmuc}&name=${TextSearch}`, method: 'GET' });
+                //     dispatch(ListProductSearch(All.data));
+                //   }
+
+                // }
+                // else {
+
+                //   if (danhmuc === '' && TextSearch !== '') {
+                //     const All = await axios({ url: `http://localhost:8080/Product/findSanPhamByTenWithOutGG?name=${TextSearch}`, method: 'GET' });
+                //     dispatch(ListProductSearch(All.data));
+                //     console.log("dm rỗng")
+                //   }
+
+                //   else if (TextSearch === '' && danhmuc !== '') {
+                //     const All = await axios({ url: `http://localhost:8080/Product/findSanPhamByDandMucAndWithOutGG?id=${danhmuc}`, method: 'GET' });
+                //     dispatch(ListProductSearch(All.data));
+                //     console.log("search rỗng")
+                //   }
+                //   else if (TextSearch !== '' && danhmuc !== '') {
+                //     const All = await axios({ url: `http://localhost:8080/Product/FindbyNameandDanhmucWithoutDiscount?id=${danhmuc}&name=${TextSearch}`, method: 'GET' });
+                //     dispatch(ListProductSearch(All.data));
+                //     console.log("search rỗng")
+                //   }
+                //   else if (TextSearch === '' && danhmuc === '') {
+                //     const All = await axios({ url: `http://localhost:8080/FindProductThisWeek`, method: 'GET' });
+                //     dispatch(ListProductSearch(All.data));
+                //     console.log("rỗng")
+
+                //   }
+
+                // }
 
 
               }}
@@ -238,7 +559,7 @@ const Search = () => {
               <input onClick={async () => {
                 // start 1
 
-                findBySoSao(5)
+                findBySoSao(1)
 
                 // end 1
               }} className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" />
@@ -302,8 +623,9 @@ const Search = () => {
                     dispatch(ListProductSearch(res.data));
                   }
                   else if (danhmuc !== '' && TextSearch === '') {
-                    const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndDanhMucHaveDisCount?id=?${danhmuc}`, method: "GET" })
-                    console.log('res 2', res.data)
+                    const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndDanhMucHaveDisCount?id=${danhmuc}`, method: "GET" })
+                    console.log('res 2 dssad ', danhmuc)
+                    console.log('res 2 dssad ', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
@@ -368,37 +690,80 @@ const Search = () => {
           <div className="form-check">
             <input onClick={async () => {
 
-              // let url = 'http://localhost:8080/Product/FindbyPriceLess?price=10000';
+              const apiMapWithoutDiscount = {
+                "danhmuc_only": `http://localhost:8080/Product/FindByPriceLessAndCategory?price=10000&category=${danhmuc}`,
+                "text_only": `http://localhost:8080/Product/FindByPriceLessAndText?text=${TextSearch}&price=10000`,
+                "sosao_only": `http://localhost:8080/Product/FindByPriceLessAndRating?rating=${sosao}&price=10000`,
+                "name_sosao": `http://localhost:8080/Product/FindByPriceLessAndTextAndRating?name=${TextSearch}&rating=${sosao}&id=${danhmuc}&price=10000`,
+                "name_danhmuc": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndText?name=${TextSearch}&category=${danhmuc}&price=10000`,
+                "sosao_danhmuc": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndRating?rating=${sosao}&id=${danhmuc}&price=10000`,
+                "name_sosao_danhmuc": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndTextAndRating?rating=${sosao}&id=${danhmuc}?text=${TextSearch}&price=10000`,
+                "no_filters": `http://localhost:8080/Product/FindbyPriceLess?price=10000`,
+              };
 
-              // // Cấu hình filters dựa trên điều kiện hiện tại
-              // const filters = {
-              //   danhmuc,
-              //   TextSearch,
-              //   isChecked,
-              //   sosao
-              // };
+
+              const apiMapWithDiscount = {
+               "danhmuc_only": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndPromotion?category=${danhmuc}&price=10000`,
+                "text_only": `http://localhost:8080/Product/FindByPriceLessAndTextAndPromotion?text=${TextSearch}&price=10000`,
+                "sosao_only": `http://localhost:8080/Product/FindByPriceLessAndPromotionAndRating?rating=${sosao}&price=10000`,
+                "name_sosao": `http://localhost:8080/Product/FindByPriceLessAndTextAndPromotionAndRating?name=${TextSearch}&rating=${sosao}&id=${danhmuc}&price=10000`,
+                "name_danhmuc": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndTextAndPromotion?name=${TextSearch}&category=${danhmuc}&price=10000`,
+                "sosao_danhmuc": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndPromotionAndRating?rating=${sosao}&id=${danhmuc}&price=10000`,
+                "name_sosao_danhmuc": `http://localhost:8080/Product/FindByAllConditions?rating=${sosao}&id=${danhmuc}?text=${TextSearch}&price=10000`,
+                "no_filters": `http://localhost:8080/Product/FindByPriceLessAndPromotion?price=10000`,
+              };
 
 
-              // if (filters.danhmuc) {
-              //   url += `&category=${filters.danhmuc}`;
-              // }
-              // if (filters.TextSearch) {
-              //   url += `&text=${filters.TextSearch}`;
-              // }
-              // if (filters.isChecked) {
-              //   url += `&promotion=true`;
-              // }
-              // if (filters.sosao) {
-              //   url += `&rating=${filters.sosao}`;
-              // }
+              const getApiKey = () => {
 
-              // const res = await axios({ url, method: 'GET' });
-              // dispatch(ListProductSearch(res.data));
-              // dispatch(SetPrice(10000));
+                if (isChecked) {
+                  if (TextSearch === '' && sosao === "" && danhmuc !== "") return "danhmuc_only";
+                  if (TextSearch !== '' && sosao === "" && danhmuc == "") return "text_only";
+                  if (TextSearch === '' && sosao != "" && danhmuc == "") return "sosao_only";
 
-              const res = await axios({ url: `http://localhost:8080/Product/FindbyPriceLess?price=10000`, method: 'GET' })
-              dispatch(ListProductSearch(res.data));
-              dispatch(SetPrice(10000))
+                  if (TextSearch !== '' && sosao !== "" && danhmuc == "") return "name_sosao";
+                  if (TextSearch == '' && sosao != "" && danhmuc != "") return "sosao_danhmuc";
+                  if (TextSearch !== '' && sosao == "" && danhmuc != "") return "name_danhmuc";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc != "") return "name_sosao_danhmuc";
+                  if (danhmuc === "" && TextSearch === "" && sosao === "") return "no_filters";
+                } else { 
+                   // Trường hợp không có giảm giá
+                  if (TextSearch === '' && sosao === "" && danhmuc !== "") return "danhmuc_only";
+                  if (TextSearch !== '' && sosao === "" && danhmuc == "") return "text_only";
+                  if (TextSearch === '' && sosao != "" && danhmuc == "") return "sosao_only";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc == "") return "name_sosao";
+                  if (TextSearch == '' && sosao != "" && danhmuc != "") return "sosao_danhmuc";
+                  if (TextSearch !== '' && sosao == "" && danhmuc != "") return "name_danhmuc";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc != "") return "name_sosao_danhmuc";
+                  if (danhmuc === "" && TextSearch === "" && sosao === "") return "no_filters";
+                }
+                return null; // Trường hợp không có điều kiện nào thỏa mãn
+              };
+
+              const apiKey = getApiKey(); // Lấy khóa API từ hàm getApiKey
+
+              if (apiKey) {
+                console.log("dsa",apiKey)
+                try {
+                  // Chọn đúng apiMap dựa trên trạng thái có giảm giá hay không
+                  const apiUrl = isChecked ? apiMapWithDiscount[apiKey] : apiMapWithoutDiscount[apiKey];
+                  console.log("dsa",apiUrl)
+                  const res = await axios({
+                    url: apiUrl, // Sử dụng URL tương ứng
+                    method: 'GET',
+                  });
+
+                  const productsearch = ListProductSearch(res.data);
+                  dispatch(productsearch);
+                } catch (error) {
+                  console.error("Lỗi khi gọi API:", error);
+                }
+                dispatch(SetPrice(10000))
+
+              }
 
 
             }} className="form-check-input" type="radio" name="flexRadioDefault1" id="flexRadioDefault9" />
@@ -413,38 +778,85 @@ const Search = () => {
           <div className="form-check">
             <input onClick={async () => {
 
-              // let url = "http://localhost:8080/Product/FindbyPrice?price1=50000&price2=100000";
+              const Default1 = 50000;
+              const Default2 = 100000;
 
-              // const filters = {
-              //   danhmuc,
-              //   TextSearch,
-              //   isChecked,
-              //   sosao
-              // };
+const apiMapWithDiscount = {
+  "danhmuc_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}`,
+  "text_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndTextWithDiscount?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}`,
+  "sosao_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&sosao=${sosao}`,
+  "name_sosao": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndTextAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}&sosao=${sosao}`,
+  "name_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndTextWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}`,
+  "sosao_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&sosao=${sosao}`,
+  "name_sosao_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndTextAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}&sosao=${sosao}`,
+  "no_filters": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDiscount?Default1=${Default1}&Default2=${Default2}`
+};
 
 
-              // if (filters.danhmuc) {
-              //   url += `&category=${filters.danhmuc}`;
-              // }
-              // if (filters.TextSearch) {
-              //   url += `&text=${filters.TextSearch}`;
-              // }
-              // if (filters.isChecked) {
-              //   url += `&promotion=true`;
-              // }
-              // if (filters.sosao) {
-              //   url += `&rating=${filters.sosao}`;
-              // }
 
-              // const res = await axios({ url, method: 'GET' })
-              // dispatch(ListProductSearch(res.data));
-              // dispatch(SetPrice(10000))
+const apiMapWithoutDiscount = {
+  "danhmuc_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMuc?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}`,
+  "text_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndText?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}`,
+  "sosao_only": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndSosao?Default1=${Default1}&Default2=${Default2}&sosao=${sosao}`,
+  "name_sosao": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndTextAndSosao?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}&sosao=${sosao}`,
+  "name_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndText?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}`,
+  "sosao_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndSosao?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&sosao=${sosao}`,
+  "name_sosao_danhmuc": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndTextAndSosao?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}&sosao=${sosao}`,
+  "no_filters": `http://localhost:8080/Product/FindSanPhamByPriceDefault?Default1=${Default1}&Default2=${Default2}`
+};
 
-              const res = await axios({ url: `http://localhost:8080/Product/FindbyPrice?price1=50000&price2=100000`, method: 'GET' })
-              dispatch(ListProductSearch(res.data));
-              dispatch(SetPrice(10000))
 
-            }} className="form-check-input" type="radio" name="flexRadioDefault1" id="flexRadioDefault7" />
+
+              const getApiKey = () => {
+
+                if (isChecked) {
+                  if (TextSearch === '' && sosao === "" && danhmuc !== "") return "danhmuc_only";
+                  if (TextSearch !== '' && sosao === "" && danhmuc == "") return "text_only";
+                  if (TextSearch === '' && sosao != "" && danhmuc == "") return "sosao_only";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc == "") return "name_sosao";
+                  if (TextSearch == '' && sosao != "" && danhmuc != "") return "sosao_danhmuc";
+                  if (TextSearch !== '' && sosao == "" && danhmuc != "") return "name_danhmuc";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc != "") return "name_sosao_danhmuc";
+                  if (danhmuc === "" && TextSearch === "" && sosao === "") return "no_filters";
+                } else {  // Trường hợp không có giảm giá
+                  if (TextSearch === '' && sosao === "" && danhmuc !== "") return "danhmuc_only";
+                  if (TextSearch !== '' && sosao === "" && danhmuc == "") return "text_only";
+                  if (TextSearch === '' && sosao != "" && danhmuc == "") return "sosao_only";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc == "") return "name_sosao";
+                  if (TextSearch == '' && sosao != "" && danhmuc != "") return "sosao_danhmuc";
+                  if (TextSearch !== '' && sosao == "" && danhmuc != "") return "name_danhmuc";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc != "") return "name_sosao_danhmuc";
+                  if (danhmuc === "" && TextSearch === "" && sosao === "") return "no_filters";
+                }
+                return null; // Trường hợp không có điều kiện nào thỏa mãn
+              };
+
+              const apiKey = getApiKey(); // Lấy khóa API từ hàm getApiKey
+
+              if (apiKey) {
+                try {
+                  // Chọn đúng apiMap dựa trên trạng thái có giảm giá hay không
+                  const apiUrl = isChecked ? apiMapWithDiscount[apiKey] : apiMapWithoutDiscount[apiKey];
+                  console.log("dataaa",apiUrl)
+                  const res = await axios({
+                    url: apiUrl, // Sử dụng URL tương ứng
+                    method: 'GET',
+                  });
+
+                  const productsearch = ListProductSearch(res.data);
+                  dispatch(productsearch);
+                } catch (error) {
+                  console.error("Lỗi khi gọi API:", error);
+                }
+                dispatch(SetPrice(10000))
+
+              }
+            }
+            } className="form-check-input" type="radio" name="flexRadioDefault1" id="flexRadioDefault7" />
             <label className="form-check-label" htmlFor="flexRadioDefault7">
               <div>
                 <h6 > 50.000 ~ 100.000 đ</h6>
@@ -456,36 +868,80 @@ const Search = () => {
           <div className="form-check">
             <input onClick={async () => {
 
-              // let url = "http://localhost:8080/Product/FindbyPriceMore?price=50000";
-
-              // const filters = {
-              //   danhmuc,
-              //   TextSearch,
-              //   isChecked,
-              //   sosao
-              // };
 
 
-              // if (filters.danhmuc) {
-              //   url += `&category=${filters.danhmuc}`;
-              // }
-              // if (filters.TextSearch) {
-              //   url += `&text=${filters.TextSearch}`;
-              // }
-              // if (filters.isChecked) {
-              //   url += `&promotion=true`;
-              // }
-              // if (filters.sosao) {
-              //   url += `&rating=${filters.sosao}`;
-              // }
+              const apiMapWithDiscount = {
+                "danhmuc_only": `http://localhost:8080/Product/FindByPriceLessAndCategory?id=${danhmuc}`,
+                "text_only": `http://localhost:8080/Product/FindByPriceLessAndText?name=${TextSearch}`,
+                "sosao_only": `http://localhost:8080/Product/FindByPriceLessAndRating?sosao=${sosao}&id=${danhmuc}`,
+                "name_sosao": `http://localhost:8080/Product/FindbySoSaoandDanhmucandNameWithDiscount?name=${TextSearch}&sosao=${sosao}&id=${danhmuc}`,
+                "name_danhmuc": `http://localhost:8080/Product/FindbyPriceLess`,
+                "sosao_danhmuc": `http://localhost:8080/Product/FindbyPriceLess`,
+                "name_sosao_danhmuc": `http://localhost:8080/Product/FindbyPriceLess`,
+                "no_filters": `http://localhost:8080/Product/FindbyPriceLess`,
+              };
 
-              // const res = await axios({ url, method: 'GET' })
-              // dispatch(ListProductSearch(res.data));
-              // dispatch(SetPrice(10000))
 
-              const res = await axios({ url: `http://localhost:8080/Product/FindbyPriceMore?price=50000`, method: 'GET' })
-              dispatch(ListProductSearch(res.data));
-              dispatch(SetPrice(10000))
+              const apiMapWithoutDiscount = {
+                "danhmuc_only": `http://localhost:8080/Product/FindByPriceLessAndCategory?id=${danhmuc}`,
+                "text_only": `http://localhost:8080/Product/FindByPriceLessAndText?name=${TextSearch}`,
+                "sosao_only": `http://localhost:8080/Product/FindByPriceLessAndRating?sosao=${sosao}&id=${danhmuc}`,
+                "name_sosao": `http://localhost:8080/Product/FindbySoSaoandDanhmucandNameWithDiscount?name=${TextSearch}&sosao=${sosao}&id=${danhmuc}`,
+                "name_danhmuc": `http://localhost:8080/Product/FindbyPriceLess`,
+                "sosao_danhmuc": `http://localhost:8080/Product/FindbyPriceLess`,
+                "name_sosao_danhmuc": `http://localhost:8080/Product/FindbyPriceLess`,
+                "no_filters": `http://localhost:8080/Product/FindbyPriceLess`,
+              };
+
+
+              const getApiKey = () => {
+
+                if (isChecked) {
+                  if (TextSearch === '' && sosao === "" && danhmuc !== "") return "danhmuc_only";
+                  if (TextSearch !== '' && sosao === "" && danhmuc == "") return "text_only";
+                  if (TextSearch === '' && sosao != "" && danhmuc == "") return "sosao_only";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc == "") return "name_sosao";
+                  if (TextSearch == '' && sosao != "" && danhmuc != "") return "sosao_danhmuc";
+                  if (TextSearch !== '' && sosao == "" && danhmuc != "") return "name_danhmuc";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc != "") return "name_sosao_danhmuc";
+                  if (danhmuc === "" && TextSearch === "" && sosao === "") return "no_filters";
+                } else {  // Trường hợp không có giảm giá
+                  if (TextSearch === '' && sosao === "" && danhmuc !== "") return "danhmuc_only";
+                  if (TextSearch !== '' && sosao === "" && danhmuc == "") return "text_only";
+                  if (TextSearch === '' && sosao != "" && danhmuc == "") return "sosao_only";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc == "") return "name_sosao";
+                  if (TextSearch == '' && sosao != "" && danhmuc != "") return "sosao_danhmuc";
+                  if (TextSearch !== '' && sosao == "" && danhmuc != "") return "name_danhmuc";
+
+                  if (TextSearch !== '' && sosao !== "" && danhmuc != "") return "name_sosao_danhmuc";
+                  if (danhmuc === "" && TextSearch === "" && sosao === "") return "no_filters";
+                }
+                return null; // Trường hợp không có điều kiện nào thỏa mãn
+              };
+
+              const apiKey = getApiKey(); // Lấy khóa API từ hàm getApiKey
+
+              if (apiKey) {
+                try {
+                  // Chọn đúng apiMap dựa trên trạng thái có giảm giá hay không
+                  const apiUrl = isChecked ? apiMapWithDiscount[apiKey] : apiMapWithoutDiscount[apiKey];
+
+                  const res = await axios({
+                    url: apiUrl, // Sử dụng URL tương ứng
+                    method: 'GET',
+                  });
+
+                  const productsearch = ListProductSearch(res.data);
+                  dispatch(productsearch);
+                } catch (error) {
+                  console.error("Lỗi khi gọi API:", error);
+                }
+                dispatch(SetPrice(10000))
+
+              }
 
             }} className="form-check-input" type="radio" name="flexRadioDefault1" id="flexRadioDefault8" />
             <label className="form-check-label" htmlFor="flexRadioDefault8">

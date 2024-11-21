@@ -48,13 +48,13 @@ const NewHeader = () => {
         };
     };
 
-    // Tạo hàm debouncedApiSuggest từ api_Suggest với debounce 1.5 giây (1500ms)
+    
     const debouncedApiSuggest = useCallback(debounce(api_Suggest, 1000), []);
 
     const highlightText = (text, keyword) => {
-        if (!keyword) return text; // Nếu không có từ khóa, trả về văn bản gốc
-        const regex = new RegExp(`(${keyword})`, 'gi'); // Tạo biểu thức chính quy không phân biệt chữ hoa/thường
-        return text.replace(regex, (match) => `<span class="highlight">${match}</span>`); // Bao quanh từ khóa tìm được bằng <span> có class "highlight"
+        if (!keyword) return text; 
+        const regex = new RegExp(`(${keyword})`, 'gi'); 
+        return text.replace(regex, (match) => `<span class="highlight">${match}</span>`); 
     };
     // Xử lý khi click bên ngoài để đóng popup
     useEffect(() => {

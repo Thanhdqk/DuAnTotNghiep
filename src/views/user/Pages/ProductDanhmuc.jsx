@@ -1,13 +1,27 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { addItemToCart } from '../Reducer/cartReducer';
 import { useDispatch } from 'react-redux';
-
+import { Pagination } from 'antd';
 const ProductDanhmuc = ({ Products }) => {
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(8); 
+
+    const currentProducts = Products.slice(
+        (currentPage - 1) * pageSize, currentPage * pageSize
+      );
+
+
+      const handlePageChange = (page, pageSize) => {
+        setCurrentPage(page);
+        setPageSize(pageSize);
+      };
+
     const dispatch = useDispatch()
     return (
         <div className='row '>
-            {Products.map((product, index) => {
+            {currentProducts.map((product, index) => {
                 const totalStars = product.danhgia.reduce((sum, rating) => sum + rating.so_sao, 0);
                 const averageStars = product.danhgia.length > 0 ? (totalStars / product.danhgia.length).toFixed(1) : 0;
                 
@@ -126,6 +140,19 @@ const ProductDanhmuc = ({ Products }) => {
                     </div>
                 );
             })}
+
+            <div className="col-md-12 d-flex justify-content-center align-items-center mt-1 mb-4">
+            <Pagination 
+        current={currentPage}
+        pageSize={pageSize}
+        total={Products.length}
+        onChange={handlePageChange}
+        showSizeChanger
+        pageSizeOptions={['8', '16', '24']}
+        style={{ textAlign: 'center', marginTop: '20px' }}
+      />
+      
+            </div>
         </div>
     );
 }

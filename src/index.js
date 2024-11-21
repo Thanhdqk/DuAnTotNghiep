@@ -39,6 +39,8 @@ import Thuonghieu from './views/user/Pages/Thuonghieu';
 import Voucher from './views/user/Pages/Voucher';
 import VoucherSelection from './views/user/Pages/VoucherSelection';
 import DonHang from './views/user/Pages/DonHang';
+import Dieukhoan from './views/user/Pages/Dieukhoan';
+import Settings from './views/user/Pages/Settings';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -78,6 +80,8 @@ root.render(
           <Route path='voucher' element={<Voucher></Voucher>}></Route>
           <Route path='voucherselection' element={<VoucherSelection></VoucherSelection>}></Route>
           <Route path='donhang' element={<DonHang></DonHang>}></Route>
+          <Route path='dieukhoan' element={<Dieukhoan></Dieukhoan>}></Route>
+          <Route path='settings' element={<Settings></Settings>}></Route>
           
         </Route>
 

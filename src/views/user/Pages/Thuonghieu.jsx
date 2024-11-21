@@ -260,11 +260,11 @@ const Thuonghieu = () => {
       } else {
         const errorData = await response.json();
         console.error(
-          "Lỗi khi cập nhật voucher:",
+          "Lỗi khi cập nhật thương hiệu:",
           response.statusText,
           errorData
         );
-        alert("Cập nhật voucher thất bại!");
+        alert("Cập nhật thương hiệu thất bại!");
       }
     } catch (error) {
       console.error("Lỗi:", error);

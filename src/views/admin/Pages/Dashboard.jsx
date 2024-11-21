@@ -50,7 +50,7 @@ const SupplierManagement = () => {
     severity: "success",
   });
   const apilistDatahd = async () =>{
-    const res = await axios({url:"http://localhost:8080/api/users/gethanhdong",method:"GET"})
+    const res = await axios({url:"http://localhost:8080/api/nhacungcap/ncchanhdong",method:"GET"})
     setlistDataHD(res.data)
     console.log('sdsadsadfas',res.data)
   }
@@ -544,19 +544,19 @@ const SupplierManagement = () => {
                   {listDatahd
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((supplier) => (
-                    <TableRow key={supplier.nha_cung_capID}>
-                      <TableCell>{supplier.nha_cung_capID}</TableCell>
-                      <TableCell>{supplier.ten_nhaCC}</TableCell>
-                      <TableCell>{supplier.ten_mat_hang}</TableCell>
-                      <TableCell>{supplier.so_dien_thoai}</TableCell>
-                      <TableCell>{supplier.dia_chi}</TableCell>
+                    <TableRow key={supplier.nhacungcap.nha_cung_capID}>
+                      <TableCell>{supplier.nhacungcap.nha_cung_capID}</TableCell>
+                      <TableCell>{supplier.nhacungcap.ten_nhaCC}</TableCell>
+                      <TableCell>{supplier.nhacungcap.ten_mat_hang}</TableCell>
+                      <TableCell>{supplier.nhacungcap.so_dien_thoai}</TableCell>
+                      <TableCell>{supplier.nhacungcap.dia_chi}</TableCell>
                       <TableCell>
                         {supplier.trang_thai_xoa == null
                           ? "Chưa Xóa"
                           : supplier.trang_thai_xoa}
                       </TableCell>
                       <TableCell>
-                        {supplier.users ? supplier.users.accountID : ""}
+                        { supplier.nhacungcap.users.accountID}
                       </TableCell>
                       <TableCell>{supplier.tenHanhDong}</TableCell>
                     </TableRow>

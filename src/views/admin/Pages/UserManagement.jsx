@@ -55,9 +55,13 @@ const UserForm = () => {
     setlistDataHD(res.data)
     console.log('sdsadsadfas',res.data)
   }
+ 
+  
+
   useEffect(() => {
     fetchUsers();
     apilistDataHD()
+   
   }, []);
 
   const fetchUsers = async () => {
@@ -319,6 +323,20 @@ const handleDelete = async (accountID) => {
 
     return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
   });
+  const filteredDataViPham = list.filter((user) => {
+    const matchesSearchTerm =
+      (user.hovaten &&
+        user.hovaten.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.accountID &&
+        user.accountID.toLowerCase().includes(searchTerm.toLowerCase()));
+
+        const matchesRoleFilter = roleFilter 
+        ? user.roles?.some(role => role.ten_vai_tro === roleFilter) 
+        : true;
+      const setTrangThaiXoa = user.trang_thai_xoa === "Ban"
+
+    return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
+  });
   useEffect(() => {
     console.log("FilerData nè: ", listDataHD);
   }, [listDataHD]);
@@ -340,6 +358,35 @@ const handleDelete = async (accountID) => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
+  const handleBanUser = async (user) => {
+    try {
+        setCurrentUser(user);
+        console.log('cc', user);
+        const { accountID } = user;
+        console.log('ccccc', accountID);
+
+        // Gửi yêu cầu đánh dấu vi phạm
+        const res = await axios({
+            url: `http://localhost:8080/api/users/vipham/${accountID}`,
+            method: 'PUT',
+        });
+
+        // Cập nhật danh sách người dùng
+        setList((prevList) => prevList.filter((user) => user.accountID !== accountID));
+
+        setSnackbarMessage("Đánh dấu người dùng vi phạm thành công!");
+        setSnackbarOpen(true);
+
+        // Chuyển sang tab thứ ba nếu cần
+        setTabValue(0);
+    } catch (error) {
+        console.error("Lỗi khi đánh dấu vi phạm:", error);
+        setSnackbarMessage("Có lỗi xảy ra khi đánh dấu vi phạm!");
+        setSnackbarOpen(true);
+    }
+};
+
+  
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -369,6 +416,8 @@ const handleDelete = async (accountID) => {
             <Tab label="Danh Sách Người Dùng" />
             <Tab label="Thêm Người Dùng" />
             <Tab onClick={()=>{fetchUsers()}} label="Lịch Sử Xóa" />
+            <Tab label="Vi Phạm" />
+            <Tab label="Các Tài Khoản Bị Ban" />
             <Tab onClick={()=>{apilistDataHD()}} label=" Hành Động" />
           </Tabs>
         </AppBar>
@@ -750,7 +799,247 @@ const handleDelete = async (accountID) => {
     />
   </TableContainer>
 )}
-  {tabValue === 3 && (
+{tabValue === 3 && (
+          <TableContainer component={Paper} className="table-container">
+            <Typography variant="h6" align="center" className="table-title">
+              Submitted User Data
+            </Typography>
+            <Grid container spacing={2} style={{ alignItems: "center" }}>
+              <Grid item xs={6}>
+                <TextField
+                  className="input-field"
+                  label="Search"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  className="input-field"
+                  select
+                  label="Filter by Role"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                >
+                  <MenuItem value="">All</MenuItem>
+                  <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
+                  <MenuItem value="Nhân Viên Kinh Doanh">
+                    Nhân viên kinh doanh
+                  </MenuItem>
+                  <MenuItem value="Nhân Viên Đăng Bài">
+                    Nhân viên đăng bài
+                  </MenuItem>
+                  <MenuItem value="Admin">Admin</MenuItem>
+                </TextField>
+              </Grid>
+            </Grid>
+
+            <Table>
+              <TableHead>
+                <TableRow className="table-row-header">
+                  <TableCell>Account ID</TableCell>
+                  <TableCell>Họ và tên</TableCell>
+                  <TableCell>Hình Ảnh</TableCell>
+                  <TableCell>Vai Trò</TableCell>
+                  <TableCell>Số Điện Thoại</TableCell>
+                  <TableCell>Địa Chỉ</TableCell>
+                  <TableCell>Mật Khẩu</TableCell>
+                  <TableCell>Vi Phạm</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((user, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{user.accountID}</TableCell>
+                      <TableCell>{user.hovaten}</TableCell>
+                      <TableCell>
+                        {user.hinh_anh ? (
+                          <img
+                            src={`/images/${user.hinh_anh}`}
+                            alt="Hình ảnh"
+                            style={{ width: 50, height: 50 }}
+                          />
+                        ) : (
+                          "No Image"
+                        )}
+                      </TableCell>
+                      <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
+                      {/* Hiển thị vai trò */}
+                      <TableCell>{user.so_dien_thoai}</TableCell>
+                      <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
+                      {/* Hiển thị địa chỉ */}
+                      
+                      <TableCell>{user.password}</TableCell>
+                      <TableCell>
+  {user.vi_pham === 3 ? (
+    <button 
+      style={{
+        backgroundColor: 'red',
+        color: 'white',
+        border: 'none',
+        padding: '5px 10px',
+        borderRadius: '5px',
+        cursor: 'pointer'
+      }}
+      onClick={() => 
+        handleBanUser(user)
+      }
+    >
+      Ban
+      
+    </button>
+  ) : (
+    user.vi_pham
+  )}
+</TableCell>
+
+                      <TableCell>
+                        <Button onClick={() => handleEdit(user)}>
+                          <Edit />
+                        </Button>
+                        <Button
+                    onClick={() => {
+                        handlechange1(user); // Call the edit function
+                        setTabValue(2); // Switch to tab 2
+                    }}
+                    sx={{ color: "secondary" }}
+                >
+                    <Delete />
+                </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredData.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </TableContainer>
+        )}
+          {tabValue === 4 && (
+  <TableContainer component={Paper} className="table-container">
+    <Typography variant="h6" align="center" className="table-title">
+     Tài Khoản Bị Ban
+    </Typography>
+    <Grid container spacing={2} style={{ alignItems: "center" }}>
+      <Grid item xs={6}>
+        <TextField
+          className="input-field"
+          label="Search"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <TextField
+          className="input-field"
+          select
+          label="Filter by Role"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+        >
+          <MenuItem value="">All</MenuItem>
+          <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
+          <MenuItem value="Nhân Viên Kinh Doanh">Nhân viên kinh doanh</MenuItem>
+          <MenuItem value="Nhân Viên Đăng Bài">Nhân viên đăng bài</MenuItem>
+          <MenuItem value="Admin">Admin</MenuItem>
+        </TextField>
+      </Grid>
+    </Grid>
+
+    <Table>
+      <TableHead>
+        <TableRow className="table-row-header">
+          <TableCell>Account ID</TableCell>
+          <TableCell>Họ và tên</TableCell>
+          <TableCell>Hình Ảnh</TableCell>
+          <TableCell>Vai Trò</TableCell>
+          <TableCell>Số Điện Thoại</TableCell>
+          <TableCell>Địa Chỉ</TableCell>
+          <TableCell>Mật Khẩu</TableCell>
+          <TableCell>Trạng Thái Xóa</TableCell>
+          <TableCell>Actions</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {filteredDataViPham
+          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          .map((user, index) => (
+            <TableRow key={index}>
+              <TableCell>{user.accountID}</TableCell>
+              <TableCell>{user.hovaten}</TableCell>
+              <TableCell>
+                {user.hinh_anh ? (
+                  <img
+                    src={`/images/${user.hinh_anh}`}
+                    alt="Hình ảnh"
+                    style={{ width: 50, height: 50 }}
+                  />
+                ) : (
+                  "No Image"
+                )}
+              </TableCell>
+              <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
+              <TableCell>{user.so_dien_thoai}</TableCell>
+              <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
+              <TableCell>{user.password}</TableCell>
+              <TableCell>{user.trang_thai_xoa}</TableCell>
+              <TableCell>
+                <Button onClick={() => handleRestore(user)}>
+                  <Restore />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+      </TableBody>
+    </Table>
+
+    <TablePagination
+      rowsPerPageOptions={[5, 10, 25]}
+      component="div"
+      count={filteredDataViPham.length}
+      rowsPerPage={rowsPerPage}
+      page={page}
+      onPageChange={handleChangePage}
+      onRowsPerPageChange={handleChangeRowsPerPage}
+    />
+  </TableContainer>
+)}
+  {tabValue === 5 && (
           <TableContainer component={Paper} className="table-container">
             <Typography variant="h6" align="center" className="table-title">
               Nhật ký hoạt động

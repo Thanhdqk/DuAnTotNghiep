@@ -56,7 +56,7 @@ const BannerManager = () => {
     severity: "success",
   });
   const apilistDataHd = async () =>{
-    const res = await axios({url:"http://localhost:8080/api/users/gethanhdong",method:"GET"})
+    const res = await axios({url:"http://localhost:8080/api/banners/bannerhanhdong",method:"GET"})
     setlistDataHD(res.data)
     console.log('sdsadsadfas',res.data)
   }
@@ -649,7 +649,7 @@ const filteredDeletedBannerss = banners.filter((banner) => {
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((post) => (
                       <TableRow key={post.bannerId}>
-                        <TableCell>{post.bannerId}</TableCell>
+                        <TableCell>{post.banner.bannerId}</TableCell>
                         <TableCell>
                           {post.hinh_anh ? (
                             <img
@@ -661,9 +661,9 @@ const filteredDeletedBannerss = banners.filter((banner) => {
                             "No Image"
                           )}
                         </TableCell>
-                        <TableCell>{post.hoat_dong}</TableCell>
-                        <TableCell>{post.ngay_tao}</TableCell>
-                        <TableCell>{post.ngay_het_han}</TableCell>
+                        <TableCell>{post.banner.hoat_dong}</TableCell>
+                        <TableCell>{post.banner.ngay_tao}</TableCell>
+                        <TableCell>{post.banner.ngay_het_han}</TableCell>
                         <TableCell>
                         {post.users ? post.users.accountID : ""}
                       </TableCell>

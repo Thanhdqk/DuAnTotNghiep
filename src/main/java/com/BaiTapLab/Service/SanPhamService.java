@@ -22,13 +22,13 @@ public class SanPhamService {
 	SanphamRepository SanphamRepository;
 
 	public List<SanPham> FindProductThisWeek() {
-		LocalDate sevenDaysAgo = LocalDate.now().minusDays(9);
+		LocalDate sevenDaysAgo = LocalDate.now().minusDays(15);
 
 		return SanphamRepository.findSanPhamLast7Days(sevenDaysAgo);
 	}
 
 	public List<SanPham> FindProductThisWeekTOP10(Pageable pageable) {
-		LocalDate sevenDaysAgo = LocalDate.now().minusDays(9);
+		LocalDate sevenDaysAgo = LocalDate.now().minusDays(15);
 
 		return SanphamRepository.findSanPhamLast7DaysTOP10(sevenDaysAgo, pageable);
 	}
@@ -41,8 +41,8 @@ public class SanPhamService {
 		return SanphamRepository.findSanPhamphantramGG();
 	}
 
-	public List<String> FindProductSuggest(String name,Pageable page) {
-		return SanphamRepository.findSanPhamSuggestByRegex(name,page);
+	public List<String> FindProductSuggest(String name, Pageable page) {
+		return SanphamRepository.findSanPhamSuggestByRegex(name, page);
 	}
 
 	public List<SanPham> FindProductDiscountTOP10(Pageable pageable) {
@@ -59,9 +59,61 @@ public class SanPhamService {
 		return SanphamRepository.findSanPhamSimilar(ID_Danhmuc.getDanh_mucId());
 	}
 
+	// start danh mục
+	
+	// start KO khuyến mãi
+	// tìm theo danh muc KHÔNG có khuyến mãi
+	
+	// tìm theo danh muc KHÔNG có khuyến mãi
 	public List<SanPham> FindSanPhamByDanhMucID(String id) {
-		return SanphamRepository.findSanPhamByDanhmucId(id);
+		return SanphamRepository.findSanPhamByDandMuc(id);
 	}
+	// tìm kiếm theo tên và danh mục và ko có khuyến mãi
+	public List<SanPham> findSanPhamByTenAndDandMucAndWithOutGG(String name,String id)
+	{
+		return SanphamRepository.findSanPhamByTenAndDandMucAndWithOutGG( name,id);
+	}
+	// Tìm sản phẩm theo danh mục và số sao (rating) không có khuyến mãi:
+	public List<SanPham> findSanPhamByDandMucAndRatingWithOutGG(String id, int rating)
+	{
+		return SanphamRepository.findSanPhamByDandMucAndRatingWithOutGG(id,rating);
+	}
+	
+	// Tìm sản phẩm theo tên và danh mục và số sao (rating) không có khuyến mãi:
+	public List<SanPham> findSanPhamByTenAndDandMucAndRatingWithOutGG(String name, String id, int rating)
+	{
+		return SanphamRepository.findSanPhamByTenAndDandMucAndRatingWithOutGG(name,id,rating);
+	}
+	
+	
+
+	// end KO khuyến mãi
+
+	// start CÓ khuyến mãi
+
+	// tìm kiếm theo danh mục và có khuyến mãi
+	public List<SanPham> findSanPhamByDandMucAndGG(String id){
+		return SanphamRepository.findSanPhamByDandMucAndGG(id);
+	}
+	// tìm kiếm theo tên và danh mực
+	public List<SanPham> findSanPhanByTenAndDanhMuc(String name, String id)
+	{
+		return SanphamRepository.findSanPhanByTenAndDanhMuc(name,id);
+	} 
+	// Tìm sản phẩm theo danh mục và số sao (rating) không có khuyến mãi:
+	public List<SanPham> findSanPhamByDandMucAndRatingWithGG(String id, int rating){
+		return SanphamRepository.findSanPhamByDandMucAndRatingWithGG(id,rating);
+	}
+	// Tìm sản phẩm theo tên và danh mục và số sao (rating) không có khuyến mãi:
+	public List<SanPham> findSanPhamByTenAndDandMucAndRatingWithGG(String name, String id, int rating)
+	{
+		return SanphamRepository.findSanPhamByTenAndDandMucAndRatingWithGG(name,id,rating);
+	}
+	
+	// end CÓ khuyến mãi
+
+	// end danh mục
+	
 
 	public List<SanPham> FindSanPhamLikeName(String name) {
 		return SanphamRepository.findSanPhamByTenSanPham(name);

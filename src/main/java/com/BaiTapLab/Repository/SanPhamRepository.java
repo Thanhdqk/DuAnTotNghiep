@@ -32,7 +32,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	List<SanPham> findSanPhamphantramGG();
 
 	@Query(value = "SELECT s.ten_san_pham " + "FROM SanPham s "
-			       + "WHERE PATINDEX('%' + ?1 + '%', s.ten_san_pham COLLATE SQL_Latin1_General_CP1_CI_AI) > 0", nativeQuery = true)
+			+ "WHERE PATINDEX('%' + ?1 + '%', s.ten_san_pham COLLATE SQL_Latin1_General_CP1_CI_AI) > 0", nativeQuery = true)
 	List<String> findSanPhamSuggestByRegex(String name, Pageable page);
 
 	@Query("SELECT s FROM SanPham s WHERE s.phantram_GG > 0")
@@ -56,34 +56,56 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	@Query("SELECT s FROM SanPham s WHERE s.ten_san_pham LIKE ?1")
 	SanPham findONESanPhamByTenSanPham(String name);
 
-//tìm kiếm  theo tên và danh mực
-
-	@Query("SELECT p FROM SanPham p WHERE p.ten_san_pham LIKE %?1%  AND p.danhmuc.danh_mucId = ?2")
-	List<SanPham> findSanPhanByTenAndDanhMuc(String name, String id);
+	// tìm kiếm theo tên ko có khuyến mãi
+	@Query("SELECT p FROM SanPham p WHERE p.ten_san_pham LIKE %?1%  ")
+	List<SanPham> findSanPhamByTenWithOutGG(String name);
 
 	// tìm kiếm theo tên và danh mục và có khuyến mãi
 	@Query("SELECT p FROM SanPham p WHERE p.ten_san_pham LIKE %?1%  AND p.danhmuc.danh_mucId = ?2 AND p.phantram_GG >0")
 	List<SanPham> findSanPhamByTenAndDandMucAndGG(String name, String id);
 
-	// tìm kiếm theo tên và danh mục và ko có khuyến mãi
-	@Query("SELECT p FROM SanPham p WHERE p.ten_san_pham LIKE %?1%  AND p.danhmuc.danh_mucId = ?2 AND p.phantram_GG =0")
-	List<SanPham> findSanPhamByTenAndDandMucAndWithOutGG(String name, String id);
+	// tìm kiếm theo tên và có khuyến mãi
+	@Query("SELECT p FROM SanPham p WHERE p.ten_san_pham LIKE %?1%  AND p.phantram_GG >0")
+	List<SanPham> findSanPhamByTenAndGG(String name);
 
-	// tìm kiếm theo tên ko có khuyến mãi
-	@Query("SELECT p FROM SanPham p WHERE p.ten_san_pham LIKE %?1%   AND p.phantram_GG >=0")
-	List<SanPham> findSanPhamByTenWithOutGG(String name);
+	// tìm theo danh muc có khuyến mãi
 
-	// tìm kiếm danh mục và ko có khuyến mãi
-	@Query("SELECT p FROM SanPham p WHERE  p.danhmuc.danh_mucId = ?1 AND p.phantram_GG >=0")
-	List<SanPham> findSanPhamByDandMucAndWithOutGG(String id);
-
-//tìm kiếm theo danh mục và  có khuyến mãi
+	// tìm kiếm theo danh mục và có khuyến mãi
 	@Query("SELECT p FROM SanPham p WHERE p.danhmuc.danh_mucId = ?1 AND p.phantram_GG >0")
 	List<SanPham> findSanPhamByDandMucAndGG(String id);
 
-//tìm kiếm theo tên và  có khuyến mãi
-	@Query("SELECT p FROM SanPham p WHERE p.ten_san_pham LIKE %?1%  AND p.phantram_GG >0")
-	List<SanPham> findSanPhamByTenAndGG(String name);
+	// tìm kiếm theo tên và danh mực
+	@Query("SELECT p FROM SanPham p WHERE p.ten_san_pham LIKE %?1%  AND p.danhmuc.danh_mucId = ?2 AND p.phantram_GG >0")
+	List<SanPham> findSanPhanByTenAndDanhMuc(String name, String id);
+
+	// Tìm sản phẩm theo danh mục và số sao (rating) không có khuyến mãi:
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.danhmuc.danh_mucId = ?1 AND d.so_sao = ?2 AND p.phantram_GG >0")
+	List<SanPham> findSanPhamByDandMucAndRatingWithGG(String id, int rating);
+
+	// Tìm sản phẩm theo tên và danh mục và số sao (rating) không có khuyến mãi:
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.ten_san_pham LIKE %?1% AND p.danhmuc.danh_mucId = ?2 AND d.so_sao = ?3 AND p.phantram_GG >0")
+	List<SanPham> findSanPhamByTenAndDandMucAndRatingWithGG(String name, String id, int rating);
+
+	// tìm theo danh muc KHÔNG có khuyến mãi
+	// tìm theo danh muc KHÔNG có khuyến mãi
+	@Query("SELECT p FROM SanPham p WHERE p.danhmuc.danh_mucId = ?1 ")
+	List<SanPham> findSanPhamByDandMuc(String id);
+
+	// tìm kiếm theo tên và danh mục và ko có khuyến mãi
+	@Query("SELECT p FROM SanPham p WHERE p.ten_san_pham LIKE %?1%  AND p.danhmuc.danh_mucId = ?2 ")
+	List<SanPham> findSanPhamByTenAndDandMucAndWithOutGG(String name, String id);
+
+	// tìm kiếm danh mục và ko có khuyến mãi
+	@Query("SELECT p FROM SanPham p WHERE  p.danhmuc.danh_mucId = ?1 ")
+	List<SanPham> findSanPhamByDandMucAndWithOutGG(String id);
+
+	// Tìm sản phẩm theo danh mục và số sao (rating) không có khuyến mãi:
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.danhmuc.danh_mucId = ?1 AND d.so_sao = ?2")
+	List<SanPham> findSanPhamByDandMucAndRatingWithOutGG(String id, int rating);
+
+	// Tìm sản phẩm theo tên và danh mục và số sao (rating) không có khuyến mãi:
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.ten_san_pham LIKE %?1% AND p.danhmuc.danh_mucId = ?2 AND d.so_sao = ?3")
+	List<SanPham> findSanPhamByTenAndDandMucAndRatingWithOutGG(String name, String id, int rating);
 
 	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE d.so_sao = ?1")
 	List<SanPham> findSanPhamBySoSao(int sosao);
@@ -104,7 +126,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	List<SanPham> findSanPhamByPriceDefault(Long Default1, Long Default2);
 
 	// Theo price (khoảng giá) và danhmuc
-	@Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3")
+	@Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc.danh_mucId = ?3")
 	List<SanPham> findSanPhamByPriceDefaultAndDanhMuc(Long Default1, Long Default2, String danhmuc);
 
 	// Theo price (khoảng giá) và text
@@ -120,15 +142,15 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	List<SanPham> findSanPhamByPriceDefaultAndSosao(Long Default1, Long Default2, int sosao);
 
 	// Theo price (khoảng giá), danhmuc, và text
-	@Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.ten_san_pham = ?4")
+	@Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc.danh_mucId = ?3 AND p.ten_san_pham = ?4")
 	List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndText(Long Default1, Long Default2, String danhmuc, String text);
 
 	// Theo price (khoảng giá), danhmuc, và isChecked (có giảm giá)
-	@Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.phantram_GG > 0")
+	@Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc.danh_mucId = ?3 AND p.phantram_GG > 0")
 	List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndDiscount(Long Default1, Long Default2, String danhmuc);
 
 	// Theo price (khoảng giá), danhmuc, và sosao
-	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND d.so_sao = ?4")
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc.danh_mucId = ?3 AND d.so_sao = ?4")
 	List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndSosao(Long Default1, Long Default2, String danhmuc, int sosao);
 
 	// Theo price (khoảng giá), text, và isChecked (có giảm giá)
@@ -144,17 +166,17 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	List<SanPham> findSanPhamByPriceDefaultAndDiscountAndSosao(Long Default1, Long Default2, int sosao);
 
 	// . Theo price (khoảng giá), danhmuc, text, và isChecked (có giảm giá)
-	@Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.ten_san_pham = ?4 AND p.phantram_GG > 0")
+	@Query("SELECT p FROM SanPham p WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc.danh_mucId = ?3 AND p.ten_san_pham = ?4 AND p.phantram_GG > 0")
 	List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndTextAndDiscount(Long Default1, Long Default2, String danhmuc,
 			String text);
 
 	// Theo price (khoảng giá), danhmuc, text, và sosao
-	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.ten_san_pham = ?4 AND d.so_sao = ?5")
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc.danh_mucId = ?3 AND p.ten_san_pham = ?4 AND d.so_sao = ?5")
 	List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndTextAndSosao(Long Default1, Long Default2, String danhmuc,
 			String text, int sosao);
 
 	// Theo price (khoảng giá), danhmuc, isChecked (có giảm giá), và sosao
-	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.phantram_GG > 0 AND d.so_sao = ?4")
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc.danh_mucId = ?3 AND p.phantram_GG > 0 AND d.so_sao = ?4")
 	List<SanPham> findSanPhamByPriceDefaultAndDanhMucAndDiscountAndSosao(Long Default1, Long Default2, String danhmuc,
 			int sosao);
 
@@ -165,7 +187,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 
 	// Theo tất cả các điều kiện: price (khoảng giá), danhmuc, text, isChecked (có
 	// giảm giá), và sosao
-	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc = ?3 AND p.ten_san_pham = ?4 AND p.phantram_GG > 0 AND d.so_sao = ?5")
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc BETWEEN ?1 AND ?2 AND p.danhmuc.danh_mucId = ?3 AND p.ten_san_pham = ?4 AND p.phantram_GG > 0 AND d.so_sao = ?5")
 	List<SanPham> findSanPhamByAllConditionsWithPriceDefault(Long Default1, Long Default2, String danhmuc, String text,
 			int sosao);
 
@@ -177,7 +199,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	@Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1")
 	List<SanPham> findSanPhamByPriceLess(Long price);
 
-	@Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2")
+	@Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc.danh_mucId = ?2")
 	List<SanPham> findSanPhamByPriceLessHaveDanhMuc(Long price, String danhmuc);
 
 	@Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.ten_san_pham = ?2")
@@ -190,15 +212,15 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	List<SanPham> findSanPhamByPriceLessHaveSosao(Long price, int sosao);
 
 // Theo price, danhmuc và text
-	@Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3")
+	@Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc.danh_mucId = ?2 AND p.ten_san_pham = ?3")
 	List<SanPham> findSanPhamByPriceLessHaveDanhMucAndText(Long price, String danhmuc, String text);
 
 // Theo price, danhmuc và isChecked (có giảm giá)
-	@Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.phantram_GG > 0")
+	@Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc.danh_mucId = ?2 AND p.phantram_GG > 0")
 	List<SanPham> findSanPhamByPriceLessHaveDanhMucAndDiscount(Long price, String danhmuc);
 
 // Theo price, danhmuc và sosao
-	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND d.so_sao = ?3")
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc.danh_mucId = ?2 AND d.so_sao = ?3")
 	List<SanPham> findSanPhamByPriceLessHaveDanhMucAndSosao(Long price, String danhmuc, int sosao);
 
 // Theo price, text và isChecked (có giảm giá)
@@ -214,15 +236,15 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	List<SanPham> findSanPhamByPriceLessHaveDiscountAndSosao(Long price, int sosao);
 
 // Theo price, danhmuc, text, và isChecked (có giảm giá)
-	@Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3 AND p.phantram_GG > 0")
+	@Query("SELECT p FROM SanPham p WHERE p.gia_goc <= ?1 AND p.danhmuc.danh_mucId = ?2 AND p.ten_san_pham = ?3 AND p.phantram_GG > 0")
 	List<SanPham> findSanPhamByPriceLessHaveDanhMucAndTextAndDiscount(Long price, String danhmuc, String text);
 
 // Theo price, danhmuc, text, và sosao
-	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3 AND d.so_sao = ?4")
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc.danh_mucId = ?2 AND p.ten_san_pham = ?3 AND d.so_sao = ?4")
 	List<SanPham> findSanPhamByPriceLessHaveDanhMucAndTextAndSosao(Long price, String danhmuc, String text, int sosao);
 
 // Theo price, danhmuc, isChecked (có giảm giá) và sosao
-	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.phantram_GG > 0 AND d.so_sao = ?3")
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc.danh_mucId = ?2 AND p.phantram_GG > 0 AND d.so_sao = ?3")
 	List<SanPham> findSanPhamByPriceLessHaveDanhMucAndDiscountAndSosao(Long price, String danhmuc, int sosao);
 
 // Theo price, text, isChecked (có giảm giá) và sosao
@@ -230,7 +252,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	List<SanPham> findSanPhamByPriceLessHaveTextAndDiscountAndSosao(Long price, String text, int sosao);
 
 // Theo tất cả các điều kiện: price, danhmuc, text, isChecked (có giảm giá), và sosao
-	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc = ?2 AND p.ten_san_pham = ?3 AND p.phantram_GG > 0 AND d.so_sao = ?4")
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.gia_goc <= ?1 AND p.danhmuc.danh_mucId = ?2 AND p.ten_san_pham = ?3 AND p.phantram_GG > 0 AND d.so_sao = ?4")
 	List<SanPham> findSanPhamByAllConditions(Long price, String danhmuc, String text, int sosao);
 
 	// end tìm kiếm theo giá dưới 10000

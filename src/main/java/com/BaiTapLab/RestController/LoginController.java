@@ -43,4 +43,12 @@ public class LoginController {
         }
         return ResponseEntity.ok("User already exists");
     }
+    
+    @PostMapping("login/github")
+    public ResponseEntity<?> postMethodName(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return ResponseEntity.ok("User already exists");
+    }
+    
 }

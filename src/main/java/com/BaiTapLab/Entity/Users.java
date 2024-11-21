@@ -120,6 +120,10 @@ public class Users {
 	@JsonBackReference
 	public List<GioHang> giohang;
 	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<Settings> settings;
+	
 //	@Override
 //	public String toString() {
 //	    return "Users{" +

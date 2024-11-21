@@ -22,9 +22,9 @@ public class ThuongHieuService {
 	}
 	
 	public ThuongHieu updateThuongHieu(ThuongHieu updatedThuongHieu) throws Exception {
-        // Kiểm tra xem voucher có tồn tại không
+        // Kiểm tra xem thương hiệu có tồn tại không
         if (!thRepository.existsById(updatedThuongHieu.getThuong_hieuID())) {
-            throw new Exception("Voucher not found with ID: " + updatedThuongHieu.getThuong_hieuID());
+            throw new Exception("Thương hiệu not found with ID: " + updatedThuongHieu.getThuong_hieuID());
         }
 
         // Cập nhật voucher trong cơ sở dữ liệu

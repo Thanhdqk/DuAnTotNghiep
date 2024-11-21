@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import imageChill from '../../image/hinh-anh-do-an-chill.jpg';
+import imageChill from '../../image/backgoundlogin.png';
 
 function RegisterForm() {
   const [email, setEmail] = useState('');
@@ -13,49 +13,45 @@ function RegisterForm() {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); // New state for success message
+  const [successMessage, setSuccessMessage] = useState('');
 
   const otpRefs = useRef([]);
+  const formRef = useRef(null);
 
   useEffect(() => {
     let interval = null;
-
     if (isButtonDisabled) {
       interval = setInterval(() => {
         setTimer((prevTimer) => {
           if (prevTimer <= 1) {
             clearInterval(interval);
             setIsButtonDisabled(false);
-            return 60; // Reset timer to 60 seconds
+            return 60;
           }
-          return prevTimer - 1; // Decrease timer by 1 second
+          return prevTimer - 1;
         });
       }, 1000);
     } else {
       clearInterval(interval);
     }
-
     return () => clearInterval(interval);
   }, [isButtonDisabled]);
 
   const handleSendOtp = async () => {
     setLoading(true);
     setErrorMessage('');
-    setSuccessMessage(''); // Reset success message
-
+    setSuccessMessage('');
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setErrorMessage('Please enter a valid email address.');
       setLoading(false);
       return;
     }
-
     try {
       const response = await fetch('http://localhost:8080/auth/sendOtp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-
       const result = await response.text();
       if (response.ok) {
         if (result.includes('OTP sent successfully')) {
@@ -67,11 +63,9 @@ function RegisterForm() {
         }
       } else {
         setErrorMessage('Error: ' + result);
-        console.error('Server response:', result);
       }
     } catch (error) {
       setErrorMessage('Error sending OTP');
-      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
@@ -80,8 +74,7 @@ function RegisterForm() {
   const handleVerifyOtp = async () => {
     setLoading(true);
     setErrorMessage('');
-    setSuccessMessage(''); // Reset success message
-
+    setSuccessMessage('');
     const otpCode = otp.join('');
     try {
       const response = await fetch('http://localhost:8080/auth/verifyOtp', {
@@ -89,7 +82,6 @@ function RegisterForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: otpCode }),
       });
-
       const result = await response.text();
       if (result === 'OTP verified successfully') {
         setStep(3);
@@ -98,7 +90,6 @@ function RegisterForm() {
       }
     } catch (error) {
       setErrorMessage('Error verifying OTP');
-      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
@@ -107,8 +98,7 @@ function RegisterForm() {
   const handleRegistration = async () => {
     setLoading(true);
     setErrorMessage('');
-    setSuccessMessage(''); // Reset success message
-
+    setSuccessMessage('');
     if (!password || password.length !== 6) {
       setErrorMessage('Please set a valid 6-digit password.');
       setLoading(false);
@@ -129,20 +119,17 @@ function RegisterForm() {
       setLoading(false);
       return;
     }
-
     try {
       const response = await fetch('http://localhost:8080/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, fullName, phoneNumber, address }),
       });
-
       if (response.ok) {
         const newUser = await response.json();
         localStorage.setItem('userEmail', email);
         localStorage.setItem('userId', newUser.accountID);
-        setSuccessMessage('Registration successful!'); // Set success message
-        // Redirect to personal information page
+        setSuccessMessage('Registration successful!');
         window.location.href = `http://localhost:3000/thông-tin-cá-nhân?userId=${newUser.accountID}`;
       } else {
         const result = await response.json();
@@ -150,7 +137,6 @@ function RegisterForm() {
       }
     } catch (error) {
       setErrorMessage('Error during registration');
-      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
@@ -168,181 +154,262 @@ function RegisterForm() {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center', background: '#f5f5f5' }}>
-      <div style={{ display: 'flex', backgroundColor: 'white', borderRadius: '10px', boxShadow: '0px 4px 8px rgba(0,0,0,0.2)', width: '800px' }}>
-        <div style={{ padding: '40px' }}>
-          <img src={imageChill} alt="Bakery illustration" style={{ width: '300px', height: 'auto' }} />
-        </div>
-        <div style={{ padding: '40px', width: '400px' }}>
-          <h1 style={{ fontSize: '2.5em', marginBottom: '20px', textAlign: 'center' }}>Register</h1>
-          {errorMessage && <span style={{ color: 'red', fontSize: '0.9em', textAlign: 'center', width: '100%', display: 'block' }}>{errorMessage}</span>}
-          {successMessage && <span style={{ color: 'green', fontSize: '0.9em', textAlign: 'center', width: '100%', display: 'block' }}>{successMessage}</span>} {/* Success message */}
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100vh',
+      background: 'linear-gradient(135deg, #89CFF0, #4F7AC9)', // Blue gradient background
+    }}>
+      <div style={{
+        display: 'flex',
+        backgroundColor: '#fff',
+        borderRadius: '15px',
+        width: '100%',
+        maxWidth: '900px',
+        height: '80vh',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)', // Added subtle shadow for realism
+      }}>
+        <div style={{
+          flex: 1,
+          backgroundImage: `url(${imageChill})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          borderTopLeftRadius: '15px',
+          borderBottomLeftRadius: '15px',
+        }}></div>
+        <div style={{
+          padding: '40px',
+          width: '400px',
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+        }}>
+          <h2 style={{
+            textAlign: 'center',
+            color: '#ff6f61',
+            marginBottom: '20px',
+            fontSize: '2.2em',
+            fontWeight: 'bold',
+            letterSpacing: '1px',
+          }}>Create Account</h2>
+
+          {errorMessage && (
+            <div style={{
+              color: '#D32F2F',
+              padding: '12px',
+              borderRadius: '8px',
+              backgroundColor: '#FFEBEE',
+              marginBottom: '20px',
+              textAlign: 'center',
+              border: '1px solid #D32F2F',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Added shadow to error box
+            }}>
+              {errorMessage}
+            </div>
+          )}
+
+          {successMessage && (
+            <div style={{
+              color: '#388E3C',
+              padding: '12px',
+              borderRadius: '8px',
+              backgroundColor: '#E8F5E9',
+              marginBottom: '20px',
+              textAlign: 'center',
+              border: '1px solid #388E3C',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Added shadow to success box
+            }}>
+              {successMessage}
+            </div>
+          )}
+
           {step === 1 && (
             <>
-              <div style={{ marginBottom: '20px' }}>
-                <input
-                  type="email"
-                  placeholder="Nhập email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onFocus={() => setEmail('')}
-                  style={{ width: '100%', padding: '10px', fontSize: '1em', marginBottom: '5px', borderRadius: '8px', border: '1px solid #ccc' }}
-                />
-              </div>
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '15px',
+                  fontSize: '1.1em',
+                  borderRadius: '8px',
+                  border: '2px solid #ff6f61',
+                  marginBottom: '15px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  transition: 'border-color 0.3s ease',
+                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
+                }}
+              />
               <button
-                type="button"
                 onClick={handleSendOtp}
                 style={{
-                  padding: '10px',
-                  fontSize: '1em',
-                  backgroundColor: '#ff4d4d',
-                  color: 'white',
+                  width: '100%',
+                  padding: '15px',
+                  backgroundColor: '#ff6f61',
+                  color: '#fff',
                   border: 'none',
                   borderRadius: '8px',
-                  width: '100%',
-                  transition: 'border 0.3s',
+                  fontSize: '1.1em',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  transition: 'background-color 0.3s ease',
+                  marginTop: '15px',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Added shadow to button
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.border = '2px solid black'}
-                onMouseLeave={(e) => e.currentTarget.style.border = 'none'}
                 disabled={loading}
               >
                 {loading ? 'Sending...' : 'Send OTP'}
               </button>
             </>
           )}
-          {step === 2 && (
-            <>
-              <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Enter OTP</h2>
+{step === 2 && (
+  <>
+    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: '20px' }}>
+      {otp.map((digit, index) => (
+        <input
+          key={index}
+          type="text"
+          value={digit}
+          onChange={(e) => handleOtpChange(index, e.target.value)}
+          ref={(el) => (otpRefs.current[index] = el)}
+          maxLength="1"
+          style={{
+            width: 'calc(33.33% - 10px)', // 3 inputs per row
+            padding: '10px', // Smaller padding
+            fontSize: '1.2em', // Smaller font size
+            fontWeight: 'bold',
+            textAlign: 'center',
+            borderRadius: '8px',
+            border: '2px solid #ff6f61',
+            marginBottom: '10px', // Vertical space between rows
+            outline: 'none',
+            boxSizing: 'border-box',
+            transition: 'border-color 0.3s ease, transform 0.2s ease',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+            transform: digit ? 'scale(1.1)' : 'scale(1)',
+          }}
+        />
+      ))}
+    </div>
+    <button
+      onClick={handleVerifyOtp}
+      style={{
+        width: '100%',
+        padding: '15px',
+        backgroundColor: '#ff6f61',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '8px',
+        fontSize: '1.1em',
+        cursor: loading ? 'not-allowed' : 'pointer',
+        transition: 'background-color 0.3s ease',
+        marginTop: '15px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      }}
+      disabled={loading}
+    >
+      {loading ? 'Verifying...' : 'Verify OTP'}
+    </button>
+  </>
+)}
 
-              {/* First Row */}
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-                {otp.slice(0, 3).map((digit, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(index, e.target.value)}
-                    ref={(ref) => (otpRefs.current[index] = ref)}
-                    style={{
-                      width: '50px', // Adjusted width for better spacing
-                      padding: '10px', // Consistent padding
-                      fontSize: '1.5em',
-                      textAlign: 'center',
-                      margin: '0 5px', // Adjusted margin for a bit more space
-                      borderRadius: '8px',
-                      border: '1px solid #ccc',
-                    }}
-                  />
-                ))}
-              </div>
 
-              {/* Second Row */}
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-                {otp.slice(3, 6).map((digit, index) => (
-                  <input
-                    key={index + 3} // Unique key for the second row
-                    type="text"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(index + 3, e.target.value)} // Adjusted index for change handler
-                    ref={(ref) => (otpRefs.current[index + 3] = ref)} // Adjust reference for the second row
-                    style={{
-                      width: '50px', // Adjusted width for better spacing
-                      padding: '10px', // Consistent padding
-                      fontSize: '1.5em',
-                      textAlign: 'center',
-                      margin: '0 5px', // Adjusted margin for a bit more space
-                      borderRadius: '8px',
-                      border: '1px solid #ccc',
-                    }}
-                  />
-                ))}
-              </div>
+{step === 3 && (
+  <>
+    <input
+      type="password"
+      placeholder="Password (6 digits)"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      style={{
+        width: '100%',
+        padding: '15px',
+        fontSize: '1.1em',
+        borderRadius: '8px',
+        border: '2px solid #ff6f61',
+        marginBottom: '15px',
+        outline: 'none',
+        boxSizing: 'border-box',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
+      }}
+    />
+    <input
+      type="text"
+      placeholder="Full Name"
+      value={fullName}
+      onChange={(e) => setFullName(e.target.value)}
+      style={{
+        width: '100%',
+        padding: '15px',
+        fontSize: '1.1em',
+        borderRadius: '8px',
+        border: '2px solid #ff6f61',
+        marginBottom: '15px',
+        outline: 'none',
+        boxSizing: 'border-box',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
+      }}
+    />
+    <input
+      type="text"
+      placeholder="Phone Number"
+      value={phoneNumber}
+      onChange={(e) => setPhoneNumber(e.target.value)}
+      style={{
+        width: '100%',
+        padding: '15px',
+        fontSize: '1.1em',
+        borderRadius: '8px',
+        border: '2px solid #ff6f61',
+        marginBottom: '15px',
+        outline: 'none',
+        boxSizing: 'border-box',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
+      }}
+    />
+    <input
+      type="text"
+      placeholder="Address"
+      value={address}
+      onChange={(e) => setAddress(e.target.value)}
+      style={{
+        width: '100%',
+        padding: '15px',
+        fontSize: '1.1em',
+        borderRadius: '8px',
+        border: '2px solid #ff6f61',
+        marginBottom: '15px',
+        outline: 'none',
+        boxSizing: 'border-box',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
+      }}
+    />
+    <button
+      onClick={handleRegistration}
+      style={{
+        width: '100%',
+        padding: '15px',
+        backgroundColor: '#ff6f61',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '8px',
+        fontSize: '1.1em',
+        cursor: loading ? 'not-allowed' : 'pointer',
+        transition: 'background-color 0.3s ease',
+        marginTop: '15px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Added shadow to button
+      }}
+      disabled={loading}
+    >
+      {loading ? 'Registering...' : 'Register'}
+    </button>
+  </>
+)}
 
-              <button
-                type="button"
-                onClick={handleVerifyOtp}
-                style={{
-                  padding: '10px',
-                  fontSize: '1em',
-                  backgroundColor: '#4CAF50',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  width: '100%',
-                  transition: 'border 0.3s',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.border = '2px solid black'}
-                onMouseLeave={(e) => e.currentTarget.style.border = 'none'}
-                disabled={loading}
-              >
-                {loading ? 'Verifying...' : 'Verify OTP'}
-              </button>
-
-              <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                {isButtonDisabled && <span>Resend OTP in {timer} seconds</span>}
-              </div>
-            </>
-          )}
-
-          {step === 3 && (
-            <>
-              <div style={{ marginBottom: '20px' }}>
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  style={{ width: '100%', padding: '10px', fontSize: '1em', marginBottom: '5px', borderRadius: '8px', border: '1px solid #ccc' }}
-                />
-              </div>
-              <div style={{ marginBottom: '20px' }}>
-                <input
-                  type="password"
-                  placeholder="Password (6 digits)"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  style={{ width: '100%', padding: '10px', fontSize: '1em', marginBottom: '5px', borderRadius: '8px', border: '1px solid #ccc' }}
-                />
-              </div>
-              <div style={{ marginBottom: '20px' }}>
-                <input
-                  type="text"
-                  placeholder="Phone Number (10 digits)"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  style={{ width: '100%', padding: '10px', fontSize: '1em', marginBottom: '5px', borderRadius: '8px', border: '1px solid #ccc' }}
-                />
-              </div>
-              <div style={{ marginBottom: '20px' }}>
-                <input
-                  type="text"
-                  placeholder="Address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  style={{ width: '100%', padding: '10px', fontSize: '1em', marginBottom: '5px', borderRadius: '8px', border: '1px solid #ccc' }}
-                />
-              </div>
-              <button
-                type="button"
-                onClick={handleRegistration}
-                style={{
-                  padding: '10px',
-                  fontSize: '1em',
-                  backgroundColor: '#4CAF50',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  width: '100%',
-                  transition: 'border 0.3s',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.border = '2px solid black'}
-                onMouseLeave={(e) => e.currentTarget.style.border = 'none'}
-                disabled={loading}
-              >
-                {loading ? 'Registering...' : 'Register'}
-              </button>
-            </>
-          )}
         </div>
       </div>
     </div>

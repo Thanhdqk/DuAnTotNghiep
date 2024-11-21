@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Image } from 'antd'; // Import the Image component from Ant Design
+import { Image, Tabs } from 'antd'; // Import Ant Design Tabs and Image component
+const { TabPane } = Tabs;
 
 const FeedbackForm = () => {
-    const [activeTab, setActiveTab] = useState('feedback');
     const [loaiYeuCau, setLoaiYeuCau] = useState('');
     const [noiDung, setNoiDung] = useState('');
     const [hinhAnh, setHinhAnh] = useState(null);
@@ -13,13 +13,6 @@ const FeedbackForm = () => {
     const [error, setError] = useState('');
     const [feedbackHistory, setFeedbackHistory] = useState([]);
     const userId = localStorage.getItem('userId');
-
-    const handleTabChange = (tab) => {
-        setActiveTab(tab);
-        if (tab === 'history') {
-            fetchFeedbackHistory();
-        }
-    };
 
     const fetchFeedbackHistory = async () => {
         try {
@@ -101,90 +94,59 @@ const FeedbackForm = () => {
             </aside>
 
             <main style={mainContentStyle}>
-                <div style={tabContainerStyle}>
-                    <button
-                        onClick={() => handleTabChange('feedback')}
-                        style={{
-                            ...tabButtonStyle,
-                            ...(activeTab === 'feedback' ? activeTabStyle : {}),
-                        }}
-                    >
-                        Nhập Phản Hồi
-                    </button>
-                    <button
-                        onClick={() => handleTabChange('history')}
-                        style={{
-                            ...tabButtonStyle,
-                            ...(activeTab === 'history' ? activeTabStyle : {}),
-                        }}
-                    >
-                        Lịch Sử Phản Hồi
-                    </button>
-                    <button
-                        onClick={() => handleTabChange('responses')}
-                        style={{
-                            ...tabButtonStyle,
-                            ...(activeTab === 'responses' ? activeTabStyle : {}),
-                        }}
-                    >
-                        Xem Phản Hồi
-                    </button>
-                </div>
-
-                {activeTab === 'feedback' && (
-                    <form onSubmit={handleSubmit} style={formStyle}>
-                        <div style={inputGroupStyle}>
-                            <label style={labelStyle}>Loại Yêu Cầu:</label>
-                            <input
-                                type="text"
-                                value={loaiYeuCau}
-                                onChange={(e) => setLoaiYeuCau(e.target.value)}
-                                required
-                                style={inputStyle}
-                            />
-                        </div>
-                        <div style={inputGroupStyle}>
-                            <label style={labelStyle}>Nội Dung:</label>
-                            <textarea
-                                value={noiDung}
-                                onChange={(e) => setNoiDung(e.target.value)}
-                                required
-                                style={textareaStyle}
-                            />
-                        </div>
-                        <div style={inputGroupStyle}>
-                            <label style={labelStyle}>Hình Ảnh:</label>
-                            <div style={gridItemStyle}>
-                                {imagePreview ? (
-                                    <img
-                                        src={imagePreview}
-                                        alt="Preview"
-                                        style={imagePreviewStyle}
-                                        onClick={() => document.getElementById('hinh_anh').click()} // Mở input file khi nhấn vào hình
-                                    />
-                                ) : (
-                                    <div style={verticalImageUploadContainerStyle} onClick={() => document.getElementById('hinh_anh').click()}>
-                                        <div style={placeholderStyle}>Nhấn để chọn hình ảnh</div>
-                                    </div>
-                                )}
+                <Tabs defaultActiveKey="1" onChange={(key) => key === "2" && fetchFeedbackHistory()} style={tabsStyle}>
+                    <TabPane tab="Nhập Phản Hồi" key="1">
+                        <form onSubmit={handleSubmit} style={formStyle}>
+                            <div style={inputGroupStyle}>
+                                <label style={labelStyle}>Loại Yêu Cầu:</label>
                                 <input
-                                    type="file"
-                                    name="hinh_anh"
-                                    id="hinh_anh"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    style={{ display: 'none' }} // Ẩn input file mặc định
+                                    type="text"
+                                    value={loaiYeuCau}
+                                    onChange={(e) => setLoaiYeuCau(e.target.value)}
+                                    required
+                                    style={inputStyle}
                                 />
                             </div>
-                        </div>
+                            <div style={inputGroupStyle}>
+                                <label style={labelStyle}>Nội Dung:</label>
+                                <textarea
+                                    value={noiDung}
+                                    onChange={(e) => setNoiDung(e.target.value)}
+                                    required
+                                    style={textareaStyle}
+                                />
+                            </div>
+                            <div style={inputGroupStyle}>
+                                <label style={labelStyle}>Hình Ảnh:</label>
+                                <div style={gridItemStyle}>
+                                    {imagePreview ? (
+                                        <img
+                                            src={imagePreview}
+                                            alt="Preview"
+                                            style={imagePreviewStyle}
+                                            onClick={() => document.getElementById('hinh_anh').click()} // Mở input file khi nhấn vào hình
+                                        />
+                                    ) : (
+                                        <div style={verticalImageUploadContainerStyle} onClick={() => document.getElementById('hinh_anh').click()}>
+                                            <div style={placeholderStyle}>Nhấn để chọn hình ảnh</div>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        name="hinh_anh"
+                                        id="hinh_anh"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        style={{ display: 'none' }} // Ẩn input file mặc định
+                                    />
+                                </div>
+                            </div>
 
-                        {error && <p style={{ color: 'red' }}>{error}</p>}
-                        <button type="submit" style={submitButtonStyle}>Gửi Phản Hồi</button>
-                    </form>
-                )}
-
-                {activeTab === 'history' && (
-                    <div>
+                            {error && <p style={{ color: 'red' }}>{error}</p>}
+                            <button type="submit" style={submitButtonStyle}>Gửi Phản Hồi</button>
+                        </form>
+                    </TabPane>
+                    <TabPane tab="Lịch Sử Phản Hồi" key="2">
                         <h2>Lịch Sử Phản Hồi</h2>
                         {error && <p style={{ color: 'red' }}>{error}</p>}
                         <ul style={historyListStyle}>
@@ -209,14 +171,14 @@ const FeedbackForm = () => {
                                 </li>
                             ))}
                         </ul>
-                    </div>
-                )}
+                    </TabPane>
+                </Tabs>
             </main>
         </div>
     );
 };
 
-// Styles (remains unchanged)
+// Styles (improved)
 const containerStyle = {
     display: 'flex',
     height: '100vh',
@@ -225,10 +187,12 @@ const containerStyle = {
 
 const sidebarStyle = {
     width: '250px',
-    backgroundColor: '#2c3e50',
+    background: 'linear-gradient(135deg, #2c3e50, #34495e)',
     color: '#fff',
     padding: '20px',
     boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
+    position: 'fixed',
+    height: '100%',
 };
 
 const linkStyle = {
@@ -252,39 +216,31 @@ const buttonStyle = {
     fontSize: '16px',
     borderRadius: '4px',
     marginBottom: '10px',
+    transition: 'background-color 0.3s',
+};
+
+const buttonHoverStyle = {
+    backgroundColor: '#2c3e50',
 };
 
 const mainContentStyle = {
-    flex: 1,
+    marginLeft: '260px',
     padding: '20px',
-    backgroundColor: '#ecf0f1',
+    width: 'calc(100% - 260px)',
 };
 
-const tabContainerStyle = {
-    display: 'flex',
-    marginBottom: '20px',
-};
-
-const tabButtonStyle = {
-    flex: 1,
-    padding: '10px',
-    backgroundColor: '#3498db',
-    color: 'white',
-    border: 'none',
-    cursor: 'pointer',
-    borderRadius: '4px',
-    fontSize: '16px',
-};
-
-const activeTabStyle = {
-    backgroundColor: '#2980b9',
+const tabsStyle = {
+    backgroundColor: '#fff',
 };
 
 const formStyle = {
-    backgroundColor: '#fff',
     padding: '20px',
-    borderRadius: '4px',
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    width: '100%',
+    maxWidth: '600px',
+    margin: '0 auto',
 };
 
 const inputGroupStyle = {
@@ -292,73 +248,90 @@ const inputGroupStyle = {
 };
 
 const labelStyle = {
+    fontWeight: 'bold',
     display: 'block',
     marginBottom: '5px',
-    fontWeight: 'bold',
 };
 
 const inputStyle = {
     width: '100%',
     padding: '10px',
-    border: '1px solid #bdc3c7',
     borderRadius: '4px',
+    border: '1px solid #ccc',
+    fontSize: '16px',
+    boxSizing: 'border-box',
+};
+const gridItemStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '10px',
+    borderRadius: '8px',
+    boxSizing: 'border-box',
 };
 
 const textareaStyle = {
     width: '100%',
-    height: '80px',
     padding: '10px',
-    border: '1px solid #bdc3c7',
     borderRadius: '4px',
+    border: '1px solid #ccc',
+    fontSize: '16px',
+    boxSizing: 'border-box',
+    height: '120px',
 };
 
-const gridItemStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+const submitButtonStyle = {
+    backgroundColor: '#27ae60',
+    color: 'white',
+    padding: '10px 20px',
+    border: 'none',
+    fontSize: '16px',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    width: '100%',
+};
+
+const historyListStyle = {
+    listStyleType: 'none',
+    padding: '0',
+    fontSize: '16px',
+};
+
+const historyItemStyle = {
+    background: '#f9f9f9',
+    marginBottom: '15px',
+    padding: '15px',
+    borderRadius: '6px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    transition: 'background-color 0.3s',
+};
+
+const historyItemHoverStyle = {
+    backgroundColor: '#f1f1f1',
 };
 
 const imagePreviewStyle = {
-    maxWidth: '200px',
-    maxHeight: '200px',
+    width: '100px',
+    height: '100px',
+    borderRadius: '8px',
     cursor: 'pointer',
+};
+
+const placeholderStyle = {
+    color: '#888',
+    textAlign: 'center',
+    fontSize: '14px',
 };
 
 const verticalImageUploadContainerStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '200px',
-    height: '200px',
-    border: '2px dashed #bdc3c7',
-    borderRadius: '4px',
+    height: '100px',
+    width: '100px',
+    border: '2px dashed #ccc',
+    borderRadius: '8px',
     cursor: 'pointer',
-};
-
-const placeholderStyle = {
-    color: '#bdc3c7',
-};
-
-const submitButtonStyle = {
-    padding: '10px 20px',
-    backgroundColor: '#2ecc71',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-};
-
-const historyListStyle = {
-    listStyleType: 'none',
-    padding: '0',
-};
-
-const historyItemStyle = {
-    backgroundColor: '#fff',
-    padding: '15px',
-    marginBottom: '10px',
-    borderRadius: '4px',
-    boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)',
 };
 
 export default FeedbackForm;

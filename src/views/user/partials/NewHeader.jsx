@@ -27,80 +27,103 @@ const NewHeader = () => {
     return (
         <>
             <header className="bg-white border-bottom">
-                <div className="container-fluid py-1">
+                <div className="container-fluid py-2">
                     <div className="row align-items-center">
-                        <div className="col-3 col-md-3 d-flex align-items-center mt-2">
-                            <img src="https://via.placeholder.com/100x40?text=LOTTE+MART" alt="Lotte Mart Logo" className="me-3 img-fluid" />
+                        {/* Logo Section */}
+                        <div className="col-3 d-flex align-items-center">
+                            <img
+                                src="/images/logosnackshoponline.jpg"
+                                alt="Snack Shop Logo"
+                                className="me-3 img-fluid"
+                                style={{ width: '165px', height: 'auto' }}
+                            />
                         </div>
 
-                        <div className="col-4 col-md-6 mt-2 mt-md-0 d-flex justify-content-center">
-                            <input type="text" className="form-control me-2" placeholder="Tìm kiếm" onClick={handleInputClick} />
-                            <button className="btn btn-outline-secondary" type="submit">
-                                <i className="bi bi-search"></i>
-                            </button>
+                        {/* Search Bar Section */}
+                        <div className="col-6 d-flex justify-content-center">
+                            <div className="input-group" style={{ maxWidth: '450px', width: '100%' }}>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Tìm kiếm"
+                                    onClick={handleInputClick}
+                                />
+                                <button className="btn btn-outline-secondary" type="submit">
+                                    <i className="bi bi-search"></i>
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="col-5 col-md-3 d-flex justify-content-end align-items-center">
-                            <NavLink className="nav-link position-relative me-4" to="#">
-                                <i className='fa fa-cart-plus fs-5 mt-1'></i>
-                                <span className="position-absolute top-3 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.6em', padding: '0.2em 0.4em' }}>
+                        {/* User & Cart Section */}
+                        <div className="col-3 d-flex justify-content-end align-items-center gap-3">
+                            {/* Cart Icon */}
+                            <NavLink className="nav-link position-relative" to="/cart">
+                                <i className="fa fa-cart-plus fs-5"></i>
+                                <span
+                                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                    style={{ fontSize: '0.75rem', padding: '0.25em 0.4em' }}
+                                >
                                     10
                                 </span>
                             </NavLink>
 
-                            {isLoggedIn ? (
-                                <div className="dropdown me-4">
-                                    <button
-                                        className="btn btn-link dropdown-toggle d-flex align-items-center no-caret"
-                                        type="button"
-                                        id="userMenuDropdown"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                    >
+                            {/* User Dropdown */}
+                            <div className="dropdown d-flex align-items-center justify-content-center mb-2">
+                                <button
+                                    className="btn btn-link dropdown-toggle no-caret p-0"
+                                    id="userMenuDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    style={{
+                                        lineHeight: '1',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <i className="bi bi-person-circle text-dark fs-4"></i>
+                                </button>
+                                <ul
+                                    className="dropdown-menu dropdown-menu-end"
+                                    aria-labelledby="userMenuDropdown"
+                                    style={{ minWidth: '150px' }}
+                                >
+                                    {isLoggedIn ? (
+                                        <>
+                                            <li>
+                                                <NavLink
+                                                    className="dropdown-item"
+                                                    to={`/thông-tin-cá-nhân?userId=${userId}`}
+                                                >
+                                                    Quản lý cá nhân
+                                                </NavLink>
+                                            </li>
+                                            <li>
+                                                <button className="dropdown-item" onClick={handleLogout}>
+                                                    Đăng xuất
+                                                </button>
+                                            </li>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <li>
+                                                <NavLink className="dropdown-item" to="/login">
+                                                    Đăng nhập
+                                                </NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink className="dropdown-item" to="/sign">
+                                                    Đăng ký
+                                                </NavLink>
+                                            </li>
+                                        </>
+                                    )}
+                                </ul>
+                            </div>
 
-                                        <span className="ms-2" style={{ textDecoration: 'none' }}><i className="bi bi-person-circle text-dark fs-4"></i></span>
-                                    </button>
-                                    <ul className="dropdown-menu" aria-labelledby="userMenuDropdown">
-                                        <li>
-                                            <NavLink className="dropdown-item" to={`/thông-tin-cá-nhân?userId=${userId}`}>
-                                                Quản lý cá nhân
-                                            </NavLink>
-                                        </li>
-                                        <li>
-                                            <button className="dropdown-item" onClick={handleLogout}>
-                                                Đăng xuất
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            ) : (
-                                <div className="dropdown me-4">
-                                    <button
-                                        className="btn btn-link dropdown-toggle d-flex align-items-center no-caret"
-                                        type="button"
-                                        id="userMenuDropdown"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                    >
 
-                                        <span className="ms-2" style={{ textDecoration: 'none' }}><i className="bi bi-person-circle text-dark fs-4"></i></span>
-                                    </button>
-                                    <ul className="dropdown-menu" aria-labelledby="userMenuDropdown">
-                                        <li>
-                                            <NavLink className="dropdown-item" to="/login">
-                                                Đăng nhập
-                                            </NavLink>
-                                        </li>
-                                        <li>
-                                            <NavLink className="dropdown-item" to="/sign">
-                                                Đăng ký
-                                            </NavLink>
-                                        </li>
-                                    </ul>
-                                </div>
-                            )}
-
-                            <NavLink className="me-4 d-flex align-items-center" to="#">
+                            {/* Notifications Icon */}
+                            <NavLink className="nav-link" to="/notifications">
                                 <i className="fa fa-bell fs-4 text-dark"></i>
                             </NavLink>
                         </div>
@@ -149,38 +172,6 @@ const NewHeader = () => {
                         </ul>
                     </div>
                 </div>
-
-                {/* Popup tìm kiếm */}
-                {showPopup && (
-                    <div className="popup row" style={{
-                        position: 'absolute',
-                        top: '20%',
-                        left: '30%',
-                        zIndex: 5,
-                        borderRadius: '20px',
-                        boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.5)',
-                        backgroundColor: 'white',
-                        width: '600px',
-                        padding: '20px',
-                    }}>
-                        <div className="popup-content">
-                            <div className="history row mx-auto">
-                                <div className="col-md-6" style={{ borderRight: '1px solid black' }}>
-                                    <h5 style={{ fontWeight: 'bold', marginBottom: '1rem', color: '#333' }}>Lịch sử</h5>
-                                    <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                                        <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
-                                    </ul>
-                                </div>
-                                <div className="col-md-6">
-                                    <h5 style={{ fontWeight: 'bold', marginBottom: '1rem', color: '#333' }}>Từ khóa phổ biến</h5>
-                                    <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                                        <li style={{ marginBottom: '0.5rem', color: '#555' }}>Gà</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </nav>
 
             {/* CSS to hide the caret */}

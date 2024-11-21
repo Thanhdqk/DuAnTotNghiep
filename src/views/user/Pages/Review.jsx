@@ -10,7 +10,7 @@ const styles = {
     },
     sidebar: {
         width: '250px',
-        backgroundColor: '#2c3e50',
+        backgroundColor: '#34495e',
         color: '#fff',
         padding: '20px',
         boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
@@ -30,7 +30,7 @@ const styles = {
     buttonStyle: {
         width: '100%',
         padding: '12px',
-        backgroundColor: '#34495e',
+        backgroundColor: '#2c3e50',
         color: 'white',
         border: 'none',
         textAlign: 'left',
@@ -43,60 +43,59 @@ const styles = {
     content: {
         marginLeft: '270px',
         flex: '1',
-    },
-    container: {
         padding: '40px',
-        maxWidth: '500px',
+    },
+    reviewContainer: {
+        maxWidth: '600px',
         margin: '0 auto',
+        padding: '30px',
+        backgroundColor: '#fff',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
         textAlign: 'center',
-        border: '1px solid #ccc',
-        borderRadius: '10px',
-        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
     },
     textarea: {
         width: '100%',
-        minHeight: '100px',
-        margin: '10px 0',
-        padding: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
+        minHeight: '120px',
+        padding: '15px',
+        borderRadius: '8px',
+        border: '1px solid #ddd',
         fontSize: '16px',
+        marginBottom: '20px',
         boxSizing: 'border-box',
-    },
-    button: {
-        padding: '10px 20px',
-        backgroundColor: '#34495e',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontSize: '16px',
-        transition: 'background-color 0.3s ease',
-    },
-    buttonHover: {
-        backgroundColor: '#2c3e50',
+        resize: 'none',
     },
     previewImage: {
         maxWidth: '100%',
         maxHeight: '300px',
-        margin: '10px 0',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
-        display: 'block',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        cursor: 'pointer',  // Makes the image clickable
+        borderRadius: '8px',
+        marginBottom: '15px',
+        cursor: 'pointer',
+        border: '1px solid #ddd',
     },
     starContainer: {
         display: 'flex',
         justifyContent: 'center',
-        margin: '10px 0',
+        marginBottom: '20px',
     },
     star: {
         cursor: 'pointer',
-        fontSize: '32px',
-        color: '#ccc',
+        fontSize: '36px',
+        color: '#f39c12',
         margin: '0 5px',
+    },
+    button: {
+        padding: '12px 20px',
+        backgroundColor: '#3498db',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '18px',
+        transition: 'background-color 0.3s ease',
+    },
+    buttonHover: {
+        backgroundColor: '#2980b9',
     },
 };
 
@@ -177,10 +176,10 @@ const Review = () => {
             </aside>
 
             <div style={styles.content}>
-                <div style={styles.container}>
+                <div style={styles.reviewContainer}>
                     <h2>Viết Đánh Giá</h2>
 
-                    {/* Image Upload and Preview (moved above the textarea) */}
+                    {/* Image Upload and Preview */}
                     <label htmlFor="imageUpload">
                         {hinhAnhPreview ? (
                             <img
@@ -189,7 +188,7 @@ const Review = () => {
                                 style={styles.previewImage}
                             />
                         ) : (
-                            <div style={{ ...styles.previewImage, padding: '10px', color: '#888' }}>
+                            <div style={styles.previewImage}>
                                 Click to upload image
                             </div>
                         )}

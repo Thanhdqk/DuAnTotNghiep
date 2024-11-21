@@ -94,8 +94,16 @@ const DonHang = () => {
             }
             try {
                 const response = await axios.get(`http://localhost:8080/api/donhang?userId=${userId}`);
-                setDonHangList(response.data);
-                console.log('Order data:', response.data);
+                const sortedData = response.data.sort((a, b) => {
+                    // Move 'Đã Hủy' and 'Đã Giao' orders to the bottom
+                    if ((a.trang_thai === 'Đã Hủy' || a.trang_thai === 'Đã Giao') && !(b.trang_thai === 'Đã Hủy' || b.trang_thai === 'Đã Giao')) return 1;
+                    if (!(a.trang_thai === 'Đã Hủy' || a.trang_thai === 'Đã Giao') && (b.trang_thai === 'Đã Hủy' || b.trang_thai === 'Đã Giao')) return -1;
+                    
+                    // For other orders, sort by date (newest first)
+                    return new Date(b.ngay_tao) - new Date(a.ngay_tao);
+                });
+                setDonHangList(sortedData);
+                console.log('Order data:', sortedData);
             } catch (err) {
                 console.error(err);
                 setError('Error fetching data: ' + (err.response?.data?.message || err.message));
@@ -103,26 +111,42 @@ const DonHang = () => {
                 setLoading(false);
             }
         };
-
+    
         fetchDonHang();
     }, [userId]);
-
     const getCurrentStep = (status) => {
         switch (status) {
             case 'Nhận Đơn':
                 return 0;
-            case 'Đang Giao':
+            case 'Đang Chuẩn Bị':
                 return 1;
-            case 'Đã Giao':
+            case 'Đang Giao':
                 return 2;
+            case 'Đã Giao':
+                return 3;
+            case 'Đã Hủy':
+                return 4; // Step for canceled orders if you want it to appear in the steps
             default:
                 return 0;
         }
     };
+
     //     For orders that have just been received: "Nhận Đơn"
     // For orders currently being delivered: "Đang Giao"
     // For orders that have been delivered: "Đã Giao"
-
+    const handleCancelOrder = async (orderId) => {
+        try {
+            await axios.put(`http://localhost:8080/api/donhang/cancel/${orderId}`);
+            // Refresh the order list after cancellation
+            setDonHangList(donhangList.map(donhang =>
+                donhang.don_hangid === orderId ? { ...donhang, trang_thai: 'Đã Hủy' } : donhang
+            ));
+            alert('Order has been canceled.');
+        } catch (error) {
+            console.error('Error canceling order:', error);
+            alert('Failed to cancel the order.');
+        }
+    };
     if (loading) return <div style={styles.loading}>Loading...</div>;
     if (error) return (
         <div style={styles.error}>
@@ -173,37 +197,54 @@ const DonHang = () => {
                                 <tr key={donhang.don_hangid}>
                                     <td style={styles.td}>{donhang.don_hangid}</td>
                                     <td style={styles.td}>{new Date(donhang.ngay_tao).toLocaleDateString()}</td>
-                                    <td style={styles.td}>{donhang.users ? donhang.users.hovaten : 'N/A'}</td>
+                                    <td style={styles.td}>{donhang.users ? donhang.users.hovaten : 'Tên không tồn tại'}</td>
                                     <td style={styles.td}>{donhang.so_dien_thoai}</td>
-                                    <td style={styles.td}>{donhang.diachi ? donhang.diachi.dia_chi : 'N/A'}</td>
-                                    <td style={styles.td}>{donhang.voucher ? donhang.voucher.so_tien_giam : 'N/A'}</td>
+                                    <td style={styles.td}>{donhang.diachi ? donhang.diachi.dia_chi : 'Địa chỉ không tồn tại'}</td>
+                                    <td style={styles.td}>{donhang.voucher ? donhang.voucher.so_tien_giam : 'Không có mã giảm giá '}</td>
                                     <td style={styles.td}>{donhang.phi_ship.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
                                     <td style={styles.td}>{donhang.tong_tien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
                                     <td style={styles.td}>
-                                        <Steps
-                                            direction="vertical"
-                                            current={getCurrentStep(donhang.trang_thai)}
-                                            items={[
-                                                { title: 'Nhận Đơn', description: 'Đơn hàng đã được xác nhận và chuẩn bị.' },
-                                                { title: 'Đang Giao', description: 'Đơn hàng đang trong quá trình vận chuyển.' },
-                                                { title: 'Đã Giao', description: 'Đơn hàng đã được giao đến khách hàng.' },
-                                            ]}
-                                        />
-                                    </td>
-                                    <td style={styles.td}>
-                                        {donhang.trang_thai === 'Đã Giao' ? (
-                                            <Link to={`/OrderDetail/${donhang.don_hangid}`} style={styles.link}>
-                                                <button style={styles.button}>Xem Chi Tiết</button>
-                                            </Link>
+                                        {donhang.trang_thai === 'Đã Hủy' ? (
+                                            <Steps
+                                                direction="vertical"
+                                                current={1} // Set to 1 to mark "Đã Hủy" as the current step
+                                                items={[
+                                                    { title: 'Nhận Đơn', description: 'Đơn hàng đã được xác nhận và chuẩn bị.' },
+                                                    { title: 'Đã Hủy', description: 'Đơn hàng đã bị hủy bởi người dùng.' },
+                                                ]}
+                                            />
                                         ) : (
-                                            <p></p>
+                                            <Steps
+                                                direction="vertical"
+                                                current={getCurrentStep(donhang.trang_thai)}
+                                                items={[
+                                                    { title: 'Nhận Đơn', description: 'Đơn hàng đã được xác nhận và chuẩn bị.' },
+                                                    { title: 'Đang Chuẩn Bị', description: 'Đơn hàng đang được chuẩn bị để vận chuyển.' },
+                                                    { title: 'Đang Giao', description: 'Đơn hàng đang trong quá trình vận chuyển.' },
+                                                    { title: 'Đã Giao', description: 'Đơn hàng đã được giao đến khách hàng.' },
+                                                ]}
+                                            />
                                         )}
+                                        {donhang.trang_thai === 'Nhận Đơn' && (
+                                            <button
+                                                onClick={() => handleCancelOrder(donhang.don_hangid)}
+                                                style={{ ...styles.button, backgroundColor: '#e74c3c' }}
+                                            >
+                                                Hủy Đơn
+                                            </button>
+                                        )}
+                                    </td>
+
+                                    <td style={styles.td}>
+                                        <Link to={`/OrderDetail/${donhang.don_hangid}`} style={styles.link}>
+                                            <button style={styles.button}>Xem Chi Tiết</button>
+                                        </Link>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
+
                     </table>
-              
                 )}
             </main>
         </div>

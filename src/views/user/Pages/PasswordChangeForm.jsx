@@ -8,6 +8,7 @@ const PasswordChangeForm = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [message, setMessage] = useState('');
   const [userId, setUserId] = useState(null);
+  const [showPassword, setShowPassword] = useState(false); // State for showing/hiding passwords
 
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId');
@@ -67,38 +68,63 @@ const PasswordChangeForm = () => {
 
           <div style={formGroupStyle}>
             <label style={labelStyle}>Mật khẩu hiện tại:</label>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              style={inputStyle}
-              required
-            />
+            <div style={inputContainerStyle}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                style={inputStyle}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={showPasswordButtonStyle}
+              >
+                {showPassword ? 'Ẩn' : 'Hiển thị'}
+              </button>
+            </div>
           </div>
 
           <div style={formGroupStyle}>
             <label style={labelStyle}>Mật khẩu mới:</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => {
-                if (currentPassword) setNewPassword(e.target.value);
-                else setMessage('Bạn phải nhập mật khẩu hiện tại trước.');
-              }}
-              style={inputStyle}
-            
-            />
+            <div style={inputContainerStyle}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={newPassword}
+                onChange={(e) => {
+                  if (currentPassword) setNewPassword(e.target.value);
+                  else setMessage('Bạn phải nhập mật khẩu hiện tại trước.');
+                }}
+                style={inputStyle}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={showPasswordButtonStyle}
+              >
+                {showPassword ? 'Ẩn' : 'Hiển thị'}
+              </button>
+            </div>
           </div>
 
           <div style={formGroupStyle}>
             <label style={labelStyle}>Xác nhận mật khẩu mới:</label>
-            <input
-              type="password"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-              style={inputStyle}
-          
-            />
+            <div style={inputContainerStyle}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                style={inputStyle}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={showPasswordButtonStyle}
+              >
+                {showPassword ? 'Ẩn' : 'Hiển thị'}
+              </button>
+            </div>
           </div>
 
           <button type="submit" style={submitButtonStyle}>Lưu mật khẩu</button>
@@ -207,6 +233,20 @@ const submitButtonStyle = {
   fontSize: '18px',
   cursor: 'pointer',
   transition: 'background-color 0.3s',
+};
+
+const inputContainerStyle = {
+  display: 'flex',
+  alignItems: 'center',
+};
+
+const showPasswordButtonStyle = {
+  marginLeft: '10px',
+  background: 'transparent',
+  color: '#27ae60',
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: '14px',
 };
 
 export default PasswordChangeForm;

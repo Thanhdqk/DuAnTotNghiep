@@ -80,7 +80,7 @@ const GoogleLoginButton = () => {
          
 
 
-          <GitHubLoginButton></GitHubLoginButton>
+         
         </div>
         <div className="col-md-4"></div>
       </div>

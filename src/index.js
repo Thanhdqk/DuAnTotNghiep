@@ -42,6 +42,8 @@ import GoogleLoginButton from './views/user/Pages/GoogleLoginButton ';
 import SearchByBanner from './views/user/Pages/SearchByBanner';
 import RenderLogin from './views/user/Pages/RenderLogin'
 import CRUDAnh from './views/admin/Pages/CRUDAnh';
+
+import SpotifyPlayerComponent from './views/user/Pages/SpotifyPlayerComponent';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -75,6 +77,7 @@ root.render(
           <Route path='Thanhtoan' element={<Thanhtoan></Thanhtoan>}></Route>
           <Route path='Sanphamyeuthich' element={<YeuThichSanPham></YeuThichSanPham>}></Route>
           <Route path='google' element={<GoogleLoginButton></GoogleLoginButton>}></Route>
+          <Route path='login' element={<SpotifyPlayerComponent></SpotifyPlayerComponent>}></Route>
           <Route path='success' element={<RenderLogin></RenderLogin>}></Route>
 
         </Route>

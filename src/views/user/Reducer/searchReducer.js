@@ -4,7 +4,7 @@ const initialState = {
     Text:"",
     Danhmuc:"",
     sosao:"",
-    price:"",
+    price:0,
     
 }
 

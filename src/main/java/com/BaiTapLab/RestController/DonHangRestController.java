@@ -1,7 +1,9 @@
 package com.BaiTapLab.RestController;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.Entity.DonHang;
 import com.BaiTapLab.Entity.SanPham;
@@ -26,7 +29,7 @@ import com.BaiTapLab.Service.DonHangService;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000, http://localhost:19006"})
 public class DonHangRestController {
 	@Autowired
 	DonHangService donhangService;
@@ -152,7 +155,158 @@ public class DonHangRestController {
 	        return ResponseEntity.status(404).body("Không tìm thấy đơn hàng");
 	    }
 	}
+	
+	@GetMapping("/list/donHangChuaNhan")
+	public ResponseEntity<List<Object[]>> listDonChuaNhan(){
+		List<Object[]> listDonHangChuaNhan = donhangRepository.danhSachChuaNhanDon("Đã xác nhận");
+		return ResponseEntity.ok(listDonHangChuaNhan);
+	}
+	
+	@GetMapping("/list/donHangDaNhan")
+	public ResponseEntity<List<Object[]>> listDonDaNhan(
+			@RequestParam("shipperid") String shipperid){
+		List<Object[]> listDonHangDaNhan = donhangRepository.findDonHangByShipperId(shipperid, "Đã nhận đơn");
+		return ResponseEntity.ok(listDonHangDaNhan);
+	}
+	
+	@GetMapping("/detail/donhang/{donhangid}")
+	public ResponseEntity<List<Object[]>> getDonHangDetails(@PathVariable String donhangid) {
+		System.out.println("Ma don hang nhan duoc tu request: " + donhangid);
+	    List<Object[]> donHangDetails = donhangService.getDonHangDetails(donhangid);
+	    // In ra console để kiểm tra dữ liệu
+	    if (donHangDetails != null && !donHangDetails.isEmpty()) {
+	        System.out.println("Dữ liệu chi tiết đơn hàng: ");
+	        for (Object[] detail : donHangDetails) {
+	            System.out.println("Ma don hang: " + detail[0]);
+	        }
+	    } else {
+	        System.out.println("Không có dữ liệu cho đơn hàng với mã: " + donhangid);
+	    }
+	    
+	    // Trả về ResponseEntity chứa dữ liệu
+	    return ResponseEntity.ok(donHangDetails);
+	    
+	}
+	
+	@PutMapping("/update/shipper/nhandon")
+	public ResponseEntity<String> updateDonHang(
+	        @RequestParam("shipperid") String shipperid,
+	        @RequestParam("don_hangid") String don_hangid) {
+		System.out.println("ShipperID: " + shipperid);
+		System.out.println("DonHangID: " + don_hangid);
+	    try {
+	        // Gọi phương thức cập nhật từ repository
+	        int rowsUpdated = donhangRepository.updateDonHangShipper("Đang giao", shipperid, "Đã nhận đơn", don_hangid);
+	        System.out.println("ShipperID: " + shipperid);
+	        System.out.println("DonHangID: " + don_hangid);
+	        if (rowsUpdated > 0) {
+	            return ResponseEntity.ok("Cập nhật trạng thái đơn hàng thành công!");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Không tìm thấy đơn hàng với ID: " + don_hangid);
+	        }
+	    } catch (Exception ex) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Lỗi khi cập nhật đơn hàng: " + ex.getMessage());
+	    }
+	}
+	
+	@PutMapping("/update/shipper/hoanthanh")
+	public ResponseEntity<String> updateDonHangHoanThanh(
+	        @RequestParam("don_hangid") String don_hangid) {
+		System.out.println("DonHangID: " + don_hangid);
+	    try {
+	        // Gọi phương thức cập nhật từ repository
+	        int rowsUpdated = donhangRepository.updateDonHangHoanThanhShipper("Đã giao", "Đã hoàn thành đơn", don_hangid);
+	        System.out.println("DonHangID: " + don_hangid);
+	        if (rowsUpdated > 0) {
+	            return ResponseEntity.ok("Cập nhật trạng thái đơn hàng thành công!");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Không tìm thấy đơn hàng với ID: " + don_hangid);
+	        }
+	    } catch (Exception ex) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Lỗi khi cập nhật đơn hàng: " + ex.getMessage());
+	    }
+	}
+	
+	@PutMapping("/update/shipper/huydonhang")
+	public ResponseEntity<String> updateHuyDonHang(
+	        @RequestParam("don_hangid") String don_hangid,
+	        @RequestParam("ly_do") String ly_do) {
+		System.out.println("DonHangID: " + don_hangid + ", Lý do: " + ly_do);
+	    try {
+	        // Gọi phương thức cập nhật từ repository
+	        int rowsUpdated = donhangRepository.updateDonHangBiHuyShipper("Bị hủy", "Khách không nhận đơn", ly_do, don_hangid);
+	        System.out.println("DonHangID: " + don_hangid);
+	        if (rowsUpdated > 0) {
+	            return ResponseEntity.ok("Cập nhật trạng thái đơn hàng thành công!");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Không tìm thấy đơn hàng với ID: " + don_hangid);
+	        }
+	    } catch (Exception ex) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Lỗi khi cập nhật đơn hàng: " + ex.getMessage());
+	    }
+	}
+	
+	@PutMapping("/update/shipper/hinhanh")
+	public ResponseEntity<String> updateDonHangHinhAnh(
+	        @RequestParam("don_hangid") String don_hangid,
+	        @RequestParam("hinh_anh") MultipartFile hinh_anh) {
+	    System.out.println("DonHangID: " + don_hangid);
 
+	    // Kiểm tra hình ảnh
+	    if (hinh_anh == null || hinh_anh.isEmpty()) {
+	        return ResponseEntity.badRequest().body("Không có hình ảnh nào được tải lên!");
+	    }
 
+	    try {
+	        // Đường dẫn lưu ảnh
+	        String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
+
+	        // Kiểm tra và tạo thư mục nếu chưa có
+	        File uploadDirectory = new File(uploadDir);
+	        if (!uploadDirectory.exists()) {
+	            uploadDirectory.mkdirs();
+	        }
+
+	        // Lấy tên ảnh từ MultipartFile
+	        String imageName = hinh_anh.getOriginalFilename();
+	        if (imageName == null || imageName.isEmpty()) {
+	            return ResponseEntity.badRequest().body("Tên ảnh không hợp lệ!");
+	        }
+
+	        // Lưu ảnh vào thư mục với tên mới
+	        File imageFile = new File(uploadDir + imageName);
+	        hinh_anh.transferTo(imageFile);
+
+	        // URL truy cập ảnh (thay đổi phù hợp với môi trường của bạn)
+	        String imageUrl = "http://localhost:8080/images/" + imageName;
+
+	        // Cập nhật đường dẫn ảnh vào cơ sở dữ liệu
+	        int rowsUpdated = donhangRepository.updateDonHangHinhAnhShipper(imageName, don_hangid);
+
+	        if (rowsUpdated > 0) {
+	            return ResponseEntity.ok("Cập nhật hình ảnh đơn hàng thành công!");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Không tìm thấy đơn hàng với ID: " + don_hangid);
+	        }
+
+	    } catch (Exception ex) {
+	        ex.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Lỗi khi cập nhật hình ảnh đơn hàng: " + ex.getMessage());
+	    }
+	}
+	
+	@GetMapping("/donhang/hinhanh/{donhangid}")
+    public ResponseEntity<String> getHinhAnh(@PathVariable String donhangid) {
+        String hinhAnh = donhangRepository.findHinhAnhByDonHangId(donhangid);
+        return ResponseEntity.ok(hinhAnh);
+    }
 
 }

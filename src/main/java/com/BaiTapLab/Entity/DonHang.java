@@ -48,6 +48,9 @@ public class DonHang {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ly_do;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String trang_thai_nhan_don;
+	
 	@OneToMany(mappedBy = "donhang", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<DonHangChiTiet> donhangchitiet;
@@ -67,4 +70,8 @@ public class DonHang {
     @ManyToOne
     @JoinColumn(name = "phuong_thucTTID")
     public PhuongThucTT phuongthuctt;
+    
+    @ManyToOne
+    @JoinColumn(name = "shipperID")
+    public Shipper shipper;
 }

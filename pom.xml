@@ -11,7 +11,8 @@
 	<groupId>com.BaiTapLab</groupId>
 	<artifactId>BackEnd</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<!--<packaging>war</packaging>-->
+	<packaging>jar</packaging>
 	<name>BackEnd</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -55,7 +56,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
+			<!--<scope>provided</scope>-->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

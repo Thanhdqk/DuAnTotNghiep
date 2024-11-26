@@ -30,6 +30,8 @@ public class DonHangService {
 		return donhangRepository.tinhLoiNhuanDonHangHienTai("Đã giao");
 	}
 	
-
+	public List<Object[]> getDonHangDetails(String donhangid) {
+        return donhangRepository.findDonHangDetailsById(donhangid);
+    }
 	
 }

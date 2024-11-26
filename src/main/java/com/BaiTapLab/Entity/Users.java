@@ -38,7 +38,7 @@ public class Users {
 	public String hoat_dong;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String vi_pham;
+	public Integer vi_pham;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;
@@ -94,6 +94,10 @@ public class Users {
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<NhaCungCap> nhacungcap;
+	
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<Settings> settings;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	//@JsonIgnore

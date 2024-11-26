@@ -1,12 +1,12 @@
 package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -15,30 +15,25 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "phanhoidanhgia")
-public class PhanHoiDanhGia {
+@Table(name = "settings")
+public class Settings {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) 
-	public int phan_hoiID;
+	public String settingid;
+	
+	public String favicon;
+	
+	public String logo;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String noi_dung;
-	
-	public LocalDate ngay_tao;
+	public String ten_cua_hang;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
+	public String so_dien_thoai;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String dia_chi_cua_hang;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
-	
-	@ManyToOne
-	@JoinColumn(name = "san_phamId")
-	public SanPham sanpham;
-	
-	@ManyToOne
-	@JoinColumn(name = "danh_giaID")
-	public DanhGia danhgia;
-	
 }

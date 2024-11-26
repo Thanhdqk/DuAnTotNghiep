@@ -53,7 +53,7 @@ const ListStore = ({ Products, checked }) => {
         const averageStars = product.danhgia.length > 0 ? (totalStars / product.danhgia.length).toFixed(1) : 0;
 
         return (
-          <> <div
+           <div
             className="card-container card mx-4 mt-3"
             key={product.san_phamId}
             style={{
@@ -65,7 +65,7 @@ const ListStore = ({ Products, checked }) => {
               textDecoration: 'none',
 
             }}
-          >
+           >
             {product.so_luong > 0 ?
               <NavLink
                 to={`/product/detail/${product.san_phamId}`}
@@ -224,11 +224,11 @@ const ListStore = ({ Products, checked }) => {
               </div>
             )}
             
-          </div>
+           </div>
         
            
            
-            </>
+            
         );
       }) : listProduct.length > 0 ? currentlistProduct.map((product) => {
         const totalStars = product.danhgia.reduce((sum, rating) => sum + rating.so_sao, 0);
@@ -236,6 +236,7 @@ const ListStore = ({ Products, checked }) => {
 
         return (
           <div
+          
             className="card-container card mx-4 mt-3"
             key={product.san_phamId}
             style={{

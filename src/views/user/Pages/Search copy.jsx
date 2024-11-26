@@ -38,7 +38,7 @@ const Search = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    dispatch(SetPrice(0))
+
 
     const Default1 = minPrice;
     const Default2 = maxPrice;
@@ -114,7 +114,7 @@ const Search = () => {
       } catch (error) {
         console.error("Lỗi khi gọi API:", error);
       }
-     
+      dispatch(SetPrice(10000))
 
     }
 
@@ -126,438 +126,34 @@ const Search = () => {
     });
 
   };
-    //////////////////////////////////////////////////////////////////////////////////////////
-
-  const findBySoSaoEqual5 = async (sosao) => {
-
-
-    // Hàm để xây dựng URL động
-    const buildUrl = (isChecked, sosao, TextSearch, danhmuc,minPrice,maxPrice) => {
-      let baseUrl = 'http://localhost:8080/Product/';
-
-      if (isChecked) {
-        // Trường hợp có cả TextSearch, danh mục, và giá cụ thể
-        if (TextSearch && danhmuc && price) {
-          
-            if(price ==10000)
-            {
-              return `${baseUrl}FindByAllConditions?category=${danhmuc}&price=10000&rating=${sosao}&name=${TextSearch}`;
-            }
-            else{
-              return `${baseUrl}FindByAllConditionsMore100k?category=${danhmuc}&price=100000&rating=${sosao}&name=${TextSearch}`;
-            }
-          
-          
-        }
-        // Trường hợp có TextSearch, danh mục và khoảng giá (min hoặc max)
-        else if (TextSearch && danhmuc && (minPrice || maxPrice)) {
-          
-          
-           
-              return `${baseUrl}FindSanPhamByPriceDefaultAndDanhMucAndTextAndSosaoWithDiscount?danhmuc=${danhmuc}&Default1=${minPrice}&Default2=${maxPrice}&text=${TextSearch}&sosao=${sosao}`;
-            
-          
-        }
-        // Trường hợp có TextSearch và danh mục
-        else if (TextSearch && danhmuc) {
-        
-          return `${baseUrl}FindSanPhamBySoSaoAndDanhMucAndNameHaveDisCount?sosao=${sosao}&id=${danhmuc}&name=${TextSearch}`;
-        }
-        //here
-        else if (TextSearch  && price) {
-          
-          if(price == 10000)
-          {
-            return `${baseUrl}FindByPriceLessAndTextAndPromotionAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=10000`;
-          }
-          else
-          {
-            return `${baseUrl}FindByPriceMore100kAndTextAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=100000`;
-          }
-        }
-      
-        else if (danhmuc && price) {
-          
-          if(price == 10000)
-            {
-              return `${baseUrl}FindByPriceMore100kAndTextAndPromotionAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=100000`;
-            }
-            else
-            {
-              return `${baseUrl}FindByPriceMore100kAndCategoryAndPromotionAndRating?rating=${sosao}&category=${danhmuc}&price=100000`;
-            }
-         
-        }
-
-        else if (TextSearch  && minPrice || maxPrice) {
-          
-          return `${baseUrl}FindSanPhamByPriceDefaultAndTextAndSosaoWithDiscount?Default1=${minPrice}&Default2=${maxPrice}&text=${TextSearch}&sosao=${sosao}`;
-        }
-       
-        else if (danhmuc && minPrice || maxPrice) {
-          
-          return `${baseUrl}FindSanPhamByPriceDefaultAndDanhMucAndSosaoWithDiscount?Default1=${minPrice}&Default2=${maxPrice}&danhmuc=${danhmuc}&sosao=${sosao}`;
-        }
-        //here
-        // Trường hợp chỉ có TextSearch
-        else if (TextSearch) {
-        
-          return `${baseUrl}FindSanPhamBySoSaoAndNameHaveDisCount?sosao=${sosao}&name=${TextSearch}`;
-        }
-        // Trường hợp chỉ có danh mục
-        else if (danhmuc) {
-         
-          return `${baseUrl}FindSanPhamBySoSaoAndDanhMucHaveDisCount?sosao=${sosao}&id=${danhmuc}`;
-        }
-        // Trường hợp chỉ có giá cụ thể
-        else if (price) {
-          
-          
-            if(price ==10000)
-            {
-              return `${baseUrl}FindByPriceLessAndPromotionAndRating?rating=${sosao}&price=10000`;
-            }
-            else{
-              return `${baseUrl}FindByPriceMore100kAndPromotionAndRating?rating=${sosao}&price=100000`;
-            }
-          
-        
-        }
-        // Trường hợp có khoảng giá (min hoặc max)
-        else if (minPrice || maxPrice) {
-         
-          return `${baseUrl}FindSanPhamByPriceDefaultAndSosaoWithDiscount?Default1=${minPrice}&Default2=${maxPrice}&sosao=${sosao}`;
-        }
-        // Trường hợp không có thêm thông tin, chỉ dựa vào số sao
-        else {
-          
-          return `${baseUrl}FindSanPhamBySoSaoHaveDiscount?sosao=${sosao}`;
-        }
-      }
-      // Nếu isChecked = false (không giảm giá), xét các trường hợp:
-      else {
-        // Trường hợp có cả TextSearch, danh mục, và giá cụ thể
-        if (TextSearch && danhmuc && price) {
-          
-            if(price =10000)
-            {
-              return `${baseUrl}FindByPriceLessAndCategoryAndTextAndRating?rating=${sosao}&category=${danhmuc}?text=${TextSearch}&price=10000`;
-            }
-            else
-            {
-              return `${baseUrl}FindByPriceMore100kAndCategoryAndTextAndRating?rating=${sosao}&category=${danhmuc}?text=${TextSearch}&price=100000`;
-            }
-          
-        
-        }
-        // Trường hợp có TextSearch, danh mục và khoảng giá (min hoặc max)
-        else if (TextSearch && danhmuc && (minPrice || maxPrice)) {
-         
-          return `${baseUrl}FindSanPhamByPriceDefaultAndDanhMucAndTextAndSosao?Default1=${minPrice}&Default2=${maxPrice}&danhmuc=${danhmuc}&text=${TextSearch}&sosao=${sosao}`;
-        }
-        // Trường hợp có TextSearch và danh mục
-        else if (TextSearch && danhmuc) {
-          
-          return `${baseUrl}FindSanPhamBySoSaoAndDanhMucAndName?sosao=${sosao}&id=${danhmuc}&name=${TextSearch}`;
-        }
-        // here
-        else if (TextSearch  && price) {
-          
-          if(price == 10000)
-          {
-            return `${baseUrl}FindByPriceLessAndTextAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=10000`;
-          }
-          else
-          {
-            return `${baseUrl}FindByPriceMore100kAndTextAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=100000`;
-          }
-        }
-      
-        else if (danhmuc && price) {
-          
-          if(price == 10000)
-            {
-              return `${baseUrl}FindByPriceLessAndCategoryAndRating?rating=${sosao}&category=${danhmuc}&price=10000`;
-            }
-            else
-            {
-              return `${baseUrl}FindByPriceMore100kAndCategoryAndRating?rating=${sosao}&category=${danhmuc}&price=100000`;
-            }
-         
-        }
-
-        else if (TextSearch  && minPrice || maxPrice) {
-          
-          return `${baseUrl}FindSanPhamByPriceDefaultAndTextAndSosao?Default1=${minPrice}&Default2=${maxPrice}&text=${TextSearch}&sosao=${sosao}`;
-        }
-       
-        else if (danhmuc && minPrice || maxPrice) {
-          
-          return `${baseUrl}FindSanPhamByPriceDefaultAndDanhMucAndSosao?Default1=${minPrice}&Default2=${maxPrice}&danhmuc=${danhmuc}&sosao=${sosao}`;
-        }
-        
-        // here
-
-        // Trường hợp chỉ có TextSearch
-        else if (TextSearch) {
-          
-          return `${baseUrl}FindSanPhamBySoSaoAndName?sosao=${sosao}&name=${TextSearch}`;
-        }
-        // Trường hợp chỉ có danh mục
-        else if (danhmuc) {
-          
-          return `${baseUrl}FindSanPhamBySoSaoAndDanhMuc?sosao=${sosao}&id=${danhmuc}`;
-        }
-        // Trường hợp chỉ có giá cụ thể
-        else if (price) {
-         
-            if(price==10000)
-            {
-              return `${baseUrl}FindByPriceLessAndRating?rating=${sosao}&price=10000`;
-            }
-            else
-            {
-              return `${baseUrl}FindByPriceMore100kAndRating?rating=${sosao}&price=100000`;
-            }
-          
-         
-        }
-        // Trường hợp có khoảng giá (min hoặc max)
-        else if (minPrice || maxPrice) {
-         
-          return `${baseUrl}FindSanPhamByPriceDefaultAndSosao?Default1=${minPrice}&Default2=${maxPrice}&sosao=${sosao}`;
-        }
-        // Trường hợp không có thêm thông tin, chỉ dựa vào số sao
-        else {
-         
-          return `${baseUrl}FindbySosao?sosao=${sosao}`;
-        }
-      }
-    
-    };
-
-    // Xây dựng URL và thực hiện yêu cầu
-    const url = buildUrl(isChecked, sosao, TextSearch, danhmuc);
-    try {
-      const res = await axios({ url, method: "GET" });
-      console.log('Kết quả:', res.data);
-      dispatch(SetSoSao(sosao));
-      dispatch(ListProductSearch(res.data));
-    } catch (error) {
-      console.error('Lỗi khi lấy dữ liệu:', error);
-    }
-  }
-
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////
 
   const findBySoSao = async (sosao) => {
 
 
     // Hàm để xây dựng URL động
-    const buildUrl = (isChecked, sosao, TextSearch, danhmuc,minPrice,maxPrice) => {
+    const buildUrl = (isChecked, sosao, TextSearch, danhmuc) => {
       let baseUrl = 'http://localhost:8080/Product/';
-
       if (isChecked) {
-        // Trường hợp có cả TextSearch, danh mục, và giá cụ thể
-        if (TextSearch && danhmuc && price) {
-          
-            if(price ==10000)
-            {
-              return `${baseUrl}FindByAllConditions?category=${danhmuc}&price=10000&rating=${sosao}&name=${TextSearch}`;
-            }
-            else{
-              return `${baseUrl}FindByAllConditionsMore100k?category=${danhmuc}&price=100000&rating=${sosao}&name=${TextSearch}`;
-            }
-          
-          
-        }
-        // Trường hợp có TextSearch, danh mục và khoảng giá (min hoặc max)
-        else if (TextSearch && danhmuc && (minPrice || maxPrice)) {
-          
-          
-           
-              return `${baseUrl}FindSanPhamByPriceDefaultAndDanhMucAndTextAndSosaoWithDiscount?danhmuc=${danhmuc}&Default1=${minPrice}&Default2=${maxPrice}&text=${TextSearch}&sosao=${sosao}`;
-            
-          
-        }
-        // Trường hợp có TextSearch và danh mục
-        else if (TextSearch && danhmuc) {
-        
+        if (TextSearch && danhmuc) {
           return `${baseUrl}FindSanPhamBySoSaoAndDanhMucAndNameHaveDisCount?sosao=${sosao}&id=${danhmuc}&name=${TextSearch}`;
-        }
-        //here
-        else if (TextSearch  && price) {
-          
-          if(price == 10000)
-          {
-            return `${baseUrl}FindByPriceLessAndTextAndPromotionAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=10000`;
-          }
-          else
-          {
-            return `${baseUrl}FindByPriceMore100kAndTextAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=100000`;
-          }
-        }
-      
-        else if (danhmuc && price) {
-          
-          if(price == 10000)
-            {
-              return `${baseUrl}FindByPriceMore100kAndTextAndPromotionAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=100000`;
-            }
-            else
-            {
-              return `${baseUrl}FindByPriceMore100kAndCategoryAndPromotionAndRating?rating=${sosao}&category=${danhmuc}&price=100000`;
-            }
-         
-        }
-
-        else if (TextSearch  && minPrice || maxPrice) {
-          
-          return `${baseUrl}FindSanPhamByPriceDefaultAndTextAndSosaoWithDiscount?Default1=${minPrice}&Default2=${maxPrice}&text=${TextSearch}&sosao=${sosao}`;
-        }
-       
-        else if (danhmuc && minPrice || maxPrice) {
-          
-          return `${baseUrl}FindSanPhamByPriceDefaultAndDanhMucAndSosaoWithDiscount?Default1=${minPrice}&Default2=${maxPrice}&danhmuc=${danhmuc}&sosao=${sosao}`;
-        }
-        //here
-        // Trường hợp chỉ có TextSearch
-        else if (TextSearch) {
-        
+        } else if (TextSearch) {
           return `${baseUrl}FindSanPhamBySoSaoAndNameHaveDisCount?sosao=${sosao}&name=${TextSearch}`;
-        }
-        // Trường hợp chỉ có danh mục
-        else if (danhmuc) {
-         
+        } else if (danhmuc) {
           return `${baseUrl}FindSanPhamBySoSaoAndDanhMucHaveDisCount?sosao=${sosao}&id=${danhmuc}`;
-        }
-        // Trường hợp chỉ có giá cụ thể
-        else if (price) {
-          
-          
-            if(price ==10000)
-            {
-              return `${baseUrl}FindByPriceLessAndPromotionAndRating?rating=${sosao}&price=10000`;
-            }
-            else{
-              return `${baseUrl}FindByPriceMore100kAndPromotionAndRating?rating=${sosao}&price=100000`;
-            }
-          
-        
-        }
-        // Trường hợp có khoảng giá (min hoặc max)
-        else if (minPrice || maxPrice) {
-         
-          return `${baseUrl}FindSanPhamByPriceDefaultAndSosaoWithDiscount?Default1=${minPrice}&Default2=${maxPrice}&sosao=${sosao}`;
-        }
-        // Trường hợp không có thêm thông tin, chỉ dựa vào số sao
-        else {
-          
+        } else {
           return `${baseUrl}FindSanPhamBySoSaoHaveDiscount?sosao=${sosao}`;
         }
-      }
-      // Nếu isChecked = false (không giảm giá), xét các trường hợp:
-      else {
-        // Trường hợp có cả TextSearch, danh mục, và giá cụ thể
-        if (TextSearch && danhmuc && price) {
-          
-            if(price =10000)
-            {
-              return `${baseUrl}FindByPriceLessAndCategoryAndTextAndRating?rating=${sosao}&category=${danhmuc}?text=${TextSearch}&price=10000`;
-            }
-            else
-            {
-              return `${baseUrl}FindByPriceMore100kAndCategoryAndTextAndRating?rating=${sosao}&category=${danhmuc}?text=${TextSearch}&price=100000`;
-            }
-          
-        
-        }
-        // Trường hợp có TextSearch, danh mục và khoảng giá (min hoặc max)
-        else if (TextSearch && danhmuc && (minPrice || maxPrice)) {
-         
-          return `${baseUrl}FindSanPhamByPriceDefaultAndDanhMucAndTextAndSosao?Default1=${minPrice}&Default2=${maxPrice}&danhmuc=${danhmuc}&text=${TextSearch}&sosao=${sosao}`;
-        }
-        // Trường hợp có TextSearch và danh mục
-        else if (TextSearch && danhmuc) {
-          
+      } else {
+        if (TextSearch && danhmuc) {
           return `${baseUrl}FindSanPhamBySoSaoAndDanhMucAndName?sosao=${sosao}&id=${danhmuc}&name=${TextSearch}`;
-        }
-        // here
-        else if (TextSearch  && price) {
-          
-          if(price == 10000)
-          {
-            return `${baseUrl}FindByPriceLessAndTextAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=10000`;
-          }
-          else
-          {
-            return `${baseUrl}FindByPriceMore100kAndTextAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=100000`;
-          }
-        }
-      
-        else if (danhmuc && price) {
-          
-          if(price == 10000)
-            {
-              return `${baseUrl}FindByPriceLessAndCategoryAndRating?rating=${sosao}&category=${danhmuc}&price=10000`;
-            }
-            else
-            {
-              return `${baseUrl}FindByPriceMore100kAndCategoryAndRating?rating=${sosao}&category=${danhmuc}&price=100000`;
-            }
-         
-        }
-
-        else if (TextSearch  && minPrice || maxPrice) {
-          
-          return `${baseUrl}FindSanPhamByPriceDefaultAndTextAndSosao?Default1=${minPrice}&Default2=${maxPrice}&text=${TextSearch}&sosao=${sosao}`;
-        }
-       
-        else if (danhmuc && minPrice || maxPrice) {
-          
-          return `${baseUrl}FindSanPhamByPriceDefaultAndDanhMucAndSosao?Default1=${minPrice}&Default2=${maxPrice}&danhmuc=${danhmuc}&sosao=${sosao}`;
-        }
-        
-        // here
-
-        // Trường hợp chỉ có TextSearch
-        else if (TextSearch) {
-          
+        } else if (TextSearch) {
           return `${baseUrl}FindSanPhamBySoSaoAndName?sosao=${sosao}&name=${TextSearch}`;
-        }
-        // Trường hợp chỉ có danh mục
-        else if (danhmuc) {
-          
+        } else if (danhmuc) {
           return `${baseUrl}FindSanPhamBySoSaoAndDanhMuc?sosao=${sosao}&id=${danhmuc}`;
-        }
-        // Trường hợp chỉ có giá cụ thể
-        else if (price) {
-         
-            if(price==10000)
-            {
-              return `${baseUrl}FindByPriceLessAndRating?rating=${sosao}&price=10000`;
-            }
-            else
-            {
-              return `${baseUrl}FindByPriceMore100kAndRating?rating=${sosao}&price=100000`;
-            }
-          
-         
-        }
-        // Trường hợp có khoảng giá (min hoặc max)
-        else if (minPrice || maxPrice) {
-         
-          return `${baseUrl}FindSanPhamByPriceDefaultAndSosao?Default1=${minPrice}&Default2=${maxPrice}&sosao=${sosao}`;
-        }
-        // Trường hợp không có thêm thông tin, chỉ dựa vào số sao
-        else {
-         
+        } else {
           return `${baseUrl}FindbySosao?sosao=${sosao}`;
         }
       }
-    
     };
 
     // Xây dựng URL và thực hiện yêu cầu
@@ -577,8 +173,6 @@ const Search = () => {
     API();
     console.log('sad', isChecked)
     console.log('sad', danhmuc)
-    console.log('sad', minPrice)
-    console.log('sad', maxPrice)
   }, [])
 
   return (
@@ -726,69 +320,47 @@ const Search = () => {
                 const sanphamWithoutDiscount = {
                   "Only_Danhmuc": `http://localhost:8080/Product/FindByCategory?id=${danhmuc}`,
                   "Only_Text": `http://localhost:8080/Product/FindbyNameWithDiscount?name=${TextSearch}`,
-                  "Only_price_More": `http://localhost:8080/Product/FindByPriceMore100k?price=100000`,
-                  "Only_price_Less": `http://localhost:8080/http://localhost:8080/Product/FindbyPriceLess?price=10000`,
+                  "Only_price": `http://localhost:8080/http://localhost:8080/Product/FindbyPriceLess?price=10000`,
                   "Only_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefault?Default1=${Default1}&Default2=${Default2}`,
-                  "Only_Sosao": `http://localhost:8080/Product/findSanPhambyTextAndSoSaoHaveDiscount?sosao=${sosao}&name=${TextSearch}`,
+                  "Only_Sosao": `http://localhost:8080/`,
                   "Danhmuc_Text": `http://localhost:8080/Product/FindbyNameandDanhmuc?name=${TextSearch}&id=${danhmuc}`,
                   "Danhmuc_Text_Sosao": `http://localhost:8080/Product/FindbySoSaoandDanhmucandName?name=${TextSearch}&sosao=${sosao}&id=${danhmuc}`,
-                  "Danhmuc_Sosao": `http://localhost:8080/Product/FindbySoSaoandDanhmuc?sosao=${sosao}&id=${danhmuc}`,
+                  "Danhmuc_Sosao": `http://localhost:8080/Product/FindbySoSaoandDanhmuc?name=${TextSearch}&id=${danhmuc}`,
                   "Sosao_text": `http://localhost:8080/Product/FindByPriceLessAndTextAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=10000`,
-                  "Danhmuc_Text_Sosao_Price_Less": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndTextAndRating?rating=${sosao}&category=${danhmuc}?text=${TextSearch}&price=10000`,
-                  "Danhmuc_Text_Sosao_Price_More": `http://localhost:8080/Product/FindByPriceMore100kAndCategoryAndTextAndRating?rating=${sosao}&category=${danhmuc}?text=${TextSearch}&price=100000`,
+                  "Danhmuc_Text_Sosao_Price": `http://localhost:8080/Product/FindbySoSaoandDanhmucandName?name=${TextSearch}&sosao=${sosao}&id=${danhmuc}&price=10000`,
                   "Danhmuc_Text_Sosao_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndTextAndSosao?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}&sosao=${sosao}`,
-                  "Danhmuc_Text_Price_More": `http://localhost:8080/Product/FindByPriceMore100kAndCategoryAndText?name=${TextSearch}&category=${danhmuc}&price=100000`,
-                  "Danhmuc_Text_Price_Less": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndText?name=${TextSearch}&category=${danhmuc}&price=10000`,
-                  "Danhmuc_Sosao_Price_More": `http://localhost:8080/Product/FindByPriceMore100kAndCategoryAndRating?rating=${sosao}&category=${danhmuc}&price=100000`,
-                  "Danhmuc_Sosao_Price_Less": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndRating?rating=${sosao}&category=${danhmuc}&price=10000`,
-                  "Text_Sosao_Price_More": `http://localhost:8080/Product/FindByPriceMore100kAndTextAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=100000`,
-                  "Text_Sosao_Price_Less": `http://localhost:8080/Product/FindByPriceLessAndTextAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=10000`,
+                  "Danhmuc_Text_Price": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndText?name=${TextSearch}&category=${danhmuc}&price=10000`,
+                  "Danhmuc_Sosao_Price": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndRating?rating=${sosao}&category=${danhmuc}&price=10000`,
+                  "Text_Sosao_Price": `http://localhost:8080/Product/FindByPriceLessAndTextAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=10000`,
                   "Danhmuc_Text_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndText?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}`,
                   "Danhmuc_Sosao_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndSosao?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&sosao=${sosao}`,
                   "Text_Sosao_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndTextAndSosao?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}&sosao=${sosao}`,
                   "Text_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndText?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}`,
                   "Danhmuc_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMuc?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}`,
-                  // thêm danh mục - price và text-price less more
-                  "Danhmuc_price_More": `http://localhost:8080/Product/FindByPriceMore100kAndCategory?price=100000&category=${danhmuc}`,
-                  "Danhmuc_price_Less": `http://localhost:8080/Product/FindByPriceLessAndCategory?price=10000&category=${danhmuc}`,
-                  "Text_price_Less": `http://localhost:8080/Product/FindByPriceLessAndText?text=${TextSearch}&price=10000`,
-                  "Text_price_More": `http://localhost:8080/Product/FindByPriceMore100kAndText?text=${TextSearch}&price=100000`,
                   "no_filters": "http://localhost:8080/FindProductTopSell"
-
                 }
 
                 const sanphamWithDiscount = {
                   "Only_Danhmuc": `http://localhost:8080/Product/FindByCategoryWithDiscount?id=${danhmuc}`,
                   "Only_Text": `http://localhost:8080/Product/FindbyNameWithDiscount?name=${TextSearch}`,
-                  "Only_price_More": `http://localhost:8080/Product/FindByPriceMore100kAndPromotion?price=100000`,
-                  "Only_price_Less": `http://localhost:8080/Product/FindByPriceLessAndPromotion?price=10000`,
+                  "Only_price": `http://localhost:8080/Product/FindByPriceLessAndPromotion?price=10000`,
                   "Only_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDiscount?Default1=${Default1}&Default2=${Default2}`,
                   "Only_Sosao": `http://localhost:8080/Product/FindbySosao?sosao=${sosao}`,
                   "Danhmuc_Text": `http://localhost:8080/Product/FindbyNameandDanhmucWithDiscount?name=${TextSearch}&id=${danhmuc}`,
                   "Danhmuc_Text_Sosao": `http://localhost:8080/Product/FindbySoSaoandDanhmucandName?name=${TextSearch}&sosao=${sosao}&id=${danhmuc}`,
                   "Danhmuc_Sosao": `http://localhost:8080/Product/FindbySoSaoandDanhmucWithDiscount?sosao=${sosao}&id=${danhmuc}`,
-                  "Sosao_text": `http://localhost:8080/Product/findSanPhambyTextAndSoSao?sosao=${sosao}&name=${TextSearch}`,
-                  "Danhmuc_Text_Sosao_Price_Less": `http://localhost:8080/Product/FindByAllConditions?rating=${sosao}&category=${danhmuc}?text=${TextSearch}&price=10000`,
-                  "Danhmuc_Text_Sosao_Price_More": `http://localhost:8080/Product/FindByAllConditionsMore100k?rating=${sosao}&category=${danhmuc}?text=${TextSearch}&price=100000`,
+                  "Sosao_text": `http://localhost:8080/`,
+                  "Danhmuc_Text_Sosao_Price": `http://localhost:8080/Product/FindByAllConditions?rating=${sosao}&category=${danhmuc}?text=${TextSearch}&price=10000`,
                   "Danhmuc_Text_Sosao_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndTextAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}&sosao=${sosao}`,
-                  "Danhmuc_Text_Price_More": `http://localhost:8080/Product/FindByPriceMore100kAndCategoryAndTextAndPromotion?name=${TextSearch}&category=${danhmuc}&price=100000`,
-                  "Danhmuc_Text_Price_Less": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndTextAndPromotion?name=${TextSearch}&category=${danhmuc}&price=10000`,
-                  "Danhmuc_Sosao_Price_Less": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndPromotionAndRating?rating=${sosao}&category=${danhmuc}&price=10000`,
-                  "Danhmuc_Sosao_Price_More": `http://localhost:8080/Product/FindByPriceMore100kAndCategoryAndPromotionAndRating?rating=${sosao}&category=${danhmuc}&price=100000`,
-                  "Text_Sosao_Price_Less": `http://localhost:8080/Product/FindByPriceLessAndTextAndPromotionAndRating?name=${TextSearch}&rating=${sosao}&price=10000`,
-                  "Text_Sosao_Price_More": `http://localhost:8080/Product/FindByPriceMore100kAndTextAndPromotionAndRating?name=${TextSearch}&rating=${sosao}&category=${danhmuc}&price=100000`,
+                  "Danhmuc_Text_Price": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndTextAndPromotion?name=${TextSearch}&category=${danhmuc}&price=10000`,
+                  "Danhmuc_Sosao_Price": `http://localhost:8080/Product/FindByPriceLessAndCategoryAndPromotionAndRating?rating=${sosao}&category=${danhmuc}&price=10000`,
+                  "Text_Sosao_Price": `http://localhost:8080/Product/FindByPriceLessAndTextAndPromotionAndRating?name=${TextSearch}&rating=${sosao}&price=10000`,
                   "Danhmuc_Text_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndTextWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&text=${TextSearch}`,
                   "Danhmuc_Sosao_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}&sosao=${sosao}`,
                   "Text_Sosao_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndTextAndSosaoWithDiscount?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}&sosao=${sosao}`,
                   "Text_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndTextWithDiscount?Default1=${Default1}&Default2=${Default2}&text=${TextSearch}`,
                   "Danhmuc_minmax": `http://localhost:8080/Product/FindSanPhamByPriceDefaultAndDanhMucWithDiscount?Default1=${Default1}&Default2=${Default2}&danhmuc=${danhmuc}`,
-                  // thêm danh mục - price và text-price less more
-                  "Danhmuc_price_More": `http://localhost:8080/Product/FindByPriceMore100kAndCategoryAndPromotion?category=${danhmuc}&price=100000`,
-                  "Danhmuc_price_Less": ` http://localhost:8080/Product/FindByPriceLessAndCategoryAndPromotion?category=${danhmuc}&price=10000`,
-                  "Text_price_Less": `http://localhost:8080/Product/FindByPriceLessAndTextAndPromotion?text=${TextSearch}&price=10000`,
-                  "Text_price_More": `http://localhost:8080/Product/FindByPriceMore100kAndTextAndPromotion?text=${TextSearch}&price=100000`,
                   "no_filters": "http://localhost:8080/FindProductDiscount"
-
                 }
 
                 const GETapi = () => {
@@ -805,10 +377,7 @@ const Search = () => {
                     return "Only_Danhmuc";
                   }
                   if (TextSearch == "" && sosao == "" && danhmuc == "" && price != 0 && minPrice == 0 && maxPrice == 0) {
-                    if (price == 10000)
-                      return "Only_price_Less";
-                    else
-                      return "Only_price_More";
+                    return "Only_price";
                   }
                   if (TextSearch == "" && sosao == "" && danhmuc == "" && price == 0 && minPrice != 0 && maxPrice != 0) {
                     return "Only_minmax";
@@ -827,41 +396,19 @@ const Search = () => {
                     return "Sosao_text";
                   }
                   if (TextSearch != "" && sosao != "" && danhmuc != "" && price != 0 && minPrice == 0 && maxPrice == 0) {
-
-                    if (price == 10000)
-                      return "Danhmuc_Text_Sosao_Price_Less";
-                    else
-                      return "Danhmuc_Text_Sosao_Price_More";
+                    return "Danhmuc_Text_Sosao_Price";
                   }
                   if (TextSearch != "" && sosao != "" && danhmuc != "" && price == 0 && minPrice != 0 && maxPrice != 0) {
                     return "Danhmuc_Text_Sosao_minmax";
                   }
                   if (TextSearch != "" && sosao == "" && danhmuc != "" && price != 0 && minPrice == 0 && maxPrice == 0) {
-
-                    if (price == 10000) {
-                      return "Danhmuc_Text_Price_Less"
-                    }
-                    else {
-                      return "Danhmuc_Text_Price_More"
-                    }
+                    return "Danhmuc_Text_Price";
                   }
                   if (TextSearch == "" && sosao != "" && danhmuc != "" && price != 0 && minPrice == 0 && maxPrice == 0) {
-                    if (price == 10000) {
-                      return "Danhmuc_Sosao_Price_Less"
-                    }
-                    else {
-                      return "Danhmuc_Sosao_Price_More"
-                    }
-
+                    return "Danhmuc_Sosao_Price";
                   }
                   if (TextSearch != "" && sosao != "" && danhmuc == "" && price != 0 && minPrice == 0 && maxPrice == 0) {
-                    if (price == 10000) {
-                      return "Text_Sosao_Price_Less"
-                    }
-                    else {
-                      return "Text_Sosao_Price_More"
-                    }
-                    //
+                    return "Text_Sosao_Price";
                   }
                   if (TextSearch != "" && sosao == "" && danhmuc != "" && price == 0 && minPrice != 0 && maxPrice != 0) {
                     return "Danhmuc_Text_minmax";
@@ -878,26 +425,7 @@ const Search = () => {
                   if (TextSearch == "" && sosao == "" && danhmuc != "" && price == 0 && minPrice != 0 && maxPrice != 0) {
                     return "Danhmuc_minmax";
                   }
-
-                  if (TextSearch == "" && sosao == "" && danhmuc != "" && price != 0 && minPrice == 0 && maxPrice == 0) {
-                    if (price == 10000) {
-                      return "Danhmuc_price_Less";
-                    }
-                    else {
-                      return "Danhmuc_price_More";
-                    }
-                  }
-
-                  if (TextSearch != "" && sosao == "" && danhmuc == "" && price != 0 && minPrice == 0 && maxPrice == 0) {
-                    if (price == 10000) {
-                      return "Text_price_Less";
-                    }
-                    else {
-                      return "Text_price_More";
-                    }
-                  }
-
-
+                 
                 }
 
                 const key = GETapi();
@@ -905,13 +433,9 @@ const Search = () => {
                 if (key != null) {
                   const url = checked ? sanphamWithDiscount[key] : sanphamWithoutDiscount[key];
                   console.log("url", url)
-                  console.log("url", key)
                   const res = await axios({ url, method: "GET" });
                   const productsearch = ListProductSearch(res.data);
                   dispatch(productsearch);
-                }
-                else {
-                  console.log("ko cossssssssss")
                 }
 
 
@@ -931,7 +455,7 @@ const Search = () => {
           <h2>Đánh giá</h2>
           <div>
             <div className="form-check">
-              <input checked={sosao==1} onChange={async () => {
+              <input onClick={async () => {
                 // start 1
 
                 findBySoSao(1)
@@ -944,7 +468,7 @@ const Search = () => {
               </label>
             </div>
             <div className="form-check">
-              <input checked={sosao==2} onChange={async () => {
+              <input onClick={async () => {
 
 
                 findBySoSao(2)
@@ -959,7 +483,7 @@ const Search = () => {
               </label>
             </div>
             <div className="form-check">
-              <input checked={sosao==3} onChange={async () => {
+              <input onClick={async () => {
 
                 findBySoSao(3)
                 // end 3
@@ -975,7 +499,7 @@ const Search = () => {
               </label>
             </div>
             <div className="form-check">
-              <input checked={sosao==4} onChange={async () => {
+              <input onClick={async () => {
                 findBySoSao(4)
               }} className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault4" />
               <label className="form-check-label" htmlFor="flexRadioDefault4">
@@ -989,270 +513,65 @@ const Search = () => {
               </label>
             </div>
             <div className="form-check">
-              <input checked={sosao==5} onChange={async () => {
-                
+              <input onClick={async () => {
                 if (isChecked) {
-                 // no filter
-                  if (TextSearch === '' && danhmuc === '' && price ==0 && (minPrice ==0 || maxPrice ==0)  ) {
-                    const res = await axios({ url: 'http://localhost:8080/Product/findBySoSaoWithDiscountEQUAL5', method: "GET" })
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                    console.log("no filter")
-                   
-                  }
-                   // only text
-                  if (TextSearch !== '' && danhmuc === '' && price ==0 && (minPrice ==0 || maxPrice ==0)  ) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndNameWithDiscountEQUAL5?name=${TextSearch}`, method: "GET" })
-                    console.log('only text', res.data)
+                  if (TextSearch !== '' && danhmuc === '') {
+                    const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndNameHaveDisCount?name=${TextSearch}`, method: "GET" })
+                    console.log('res 1', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
-                  // only danh muc
-                  else if (danhmuc !== '' && TextSearch === '' && price ==0 && (minPrice ==0 || maxPrice ==0)  ) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndCategoryWithDiscountEQUAL5?danhmuc=${danhmuc}`, method: "GET" })
-                   
-                    console.log('only danh muc ', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  // only price
-                  if (TextSearch === '' && danhmuc === '' && price !=0 && (minPrice ==0 || maxPrice ==0)  ) {
-                    if(price == 10000)
-                    {
-                      const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceLessThan10kWithDiscountEQUAL5?price=10000`, method: "GET" })
-                      console.log('only price less', res.data)
-                      dispatch(SetSoSao(5))
-                      dispatch(ListProductSearch(res.data));
-                    }
-                    else{
-                      const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceGreaterThan100kWithDiscountEQUAL5?price=100000`, method: "GET" })
-                      console.log('only price more', res.data)
-                      dispatch(SetSoSao(5))
-                      dispatch(ListProductSearch(res.data));
-                    }
-                   
-                  }
-                  // only min max
-                  if (TextSearch == '' && danhmuc === '' && price ==0 && (minPrice !=0 || maxPrice !=0)  ) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceRangeWithDiscountEQUAL5?default1=${minPrice}&default2=${maxPrice}`, method: "GET" })
-                    console.log('only min max', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  //  text danh muc
-                  else if (TextSearch !== '' && danhmuc !== "" && price ==0 && (minPrice ==0 || maxPrice ==0)) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndCategoryAndNameWithDiscountEQUAL5?id=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('text danh muc', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  // text price
-                  else if (TextSearch !== '' && danhmuc == "" && price !=0 && (minPrice ==0 || maxPrice ==0)) {
-                    if(price == 10000)
-                    {
-                      const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndNameAndPriceLessThan10kWithDiscountEQUAL5?price=10000&name=${TextSearch}`, method: "GET" })
-                    console.log('text price less', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                    }
-                    else{
-                      const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndNameAndPriceGreaterThan100kWithDiscountEQUAL5?price=100000&name=${TextSearch}`, method: "GET" })
-                    console.log('text price more', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                    }
-                  }
-                   // danh muc price
-                  else if (TextSearch == '' && danhmuc != "" && price !=0 && (minPrice ==0 || maxPrice ==0)) {
-                   if(price == 10000)
-                   {
-                    const res = await axios({ url: `http://localhost:8080/Product/findByDanhMucAndPriceLess10kEQUAL5HaveDiscount?danhmuc=${danhmuc}&price=10000`, method: "GET" })
-                    console.log('res 3', res.data)
-                    dispatch(SetSoSao(5))
-                    
-                    dispatch(ListProductSearch(res.data));
-                   }
-                   else{
-                    const res = await axios({ url: `http://localhost:8080/Product/findByDanhMucAndPriceMore100kEQUAL5HaveDiscount?danhmuc=${danhmuc}}&price=100000`, method: "GET" })
-                    console.log('res 3', res.data)
-                    dispatch(SetSoSao(5))
-                    
-                    dispatch(ListProductSearch(res.data));
-                   }
-                  }
-                    // text danh muc price
-                  else if (TextSearch != '' && danhmuc != "" && price !=0 && (minPrice ==0 || maxPrice ==0)) {
-                   if(price == 10000)
-                   {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndCategoryAndNameAndPriceLessThan10kWithDiscountEQUAL5?danhmuc=${danhmuc}&name=${TextSearch}&price=10000`, method: "GET" })
-                    console.log('text danh muc price less', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                   }
-                   else{
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndCategoryAndNameAndPriceGreaterThan100kWithDiscountEQUAL5?danhmuc=${danhmuc}&name=${TextSearch}&price=100000`, method: "GET" })
-                    console.log('text danh muc price more', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                   }
-                  }
-                  //  text min max
-                  else if (TextSearch != '' && danhmuc == "" && price ==0 && (minPrice !=0 || maxPrice !=0)) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceRangeAndNameWithDiscountEQUAL5?name=${TextSearch}&default1=${minPrice}&default2=${maxPrice}`, method: "GET" })
-                    console.log('text min max', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  //  danh muc min max
-                  else if (TextSearch == '' && danhmuc != "" && price ==0 && (minPrice !=0 || maxPrice !=0)) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceRangeAndCategoryWithDiscountEQUAL5?danhmuc=${danhmuc}&default1=${minPrice}&default2=${maxPrice}`, method: "GET" })
-                    console.log('danh muc min max', res.data)
+                  else if (danhmuc !== '' && TextSearch === '') {
+                    const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndDanhMucHaveDisCount?id=${danhmuc}`, method: "GET" })
+                    console.log('res 2 dssad ', danhmuc)
+                    console.log('res 2 dssad ', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
 
-                  // text danh muc min max
-                  else if (TextSearch != '' && danhmuc != "" && price ==0 && (minPrice !=0 || maxPrice !=0)) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceRangeAndCategoryAndNameWithDiscountEQUAL5?danhmuc=${danhmuc}&name=${TextSearch}&default1=${minPrice}&default2=${maxPrice}`, method: "GET" })
+                  else if (TextSearch !== '' && danhmuc !== "") {
+                    const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndDanhMucAndNameHaveDisCount?id=${danhmuc}&name=${TextSearch}`, method: "GET" })
                     console.log('res 3', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
-
-
-                 
+                  else {
+                    const res = await axios({ url: 'http://localhost:8080/Product/findSanPhamBySoSaoEqual5HaveDiscount', method: "GET" })
+                    dispatch(SetSoSao(5))
+                    dispatch(ListProductSearch(res.data));
+                    alert("else gg")
+                  }
 
                 }
                 else {
-                  // no filter
-                  if (TextSearch === '' && danhmuc === '' && price ==0 && (minPrice ==0 || maxPrice ==0)  ) {
-                    const res = await axios({ url: 'http://localhost:8080/Product/findBySoSaoEQUAL5', method: "GET" })
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                    console.log("no filter")
-                   
-                  }
-                   // only text
-               else   if (TextSearch !== '' && danhmuc === '' && price ==0 && (minPrice ==0 || maxPrice ==0)  ) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndNameEQUAL5?name=${TextSearch}`, method: "GET" })
-                    console.log('only text', res.data)
+                  if (TextSearch !== '' && danhmuc === '') {
+                    const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndName?name=${TextSearch}`, method: "GET" })
+                    console.log('res 1', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
-                  // only danh muc
-                  else if (danhmuc !== '' && TextSearch === '' && price ==0 && (minPrice ==0 || maxPrice ==0)  ) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndCategoryEQUAL5?danhmuc=${danhmuc}`, method: "GET" })
-                   
-                    console.log('only danh muc ', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  // only price
-                else  if (TextSearch === '' && danhmuc === '' && price !=0 && (minPrice ==0 || maxPrice ==0)  ) {
-                    if(price == 10000)
-                    {
-                      const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceLessThan10kEQUAL5?price=10000`, method: "GET" })
-                      console.log('only price less', res.data)
-                      dispatch(SetSoSao(5))
-                      dispatch(ListProductSearch(res.data));
-                    }
-                    else{
-                      const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceGreaterThan100kEQUAL5?price=100000`, method: "GET" })
-                      console.log('only price more', res.data)
-                      dispatch(SetSoSao(5))
-                      dispatch(ListProductSearch(res.data));
-                    }
-                   
-                  }
-                  // only min max
-               else   if (TextSearch == '' && danhmuc === '' && price ==0 && (minPrice !=0 || maxPrice !=0)  ) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceRangeEQUAL5?default1=${minPrice}&default2=${maxPrice}`, method: "GET" })
-                    console.log('only min max', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  //  text danh muc
-                  else if (TextSearch !== '' && danhmuc !== "" && price ==0 && (minPrice ==0 || maxPrice ==0)) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndCategoryAndNameEQUAL5?danhmuc=${danhmuc}&name=${TextSearch}`, method: "GET" })
-                    console.log('text danh muc', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  // text price
-                  else if (TextSearch !== '' && danhmuc == "" && price !=0 && (minPrice ==0 || maxPrice ==0)) {
-                    if(price == 10000)
-                    {
-                      const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndNameAndPriceLessThan10kEQUAL5?price=10000&name=${TextSearch}`, method: "GET" })
-                    console.log('text price less', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                    }
-                    else{
-                      const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndNameAndPriceGreaterThan100kEQUAL5?price=100000&name=${TextSearch}`, method: "GET" })
-                    console.log('text price more', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                    }
-                  }
-                   // danh muc price
-                  else if (TextSearch == '' && danhmuc != "" && price !=0 && (minPrice ==0 || maxPrice ==0)) {
-                   if(price == 10000)
-                   {
-                    const res = await axios({ url: `http://localhost:8080/Product/findByDanhMucAndPriceLess10kEQUAL5?danhmuc=${danhmuc}&price=100000`, method: "GET" })
-                    console.log('res 3', res.data)
-                    dispatch(SetSoSao(5))
-                    
-                    dispatch(ListProductSearch(res.data));
-                   }
-                   else{
-                    const res = await axios({ url: `http://localhost:8080/Product/findByDanhMucAndPriceMore100kEQUAL5?danhmuc=${danhmuc}&price=100000`, method: "GET" })
-                    console.log('res 3', res.data)
-                    dispatch(SetSoSao(5))
-                    
-                    dispatch(ListProductSearch(res.data));
-                   }
-                  }
-                    // text danh muc price
-                  else if (TextSearch != '' && danhmuc != "" && price !=0 && (minPrice ==0 || maxPrice ==0)) {
-                   if(price == 10000)
-                   {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndCategoryAndNameAndPriceLessThan10kEQUAL5?danhmuc=${danhmuc}&name=${TextSearch}&price=10000`, method: "GET" })
-                    console.log('text danh muc price less', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                   }
-                   else{
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndCategoryAndNameAndPriceGreaterThan100kEQUAL5?danhmuc=${danhmuc}&name=${TextSearch}&price=100000`, method: "GET" })
-                    console.log('text danh muc price more', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                   }
-                  }
-                  //  text min max
-                  else if (TextSearch != '' && danhmuc == "" && price ==0 && (minPrice !=0 || maxPrice !=0)) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceRangeAndNameEQUAL5?name=${TextSearch}&default1=${minPrice}&default2=${maxPrice}`, method: "GET" })
-                    console.log('text min max', res.data)
-                    dispatch(SetSoSao(5))
-                    dispatch(ListProductSearch(res.data));
-                  }
-                  //  danh muc min max
-                  else if (TextSearch == '' && danhmuc != "" && price ==0 && (minPrice !=0 || maxPrice !=0)) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceRangeAndCategoryEQUAL5?danhmuc=${danhmuc}&default1=${minPrice}&default2=${maxPrice}`, method: "GET" })
-                    console.log('danh muc min max', res.data)
+                  else if (danhmuc !== '' && TextSearch === '') {
+                    const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndDanhMuc?id=${danhmuc}`, method: "GET" })
+                    console.log('res 2', res.data)
                     dispatch(SetSoSao(5))
                     dispatch(ListProductSearch(res.data));
                   }
 
-                  // text danh muc min max
-                  else if (TextSearch != '' && danhmuc != "" && price ==0 && (minPrice !=0 || maxPrice !=0)) {
-                    const res = await axios({ url: `http://localhost:8080/Product/findBySoSaoAndPriceRangeAndCategoryAndNameEQUAL5?danhmuc=${danhmuc}&name=${TextSearch}&default1=${minPrice}&default2=${maxPrice}`, method: "GET" })
-                    console.log('text danh muc min max', res.data)
-                    dispatch(SetSoSao(5))
+                  else if (TextSearch !== '' && danhmuc !== '') {
+                    const res = await axios({ url: `http://localhost:8080/Product/findSanPhamBySoSaoEqual5AndDanhMucAndName?id=${danhmuc}&name=${TextSearch}`, method: "GET" })
+                    console.log('res 3', res.data)
+                    dispatch(SetSoSao(4))
                     dispatch(ListProductSearch(res.data));
                   }
+                  else {
+                    const res = await axios({ url: 'http://localhost:8080/Product/FindbySosao5', method: "GET" })
+                    dispatch(SetSoSao(5))
+                    dispatch(ListProductSearch(res.data));
+
+                  }
                 }
-              }
-              } className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault5" />
+
+              }} className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault5" />
               <label className="form-check-label" htmlFor="flexRadioDefault5">
                 <div>
                   <i className="bi bi-star-fill text-warning" />
@@ -1610,7 +929,7 @@ const Search = () => {
                 cursor: "pointer",
               }}
             >
-              <i className="bi bi-search text-danger fw-bold"></i>
+              <i class="bi bi-search text-danger fw-bold"></i>
             </button>
           </form>
 

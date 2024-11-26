@@ -1,10 +1,11 @@
 # Khai báo port
 server: # lưu ý không được dùng tab trong file .yml 
   port: 8080
-  
+  address: 0.0.0.0
 #Connect sql server
 spring:
   datasource:
+    #url: jdbc:sqlserver://34.124.177.222:1433;databaseName=DuAnTotNghiepTest;encrypt=true;trustServerCertificate=true;
     url: jdbc:sqlserver://localhost;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;
     username: sa
     password: 123
@@ -34,4 +35,5 @@ paypal:
     id: AbWy2B4tWfcKdb0qv6UzhoJuC2qWYpa8TwNCz-mGLynovI0bZClkwHyFyU1IEuE-KPrpZaW3Cp5avneH
     secret: EAssZAWtf6BkDmId6KYB1KrrVoxrFTWHIW7UiA_gRpAbqEy7S2_dRqjLT8zu0twefBbdPPEUDGcQDf13
   mode: sandbox # hoặc 'live' cho môi trường sản xuất
-
+  
+#url: jdbc:sqlserver://localhost;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;

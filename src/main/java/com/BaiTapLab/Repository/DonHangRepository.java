@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.BaiTapLab.Entity.DonHang;
+import com.BaiTapLab.Entity.Shipper;
 
 import jakarta.transaction.Transactional;
 
@@ -161,4 +162,72 @@ public interface DonHangRepository extends JpaRepository<DonHang, String> {
 	int updateTrangThaiDonHangDaXacNhan(@Param("trangThai") String trangThai, 
 	                           @Param("thoiGianXacNhan") LocalDate thoiGianXacNhan, 
 	                           @Param("donHangId") String donHangId);
+	
+	// Shipper nè
+	@Query("select dh.don_hangid, dh.thoi_gian_du_kien from DonHang dh\r\n"
+			+ "where dh.trang_thai = :trangThai") 
+	List<Object[]> danhSachChuaNhanDon(@Param("trangThai") String trangThai);
+	
+	@Query(value = "SELECT dh.don_hangid, dh.tong_tien, us.hovaten, " +
+            "us.so_dien_thoai, dc.dia_chi, dc.phuong, dc.quan, " +
+            "dc.thanh_pho, sp.ten_san_pham, dhct.tong_tien, dhct.so_luong " +
+            "FROM donhang dh " +
+            "LEFT JOIN users us ON dh.accountid = us.accountid " +
+            "LEFT JOIN diachi dc ON dc.accountid = dh.accountid " +
+            "LEFT JOIN donhangchitiet dhct ON dhct.don_hangid = dh.don_hangid " +
+            "LEFT JOIN sanpham sp ON sp.san_pham_id = dhct.san_pham_id " +
+            "WHERE dh.don_hangid = ?", nativeQuery = true)
+	List<Object[]> findDonHangDetailsById(String donhangid);
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE DonHang " +
+	       "SET trang_thai = :trangThai, " +
+	       "shipper = (SELECT s FROM Shipper s WHERE s.id = :shipperId), " +
+	       "trang_thai_nhan_don = :trangThaiNhanDon " +
+	       "WHERE don_hangid = :donHangId")
+	int updateDonHangShipper(
+	        @Param("trangThai") String trangThai,
+	        @Param("shipperId") String shipperId, // ID shipper từ frontend
+	        @Param("trangThaiNhanDon") String trangThaiNhanDon,
+	        @Param("donHangId") String donHangId);
+
+	@Query("SELECT d.don_hangid, d.thoi_gian_du_kien FROM DonHang d WHERE d.shipper.shipperID = :shipperid and d.trang_thai_nhan_don =:trangThaiNhanDon")
+	List<Object[]> findDonHangByShipperId(@Param("shipperid") String shipperid, @Param("trangThaiNhanDon") String trangThaiNhanDon);
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE DonHang dh " +
+	       "SET dh.hinh_anh = :hinhAnh " +
+	       "WHERE dh.don_hangid = :donHangId")
+	int updateDonHangHinhAnhShipper(
+	        @Param("hinhAnh") String hinhAnh,
+	        @Param("donHangId") String donHangId);
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE DonHang dh " +
+	       "SET dh.trang_thai = :trangThai, " +
+	       "dh.trang_thai_nhan_don = :trangThaiNhanDon " +
+	       "WHERE dh.don_hangid = :donHangId")
+	int updateDonHangHoanThanhShipper(
+	        @Param("trangThai") String trangThai,
+	        @Param("trangThaiNhanDon") String trangThaiNhanDon,
+	        @Param("donHangId") String donHangId);
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE DonHang dh " +
+	       "SET dh.trang_thai = :trangThai, " +
+	       "dh.trang_thai_nhan_don = :trangThaiNhanDon, " +
+	       "dh.ly_do = :lydo " +
+	       "WHERE dh.don_hangid = :donHangId")
+	int updateDonHangBiHuyShipper(
+	        @Param("trangThai") String trangThai,
+	        @Param("trangThaiNhanDon") String trangThaiNhanDon,
+	        @Param("lydo") String lydo,
+	        @Param("donHangId") String donHangId);
+	
+	@Query("SELECT d.hinh_anh FROM DonHang d WHERE d.don_hangid = :donHangId")
+    String findHinhAnhByDonHangId(@Param("donHangId") String donHangId);
 }

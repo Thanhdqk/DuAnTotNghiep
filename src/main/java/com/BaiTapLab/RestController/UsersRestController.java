@@ -26,7 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.Entity.DiaChi;
 import com.BaiTapLab.Entity.Roles;
+import com.BaiTapLab.Entity.Shipper;
 import com.BaiTapLab.Entity.Users;
+import com.BaiTapLab.Repository.ShipperRepository;
 import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Security.JwtUtil;
 import com.BaiTapLab.Service.UsersService;
@@ -34,7 +36,7 @@ import com.BaiTapLab.Service.UsersService;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000, http://192.168.137.1:3000"})
 public class UsersRestController {
 	@Autowired
 	UsersRepository usersRepository;
@@ -43,7 +45,39 @@ public class UsersRestController {
 	UsersService usersService;
 	
 	@Autowired
+	ShipperRepository shipperRepository;
+	
+	@Autowired
     private JwtUtil jwtUtil;
+	
+	@PostMapping("/login/mobile")
+	public ResponseEntity<Map<String, Object>> loginMobile(@RequestBody Map<String, String> loginRequest) {
+		 System.out.println("Login Request: " + loginRequest);
+		String shipperid = loginRequest.get("shipperid");
+	    String password = loginRequest.get("password");
+	    System.out.println("Shipperid 1: " + shipperid);  // In ra để kiểm tra
+	    System.out.println("Password: " + password); 
+	    Map<String, Object> response = new HashMap<>();
+	    try {
+	        Optional<Shipper> user = shipperRepository.findByShipperIDAndPassword(shipperid, password);
+	        if (user.isPresent()) {
+	            String token = jwtUtil.generateToken(user.get().getShipperID());
+	            response.put("message", "Đăng nhập thành công!");
+	            response.put("token", token);
+	            response.put("shipperid", user.get().shipperID);
+	            response.put("hinhAnh", user.get().getHinh_anh());
+	            response.put("hovaten", user.get().getHovaten());
+	            response.put("vaitro", user.get().getVai_tro());
+	            return ResponseEntity.ok(response);
+	        } else {
+	            response.put("message", "Sai tài khoản hoặc mật khẩu!");
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	        }
+	    } catch (Exception e) {
+	        response.put("message", "Lỗi hệ thống: " + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
+	}
 	
 	@GetMapping("/list/users")
 	public List<Map<String, Object>> getUsers() {
@@ -89,6 +123,8 @@ public class UsersRestController {
 	    }
 	}
 
+	
+	
 	@PostMapping("/add/users")
 	public ResponseEntity<Map<String, Object>> createUserWithImageAndDetails(
 			@RequestParam("accountID") String accountID, @RequestParam("password") String password,

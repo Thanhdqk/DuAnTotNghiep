@@ -97,6 +97,10 @@ public class SanPham {
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<NhapXuatSanPham> nhapxuatsanpham;
+	
+	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
 	//@JsonIgnore
 	@JsonManagedReference
 	public List<PhanHoiDanhGia> phanhoidanhgia;

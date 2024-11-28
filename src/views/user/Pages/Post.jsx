@@ -34,7 +34,7 @@ const Post = () => {
 
         <div className="col-md-6">
 
-            <h4 className='ms-2 fw-bold text-dark'>{post.tieu_de}</h4>
+            <h4 className='ms-2 fw-bold text-dark'>{post.tieu_de_chinh}</h4>
 
             <p className='text-muted ms-2 fw-bold'>{post.tieu_de_phu}</p>
             

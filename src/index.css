@@ -710,3 +710,17 @@ header {
   color: red; /* Màu chữ đỏ */
 }
 /* Đảm bảo rằng các biểu tượng Font Awesome sẽ hiển thị đẹp */
+.spotify-button {
+  padding: 10px 20px; /* Để nút cân đối */
+}
+
+.spotify-button i {
+  font-size: 20px; /* Tăng kích thước icon */
+}
+
+.spotify-button span {
+  flex: 1; /* Đẩy text vào giữa */
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+}

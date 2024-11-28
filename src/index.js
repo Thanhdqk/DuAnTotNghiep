@@ -33,6 +33,7 @@ import ReviewForm  from './views/user/Pages/Review';
 import OrderDetail  from './views/user/Pages/OrderDetail';
 import PasswordChangeForm  from './views/user/Pages/PasswordChangeForm';
 import Feedback  from './views/user/Pages/Feedback';
+import UserVouchers  from './views/user/Pages/UserVouchers';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -56,6 +57,7 @@ root.render(
         {/*end page user */} 
         <Route path='/đổi-mật-khẩu' element={<PasswordChangeForm></PasswordChangeForm>} />
         <Route path='//review/:productId' element={<ReviewForm></ReviewForm>} />
+        <Route path='/Mã-giảm-giá' element={<UserVouchers></UserVouchers>} />
         <Route path='/OrderDetail/:id' element={<OrderDetail ></OrderDetail >} />
         <Route path='/lịch-sử-đặt-hàng' element={<Order></Order>} />
         <Route path='/like' element={<FavoriteProducts></FavoriteProducts>} />

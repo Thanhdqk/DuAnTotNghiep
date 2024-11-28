@@ -51,7 +51,7 @@ const PasswordChangeForm = () => {
           <h3>Quản Lý Cá Nhân</h3>
         </Link>
         <ul style={menuStyle}>
-          {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Thẻ thanh toán', 'Phương thức thanh toán', 'Đổi mật khẩu','Feedback', 'Yêu Thích'].map((item, index) => (
+          {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá'].map((item, index) => (
             <li key={index}>
               <Link to={`/${item.replace(/ /g, '-').toLowerCase()}?userId=${userId}`} style={linkStyle}>
                 <button style={buttonStyle}>{item}</button>

@@ -127,12 +127,35 @@ const OrderDetail = () => {
         const fetchOrder = async () => {
             try {
                 const res = await axios.get(`http://localhost:8080/api/donhang/${id}`);
-                setOrder(res.data);
+                const orderData = res.data;
 
-                if (res.data.length > 0) {
-                    const sanPhamId = res.data[0].sanpham.id;
-                    const imageRes = await axios.get(`http://localhost:8080/api/hinhanh/sanpham/${sanPhamId}`);
-                    setImages(imageRes.data);
+                if (orderData.length > 0) {
+                    // Kiểm tra trạng thái đã đánh giá cho từng sản phẩm
+                    const updatedOrder = await Promise.all(
+                        orderData.map(async (item) => {
+                            if (item.sanpham?.id) {
+                                try {
+                                    // Kiểm tra nếu sản phẩm đã được đánh giá
+                                    const { data: hasReviewed } = await axios.get(
+                                        `http://localhost:8080/api/reviews/exist`,
+                                        {
+                                            params: {
+                                                sanPhamId: item.sanpham.id,
+                                                userId,
+                                            },
+                                        }
+                                    );
+                                    return { ...item, hasReviewed }; // Thêm trạng thái hasReviewed vào từng sản phẩm
+                                } catch (error) {
+                                    console.error("Error checking review status:", error);
+                                    return { ...item, hasReviewed: false }; // Nếu có lỗi, mặc định là chưa đánh giá
+                                }
+                            }
+                            return { ...item, hasReviewed: false };
+                        })
+                    );
+
+                    setOrder(updatedOrder);
                 }
             } catch (error) {
                 console.error("Error fetching order details:", error);
@@ -142,15 +165,16 @@ const OrderDetail = () => {
         const fetchUser = async () => {
             try {
                 const res = await axios.get(`http://localhost:8080/api/users/${userId}`);
-                setUser(res.data); // Set the user data
+                setUser(res.data); // Lấy thông tin người dùng
             } catch (error) {
                 console.error("Error fetching user details:", error);
             }
         };
 
         fetchOrder();
-        fetchUser(); // Fetch user details
+        fetchUser(); // Lấy thông tin người dùng
     }, [id, userId]);
+
 
     return (
         <div style={styles.mainContainer}>
@@ -160,7 +184,7 @@ const OrderDetail = () => {
                     <h3>Quản Lý Cá Nhân</h3>
                 </Link>
                 <ul style={styles.menuStyle}>
-                    {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Thẻ thanh toán', 'Phương thức thanh toán', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích'].map((item, index) => (
+                    {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá'].map((item, index) => (
                         <li key={index}>
                             <Link to={`/${item.replace(/ /g, '-').toLowerCase()}?userId=${userId}`} style={styles.linkStyle}>
                                 <button style={styles.buttonStyle}>{item}</button>
@@ -190,79 +214,105 @@ const OrderDetail = () => {
                                 <strong>Email:</strong>
                                 <span>{user.accountID}</span>
                             </div>
+                            <div style={styles.detailText}>
+                                <strong>Địa Chỉ:</strong>
+                                <span>{order && order[0]?.donhang.diachi.dia_chi}</span>
+                            </div>
                         </div>
                     )}
 
+                    {/* Hiển thị thông tin đơn hàng */}
                     <h2 style={styles.sectionTitle}>Thông Tin Đơn Hàng</h2>
                     {order ? (
-                        <ul>
-                            {order.map((item) => (
-                                <li
-                                    style={{ ...styles.listItem, '&:hover': styles.listItemHovered }}
-                                    key={item.id}
-                                >
-                                    <div style={styles.detailText}>
-                                        <strong>Sản Phẩm:</strong>
-                                        <span>{item.sanpham?.ten_san_pham || 'Không có tên sản phẩm'}</span>
-                                    </div>
-                                    <div style={styles.detailText}>
-                                        <strong>Số Lượng:</strong>
-                                        <span>{item.so_luong}</span>
-                                    </div>
-                                    <div style={styles.detailText}>
-                                        <strong>Thành Tiền:</strong>
-                                        <span>{(item.so_luong * item.sanpham?.gia_goc).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
-                                    </div>
-                                    <div style={styles.detailText}>
-                                        <strong>Trạng Thái:</strong>
-                                        <span>{item.donhang?.trang_thai}</span>
-                                    </div>
-                                    <div style={styles.detailText}>
-                                        <strong>Ngày Tạo:</strong>
-                                        <span>{item.donhang?.ngay_tao}</span>
-                                    </div>
-                                    <div style={styles.detailText}>
-                                        <strong>Thời Gian Xác Nhận:</strong>
-                                        <span>{item.donhang?.thoi_gianXN}</span>
-                                    </div>
-                                    <div style={styles.detailText}>
-                                        <strong>Số Điện Thoại:</strong>
-                                        <span>{item.donhang?.so_dien_thoai}</span>
-                                    </div>
-                                    <div style={styles.detailText}>
-                                        <strong>Ghi Chú:</strong>
-                                        <span>{item.donhang?.ghi_chu}</span>
-                                    </div>
-                                    <div style={styles.detailText}>
-                                        <strong>Phí Ship:</strong>
-                                        <span>{item.donhang?.phi_ship.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
-                                    </div>
-                                    <div style={styles.detailText}>
-                                        <strong>Tổng Tiền:</strong>
-                                        <span>{item.donhang?.tong_tien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</span>
-                                    </div>
-                                    <div style={styles.detailText}>
-                                        <strong>Địa Chỉ:</strong>
-                                        <span>{item.donhang.diachi.dia_chi}</span>
-                                    </div>
+                        <div>
+                            {/* Bảng 1: Sản Phẩm, Số Lượng, Thành Tiền */}
+                            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '30px' }}>
+                                <thead>
+                                    <tr>
+                                        <th style={{ borderBottom: '2px solid #ccc', padding: '10px', textAlign: 'left' }}>Sản Phẩm</th>
+                                        <th style={{ borderBottom: '2px solid #ccc', padding: '10px', textAlign: 'left' }}>Số Lượng</th>
+                                        <th style={{ borderBottom: '2px solid #ccc', padding: '10px', textAlign: 'left' }}>Thành Tiền</th>
+                                        <th style={{ borderBottom: '2px solid #ccc', padding: '10px', textAlign: 'left' }}>Thao Tác</th> {/* Cột cho "Viết Đánh Giá" */}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {order.map((item) => (
+                                        <tr key={item.id}>
+                                            <td style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <img
+                                                        src={`http://localhost:8080/images/uploads/${item.sanpham?.hinhanh[0]?.ten_hinh}`}
+                                                        alt="Hình ảnh sản phẩm"
+                                                        style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '5px', marginRight: '10px' }}
+                                                    />
+                                                    <span>{item.sanpham?.ten_san_pham || 'Không có tên sản phẩm'}</span>
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>{item.so_luong}</td>
+                                            <td style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+                                                {(item.so_luong * item.sanpham?.gia_goc).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                            </td>
+                                            <td style={{ padding: '10px', borderBottom: '1px solid #ccc', textAlign: 'center' }}>
+                                                {item.donhang?.trang_thai === 'Đã Giao' && item.sanpham?.san_phamId && (
+                                                    <Link to={`/review/${item.sanpham.san_phamId}`} style={styles.button}>
+                                                        Viết Đánh Giá
+                                                    </Link>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            {/* <td style={{ padding: '10px', borderBottom: '1px solid #ccc', textAlign: 'center' }}>
+                                {item.donhang?.trang_thai === 'Đã Giao' && item.sanpham?.id && !item.hasReviewed && (
+                                    <Link to={`/review/${item.sanpham.id}`} style={styles.button}>
+                                        Viết Đánh Giá
+                                    </Link>
+                                )}
+                            </td> */}
 
-                                    {/* Image Gallery */}
-                                    <div style={{ marginTop: '10px' }}>
-                                        <img
-                                            src={`http://localhost:8080/images/uploads/${item.sanpham?.hinhanh[0]?.ten_hinh}`}
-                                            alt="Hình ảnh sản phẩm"
-                                            style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '5px', margin: '5px' }}
-                                        />
-                                    </div>
+                            {/* Bảng 2: Trạng Thái, Ngày Tạo, Thời Gian Xác Nhận, Phí Ship */}
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead>
+                                    <tr>
+                                        <th style={{ borderBottom: '2px solid #ccc', padding: '10px', textAlign: 'left' }}>Trạng Thái</th>
+                                        <th style={{ borderBottom: '2px solid #ccc', padding: '10px', textAlign: 'left' }}>Ngày Tạo</th>
+                                        <th style={{ borderBottom: '2px solid #ccc', padding: '10px', textAlign: 'left' }}>Thời Gian Xác Nhận</th>
+                                        <th style={{ borderBottom: '2px solid #ccc', padding: '10px', textAlign: 'left' }}>Phí Ship</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
-                                    {item.donhang?.trang_thai === 'Đã Giao' && item.sanpham?.san_phamId && (
-                                        <Link to={`/review/${item.sanpham.san_phamId}`} style={styles.button}>
-                                            Viết Đánh Giá
-                                        </Link>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
+                                    <tr key={order[0].id}>
+                                        <td style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+                                            {order[0].donhang?.trang_thai}
+                                        </td>
+                                        <td style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+                                            {order[0].donhang?.ngay_tao}
+                                        </td>
+                                        <td style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+                                            {order[0].donhang?.thoi_gianXN}
+                                        </td>
+                                        <td style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+                                            {order[0].donhang?.phi_ship.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                            {/* Hiển thị tổng tiền (bao gồm phí ship) */}
+                            <div style={styles.detailText}>
+                                <strong>Tổng Tiền:</strong>
+                                <span>
+                                    {(
+                                        order.reduce((total, item) => total + (item.so_luong * item.sanpham?.gia_goc), 0) +
+                                        (order[0]?.donhang?.phi_ship || 0)  // Thêm phí ship
+                                    ).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                </span>
+                            </div>
+
+                        </div>
                     ) : (
                         <p>Không có chi tiết đơn hàng nào.</p>
                     )}
@@ -273,6 +323,7 @@ const OrderDetail = () => {
                 </div>
             </div>
         </div>
+
     );
 };
 

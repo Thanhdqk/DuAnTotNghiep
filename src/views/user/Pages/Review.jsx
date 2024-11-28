@@ -102,7 +102,7 @@ const styles = {
 const Review = () => {
     const { productId } = useParams();
     const [noiDung, setNoiDung] = useState('');
-    const [soSao, setSoSao] = useState(0);
+    const [soSao, setSoSao] = useState(5);
     const [hinhAnh, setHinhAnh] = useState(null);
     const [hinhAnhPreview, setHinhAnhPreview] = useState('');
     const navigate = useNavigate();
@@ -165,7 +165,7 @@ const Review = () => {
                     <h3>Quản Lý Cá Nhân</h3>
                 </Link>
                 <ul style={styles.menuStyle}>
-                    {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Thẻ thanh toán', 'Phương thức thanh toán', 'Đổi mật khẩu'].map((item, index) => (
+                    {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá'].map((item, index) => (
                         <li key={index}>
                             <Link to={`/${item.replace(/ /g, '-').toLowerCase()}?userId=${userId}`} style={styles.linkStyle}>
                                 <button style={styles.buttonStyle}>{item}</button>

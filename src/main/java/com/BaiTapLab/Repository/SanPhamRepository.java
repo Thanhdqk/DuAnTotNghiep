@@ -14,6 +14,18 @@ import org.springframework.data.repository.query.Param;
 import com.BaiTapLab.Entity.SanPham;
 
 public interface SanphamRepository extends JpaRepository<SanPham, String> {
+	
+	// new sản phẩm từ thương hiệu
+	@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
+			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
+			+ "s.chieu_cao, s.chieu_dai, s.chieu_rong, s.khoi_luong, "
+			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
+			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
+			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
+			+ "FROM SanPham s "
+			+ "WHERE s.thuonghieu.thuong_hieuID = ?1")
+	List<Object[]> findSanPhamThuongHieuID(String id);
+	
 	// new giảm giá
 	@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
 			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
@@ -115,7 +127,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 
 	// tìm các sản phẩm bán nhiều nhất
 
-// tìm kiếm  theo tên
+    // tìm kiếm  theo tên
 	@Query(value = "SELECT * FROM SanPham WHERE ten_san_pham COLLATE SQL_Latin1_General_CP1_CI_AI LIKE %?1%", nativeQuery = true)
 	List<SanPham> findSanPhamByTenSanPham(String name);
 

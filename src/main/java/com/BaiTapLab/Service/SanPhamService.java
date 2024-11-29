@@ -20,7 +20,13 @@ public class SanPhamService {
 	DanhmucRepository DanhmucRepository;
 	@Autowired
 	SanphamRepository SanphamRepository;
+	
+	// new findby thuong hieu id
+	public List<Object[]> findSanPhamThuongHieuID(String id) {
+		
 
+		return SanphamRepository.findSanPhamThuongHieuID(id);
+}
 	
 	public List<Object[]> finListdSanPhamById(String id,Pageable pageable) {
 	

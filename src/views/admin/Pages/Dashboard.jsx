@@ -24,10 +24,10 @@ import axios from "axios";
 import { param } from "jquery";
 
 const SupplierManagement = () => {
-  const userid = localStorage.getItem("account_id")
-  console.log("dsadasdsa",userid)
+  const userid = localStorage.getItem("account_id");
+  console.log("dsadasdsa", userid);
   const [tabValue, setTabValue] = useState(0);
-  
+
   const [formData, setFormData] = useState({
     nha_cung_capID: "",
     ten_nhaCC: "",
@@ -39,27 +39,41 @@ const SupplierManagement = () => {
     accountID: "",
   });
   const [page, setPage] = useState(0);
+  const [addorupdate, setaddorupdate] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [banners, setBanners] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [errors, setErrors] = useState({});
   const [suppliers, setSuppliers] = useState([]);
-  const [listDatahd,setlistDataHD] = useState([])
+  const [listDatahd, setlistDataHD] = useState([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
   });
-  const apilistDatahd = async () =>{
-    const res = await axios({url:"http://localhost:8080/api/nhacungcap/ncchanhdong",method:"GET"})
-    setlistDataHD(res.data)
-    console.log('sdsadsadfas',res.data)
+  const apilistDatahd = async () => {
+    const res = await axios({
+      url: "http://localhost:8080/api/nhacungcap/ncchanhdong",
+      method: "GET",
+    });
+    setlistDataHD(res.data);
+    console.log("sdsadsadfas", res.data);
+  };
+  const getnewID = async() =>{
+    const res = await axios({url:"http://localhost:8080/api/nhacungcap/generateNewNccId",method:"GET"})
+    if(formData.nha_cung_capID == "")
+    {
+      formData.nha_cung_capID = res.data
+    }
+    
+    console.log("ress",res.data)
   }
-
 
   useEffect(() => {
     fetchSuppliers();
     apilistDatahd();
-  }, []);
+    getnewID();
+  }, [formData.nha_cung_capID]);
 
   const fetchSuppliers = async () => {
     try {
@@ -103,20 +117,29 @@ const SupplierManagement = () => {
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
-
-  const filteredSuppliers = suppliers.filter((supplier) =>{
-    const matchesSearch  = supplier.ten_nhaCC.toLowerCase().includes(searchTerm.toLowerCase());
-    const isDeleted = supplier.trang_thai_xoa === "Xóa";
-    return matchesSearch && !isDeleted;
-});
-  const filteredSupplierss = suppliers.filter((supplier) => {
-    const matchesSearch = supplier.nha_cung_capID
+  const filteredSuppliers = suppliers.filter((supplier) => {
+    const matchesSearchName = supplier.ten_nhaCC
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-
+    const matchesSearchID = supplier.nha_cung_capID
+      .toString()
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
     const isDeleted = supplier.trang_thai_xoa === "Xóa";
+    return (matchesSearchName || matchesSearchID) && !isDeleted;
+  });
 
-    return matchesSearch && isDeleted; // Filtering out deleted suppliers
+  // Filter deleted suppliers (if needed)
+  const filteredSupplierss = suppliers.filter((supplier) => {
+    const matchesSearchName = supplier.ten_nhaCC
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesSearchID = supplier.nha_cung_capID
+      .toString()
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const isDeleted = supplier.trang_thai_xoa === "Xóa";
+    return (matchesSearchName || matchesSearchID) && isDeleted;
   });
 
   const handleEdit = (supplier) => {
@@ -131,6 +154,7 @@ const SupplierManagement = () => {
       accountID: supplier.users.accountID,
     });
     setTabValue(1);
+    setaddorupdate("add")
     console.log("Dữ liệu khi nhấn edit: ", supplier);
   };
   const handleChange1 = async (post) => {
@@ -146,7 +170,7 @@ const SupplierManagement = () => {
       handleSnackbar("Xóa banner thành công!", "success");
       setTabValue(0);
       // filteredSuppliers();
-      fetchSuppliers()
+      fetchSuppliers();
     } catch (error) {
       handleSnackbar("Có lỗi xảy ra khi xóa nhà cung cấp!", "error");
     }
@@ -161,7 +185,6 @@ const SupplierManagement = () => {
         handleSnackbar("Xóa nhà cung cấp thành công!", "success");
         setTabValue(2);
         //filteredSuppliers();
-        
       } catch (error) {
         //handleSnackbar("Có lỗi xảy ra khi xóa nhà cung cấp!", "error");
       }
@@ -180,34 +203,90 @@ const SupplierManagement = () => {
       handleSnackbar("Có lỗi xảy ra khi khôi phục banner!", "error");
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Dữ liệu khi nhấn save: ", formData);
-    console.log('da',formData.nha_cung_capID)
+  
+    // Khởi tạo lỗi ban đầu
+    const newErrors = {};
+    let isValid = true;
+  
+    // Kiểm tra từng trường
+    if (!formData.nha_cung_capID || formData.nha_cung_capID.trim() === "") {
+      newErrors.nha_cung_capID = "Mã nhà cung cấp là bắt buộc!";
+      isValid = false;
+    }
+  
+    if (!formData.ten_nhaCC || formData.ten_nhaCC.trim() === "") {
+      newErrors.ten_nhaCC = "Tên nhà cung cấp là bắt buộc!";
+      isValid = false;
+    }
+  
+    if (!formData.ten_mat_hang || formData.ten_mat_hang.trim() === "") {
+      newErrors.ten_mat_hang = "Tên mặt hàng là bắt buộc!";
+      isValid = false;
+    }
+  
+    if (!formData.dia_chi || formData.dia_chi.trim() === "") {
+      newErrors.dia_chi = "Địa chỉ là bắt buộc!";
+      isValid = false;
+    }
+  
+    if (!formData.so_dien_thoai || formData.so_dien_thoai.trim() === "") {
+      newErrors.so_dien_thoai = "Số điện thoại là bắt buộc!";
+      isValid = false;
+    } else if (!/^\d{10,11}$/.test(formData.so_dien_thoai)) {
+      newErrors.so_dien_thoai = "Số điện thoại phải từ 10-11 số!";
+      isValid = false;
+    }
+  
+    setErrors(newErrors);
+  
+    // Nếu không hợp lệ, dừng việc gửi API
+    if (!isValid) return;
+  
     try {
-      await axios.post(
-        `http://localhost:8080/api/nhacungcap/save?id=${userid}&nha_cung_capID=${formData.nha_cung_capID}&ten_nhaCC=${formData.ten_nhaCC}&ten_mat_hang=${formData.ten_mat_hang}
-        &dia_chi=${formData.dia_chi}&so_dien_thoai=${formData.so_dien_thoai}&trang_thai_xoa=${formData.trang_thai_xoa}`,
-       
-        {
+      const params = new URLSearchParams({
+        id: userid,
+        nha_cung_capID: formData.nha_cung_capID,
+        ten_nhaCC: formData.ten_nhaCC,
+        ten_mat_hang: formData.ten_mat_hang,
+        dia_chi: formData.dia_chi,
+        so_dien_thoai: formData.so_dien_thoai,
+        trang_thai_xoa: formData.trang_thai_xoa,
+      });
+  
+      if(addorupdate !="add") {
+        // Gửi PUT nếu đang ở chế độ chỉnh sửa
+        await axios.put(`http://localhost:8080/api/nhacungcap/saveee?${params.toString()}`, {
           headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      );
+            "Content-Type": "application/json",
+          },
+        });
+      } else {
+        // Gửi POST nếu đang ở chế độ thêm mới
+        await axios.post(`http://localhost:8080/api/nhacungcap/save?${params.toString()}`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
+      
+  
       fetchSuppliers();
       resetForm();
       setTabValue(0);
       handleSnackbar("Thêm nhà cung cấp thành công!", "success");
     } catch (error) {
-      //handleSnackbar("Có lỗi xảy ra khi lưu nhà cung cấp!", error);
       console.error(
         "Có lỗi xảy ra khi lưu nhà cung cấp:",
         error.response || error.message || error
       );
+      handleSnackbar("Có lỗi xảy ra khi lưu nhà cung cấp!", "error");
     }
   };
+  
 
   const handleSnackbar = (message, severity) => {
     setSnackbar({ open: true, message, severity });
@@ -217,6 +296,7 @@ const SupplierManagement = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  
   return (
     <Container maxWidth="xl">
       <Paper elevation={5} style={{ padding: "16px", color: "#1976d2" }}>
@@ -279,38 +359,38 @@ const SupplierManagement = () => {
                 </TableHead>
                 <TableBody>
                   {filteredSuppliers
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((supplier) => (
-                    <TableRow key={supplier.nha_cung_capID}>
-                      <TableCell>{supplier.nha_cung_capID}</TableCell>
-                      <TableCell>{supplier.ten_nhaCC}</TableCell>
-                      <TableCell>{supplier.ten_mat_hang}</TableCell>
-                      <TableCell>{supplier.so_dien_thoai}</TableCell>
-                      <TableCell>{supplier.dia_chi}</TableCell>
-                      {/* <TableCell>
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((supplier) => (
+                      <TableRow key={supplier.nha_cung_capID}>
+                        <TableCell>{supplier.nha_cung_capID}</TableCell>
+                        <TableCell>{supplier.ten_nhaCC}</TableCell>
+                        <TableCell>{supplier.ten_mat_hang}</TableCell>
+                        <TableCell>{supplier.so_dien_thoai}</TableCell>
+                        <TableCell>{supplier.dia_chi}</TableCell>
+                        {/* <TableCell>
                         {supplier.trang_thai_xoa == null
                           ? "Chưa Xóa"
                           : supplier.trang_thai_xoa}
                       </TableCell> */}
-                      <TableCell>
-                        {supplier.users ? supplier.users.accountID : ""}
-                      </TableCell>
-                      <TableCell>
-                        <Button onClick={() => handleEdit(supplier)}>
-                          <Edit />
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            handleChange1(supplier);
-                             // Chuyển sang tab lịch sử
-                          }}
-                          sx={{ color: "secondary" }}
-                        >
-                          <Delete />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        <TableCell>
+                          {supplier.users ? supplier.users.accountID : ""}
+                        </TableCell>
+                        <TableCell>
+                          <Button onClick={() => handleEdit(supplier)}>
+                            <Edit />
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              handleChange1(supplier);
+                              // Chuyển sang tab lịch sử
+                            }}
+                            sx={{ color: "secondary" }}
+                          >
+                            <Delete />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -335,7 +415,9 @@ const SupplierManagement = () => {
                   label="Mã Nhà Cung Cấp"
                   variant="outlined"
                   fullWidth
-                  required
+                  disabled
+                  error={!!errors.nha_cung_capID}
+                  helperText={errors.nha_cung_capID}
                   value={formData.nha_cung_capID}
                   onChange={handleInputChange}
                 />
@@ -346,7 +428,8 @@ const SupplierManagement = () => {
                   label="Tên Nhà Cung Cấp"
                   variant="outlined"
                   fullWidth
-                  required
+                  error={!!errors.ten_nhaCC}
+                  helperText={errors.ten_nhaCC}
                   value={formData.ten_nhaCC}
                   onChange={handleInputChange}
                 />
@@ -357,7 +440,8 @@ const SupplierManagement = () => {
                   label="Tên Mặt Hàng"
                   variant="outlined"
                   fullWidth
-                  required
+                  error={!!errors.ten_mat_hang}
+                  helperText={errors.ten_mat_hang}
                   value={formData.ten_mat_hang}
                   onChange={handleInputChange}
                 />
@@ -368,7 +452,8 @@ const SupplierManagement = () => {
                   label="Số Điện Thoại"
                   variant="outlined"
                   fullWidth
-                  required
+                  error={!!errors.so_dien_thoai}
+                  helperText={errors.so_dien_thoai}
                   value={formData.so_dien_thoai}
                   onChange={handleInputChange}
                 />
@@ -379,11 +464,13 @@ const SupplierManagement = () => {
                   label="Địa Chỉ"
                   variant="outlined"
                   fullWidth
+                  error={!!errors.dia_chi}
+                  helperText={errors.dia_chi}
                   value={formData.dia_chi}
                   onChange={handleInputChange}
                 />
               </Grid>
-            
+
               <Grid item xs={12} container spacing={2}>
                 <Grid item xs={6}>
                   <Button
@@ -393,7 +480,7 @@ const SupplierManagement = () => {
                     fullWidth
                     startIcon={<Add />}
                   >
-                    {formData.nha_cung_capID ? "CẬP NHẬT BANNER" : "THÊM BANNER"}
+                    {addorupdate == "add" ? "CẬP NHẬT NHÀ CUNG CẤP" : "THÊM NHÀ CUNG CẤP "}
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
@@ -474,11 +561,6 @@ const SupplierManagement = () => {
                           sx={{ color: "primary", marginRight: 1 }}
                           startIcon={<Restore />}
                         ></Button>
-                        <Button
-                          onClick={() => handleDelete(supplier.nha_cung_capID)}
-                          sx={{ color: "error" }}
-                          startIcon={<Delete />}
-                        ></Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -542,25 +624,31 @@ const SupplierManagement = () => {
                 </TableHead>
                 <TableBody>
                   {listDatahd
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((supplier) => (
-                    <TableRow key={supplier.nhacungcap.nha_cung_capID}>
-                      <TableCell>{supplier.nhacungcap.nha_cung_capID}</TableCell>
-                      <TableCell>{supplier.nhacungcap.ten_nhaCC}</TableCell>
-                      <TableCell>{supplier.nhacungcap.ten_mat_hang}</TableCell>
-                      <TableCell>{supplier.nhacungcap.so_dien_thoai}</TableCell>
-                      <TableCell>{supplier.nhacungcap.dia_chi}</TableCell>
-                      <TableCell>
-                        {supplier.trang_thai_xoa == null
-                          ? "Chưa Xóa"
-                          : supplier.trang_thai_xoa}
-                      </TableCell>
-                      <TableCell>
-                        { supplier.nhacungcap.users.accountID}
-                      </TableCell>
-                      <TableCell>{supplier.tenHanhDong}</TableCell>
-                    </TableRow>
-                  ))}
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((supplier) => (
+                      <TableRow key={supplier.nhacungcap.nha_cung_capID}>
+                        <TableCell>
+                          {supplier.nhacungcap.nha_cung_capID}
+                        </TableCell>
+                        <TableCell>{supplier.nhacungcap.ten_nhaCC}</TableCell>
+                        <TableCell>
+                          {supplier.nhacungcap.ten_mat_hang}
+                        </TableCell>
+                        <TableCell>
+                          {supplier.nhacungcap.so_dien_thoai}
+                        </TableCell>
+                        <TableCell>{supplier.nhacungcap.dia_chi}</TableCell>
+                        <TableCell>
+                          {supplier.trang_thai_xoa == null
+                            ? "Chưa Xóa"
+                            : supplier.trang_thai_xoa}
+                        </TableCell>
+                        <TableCell>
+                          {supplier.nhacungcap.users.accountID}
+                        </TableCell>
+                        <TableCell>{supplier.tenHanhDong}</TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </TableContainer>

@@ -162,7 +162,9 @@ const DonHang = () => {
                     <h3>Quản Lý Cá Nhân</h3>
                 </Link>
                 <ul style={styles.menu}>
-                    {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá'].map((item, index) => (
+                    {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá',
+                        "Địa chỉ của bạn",
+                        "Ví đã liên kết",].map((item, index) => (
                         <li key={index}>
                             <Link to={`/${item.replace(/ /g, '-').toLowerCase()}?userId=${userId}`} style={styles.link}>
                                 <button style={styles.button}>{item}</button>
@@ -193,56 +195,64 @@ const DonHang = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {donhangList.map((donhang) => (
-                                <tr key={donhang.don_hangid}>
-                                    <td style={styles.td}>{donhang.don_hangid}</td>
-                                    <td style={styles.td}>{new Date(donhang.ngay_tao).toLocaleDateString()}</td>
-                                    <td style={styles.td}>{donhang.users ? donhang.users.hovaten : 'Tên không tồn tại'}</td>
-                                    <td style={styles.td}>{donhang.so_dien_thoai}</td>
-                                    <td style={styles.td}>{donhang.diachi ? donhang.diachi.dia_chi : 'Địa chỉ không tồn tại'}</td>
-                                    <td style={styles.td}>{donhang.voucher ? donhang.voucher.so_tien_giam : 'Không có mã giảm giá '}</td>
-                                    <td style={styles.td}>{donhang.phi_ship.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-                                    <td style={styles.td}>{donhang.tong_tien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-                                    <td style={styles.td}>
-                                        {donhang.trang_thai === 'Đã Hủy' ? (
-                                            <Steps
-                                                direction="vertical"
-                                                current={1} // Set to 1 to mark "Đã Hủy" as the current step
-                                                items={[
-                                                    { title: 'Nhận Đơn', description: 'Đơn hàng đã được xác nhận và chuẩn bị.' },
-                                                    { title: 'Đã Hủy', description: 'Đơn hàng đã bị hủy bởi người dùng.' },
-                                                ]}
-                                            />
-                                        ) : (
-                                            <Steps
-                                                direction="vertical"
-                                                current={getCurrentStep(donhang.trang_thai)}
-                                                items={[
-                                                    { title: 'Nhận Đơn', description: 'Đơn hàng đã được xác nhận và chuẩn bị.' },
-                                                    { title: 'Đang Chuẩn Bị', description: 'Đơn hàng đang được chuẩn bị để vận chuyển.' },
-                                                    { title: 'Đang Giao', description: 'Đơn hàng đang trong quá trình vận chuyển.' },
-                                                    { title: 'Đã Giao', description: 'Đơn hàng đã được giao đến khách hàng.' },
-                                                ]}
-                                            />
-                                        )}
-                                        {donhang.trang_thai === 'Nhận Đơn' && (
-                                            <button
-                                                onClick={() => handleCancelOrder(donhang.don_hangid)}
-                                                style={{ ...styles.button, backgroundColor: '#e74c3c' }}
-                                            >
-                                                Hủy Đơn
-                                            </button>
-                                        )}
-                                    </td>
+    {donhangList.map((donhang) => {
+        // Tính toán tổng tiền chính xác
+        const tongTien = 
+            (donhang.tong_tien || 0) // Tổng giá trị sản phẩm
+            - (donhang.voucher?.so_tien_giam || 0) // Trừ giảm giá (nếu có)
+            + (donhang.phi_ship || 0); // Cộng phí ship
 
-                                    <td style={styles.td}>
-                                        <Link to={`/OrderDetail/${donhang.don_hangid}`} style={styles.link}>
-                                            <button style={styles.button}>Xem Chi Tiết</button>
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
+        return (
+            <tr key={donhang.don_hangid}>
+                <td style={styles.td}>{donhang.don_hangid}</td>
+                <td style={styles.td}>{new Date(donhang.ngay_tao).toLocaleDateString()}</td>
+                <td style={styles.td}>{donhang.users ? donhang.users.hovaten : 'Tên không tồn tại'}</td>
+                <td style={styles.td}>{donhang.so_dien_thoai}</td>
+                <td style={styles.td}>{donhang.diachi ? donhang.diachi.dia_chi : 'Địa chỉ không tồn tại'}</td>
+                <td style={styles.td}>{donhang.voucher ? donhang.voucher.so_tien_giam.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) : 'Mã giảm giá không được áp dụng'}</td>
+                <td style={styles.td}>{donhang.phi_ship.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                <td style={styles.td}>{tongTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                <td style={styles.td}>
+                    {donhang.trang_thai === 'Đã Hủy' ? (
+                        <Steps
+                            direction="vertical"
+                            current={1}
+                            items={[
+                                { title: 'Nhận Đơn', description: 'Đơn hàng đã được xác nhận và chuẩn bị.' },
+                                { title: 'Đã Hủy', description: 'Đơn hàng đã bị hủy bởi người dùng.' },
+                            ]}
+                        />
+                    ) : (
+                        <Steps
+                            direction="vertical"
+                            current={getCurrentStep(donhang.trang_thai)}
+                            items={[
+                                { title: 'Nhận Đơn', description: 'Đơn hàng đã được xác nhận và chuẩn bị.' },
+                                { title: 'Đang Chuẩn Bị', description: 'Đơn hàng đang được chuẩn bị để vận chuyển.' },
+                                { title: 'Đang Giao', description: 'Đơn hàng đang trong quá trình vận chuyển.' },
+                                { title: 'Đã Giao', description: 'Đơn hàng đã được giao đến khách hàng.' },
+                            ]}
+                        />
+                    )}
+                    {donhang.trang_thai === 'Nhận Đơn' && (
+                        <button
+                            onClick={() => handleCancelOrder(donhang.don_hangid)}
+                            style={{ ...styles.button, backgroundColor: '#e74c3c' }}
+                        >
+                            Hủy Đơn
+                        </button>
+                    )}
+                </td>
+                <td style={styles.td}>
+                    <Link to={`/OrderDetail/${donhang.don_hangid}`} style={styles.link}>
+                        <button style={styles.button}>Xem Chi Tiết</button>
+                    </Link>
+                </td>
+            </tr>
+        );
+    })}
+</tbody>
+
 
                     </table>
                 )}

@@ -7,7 +7,6 @@ function RegisterForm() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [address, setAddress] = useState('');
   const [step, setStep] = useState(1);
   const [timer, setTimer] = useState(60);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -114,16 +113,12 @@ function RegisterForm() {
       setLoading(false);
       return;
     }
-    if (!address) {
-      setErrorMessage('Please enter your address.');
-      setLoading(false);
-      return;
-    }
+
     try {
       const response = await fetch('http://localhost:8080/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, fullName, phoneNumber, address }),
+        body: JSON.stringify({ email, password, fullName, phoneNumber}),
       });
       if (response.ok) {
         const newUser = await response.json();
@@ -359,23 +354,6 @@ function RegisterForm() {
       placeholder="Phone Number"
       value={phoneNumber}
       onChange={(e) => setPhoneNumber(e.target.value)}
-      style={{
-        width: '100%',
-        padding: '15px',
-        fontSize: '1.1em',
-        borderRadius: '8px',
-        border: '2px solid #ff6f61',
-        marginBottom: '15px',
-        outline: 'none',
-        boxSizing: 'border-box',
-        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
-      }}
-    />
-    <input
-      type="text"
-      placeholder="Address"
-      value={address}
-      onChange={(e) => setAddress(e.target.value)}
       style={{
         width: '100%',
         padding: '15px',

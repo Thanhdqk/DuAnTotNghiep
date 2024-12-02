@@ -34,6 +34,8 @@ import OrderDetail  from './views/user/Pages/OrderDetail';
 import PasswordChangeForm  from './views/user/Pages/PasswordChangeForm';
 import Feedback  from './views/user/Pages/Feedback';
 import UserVouchers  from './views/user/Pages/UserVouchers';
+import UserAddresses from './views/user/Pages/UserAddresses';
+import Wallet from './views/user/Pages/WalletUser';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -63,6 +65,8 @@ root.render(
         <Route path='/like' element={<FavoriteProducts></FavoriteProducts>} />
         <Route path='/thông-tin-cá-nhân' element={<PersonalInfo></PersonalInfo>} />
         <Route path='/Feedback' element={<Feedback></Feedback>} />
+        <Route path='/Địa-chỉ-của-bạn' element={<UserAddresses></UserAddresses>} />
+        <Route path='/Ví-đã-liên-kết' element={<Wallet></Wallet>} />
         {/* page admin */}
         <Route path='/admin/login' element={<AdminLogin></AdminLogin>} />
         

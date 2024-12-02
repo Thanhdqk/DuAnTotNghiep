@@ -38,7 +38,9 @@ const VoucherList = () => {
                     <h3>Quản Lý Cá Nhân</h3>
                 </Link>
                 <ul style={menuStyle}>
-                    {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá'].map((item, index) => (
+                    {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá',
+                        "Địa chỉ của bạn",
+                        "Ví đã liên kết",].map((item, index) => (
                         <li key={index}>
                             <Link to={`/${item.replace(/ /g, '-').toLowerCase()}?userId=${userId}`} style={linkStyle}>
                                 <button
@@ -95,25 +97,28 @@ const VoucherList = () => {
     }
 
     .voucher-card {
-        background-color: transparent; /* Bỏ màu nền */
-        border: none; /* Bỏ khung viền */
-        border-radius: 0; /* Bỏ bo tròn góc */
+        background-color: #fff; /* Màu nền trắng cho thẻ */
+        border: 1px solid #ddd; /* Viền mỏng màu xám nhạt */
+        border-radius: 8px; /* Bo góc thẻ */
         overflow: hidden; 
-        transition: transform 0.3s ease-in-out;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Bóng đổ nhẹ */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .voucher-card:hover {
-        transform: translateY(0); /* Không có hiệu ứng hover */
+        transform: translateY(-5px); /* Thẻ nâng lên khi hover */
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Bóng đổ mạnh hơn */
     }
 
     .voucher-image {
         width: 100%;
-        height: 200px;
+        height: 150px;
         object-fit: cover;
+        border-bottom: 1px solid #ddd; /* Viền dưới ảnh */
     }
 
     .voucher-info {
-        padding: 10px;
+        padding: 15px;
         text-align: left;
     }
 
@@ -155,6 +160,7 @@ const VoucherList = () => {
         color: #888;
     }
 `}</style>
+
 
         </div>
     );

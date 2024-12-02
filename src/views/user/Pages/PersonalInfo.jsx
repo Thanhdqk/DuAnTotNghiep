@@ -6,7 +6,6 @@ const PersonalInfo = () => {
     accountID: '',
     hovaten: '',
     so_dien_thoai: '',
-    dia_chi: '',
     hinh_anh: null,
   });
 
@@ -18,7 +17,7 @@ const PersonalInfo = () => {
   useEffect(() => {
     const accountID = new URLSearchParams(window.location.search).get('userId');
     if (accountID) {
-      setForm(prev => ({ ...prev, accountID }));
+      setForm((prev) => ({ ...prev, accountID }));
       setUserId(accountID);
       fetchUserData(accountID);
     } else {
@@ -33,23 +32,15 @@ const PersonalInfo = () => {
       if (!response.ok) throw new Error('Failed to fetch user data');
       const data = await response.json();
 
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
         hovaten: data.hovaten || '',
         so_dien_thoai: data.so_dien_thoai || '',
-        dia_chi: data.dia_chi || '',
         hinh_anh: data.hinh_anh || '',
       }));
 
-      // Cập nhật preview image từ dữ liệu người dùng đã fetch
       if (data.hinh_anh) {
         setPreviewImage(`http://localhost:8080/images/uploads/${data.hinh_anh}`);
-      }
-
-      const addressResponse = await fetch(`http://localhost:8080/auth/users/${accountID}/address`);
-      if (addressResponse.ok) {
-        const addressData = await addressResponse.json();
-        setForm(prev => ({ ...prev, dia_chi: addressData?.dia_chi || '' }));
       }
     } catch (error) {
       alert('Error loading user data');
@@ -59,19 +50,18 @@ const PersonalInfo = () => {
     }
   };
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setForm(prev => ({ ...prev, hinh_anh: file })); // Lưu cả file để gửi lên backend
-      setPreviewImage(URL.createObjectURL(file)); // Hiển thị hình ảnh trước
+      setForm((prev) => ({ ...prev, hinh_anh: file }));
+      setPreviewImage(URL.createObjectURL(file));
     } else {
-      setForm(prev => ({ ...prev, hinh_anh: null }));
+      setForm((prev) => ({ ...prev, hinh_anh: null }));
       setPreviewImage(null);
     }
   };
@@ -80,72 +70,72 @@ const PersonalInfo = () => {
     e.preventDefault();
     setErrorMessage('');
 
-    // Validation
-    if (!form.hovaten.trim() || !form.so_dien_thoai.trim() || !form.dia_chi.trim()) {
-      setErrorMessage('Vui lòng điền đầy đủ thông tin.');
-      return;
+    if (!form.hovaten.trim() || !form.so_dien_thoai.trim()) {
+        setErrorMessage('Vui lòng điền đầy đủ thông tin.');
+        return;
     }
 
-    const phoneRegex = /^\d{10}$/; // Điều chỉnh theo định dạng số điện thoại mong muốn
+    const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(form.so_dien_thoai)) {
-      setErrorMessage('Số điện thoại không hợp lệ. Vui lòng nhập lại.');
-      return;
+        setErrorMessage('Số điện thoại không hợp lệ. Vui lòng nhập lại.');
+        return;
     }
 
     try {
-      // Upload image if exists
-      if (form.hinh_anh) {
-        const formData = new FormData();
-        formData.append('hinh_anh', form.hinh_anh); // Thêm file vào FormData
+        let hinhAnhName = form.hinh_anh ? form.hinh_anh.name : form.hinh_anh;
 
-        const imageUploadResponse = await fetch(`http://localhost:8080/auth/users/${form.accountID}/upload`, {
-          method: 'POST',
-          body: formData,
+        // Upload hình ảnh nếu có file mới
+        if (form.hinh_anh instanceof File) {
+            const formData = new FormData();
+            formData.append('hinh_anh', form.hinh_anh);
+
+            const imageUploadResponse = await fetch(`http://localhost:8080/auth/users/${form.accountID}/upload`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!imageUploadResponse.ok) {
+                const result = await imageUploadResponse.json();
+                alert('Lỗi: ' + result.message);
+                return;
+            }
+
+            hinhAnhName = form.hinh_anh.name; // Cập nhật tên ảnh mới
+        }
+
+        // Chuẩn bị dữ liệu gửi đi
+        const userData = {
+            accountID: form.accountID,
+            hovaten: form.hovaten,
+            so_dien_thoai: form.so_dien_thoai,
+            hinh_anh: hinhAnhName, // Sử dụng tên ảnh cũ nếu không upload mới
+        };
+
+        const userUpdateResponse = await fetch(`http://localhost:8080/auth/users/${form.accountID}/update`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData),
         });
 
-        if (!imageUploadResponse.ok) {
-          const result = await imageUploadResponse.json();
-          alert('Lỗi: ' + result.message);
-          return;
+        if (!userUpdateResponse.ok) {
+            const result = await userUpdateResponse.json();
+            alert('Lỗi: ' + result.message);
+            return;
         }
-      }
 
-      // Update user information
-      const userData = {
-        accountID: form.accountID,
-        hovaten: form.hovaten,
-        so_dien_thoai: form.so_dien_thoai,
-        dia_chi: form.dia_chi,
-        hinh_anh: form.hinh_anh ? form.hinh_anh.name : '', // Chỉ lưu tên file để cập nhật
-      };
+        alert('Thông tin đã được lưu thành công!');
+        fetchUserData(form.accountID);
 
-      const userUpdateResponse = await fetch(`http://localhost:8080/auth/users/${form.accountID}/update`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      });
-
-      if (!userUpdateResponse.ok) {
-        const result = await userUpdateResponse.json();
-        alert('Lỗi: ' + result.message);
-        return;
-      }
-
-      alert('Thông tin đã được lưu thành công!');
-
-      // Làm mới dữ liệu người dùng để phản ánh thay đổi
-      fetchUserData(form.accountID);
-
-      // Nếu có hình ảnh, cập nhật lại preview image
-      if (form.hinh_anh) {
-        setPreviewImage(`http://localhost:8080/images/uploads/${form.hinh_anh.name}`);
-      }
-
+        if (hinhAnhName) {
+            setPreviewImage(`http://localhost:8080/images/uploads/${hinhAnhName}`);
+        }
     } catch (error) {
-      alert('Có lỗi xảy ra trong quá trình lưu thông tin');
-      console.error('Error:', error);
+        alert('Có lỗi xảy ra trong quá trình lưu thông tin');
+        console.error('Error:', error);
     }
-  };
+};
+
+
   if (isLoading) return <div style={loadingStyle}>Loading...</div>;
 
   return (
@@ -155,13 +145,15 @@ const PersonalInfo = () => {
           <h3>Quản Lý Cá Nhân</h3>
         </Link>
         <ul style={menuStyle}>
-          {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá'].map((item, index) => (
-            <li key={index}>
-              <Link to={`/${item.replace(/ /g, '-').toLowerCase()}?userId=${userId}`} style={linkStyle}>
-                <button style={buttonStyle}>{item}</button>
-              </Link>
-            </li>
-          ))}
+          {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá','Địa chỉ của bạn','Ví đã liên kết'].map(
+            (item, index) => (
+              <li key={index}>
+                <Link to={`/${item.replace(/ /g, '-').toLowerCase()}?userId=${userId}`} style={linkStyle}>
+                  <button style={buttonStyle}>{item}</button>
+                </Link>
+              </li>
+            )
+          )}
         </ul>
       </aside>
 
@@ -170,10 +162,10 @@ const PersonalInfo = () => {
           <h2 style={formHeaderStyle}>Thông tin cá nhân</h2>
           {errorMessage && <p style={errorMessageStyle}>{errorMessage}</p>}
           <div style={gridStyle}>
-            {['hovaten', 'so_dien_thoai', 'dia_chi'].map((field, index) => (
+            {['hovaten', 'so_dien_thoai'].map((field, index) => (
               <div key={index} style={gridItemStyle}>
                 <label htmlFor={field} style={labelStyle}>
-                  {field === 'hovaten' ? 'Họ tên' : field === 'so_dien_thoai' ? 'Điện thoại' : 'Địa chỉ'}
+                  {field === 'hovaten' ? 'Họ tên' : 'Điện thoại'}
                 </label>
                 <input
                   type="text"
@@ -187,7 +179,9 @@ const PersonalInfo = () => {
               </div>
             ))}
             <div style={gridItemStyle}>
-              <label htmlFor="accountID" style={labelStyle}>Email</label>
+              <label htmlFor="accountID" style={labelStyle}>
+                Email
+              </label>
               <input
                 type="email"
                 name="accountID"
@@ -205,10 +199,13 @@ const PersonalInfo = () => {
                   src={previewImage}
                   alt="Preview"
                   style={imagePreviewStyle}
-                  onClick={() => document.getElementById('hinh_anh').click()} // Mở input file khi nhấn vào hình
+                  onClick={() => document.getElementById('hinh_anh').click()}
                 />
               ) : (
-                <div style={verticalImageUploadContainerStyle} onClick={() => document.getElementById('hinh_anh').click()}>
+                <div
+                  style={verticalImageUploadContainerStyle}
+                  onClick={() => document.getElementById('hinh_anh').click()}
+                >
                   <div style={placeholderStyle}>Nhấn để chọn hình ảnh</div>
                 </div>
               )}
@@ -218,11 +215,13 @@ const PersonalInfo = () => {
                 id="hinh_anh"
                 accept="image/*"
                 onChange={handleImageChange}
-                style={{ display: 'none' }} // Ẩn input file mặc định
+                style={{ display: 'none' }}
               />
             </div>
           </div>
-          <button type="submit" style={submitButtonStyle}>Lưu thông tin</button>
+          <button type="submit" style={submitButtonStyle}>
+            Lưu thông tin
+          </button>
         </form>
       </main>
     </div>

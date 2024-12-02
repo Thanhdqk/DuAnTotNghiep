@@ -50,7 +50,7 @@ public class Users {
 	public String hoat_dong;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
-	public String vi_pham;
+	public int vi_pham;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;

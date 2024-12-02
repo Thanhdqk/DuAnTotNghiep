@@ -35,8 +35,8 @@ public class Banner {
     public LocalDate ngay_het_han; // Added field for expiration date
 
     @OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
-    @JsonIgnore
-    public List<DanhMuc> danhmuc;
+	@JsonIgnore
+	public List<BannerChiTiet> bannerchitiet;
 
 	
 

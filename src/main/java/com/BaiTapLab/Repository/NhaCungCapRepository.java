@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -34,5 +35,9 @@ public interface NhaCungCapRepository extends JpaRepository<NhaCungCap, String> 
 	
 	@Query("SELECT u FROM  NhaCungCap u WHERE u.trang_thai_xoa is NULL")
 	List<Users> findUserByTrangThai();
+	
+	 @Query("SELECT b.nha_cung_capID FROM NhaCungCap b ORDER BY b.nha_cung_capID DESC")
+	    List<String> findLatestBannerId(PageRequest pageRequest);
+
 
 }

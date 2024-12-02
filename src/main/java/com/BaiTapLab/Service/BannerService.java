@@ -26,7 +26,7 @@ public class BannerService {
         HanhDong hd = new HanhDong();
 		hd.setBanner(banner);
 		hd.setTen_hanh_dong("Thêm");
-//		HanhDongReopository.save(hd);
+		HanhDongReopository.save(hd);
 	
         return bannerRepository.save(banner);
         
@@ -44,13 +44,12 @@ public class BannerService {
         existingBanner.setHinh_anh(banner.getHinh_anh());
         existingBanner.setHoat_dong(banner.getHoat_dong());
         existingBanner.setNgay_het_han(banner.getNgay_het_han());
-        existingBanner.setDanhmuc(banner.getDanhmuc());
         existingBanner.setUsers(banner.getUsers());
         
         HanhDong hd = new HanhDong();
    		hd.setBanner(banner);
-   		hd.setTen_hanh_dong("Thêm");
-//   		HanhDongReopository.save(hd);
+   		hd.setTen_hanh_dong("Cập Nhật");
+		HanhDongReopository.save(hd);
         return bannerRepository.save(existingBanner);
     }
 

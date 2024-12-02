@@ -1,5 +1,6 @@
 package com.BaiTapLab.Service;
 
+import com.BaiTapLab.Entity.HanhDong;
 import com.BaiTapLab.Entity.NhaCungCap;
 import com.BaiTapLab.Repository.HanhDongReopository;
 import com.BaiTapLab.Repository.NhaCungCapRepository;
@@ -25,9 +26,14 @@ public class NhaCungCapService {
         return nhaCungCapRepository.findById(id);
     }
 
-    public NhaCungCap save(NhaCungCap nhaCungCap) {
+    public NhaCungCap createNhaCungCap(NhaCungCap nhaCungCap) {
+    	 NhaCungCap nhaCungCap2 = nhaCungCapRepository.save(nhaCungCap);
+    	HanhDong hd = new HanhDong();
+		hd.setNhacungcap(nhaCungCap);
+		hd.setTen_hanh_dong("Thêm");
+		HanhDongReopository.save(hd);
     	
-        return nhaCungCapRepository.save(nhaCungCap);
+        return nhaCungCap2;
       
     }
 

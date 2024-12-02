@@ -43,7 +43,7 @@ public class DanhMuc {
 	@JoinColumn(name = "accountID")
 	public Users users;
 	
-	@ManyToOne
-	@JoinColumn(name = "bannerId")
-	public Banner banner;
+	@OneToMany(mappedBy = "danhmuc", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<BannerChiTiet> bannerchitiet;
 }

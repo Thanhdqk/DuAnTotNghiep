@@ -131,4 +131,10 @@ public class UsersService {
     public Users save(Users user) {
         return usersRepository.save(user);
     }
+    public List<Users> findByViPham () {
+    	return usersRepository.findUserByViPham();
+    }
+    public List<Users> findByVP() {
+    	return usersRepository.findUserByVP();
+    }
 }

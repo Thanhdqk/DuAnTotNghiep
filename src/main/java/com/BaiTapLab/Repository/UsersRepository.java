@@ -42,10 +42,28 @@ public interface UsersRepository extends JpaRepository<Users, String> {
     @Transactional
     @Query("UPDATE Users u SET u.trang_thai_xoa = NULL WHERE u.accountID = ?1" )
     int reloadThuongHieuID(String thuong_hieuID);
+    
+    @Modifying
+    @Transactional
+    @Query("UPDATE Users u SET u.vi_pham = NULL WHERE u.accountID = ?1" )
+    void reloadViPham(String userid);
+    
+    @Modifying
+  	@Transactional
+  	@Query("UPDATE Users u SET u.trang_thai_xoa = 'Ban' WHERE u.accountID = ?1")
+  	void mark(String userid);
+    
+    
+    
 
 	
 	@Query("SELECT u FROM  Users u WHERE u.trang_thai_xoa is NULL")
 	List<Users> findUserByTrangThai();
-
+ 
+	@Query("SELECT u FROM Users u WHERE u.vi_pham > 0")
+	List<Users> findUserByViPham();
+	
+	@Query("SELECT u FROM  Users u WHERE u.trang_thai_xoa = 'Ban' ")
+	List<Users> findUserByVP();
 	
 }

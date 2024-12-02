@@ -1,5 +1,6 @@
 package com.BaiTapLab.RestController;
 
+import com.BaiTapLab.DTO.NhaCungCapDTO;
 /*import com.BaiTapLab.DTO.NhaCungCapDTO;*/
 import com.BaiTapLab.DTO.UserDTO;
 import com.BaiTapLab.Entity.HanhDong;
@@ -11,6 +12,7 @@ import com.BaiTapLab.Repository.NhaCungCapRepository;
 import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.NhaCungCapService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -114,6 +116,44 @@ public class NhaCungCapRestController {
 //    }
 
 
+    @PutMapping("/saveee")
+    public void createNhaCungCap1(
+           
+    		
+            @RequestParam("id") String accountID,
+            @RequestParam("nha_cung_capID") String nha_cung_capID,
+            @RequestParam("ten_nhaCC") String ten_nhaCC,
+            @RequestParam("ten_mat_hang") String ten_mat_hang,
+            @RequestParam("dia_chi") String dia_chi,
+            @RequestParam("so_dien_thoai") String so_dien_thoai,
+            @RequestParam("trang_thai_xoa") String trang_thai_xoa)
+    	 {
+      
+       System.out.println("id"+accountID);
+       System.out.println("nha_cung_capID"+nha_cung_capID);
+       System.out.println("nha_cung_capID"+ten_nhaCC);
+       System.out.println("nha_cung_capID"+ten_mat_hang);
+       System.out.println("nha_cung_capID"+dia_chi);
+       System.out.println("nha_cung_capID"+so_dien_thoai);
+       System.out.println("nha_cung_capID"+trang_thai_xoa);
+       Users user = userrepository.findByAccountID(accountID);
+       NhaCungCap cc = new NhaCungCap();
+       cc.setUsers(user);
+       cc.setNha_cung_capID(nha_cung_capID);
+       cc.setDia_chi(dia_chi);
+       cc.setSo_dien_thoai(so_dien_thoai);
+       cc.setTen_nhaCC(ten_nhaCC);
+       cc.setTen_mat_hang(ten_mat_hang);
+       cc.setTrang_thai_xoa(trang_thai_xoa);
+       NhaCungCap nhaCungCap2 = nhacupcaprepository.save(cc);
+  	HanhDong hd = new HanhDong();
+		hd.setNhacungcap(nhaCungCap2);
+		hd.setTen_hanh_dong("Thêm");
+		HanhDongReopository.save(hd);
+      System.out.println("ccccccccccccc");
+    
+        
+    }
     @PostMapping("/save")
     public void createNhaCungCap(
            
@@ -143,7 +183,11 @@ public class NhaCungCapRestController {
        cc.setTen_nhaCC(ten_nhaCC);
        cc.setTen_mat_hang(ten_mat_hang);
        cc.setTrang_thai_xoa(trang_thai_xoa);
-      nhacupcaprepository.save(cc);
+       NhaCungCap nhaCungCap2 = nhacupcaprepository.save(cc);
+  	HanhDong hd = new HanhDong();
+		hd.setNhacungcap(nhaCungCap2);
+		hd.setTen_hanh_dong("Upload");
+		HanhDongReopository.save(hd);
       System.out.println("ccccccccccccc");
     
         
@@ -166,8 +210,23 @@ public class NhaCungCapRestController {
         response.put("message", "Nhà cung cấp đã được xóa thành công!");
         return ResponseEntity.ok(response);
     }
-//    @GetMapping("/ncchanhdong")
-//	public List<NhaCungCapDTO> getMethodName() {
-//		return HanhDongReopository.findNhaCungCap();
-//	}
+    @GetMapping("/ncchanhdong")
+	public List<NhaCungCapDTO> getMethodName() {
+		return HanhDongReopository.findNhaCungCap();
+	}
+    @GetMapping("/generateNewNccId")
+    public ResponseEntity<String> getNewBannerId() {
+        String latestBannerId = nhacupcaprepository.findLatestBannerId(PageRequest.of(0, 1)).stream().findFirst().orElse("NCC000");
+        String newBannerId = generateNewBannerId(latestBannerId);
+        return ResponseEntity.ok(newBannerId);
+    }
+
+    private String generateNewBannerId(String latestBannerId) {
+        if (latestBannerId.startsWith("NCC")) {
+            int numberPart = Integer.parseInt(latestBannerId.substring(3)) + 1;
+            return "NCC" + String.format("%03d", numberPart);
+        }
+        return "NCC001";
+        
+    }
 }

@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
@@ -37,6 +38,9 @@ public class Voucher {
 	public int so_luot_SD;
 	
 	public int so_luong;
+	
+	@Transient
+    public boolean saved;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String dieu_kien;

@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.DTO.ThuongHieuDTO;
 import com.BaiTapLab.Entity.HanhDong;
+import com.BaiTapLab.Entity.NhaCungCap;
 import com.BaiTapLab.Entity.ThuongHieu;
 import com.BaiTapLab.Repository.HanhDongRepository;
 import com.BaiTapLab.Repository.NhaCungCapRepository;
@@ -56,6 +60,48 @@ public class ThuongHieuRestController {
 		return ResponseEntity.ok(listThuongHieu);
 	}
     
+
+    
+    @GetMapping("/thuonghieu/getNewThuongHieuID")
+    public ResponseEntity<String> getNewThuongHieuId(){
+        String latestThuongHieuId = getLatestThuongHieuId();
+        
+        String newThuongHieuId = generateNewThuongHieuId(latestThuongHieuId);
+        
+        return ResponseEntity.ok(newThuongHieuId);
+    }
+
+    private String getLatestThuongHieuId() {
+        // Lấy mã mới nhất từ cơ sở dữ liệu
+        List<String> latestThuongHieuIds = thuonghieuRepository.getLatestThuongHieuId(PageRequest.of(0, 1));
+        if (latestThuongHieuIds.isEmpty()) {
+            return "ThuongHieu001";  // Nếu không có bản ghi, trả về mã mặc định
+        }
+        String latestThuongHieuId = latestThuongHieuIds.get(0);
+        System.out.println("Latest ThuongHieuId: " + latestThuongHieuId); // In để kiểm tra
+        return latestThuongHieuId;
+    }
+
+    private String generateNewThuongHieuId(String latestThuongHieuId) {
+        // Kiểm tra xem mã cũ có hợp lệ không
+        if (latestThuongHieuId != null && latestThuongHieuId.startsWith("ThuongHieu")) {
+            try {
+                // Lấy phần số từ mã (tách sau dấu "_")
+                String numberPart = latestThuongHieuId.substring("ThuongHieu".length()); // Lấy phần sau "ThuongHieu_"
+                System.out.println("Number part before increment: " + numberPart); // In để kiểm tra
+                int newIdNumber = Integer.parseInt(numberPart) + 1; // Tăng 1 đơn vị
+                System.out.println("New Id Number: " + newIdNumber); // In để kiểm tra
+                return "ThuongHieu" + newIdNumber; // Trả về mã mới, ví dụ: ThuongHieu_2
+            } catch (NumberFormatException e) {
+                // Xử lý nếu mã không hợp lệ (ví dụ: nếu phần số không phải là số hợp lệ)
+                return "ThuongHieu001"; // Trả về mã mặc định nếu có lỗi
+            }
+        }
+        return "ThuongHieu001"; // Nếu mã cũ không hợp lệ, trả về mã mặc định
+    }
+
+
+    
     @GetMapping("/edit/thuonghieu/{thuong_hieuID}")
 	public ResponseEntity<ThuongHieu> getSanPhamById(@PathVariable String thuong_hieuID){
 		Optional<ThuongHieu> thuonghieu = thuonghieuRepository.findById(thuong_hieuID);
@@ -64,7 +110,7 @@ public class ThuongHieuRestController {
 
     @PostMapping("/thuonghieu/add")
 	public ResponseEntity<?> addThuongHieu(
-	        @RequestParam("thuong_hieuID") String thuong_hieuID,
+			@RequestParam(value = "thuong_hieuID", required = false) String thuong_hieuID,
 	        @RequestParam("ten_thuong_hieu") String ten_thuong_hieu,
 	        @RequestParam("ngay_tao") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngay_tao,
 	        @RequestParam("hoat_dong") String hoat_dong,
@@ -72,9 +118,20 @@ public class ThuongHieuRestController {
     		@RequestParam("accountID") String accountID,
     		@RequestParam("nha_cung_capID") String nha_cung_capID){
     		
+//    		Map<String, String> response = new HashMap<>();
     		HanhDong hd = new HanhDong();
 
 	    try {
+	    	
+	    	// Lấy nhà cung cấp từ database
+	        NhaCungCap nhaCungCap = nhaCungCapRepository.findByNha_cung_capID(nha_cung_capID);
+	        
+	        // Kiểm tra tên thương hiệu đã tồn tại trong nhà cung cấp này chưa
+	        if (thuonghieuRepository.existsByTenThuongHieuAndNhaCungCap(ten_thuong_hieu, nha_cung_capID)) {
+	            // Nếu trùng, trả về lỗi
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+	                    .body("Tên thương hiệu đã tồn tại trong nhà cung cấp này.");
+	        }
 	        // Tạo đối tượng Thương Hiệu từ các tham số
 	        ThuongHieu thuonghieu = new ThuongHieu();
 	        thuonghieu.setThuong_hieuID(thuong_hieuID);
@@ -83,6 +140,7 @@ public class ThuongHieuRestController {
 	        thuonghieu.setHoat_dong(hoat_dong);
 	        thuonghieu.setUsers(userRepository.findByAccountID(accountID));
 	        thuonghieu.setNhacungcap(nhaCungCapRepository.findByNha_cung_capID(nha_cung_capID));
+	        
 	        // Xử lý file ảnh nếu được upload
 	        if (hinh_anh != null && hinh_anh.length > 0) {
 	            String tenHinhAnh = hinh_anh[0].getOriginalFilename();
@@ -188,24 +246,6 @@ public class ThuongHieuRestController {
 	    }
 	}
 
-//    @DeleteMapping("/thuonghieu/delete/{thuong_hieuID}")
-//	public ResponseEntity<?> deleteThuongHieu(@PathVariable String thuong_hieuID) {
-//	    try {
-//	        // Tìm thương hiệu theo ID
-//	        ThuongHieu thuonghieu = thuonghieuService.findByThuongHieuID(thuong_hieuID);
-//	        if (thuonghieu != null) {
-//	            // Xóa thương hiệu
-//	            thuonghieuService.deleteThuongHieu(thuong_hieuID);
-//	            return ResponseEntity.ok("Thương hiệu đã được xóa thành công!");
-//	        } else {
-//	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//	                    .body("Không tìm thấy thương hiệu với ID: " + thuong_hieuID);
-//	        }
-//	    } catch (Exception e) {
-//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//	                .body("Lỗi khi xóa thương hiệu: " + e.getMessage());
-//	    }
-//	}
     
     @PutMapping("/thuonghieu/deleteToGarbage/{thuong_hieuID}")
 	public ResponseEntity<Object> deleteThuongHieuToGarbage(@PathVariable String thuong_hieuID) {

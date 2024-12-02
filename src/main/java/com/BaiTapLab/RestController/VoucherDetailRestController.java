@@ -33,20 +33,28 @@ public class VoucherDetailRestController {
 	    @RequestParam String voucherID,
 	    @RequestParam String accountID) {
 	    
-	    // Tạo đối tượng VoucherDetail mới
 	    VoucherDetail voucherDetail = new VoucherDetail();
-	    
-	    // Lấy voucher và user từ repository tương ứng (giả sử đã có repository hoặc service)
 	    Voucher voucher = voucherRepository.findById(voucherID).orElse(null);
 	    Users user = usersRepository.findById(accountID).orElse(null);
 
-	    // Kiểm tra nếu user và voucher tồn tại
 	    if (voucher != null && user != null) {
-	        voucherDetail.setVoucher(voucher);
-	        voucherDetail.setUsers(user);
-	        return voucherDetailService.save(voucherDetail);
+	        // Kiểm tra số lượng còn không
+	        if (voucher.getSo_luong() > 0) {
+	            voucherDetail.setVoucher(voucher);
+	            voucherDetail.setUsers(user);
+	            
+	            // Giảm số lượng voucher
+	            voucher.setSo_luong(voucher.getSo_luong() - 1);
+	            voucher.setSo_luot_SD(voucher.getSo_luot_SD() - 1);
+	            voucherRepository.save(voucher); // Cập nhật lại trong database
+
+	            return voucherDetailService.save(voucherDetail);
+	        } else {
+	            throw new IllegalArgumentException("Voucher đã hết số lượng");
+	        }
 	    } else {
 	        throw new IllegalArgumentException("Voucher hoặc người dùng không tồn tại");
 	    }
 	}
+
 }

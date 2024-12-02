@@ -11,14 +11,14 @@ import com.BaiTapLab.Repository.VoucherDetailRepository;
 public class VoucherService {
     @Autowired
     private VoucherRepository voucherRepository;
-    
+
     @Autowired
     private VoucherDetailRepository voucherDetailRepository;
-    
-    public List<Voucher> findUnSavedVouchers(String accountID) {
+
+    public List<Voucher> findAllVouchersWithSavedStatus(String accountID) {
         List<String> savedVoucherIDs = voucherDetailRepository.findVoucherIDsByAccountID(accountID);
         return voucherRepository.findAll().stream()
-                                .filter(voucher -> !savedVoucherIDs.contains(voucher.getVoucherID()))
-                                .toList();
+                .peek(voucher -> voucher.setSaved(savedVoucherIDs.contains(voucher.getVoucherID())))
+                .toList();
     }
 }

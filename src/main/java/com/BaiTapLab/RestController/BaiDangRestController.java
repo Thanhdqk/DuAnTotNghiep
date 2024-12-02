@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.BaiTapLab.DTO.BaiDangDTO;
 import com.BaiTapLab.Entity.BaiDang;
 import com.BaiTapLab.Entity.HanhDong;
-import com.BaiTapLab.Entity.ThuongHieu;
 import com.BaiTapLab.Repository.BaiDangRepository;
 import com.BaiTapLab.Repository.HanhDongRepository;
 import com.BaiTapLab.Repository.UsersRepository;
@@ -51,6 +51,44 @@ public class BaiDangRestController {
 		System.out.println(listBaiDang);
 		return ResponseEntity.ok(listBaiDang);
 	}
+	
+	@GetMapping("/baidang/getNewBaiDangID")
+    public ResponseEntity<String> getNewBaiDangId(){
+        String latestBaiDangId = getLatestBaiDangId();
+        
+        String newBaiDangId = generateNewBaiDangId(latestBaiDangId);
+        
+        return ResponseEntity.ok(newBaiDangId);
+    }
+
+    private String getLatestBaiDangId() {
+        // Lấy mã mới nhất từ cơ sở dữ liệu
+        List<String> latestBaiDangIds = baidangRepository.getLatestBaiDangId(PageRequest.of(0, 1));
+        if (latestBaiDangIds.isEmpty()) {
+            return "BaiDang001";  // Nếu không có bản ghi, trả về mã mặc định
+        }
+        String latestBaiDangId = latestBaiDangIds.get(0);
+        System.out.println("Latest BaiDangId: " + latestBaiDangId); // In để kiểm tra
+        return latestBaiDangId;
+    }
+    
+    private String generateNewBaiDangId(String latestBaiDangId) {
+        // Kiểm tra xem mã cũ có hợp lệ không
+        if (latestBaiDangId != null && latestBaiDangId.startsWith("BaiDang")) {
+            try {
+                // Lấy phần số từ mã (tách sau dấu "_")
+                String numberPart = latestBaiDangId.substring("BaiDang".length()); // Lấy phần sau "ThuongHieu_"
+                System.out.println("Number part before increment: " + numberPart); // In để kiểm tra
+                int newIdNumber = Integer.parseInt(numberPart) + 1; // Tăng 1 đơn vị
+                System.out.println("New Id Number: " + newIdNumber); // In để kiểm tra
+                return "BaiDang" + newIdNumber; // Trả về mã mới, ví dụ: ThuongHieu_2
+            } catch (NumberFormatException e) {
+                // Xử lý nếu mã không hợp lệ (ví dụ: nếu phần số không phải là số hợp lệ)
+                return "BaiDang001"; // Trả về mã mặc định nếu có lỗi
+            }
+        }
+        return "BaiDang001"; // Nếu mã cũ không hợp lệ, trả về mã mặc định
+    }
     
     @GetMapping("/edit/baidang/{bai_dangID}")
 	public ResponseEntity<BaiDang> getBaiDangById(@PathVariable String bai_dangID){
@@ -105,11 +143,11 @@ public class BaiDangRestController {
 	        
 	        // Lưu baidang vào DB qua service
 	        BaiDang savedBaiDang = baidangService.createBaiDang(baidang);
-	        hd.setBaidang(baidang);
-            hd.setTen_hanh_dong("Thêm");
-          
-           
-            HanhDongRepository.save(hd);
+//	        hd.setBaidang(baidang);
+//            hd.setTen_hanh_dong("Thêm");
+//          
+//           
+//            HanhDongRepository.save(hd);
 	        // Trả về thông tin baidang đã lưu
 	        return ResponseEntity.ok(savedBaiDang);
 
@@ -143,7 +181,6 @@ public class BaiDangRestController {
 	        BaiDang baidang = baidangService.findByBaiDangID(bai_dangID);
 	        
 	        // Cập nhật các thuộc tính của baidang
-	        baidang.setBai_dangID(bai_dangID);
 	        baidang.setTieu_de_phu(tieu_de_phu);
 	        baidang.setTieu_de_chinh(tieu_de_chinh);
 	        baidang.setNoi_dung(noi_dung);

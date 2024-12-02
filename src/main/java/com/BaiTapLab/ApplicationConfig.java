@@ -12,4 +12,5 @@ public class ApplicationConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/images/");
     }
+    
 }

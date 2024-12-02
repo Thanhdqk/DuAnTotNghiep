@@ -14,9 +14,9 @@ import com.BaiTapLab.Service.VoucherService;
 public class VoucherRestController {
     @Autowired 
     private VoucherService voucherService;
-    
-    @GetMapping("/loadUnsavedVouchers")
-    public List<Voucher> loadUnsavedVouchers(@RequestParam String accountID) {
-        return voucherService.findUnSavedVouchers(accountID);
+
+    @GetMapping("/loadAllVouchers")
+    public List<Voucher> loadAllVouchers(@RequestParam String accountID) {
+        return voucherService.findAllVouchersWithSavedStatus(accountID);
     }
 }

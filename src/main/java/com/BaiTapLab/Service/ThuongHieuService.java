@@ -31,14 +31,6 @@ public class ThuongHieuService {
         return thRepository.save(updatedThuongHieu);
     }
 	
-	public void deleteThuongHieu(String thuong_hieuID) throws Exception {
-	    // Kiểm tra xem voucher có tồn tại không trước khi xóa
-	    if (!thRepository.existsById(thuong_hieuID)) {
-	        throw new Exception("ThuongHieu not found with ID: " + thuong_hieuID);
-	    }
-	    // Thực hiện xóa voucher
-	    thRepository.deleteById(thuong_hieuID);
-	}
 	
 
 	public boolean deleteThuongHieuById(String thuong_hieuID) {
@@ -50,4 +42,5 @@ public class ThuongHieuService {
         int result = thRepository.reloadThuongHieuID(thuong_hieuID);
         return result > 0; // Trả về true nếu cập nhật thành công
     }
+	
 }

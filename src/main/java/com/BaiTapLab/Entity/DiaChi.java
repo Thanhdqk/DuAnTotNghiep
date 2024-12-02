@@ -3,6 +3,7 @@ package com.BaiTapLab.Entity;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,26 +15,41 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "diachi")
 public class DiaChi {
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    public int dia_chiID;
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public int dia_chiID;
+
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String dia_chi;
+
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String phuong;
+
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String quan;
 	
+  
+
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String thanh_pho;
+
 	@OneToMany(mappedBy = "diachi", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<DonHang> donhang;
-	
+
 	@ManyToOne
-    @JoinColumn(name = "accountID")
-    public Users users;
+	@JoinColumn(name = "accountID")
+	@JsonManagedReference
+	
+	public Users users;
 
 	public int getDia_chiID() {
 		return dia_chiID;
@@ -51,6 +67,30 @@ public class DiaChi {
 		this.dia_chi = dia_chi;
 	}
 
+	public String getPhuong() {
+		return phuong;
+	}
+
+	public void setPhuong(String phuong) {
+		this.phuong = phuong;
+	}
+
+	public String getQuan() {
+		return quan;
+	}
+
+	public void setQuan(String quan) {
+		this.quan = quan;
+	}
+
+	public String getThanh_pho() {
+		return thanh_pho;
+	}
+
+	public void setThanh_pho(String thanh_pho) {
+		this.thanh_pho = thanh_pho;
+	}
+
 	public List<DonHang> getDonhang() {
 		return donhang;
 	}
@@ -66,5 +106,6 @@ public class DiaChi {
 	public void setUsers(Users users) {
 		this.users = users;
 	}
+	
 	
 }

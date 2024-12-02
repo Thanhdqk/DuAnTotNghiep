@@ -102,15 +102,6 @@ public class UserService {
 		return savedUser;
 	}
 
-	public Optional<Users> getUserById(String id) { // Updated to accept String since accountID is a String
-		return userRepository.findById(id);
-	}
-
-	public Optional<DiaChi> getUserAddress(String accountID) {
-		Optional<Users> userOptional = userRepository.findById(accountID);
-		return userOptional.flatMap(user -> diaChiRepository.findByUsers(user).stream().findFirst());
-	}
-
 	public void updateUser(Users user) {
 		userRepository.save(user);
 	}
@@ -120,54 +111,40 @@ public class UserService {
 		return user.orElse(null);
 	}
 
-	// Add this method to UserService class
-	public void updateUserAddress(String accountID, DiaChi newAddress) {
+	public List<DiaChi> getUserAddresses(String accountID) {
 		Optional<Users> userOptional = userRepository.findById(accountID);
-		if (!userOptional.isPresent()) {
-			throw new RuntimeException("User not found"); // Handle the case where user is not found
-		}
-
-		Users user = userOptional.get();
-		List<DiaChi> existingAddresses = diaChiRepository.findByUsers(user);
-
-		if (!existingAddresses.isEmpty()) {
-			DiaChi existingAddress = existingAddresses.get(0); // Assuming you want to update the first address
-			existingAddress.setDia_chi(newAddress.getDia_chi()); // Update the address
-			diaChiRepository.save(existingAddress);
+		if (userOptional.isPresent()) {
+			return diaChiRepository.findByUsers(userOptional.get());
 		} else {
-			// Optionally, if no existing address is found, you can create a new address
-			newAddress.setUsers(user);
-			diaChiRepository.save(newAddress);
+			throw new RuntimeException("User not found.");
 		}
 	}
 
-	// Update the UserService class
-	public void addOrUpdateUserAddress(String accountID, String address) {
+	// Lấy địa chỉ bằng ID
+	public Optional<DiaChi> getAddressById(int addressId) {
+		return diaChiRepository.findById(addressId);
+	}
+
+	// Lưu hoặc cập nhật địa chỉ
+	public void saveAddress(DiaChi address) {
+		diaChiRepository.save(address);
+	}
+
+	// Thêm hoặc cập nhật địa chỉ
+	public void addOrUpdateUserAddress(String accountID, DiaChi newAddress) {
 		Optional<Users> userOptional = userRepository.findById(accountID);
 		if (userOptional.isPresent()) {
 			Users user = userOptional.get();
-
-			// Check if there's an existing address
-			List<DiaChi> existingAddresses = diaChiRepository.findByUsers(user);
-			DiaChi diaChi;
-
-			if (!existingAddresses.isEmpty()) {
-				// Update the first existing address (or modify logic to handle multiple
-				// addresses as needed)
-				diaChi = existingAddresses.get(0); // You might want to specify which address to update
-				diaChi.setDia_chi(address);
-			} else {
-				// Create a new DiaChi object if no existing address
-				diaChi = new DiaChi();
-				diaChi.setDia_chi(address);
-				diaChi.setUsers(user); // Set the user
-			}
-
-			// Save the address to the repository
-			diaChiRepository.save(diaChi);
-			System.out.println("Address saved/updated successfully!");
+			newAddress.setUsers(user);
+			diaChiRepository.save(newAddress);
 		} else {
-			System.out.println("User not found!");
+			throw new RuntimeException("User not found.");
 		}
 	}
+
+	// Lấy thông tin người dùng
+	public Optional<Users> getUserById(String id) {
+		return userRepository.findById(id);
+	}
+
 }

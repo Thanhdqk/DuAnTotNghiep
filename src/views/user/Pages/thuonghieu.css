@@ -212,3 +212,8 @@
   .buttonexcel:hover {
     background-color: darkgreen; /* Màu nền khi hover */
   }
+
+  .error {
+    color: red;
+    font-size: 0.9em;
+}

@@ -8,21 +8,16 @@ import {
   ReloadOutlined
 } from "@ant-design/icons";
 import { useState, useEffect, useRef } from "react";
-import { data } from "jquery";
+import { data, get } from "jquery";
 import * as XLSX from "xlsx";
+import axios from 'axios';
+
 //import "../../assets/images"
 
 const onChange = (key) => {
   console.log(key);
 };
 
-const getCurrentDate = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -34,17 +29,24 @@ const getBase64 = (file) =>
 
 const Thuonghieu = () => {
   const [hanhdong,sethanhdong] = useState([]);
+  // const[error,setError] = useState("");
   const [thuonghieuData, setThuonghieuData] = useState([]);
   const [hoatDong, setHoatDong] = useState("Hoạt động");
   const [selectedThuongHieu, setSelectedThuongHieu] = useState({
+    thuong_hieuID: "",
     hoat_dong: "Hoạt động",
     hanh_dong: "Thêm",
+    nha_cung_capID: "1",
   });
   const [activeKey, setActiveKey] = useState("1");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
   const [searchStatus, setSearchStatus] = useState("");
+  const [newThuongHieuID, setNewThuongHieuID] = useState("");
+  const [nhaCungCapList, setNhaCungCapList] = useState([]);
+  const [nha_cung_capID, setNhaCungCapID] = useState("Poca");
+
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -61,6 +63,22 @@ const Thuonghieu = () => {
         file.response ? file.response.url : file.url
       ), // Lưu URL hình ảnh
     }));
+  };
+
+  const getNewThuongHieuID = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/thuonghieu/getNewThuongHieuID"
+      );
+      setNewThuongHieuID(response.data);
+      console.log("Thương Hiệu ID:", response.data);
+      setSelectedThuongHieu((prev) => ({
+        ...prev,
+        thuong_hieuID: response.data,
+      }));
+    } catch (error) {
+      console.error("Lỗi khi lấy thuong_hieuID:", error);
+    }
   };
 
   const uploadButton = (
@@ -97,7 +115,7 @@ const Thuonghieu = () => {
         setActiveKey("1");
       }
     } catch (error) {
-      console.error("Lỗi khi lấy thông tin bài đăng:", error);
+      console.error("Lỗi khi lấy thông tin thương hiệu:", error);
     }
     // Chuyển đổi 'hinh_anh' thành mảng nếu cần
     const images = Array.isArray(thuonghieu.hinh_anh)
@@ -124,6 +142,7 @@ const Thuonghieu = () => {
     setSelectedThuongHieu((prev) => ({
       ...prev,
       hoat_dong: value, // Cập nhật trạng thái hoat_dong
+      nha_cung_capID: value,
     }));
   };
 
@@ -148,6 +167,7 @@ const Thuonghieu = () => {
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu thương hiệu:", error);
     }
+    getNewThuongHieuID();
   };
 
   const fetchHanhDongData = async () => {
@@ -173,9 +193,34 @@ const Thuonghieu = () => {
     }
   };
 
+  const fetchNhaCungCapList = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/nhacungcap/all");
+      const data = await response.json();
+
+      const formattedData = data.map((item) => ({
+        nha_cung_capID: item.nha_cung_capID,
+        ten_nhaCC: item.ten_nhaCC,
+      }));
+      setNhaCungCapList(formattedData);
+      console.log("Danh sách nhà cung cấp: ", formattedData);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách nhà cung cấp:", error);
+    }
+  };
+  
+
   useEffect(() => {
     fetchThuongHieuData();
     fetchHanhDongData();
+    fetchNhaCungCapList();
+    const accountID = JSON.parse(localStorage.getItem("accountID"));
+    if (accountID) {
+      setSelectedThuongHieu((prev) => ({
+        ...prev,
+        accountID,
+      }));
+    }
   }, []);
 
   let thuonghieu = {};
@@ -186,51 +231,105 @@ const Thuonghieu = () => {
       ngay_tao: document.getElementById("ngay_tao").value,
       hoat_dong: selectedThuongHieu.hoat_dong,
       accountID: document.getElementById("accountID").value,
-      nha_cung_capID: document.getElementById("nha_cung_capID").value,
+      nha_cung_capID: selectedThuongHieu.nha_cung_capID,
     };
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
+  
+    // Kiểm tra các trường bắt buộc
+    if (document.getElementById("ten_thuong_hieu").value === "") {
+      alert("Vui lòng nhập tên thương hiệu");
+      return;
+  } 
+  // Kiểm tra nếu chỉ toàn số
+  else if (/^\d+$/.test(document.getElementById("ten_thuong_hieu").value)) {
+      alert("Tên thương hiệu không được là chuỗi toàn số");
+      return;
+  }
+  // Cho phép chữ và số
+  else if (!/^[a-zA-Z0-9\s]+$/.test(document.getElementById("ten_thuong_hieu").value)) {
+      alert("Tên thương hiệu không được chứa kí tự đặc biệt");
+      return;
+  }
+  else if (document.getElementById("accountID").value === "") {
+      alert("Vui lòng nhập tài khoản ID");
+      return;
+  } else if (document.getElementById("ngay_tao").value === "") {
+      alert("Vui lòng chọn ngày tạo");
+      return;
+  } else if (fileList.length === 0) {
+      alert("Vui lòng chọn hình ảnh");
+      return;
+  }
+  
+  
+    // Gọi hàm thuonghieuChung để cập nhật dữ liệu thương hiệu
     thuonghieuChung();
-
+  
     const formData = new FormData();
     for (const key in thuonghieu) {
       formData.append(key, thuonghieu[key]);
     }
-
-    // Sử dụng ref để lấy file
+  
+    // Thêm các tệp hình ảnh vào formData
     fileList.forEach((file) => {
       formData.append("hinh_anh", file.originFileObj); // Sử dụng originFileObj để lấy file thực tế
     });
+  
     try {
       const response = await fetch("http://localhost:8080/thuonghieu/add", {
         method: "POST",
         body: formData,
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         console.log("Thương hiệu đã được thêm thành công:", data);
         alert("Thêm thương hiệu thành công!");
         fetchThuongHieuData();
-        fetchHanhDongData()
+        fetchHanhDongData();
         clear();
         console.log("URL ảnh:", data.imageUrl);
         console.log(selectedThuongHieu);
       } else {
-        const errorData = await response.json();
+        const errorData = await response.text();
         console.error("Lỗi khi thêm thương hiệu:", response.statusText, errorData);
-        alert("Thêm thương hiệu thất bại!");
+        alert("Tên thương hiệu đã tồn tại trong nhà cung cấp này!");
       }
     } catch (error) {
       console.error("Lỗi:", error);
     }
   };
+  
 
   const handleUpdate = async () => {
+    if (document.getElementById("ten_thuong_hieu").value === "") {
+      alert("Vui lòng nhập tên thương hiệu");
+      return;
+  } 
+  // Kiểm tra nếu chỉ toàn số
+  else if (/^\d+$/.test(document.getElementById("ten_thuong_hieu").value)) {
+      alert("Tên thương hiệu không được là chuỗi toàn số");
+      return;
+  }
+  // Cho phép chữ và số
+  else if (!/^[a-zA-Z0-9\s]+$/.test(document.getElementById("ten_thuong_hieu").value)) {
+      alert("Tên thương hiệu chỉ được chứa chữ cái, số và khoảng trắng");
+      return;
+  }
+  else if (document.getElementById("accountID").value === "") {
+      alert("Vui lòng nhập tài khoản ID");
+      return;
+  } else if (document.getElementById("ngay_tao").value === "") {
+      alert("Vui lòng chọn ngày tạo");
+      return;
+  } else if (fileList.length === 0) {
+      alert("Vui lòng chọn hình ảnh");
+      return;
+  }  
     thuonghieuChung();
-
     const formData = new FormData();
     for (const key in thuonghieu) {
       formData.append(key, thuonghieu[key]);
@@ -272,79 +371,22 @@ const Thuonghieu = () => {
   };
 
   const clear = () => {
-    document.getElementById("thuong_hieuID").value = "";
+    getNewThuongHieuID();
     document.getElementById("ten_thuong_hieu").value = "";
     document.getElementById("ngay_tao").value = "";
 
     setSelectedThuongHieu({
       hoat_dong: "Hoạt động",
       trang_thai_xoa: "Chưa xoá",
+      nha_cung_capID: "Poca",
+      accountID: JSON.parse(localStorage.getItem("accountID"))
     });
 
     setFileList([]);
-    document.getElementById("accountID").value = "";
-    document.getElementById("nha_cung_capID").value = "";
   }
   const handelClear = () => {
     clear();
   };
-
-  // const handleDeleteInput = (thuong_hieuID) => {
-  //   if (window.confirm("Bạn có chắc chắn muốn xóa voucher này?")) {
-  //     // Gọi API xóa voucher
-  //     deleteThuongHieuInput(thuong_hieuID);
-  //   }
-  // };
-
-  // const handleDeleteTable = (thuong_hieuID) => {
-  //   if (window.confirm("Bạn có chắc chắn muốn xóa thương hiệu này?")) {
-  //     // Gọi API xóa voucher
-  //     deleteThuongHieuTable(thuong_hieuID);
-  //   }
-  // };
-
-  // const deleteThuongHieuInput = async () => {
-  //   thuonghieuChung();
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:8080/thuonghieu/delete/${thuonghieu.thuong_hieuID}`,
-  //       {
-  //         method: "DELETE",
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       alert("Thương hiệu đã được xóa thành công!");
-  //       fetchThuongHieuData();
-  //       clear();
-  //       // Cập nhật lại danh sách vouchers nếu cần
-  //     } else {
-  //       alert("Lỗi khi xóa thương hiệu.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi gọi API:", error);
-  //   }
-  // };
-  // const deleteThuongHieuTable = async (thuong_hieuID) => {
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:8080/thuonghieu/delete/${thuong_hieuID}`,
-  //       {
-  //         method: "DELETE",
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       alert("Thương hiệu đã được xóa thành công!");
-  //       fetchThuongHieuData();
-  //       // Cập nhật lại danh sách vouchers nếu cần
-  //     } else {
-  //       alert("Lỗi khi xóa thương hiệu.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi gọi API:", error);
-  //   }
-  // };
 
   const handleReload = async (thuong_hieuID) => {
     try {
@@ -660,10 +702,10 @@ const Thuonghieu = () => {
             <div className="tab-content">
               <h1>Thông tin chung</h1>
               <div className="input-container">
-                <div className="form-group">
-                  <label htmlFor="productCode">Thương Hiệu ID</label>
-                  <input
-                    type="text"
+              <div className="form-group">
+                <label htmlFor="productName">Mã thương hiệu</label>
+                <input
+                    type="text" disabled
                     id="thuong_hieuID"
                     className="form-control"
                     value={selectedThuongHieu?.thuong_hieuID || ""}
@@ -674,7 +716,7 @@ const Thuonghieu = () => {
                       })
                     }
                   />
-                </div>
+              </div>
                 <div className="form-group">
                   <label htmlFor="productName">Tên Thương Hiệu</label>
                   <input
@@ -695,6 +737,7 @@ const Thuonghieu = () => {
                   <input
                     type="text"
                     id="accountID"
+                    disabled
                     className="form-control"
                     value={selectedThuongHieu?.accountID || ""}
                     onChange={(e) =>
@@ -706,19 +749,23 @@ const Thuonghieu = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="productName">Nhà cung cấp ID</label>
-                  <input
-                    type="text"
-                    id="nha_cung_capID"
-                    className="form-control"
-                    value={selectedThuongHieu?.nha_cung_capID || ""}
-                    onChange={(e) =>
-                      setSelectedThuongHieu({
-                        ...selectedThuongHieu,
-                        nha_cung_capID: e.target.value,
-                      })
-                    }
-                  />
+                  <label htmlFor="nha_cung_capID">Nhà cung cấp</label>
+                  <Select
+                    style={{ width: "100%" }}
+                    value={selectedThuongHieu.nha_cung_capID}
+                    onChange={(value) => {
+                      setSelectedThuongHieu((prev) => ({
+                        ...prev,
+                        nha_cung_capID: value,
+                      }));
+                    }}
+                  >
+                    {nhaCungCapList.map((item) => (
+                      <Select.Option key={item.nha_cung_capID} value={item.nha_cung_capID}>
+                        {item.ten_nhaCC}
+                      </Select.Option>
+                    ))}
+                  </Select>
                 </div>
               </div>
 

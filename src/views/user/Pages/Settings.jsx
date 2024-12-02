@@ -42,6 +42,8 @@ const Settings = () => {
         .catch((error) => {
             console.error("Lỗi khi tải settings:", error);
         });
+        const accountID = JSON.parse(localStorage.getItem("accountID"));
+        setFormData({ ...formData, accountID: accountID });
 }, []);
 
   // Xử lý khi thay đổi dữ liệu form
@@ -146,6 +148,7 @@ const Settings = () => {
           <input
             type="text"
             id="accountID"
+            disabled
             name="accountID"
             className="form-control"
             value={formData.accountID}

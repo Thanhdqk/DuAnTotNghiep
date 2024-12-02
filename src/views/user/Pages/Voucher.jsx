@@ -10,37 +10,41 @@ const Voucher = () => {
   const [savedVouchers, setSavedVouchers] = useState(new Set()); // State để theo dõi voucher đã lưu
 
   useEffect(() => {
-    const fetchUnsavedVouchers = async () => {
+    const fetchAllVouchers = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/loadUnsavedVouchers', {
+        const response = await axios.get('http://localhost:8080/loadAllVouchers', {
           params: { accountID: accountID }
         });
         setVouchers(response.data);
       } catch (error) {
-        console.error('Error loading unsaved vouchers:', error);
+        console.error('Error loading vouchers:', error);
       } finally {
         setLoading(false);
       }
     };
   
-    fetchUnsavedVouchers();
+    fetchAllVouchers();
   }, [accountID]);  
 
   const handleSave = async (voucherID) => {
     const selectedVoucher = vouchers.find(voucher => voucher.voucherID === voucherID);
   
-    // Kiểm tra nếu voucher đã hết hạn
-    const now = new Date();
-    const expiryDate = new Date(selectedVoucher.han_su_dung);
-  
-    if (expiryDate < now) {
-      alert('Voucher đã hết hạn!');
+    if (!selectedVoucher || selectedVoucher.saved) {
+      alert('Voucher đã được lưu trước đó!');
       return;
     }
-  
-    // Kiểm tra nếu so_luot_SD hoặc so_luong bằng 0
-    if (selectedVoucher.so_luot_SD === 0 || selectedVoucher.so_luong === 0) {
-      alert('Hết mã giảm giá!!!');
+
+    // Check if the voucher is expired
+  const expiryDate = new Date(selectedVoucher.han_su_dung);
+  const today = new Date();
+
+  if (expiryDate < today) {
+    alert('Voucher này đã hết hạn!');
+    return;
+  }
+
+    if(selectedVoucher.so_luong === 0){
+      alert('Đã hết số lượng voucher');
       return;
     }
   
@@ -52,12 +56,16 @@ const Voucher = () => {
         }
       });
       console.log(response.data);
-      setSavedVouchers(prev => new Set(prev).add(voucherID)); // Thêm voucherID vào Set
+  
+      // Cập nhật trạng thái 'saved' của voucher
+      setVouchers(vouchers.map(voucher =>
+        voucher.voucherID === voucherID ? { ...voucher, saved: true, so_luong: voucher.so_luong - 1  } : voucher
+      ));
       alert('Lưu voucher thành công!');
     } catch (error) {
       console.error('Lỗi khi lưu voucher:', error);
     }
-  };
+  };  
   
   return (
     <div className="container mt-4">
@@ -85,20 +93,18 @@ const Voucher = () => {
                     <p className="voucher-minimum-order">Đơn Tối Thiểu 0₫</p>
                     <p className="voucher-exclusive">Dành riêng cho bạn</p>
                     <p className="voucher-expiry">HSD: {voucher.han_su_dung}</p>
-                    <p className="voucher-quantity">Số lượt sử dụng: {voucher.so_luot_SD}</p>
+                    <p className="voucher-quantity">Số lượng: {voucher.so_luong}</p>
                   </div>
   
                   <div className="voucher-button-wrapper">
-                    <Button 
-                      variant="outline-success" 
-                      className="voucher-button" 
-                      onClick={() => handleSave(voucher.voucherID)}
-                      disabled={
-                        savedVouchers.has(voucher.voucherID)
-                      }
-                    >
-                      {savedVouchers.has(voucher.voucherID) ? 'Đã Lưu' : 'Lưu'}
-                    </Button>
+                  <Button 
+                    variant={voucher.saved ? "outline-secondary" : "outline-success"} 
+                    className="voucher-button" 
+                    onClick={() => handleSave(voucher.voucherID)}
+                    disabled={voucher.saved}
+                  >
+                    {voucher.saved ? 'Đã Lưu' : 'Lưu'}
+                  </Button>
                   </div>
                 </Card.Body>
               </Card>

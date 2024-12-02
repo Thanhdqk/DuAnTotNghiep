@@ -11,18 +11,22 @@ import { useState, useEffect, useRef } from "react";
 import { data } from "jquery";
 import * as XLSX from "xlsx";
 //import "../../assets/images"
+import axios from 'axios';
+import { Editor } from '@tinymce/tinymce-react';
+import { Input } from 'antd';
+const { TextArea } = Input;
 
 const onChange = (key) => {
   console.log(key);
 };
 
-const getCurrentDate = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
+// const getCurrentDate = () => {
+//   const today = new Date();
+//   const year = today.getFullYear();
+//   const month = String(today.getMonth() + 1).padStart(2, "0");
+//   const day = String(today.getDate()).padStart(2, "0");
+//   return `${year}-${month}-${day}`;
+// };
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -33,7 +37,7 @@ const getBase64 = (file) =>
   });
 
 const Baidang = () => {
-  const [hanhdong,sethanhdong] = useState([]);
+  const [hanhdong, sethanhdong] = useState([]);
   const [baidangData, setBaidangData] = useState([]);
   const [hoatDong, setHoatDong] = useState("Hoạt động");
   const [selectedBaiDang, setSelectedBaiDang] = useState({
@@ -45,6 +49,8 @@ const Baidang = () => {
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
   const [searchStatus, setSearchStatus] = useState("");
+  const [newBaiDangID, setNewBaiDangID] = useState("");
+  const [content, setContent] = useState('');
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -61,6 +67,27 @@ const Baidang = () => {
         file.response ? file.response.url : file.url
       ), // Lưu URL hình ảnh
     }));
+  };
+  const handleEditorChange = (newContent) => {
+    console.log(newContent);
+    setContent(newContent);
+
+  };
+
+  const getNewBaiDangID = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/baidang/getNewBaiDangID"
+      );
+      setNewBaiDangID(response.data);
+      console.log("Bài Đăng ID:", response.data);
+      setSelectedBaiDang((prev) => ({
+        ...prev,
+        bai_dangID: response.data,
+      }));
+    } catch (error) {
+      console.error("Lỗi khi lấy bai_dangID:", error);
+    }
   };
 
   const uploadButton = (
@@ -92,6 +119,8 @@ const Baidang = () => {
           ...data,
           accountID: data.users ? data.users.accountID : null
         });
+        setContent(data.noi_dung);
+        console.log("noi dung: ",data);
         //console.log(data);
         setActiveKey("1");
       }
@@ -114,7 +143,7 @@ const Baidang = () => {
     }));
 
     setFileList(initialFileList);
-    
+
     console.log(baidang);
   };
 
@@ -149,9 +178,10 @@ const Baidang = () => {
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu bài đăng:", error);
     }
+    getNewBaiDangID();
   };
 
-  const fetchHanhDongData= async () => {
+  const fetchHanhDongData = async () => {
     try {
       const response = await fetch("http://localhost:8080/baidang/gethanhdong");
       const data = await response.json();
@@ -169,7 +199,7 @@ const Baidang = () => {
         hanh_dong: item.ten_HanhDong,
         accountID: item.baidang.users.accountID,
       }));
-    sethanhdong(formattedData);
+      sethanhdong(formattedData);
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu bài đăng:", error);
     }
@@ -178,6 +208,13 @@ const Baidang = () => {
   useEffect(() => {
     fetchHanhDongData()
     fetchBaiDangData();
+    const accountID = JSON.parse(localStorage.getItem("accountID"));
+    if (accountID) {
+      setSelectedBaiDang((prev) => ({
+        ...prev,
+        accountID,
+      }));
+    }
   }, []);
 
   let baidang = {};
@@ -186,7 +223,7 @@ const Baidang = () => {
       bai_dangID: document.getElementById("bai_dangID").value,
       tieu_de_phu: document.getElementById("tieu_de_phu").value,
       tieu_de_chinh: document.getElementById("tieu_de_chinh").value,
-      noi_dung: document.getElementById("noi_dung").value,
+      noi_dung: content != null ? content : '',
       ngay_tao: document.getElementById("ngay_tao").value,
       hoat_dong: selectedBaiDang.hoat_dong,
       accountID: document.getElementById("accountID").value,
@@ -195,13 +232,36 @@ const Baidang = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+
+    // Kiểm tra các trường bắt buộc
+    if (document.getElementById("tieu_de_chinh").value === "") {
+      alert("Vui lòng nhập tiêu đề chính");
+      return;
+    } else if (document.getElementById("tieu_de_phu").value === "") {
+      alert("Vui lòng nhập tiêu đề phụ");
+      return;
+    } else if (document.getElementById("accountID").value === "") {
+      alert("Vui lòng nhập tài khoản ID");
+      return;
+    } else if (document.getElementById("ngay_tao").value === "") {
+      alert("Vui lòng chọn ngày tạo");
+      return;
+    } else if (content.length == 0) {
+      alert("Vui lòng nhập nội dung");
+      return;
+    }
+    else if (fileList.length === 0) {
+      alert("Vui lòng chọn hình ảnh");
+      return;
+    }
     baidangChung();
 
     const formData = new FormData();
     for (const key in baidang) {
       formData.append(key, baidang[key]);
     }
-    
+
+    formData.append("noi_dung", content);
 
     // Sử dụng ref để lấy file
     fileList.forEach((file) => {
@@ -233,6 +293,27 @@ const Baidang = () => {
   };
 
   const handleUpdate = async () => {
+    // Kiểm tra các trường bắt buộc
+    if (document.getElementById("tieu_de_chinh").value === "") {
+      alert("Vui lòng nhập tiêu đề chính");
+      return;
+    } else if (document.getElementById("tieu_de_phu").value === "") {
+      alert("Vui lòng nhập tiêu đề phụ");
+      return;
+    } else if (document.getElementById("accountID").value === "") {
+      alert("Vui lòng nhập tài khoản ID");
+      return;
+    } else if (document.getElementById("ngay_tao").value === "") {
+      alert("Vui lòng chọn ngày tạo");
+      return;
+    } else if (content.length == 0) {
+      alert("Vui lòng nhập nội dung");
+      return;
+    }
+    else if (fileList.length === 0) {
+      alert("Vui lòng chọn hình ảnh");
+      return;
+    }
     baidangChung();
 
     const formData = new FormData();
@@ -275,10 +356,10 @@ const Baidang = () => {
   };
 
   const clear = () => {
-    document.getElementById("bai_dangID").value = "";
+    getNewBaiDangID();
     document.getElementById("tieu_de_phu").value = "";
     document.getElementById("tieu_de_chinh").value = "";
-    document.getElementById("noi_dung").value = "";
+    setContent('');
     document.getElementById("ngay_tao").value = "";
 
     setSelectedBaiDang({
@@ -287,68 +368,11 @@ const Baidang = () => {
     });
 
     setFileList([]);
-    document.getElementById("accountID").value = "";
   }
   const handelClear = () => {
     clear();
   };
 
-  // const handleDeleteInput = (bai_dangID) => {
-  //   if (window.confirm("Bạn có chắc chắn muốn xóa bài đăng này?")) {
-  //     // Gọi API xóa voucher
-  //     deleteBaiDangInput(bai_dangID);
-  //   }
-  // };
-
-  // const handleDeleteTable = (bai_dangID) => {
-  //   if (window.confirm("Bạn có chắc chắn muốn xóa bài đăng này?")) {
-  //     // Gọi API xóa voucher
-  //     deleteBaiDangTable(bai_dangID);
-  //   }
-  // };
-
-  // const deleteBaiDangInput = async () => {
-  //   baidangChung();
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:8080/baidang/delete/${baidang.bai_dangID}`,
-  //       {
-  //         method: "DELETE",
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       alert("Bài đăng đã được xóa thành công!");
-  //       fetchBaiDangData();
-  //       clear();
-  //       // Cập nhật lại danh sách vouchers nếu cần
-  //     } else {
-  //       alert("Lỗi khi xóa bài đăng");
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi gọi API:", error);
-  //   }
-  // };
-  // const deleteBaiDangTable = async (bai_dangID) => {
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:8080/baidang/delete/${bai_dangID}`,
-  //       {
-  //         method: "DELETE",
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       alert("Bài đăng đã được xóa thành công!");
-  //       fetchBaiDangData();
-  //       // Cập nhật lại danh sách vouchers nếu cần
-  //     } else {
-  //       alert("Lỗi khi xóa bài đăng");
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi gọi API:", error);
-  //   }
-  // };
 
   const handleReload = async (bai_dangID) => {
     try {
@@ -358,7 +382,7 @@ const Baidang = () => {
           method: "PUT",
         }
       );
-  
+
       if (response.ok) {
         alert("Phục hồi bài đăng thành công!");
         fetchBaiDangData(); // Tải lại dữ liệu thương hiệu
@@ -379,7 +403,7 @@ const Baidang = () => {
           method: "PUT",
         }
       );
-  
+
       if (response.ok) {
         alert("Bài đăng đã được xóa thành công!");
         fetchBaiDangData(); // Tải lại dữ liệu thương hiệu
@@ -415,7 +439,7 @@ const Baidang = () => {
           method: "PUT",
         }
       );
-  
+
       if (response.ok) {
         alert("Bài đăng đã được xóa thành công!");
         fetchBaiDangData(); // Tải lại dữ liệu thương hiệu
@@ -428,7 +452,7 @@ const Baidang = () => {
       console.error("Lỗi khi gọi API:", error);
     }
   };
-  
+
   // Cấu hình cột cho bảng
   const columns = [
     {
@@ -450,7 +474,24 @@ const Baidang = () => {
       title: "Nội dung",
       dataIndex: "noi_dung",
       key: "noi_dung",
-    },
+      render: (text) => {
+        // Loại bỏ tất cả các thẻ HTML bằng regex
+        const plainText = text.replace(/<\/?[^>]+(>|$)/g, "");
+        return (
+          <div
+            style={{
+              maxWidth: 200,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+            title={plainText} // Hiển thị toàn bộ văn bản khi hover
+          >
+            {plainText}
+          </div>
+        );
+      },
+    },    
     {
       title: "Ngày tạo",
       dataIndex: "ngay_tao",
@@ -491,7 +532,7 @@ const Baidang = () => {
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <EditOutlined
             style={{ cursor: "pointer", color: "#1890ff" }}
-            onClick={() => handleEdit(record)} 
+            onClick={() => handleEdit(record)}
           />
           <DeleteOutlined
             style={{ cursor: "pointer", color: "red" }}
@@ -570,7 +611,7 @@ const Baidang = () => {
       ),
     },
   ];
-// nhatj ki
+  // nhatj ki
   const columns3 = [
     {
       title: "Mã bài đăng",
@@ -633,21 +674,21 @@ const Baidang = () => {
 
   const filteredBaiDangData = baidangData.filter((baidang) => {
     return (
-      baidang.trang_thai_xoa === null && 
+      baidang.trang_thai_xoa === null &&
       (!searchStatus || baidang.hoat_dong === searchStatus)
     );
   });
-  
-  console.log("Danh sách bài đăng", filteredBaiDangData);  
 
-      
+  console.log("Danh sách bài đăng", filteredBaiDangData);
+
+
   const filteredBaiDangDataGarbage = baidangData.filter((baidang) => {
     console.log(`trang_thai_xoa: ${baidang.trang_thai_xoa}`);
-      return baidang.trang_thai_xoa === "Xóa";
-    });
-  console.log("Thùng rác", filteredBaiDangDataGarbage); 
-  
-  const filteredNhatKyBaiDangData = baidangData; 
+    return baidang.trang_thai_xoa === "Xóa";
+  });
+  console.log("Thùng rác", filteredBaiDangDataGarbage);
+
+  const filteredNhatKyBaiDangData = baidangData;
 
   // Xuất file Excel
   const exportToExcel = () => {
@@ -684,6 +725,7 @@ const Baidang = () => {
                   <input
                     type="text"
                     id="bai_dangID"
+                    disabled
                     className="form-control"
                     value={selectedBaiDang?.bai_dangID || ""}
                     onChange={(e) =>
@@ -712,7 +754,7 @@ const Baidang = () => {
               </div>
 
               <div className="input-container">
-              <div className="form-group">
+                <div className="form-group">
                   <label htmlFor="productName">Tiêu Đề Phụ</label>
                   <input
                     type="text"
@@ -727,12 +769,13 @@ const Baidang = () => {
                     }
                   />
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="productName">Account ID</label>
                   <input
                     type="text"
                     id="accountID"
+                    disabled
                     className="form-control"
                     value={selectedBaiDang?.accountID || ""}
                     onChange={(e) =>
@@ -787,21 +830,34 @@ const Baidang = () => {
                   />
                 </div>
               </div>
-              <div className="form-group mb-5">
-                  <label htmlFor="productName">Nội Dung</label>
-                  <textarea
-                    type="text"
-                    id="noi_dung"
-                    className="form-control"
-                    value={selectedBaiDang?.noi_dung || ""}
-                    onChange={(e) =>
-                      setSelectedBaiDang({
-                        ...selectedBaiDang,
-                        noi_dung: e.target.value,
-                      })
-                    }
-                  />
-                </div>
+              <div className='inputtext mt-2'>
+                <div className='h4'>Nội dung </div>
+                <Editor
+                  apiKey='cdl7m07e6o2g3q2jko7q8ompxq0yenyd414zt85qbpdonj4i' // Sử dụng API key của bạn
+
+                  init={{
+                    height: 300,
+                    width: '100%',
+
+                    menubar: false,
+                    plugins: [
+                      'advlist autolink lists link image charmap print preview anchor',
+                      // Bỏ bớt các plugin không cần thiết để kiểm tra
+                      'insertdatetime media table paste help',
+                    ],
+                    toolbar:
+                      'undo redo | formatselect | bold italic forecolor backcolor | ' +
+                      'alignleft aligncenter alignright alignjustify | ' +
+                      'bullist numlist outdent indent | removeformat | help',
+                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                  }}
+                  name=""
+                  className="mt-5"
+                  value={content}
+                  onEditorChange={handleEditorChange}
+
+                />
+              </div>
               <Upload
                 action="http://localhost:8080/images/"
                 listType="picture-card"
@@ -895,7 +951,7 @@ const Baidang = () => {
                 pagination={false}
               />
             </div>
-              ),
+          ),
         },
         {
           label: `Nhật ký hoạt động`,
@@ -908,7 +964,7 @@ const Baidang = () => {
                 pagination={false}
               />
             </div>
-              ),
+          ),
         },
       ]}
     />

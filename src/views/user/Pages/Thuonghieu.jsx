@@ -34,7 +34,7 @@ const Thuonghieu = () => {
   const [hoatDong, setHoatDong] = useState("Hoạt động");
   const [selectedThuongHieu, setSelectedThuongHieu] = useState({
     thuong_hieuID: "",
-    hoat_dong: "Hoạt động",
+    hoat_dong: "On",
     hanh_dong: "Thêm",
     nha_cung_capID: "1",
   });
@@ -376,7 +376,7 @@ const Thuonghieu = () => {
     document.getElementById("ngay_tao").value = "";
 
     setSelectedThuongHieu({
-      hoat_dong: "Hoạt động",
+      hoat_dong: "On",
       trang_thai_xoa: "Chưa xoá",
       nha_cung_capID: "Poca",
       accountID: JSON.parse(localStorage.getItem("accountID"))
@@ -797,8 +797,8 @@ const Thuonghieu = () => {
                       })
                     }
                     options={[
-                      { value: "Hoạt động", label: "Hoạt động" },
-                      { value: "Ngừng hoạt động", label: "Ngừng hoạt động" },
+                      { value: "On", label: "Hoạt động" },
+                      { value: "Off", label: "Ngừng hoạt động" },
                     ]}
                     styles={{
                       control: (base) => ({

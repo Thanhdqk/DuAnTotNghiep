@@ -41,7 +41,7 @@ const Baidang = () => {
   const [baidangData, setBaidangData] = useState([]);
   const [hoatDong, setHoatDong] = useState("Hoạt động");
   const [selectedBaiDang, setSelectedBaiDang] = useState({
-    hoat_dong: "Hoạt động",
+    hoat_dong: "On",
     hanh_dong: "Thêm",
   });
   const [activeKey, setActiveKey] = useState("1");
@@ -363,8 +363,9 @@ const Baidang = () => {
     document.getElementById("ngay_tao").value = "";
 
     setSelectedBaiDang({
-      hoat_dong: "Hoạt động",
+      hoat_dong: "On",
       trang_thai_xoa: "Chưa xoá",
+      accountID: JSON.parse(localStorage.getItem("accountID"))
     });
 
     setFileList([]);
@@ -816,8 +817,8 @@ const Baidang = () => {
                       })
                     }
                     options={[
-                      { value: "Hoạt động", label: "Hoạt động" },
-                      { value: "Ngừng hoạt động", label: "Ngừng hoạt động" },
+                      { value: "On", label: "Hoạt động" },
+                      { value: "Off", label: "Ngừng hoạt động" },
                     ]}
                     styles={{
                       control: (base) => ({

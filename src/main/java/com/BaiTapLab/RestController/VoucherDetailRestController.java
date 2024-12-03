@@ -45,7 +45,7 @@ public class VoucherDetailRestController {
 	            
 	            // Giảm số lượng voucher
 	            voucher.setSo_luong(voucher.getSo_luong() - 1);
-	            voucher.setSo_luot_SD(voucher.getSo_luot_SD() - 1);
+	            voucher.setSo_luot_SD(voucher.getSo_luot_SD() + 1);
 	            voucherRepository.save(voucher); // Cập nhật lại trong database
 
 	            return voucherDetailService.save(voucherDetail);

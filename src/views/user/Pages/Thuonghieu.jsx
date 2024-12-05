@@ -148,7 +148,7 @@ const Thuonghieu = () => {
 
   const fetchThuongHieuData = async () => {
     try {
-      const response = await fetch("http://localhost:8080/loadAll");
+      const response = await fetch("http://localhost:8080/loadThuongHieu");
       const data = await response.json();
       console.log("Dữ liệu là: ", data);
       const formattedData = data.map((item) => ({
@@ -184,6 +184,7 @@ const Thuonghieu = () => {
         trang_thai_xoa: item.thuonghieu.trang_thai_xoa,
         hinh_anh: item.thuonghieu.hinh_anh,
         hanh_dong: item.ten_HanhDong,
+        ngay_hanh_dong: item.ngay_HanhDong, // Thêm trường này
         accountID: item.thuonghieu.users.accountID,
         nha_cung_capID: item.thuonghieu.nhacungcap.nha_cung_capID
       }));
@@ -651,6 +652,11 @@ const Thuonghieu = () => {
       title: "Hành động",
       dataIndex: "hanh_dong",
       key: "hanh_dong",
+    },
+    {
+      title: "Ngày Hành Động", // Tiêu đề cột mới
+      dataIndex: "ngay_hanh_dong", // Trường dữ liệu
+      key: "ngay_hanh_dong", // Khóa của cột
     },
   ];
 

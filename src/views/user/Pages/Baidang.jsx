@@ -197,6 +197,7 @@ const Baidang = () => {
         trang_thai_xoa: item.baidang.trang_thai_xoa,
         hinh_anh: item.baidang.hinh_anh,
         hanh_dong: item.ten_HanhDong,
+        ngay_hanh_dong: item.ngay_HanhDong, // Thêm trường này
         accountID: item.baidang.users.accountID,
       }));
       sethanhdong(formattedData);
@@ -478,6 +479,10 @@ const Baidang = () => {
       render: (text) => {
         // Loại bỏ tất cả các thẻ HTML bằng regex
         const plainText = text.replace(/<\/?[^>]+(>|$)/g, "");
+    
+        // Giải mã các ký tự HTML (HTML entities) thành ký tự thuần
+        const decodedText = new DOMParser().parseFromString(plainText, "text/html").body.textContent || "";
+    
         return (
           <div
             style={{
@@ -486,13 +491,13 @@ const Baidang = () => {
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
-            title={plainText} // Hiển thị toàn bộ văn bản khi hover
+            title={decodedText} // Hiển thị toàn bộ văn bản khi hover
           >
-            {plainText}
+            {decodedText}
           </div>
         );
       },
-    },    
+    },      
     {
       title: "Ngày tạo",
       dataIndex: "ngay_tao",
@@ -565,7 +570,28 @@ const Baidang = () => {
       title: "Nội dung",
       dataIndex: "noi_dung",
       key: "noi_dung",
-    },
+      render: (text) => {
+        // Loại bỏ tất cả các thẻ HTML bằng regex
+        const plainText = text.replace(/<\/?[^>]+(>|$)/g, "");
+    
+        // Giải mã các ký tự HTML (HTML entities) thành ký tự thuần
+        const decodedText = new DOMParser().parseFromString(plainText, "text/html").body.textContent || "";
+    
+        return (
+          <div
+            style={{
+              maxWidth: 200,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+            title={decodedText} // Hiển thị toàn bộ văn bản khi hover
+          >
+            {decodedText}
+          </div>
+        );
+      },
+    },      
     {
       title: "Ngày tạo",
       dataIndex: "ngay_tao",
@@ -633,7 +659,28 @@ const Baidang = () => {
       title: "Nội dung",
       dataIndex: "noi_dung",
       key: "noi_dung",
-    },
+      render: (text) => {
+        // Loại bỏ tất cả các thẻ HTML bằng regex
+        const plainText = text.replace(/<\/?[^>]+(>|$)/g, "");
+    
+        // Giải mã các ký tự HTML (HTML entities) thành ký tự thuần
+        const decodedText = new DOMParser().parseFromString(plainText, "text/html").body.textContent || "";
+    
+        return (
+          <div
+            style={{
+              maxWidth: 100,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+            title={decodedText} // Hiển thị toàn bộ văn bản khi hover
+          >
+            {decodedText}
+          </div>
+        );
+      },
+    },      
     {
       title: "Ngày tạo",
       dataIndex: "ngay_tao",
@@ -670,6 +717,11 @@ const Baidang = () => {
       title: "Hành động",
       dataIndex: "hanh_dong",
       key: "hanh_dong",
+    },
+    {
+      title: "Ngày Hành Động", // Tiêu đề cột mới
+      dataIndex: "ngay_hanh_dong", // Trường dữ liệu
+      key: "ngay_hanh_dong", // Khóa của cột
     },
   ];
 

@@ -3,6 +3,7 @@ package com.BaiTapLab.RestController;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -143,11 +144,11 @@ public class BaiDangRestController {
 	        
 	        // Lưu baidang vào DB qua service
 	        BaiDang savedBaiDang = baidangService.createBaiDang(baidang);
-//	        hd.setBaidang(baidang);
-//            hd.setTen_hanh_dong("Thêm");
-//          
-//           
-//            HanhDongRepository.save(hd);
+	        hd.setBaidang(baidang);
+            hd.setTen_hanh_dong("Thêm");
+          
+           hd.setNgay_hanh_dong(LocalDate.now());
+            HanhDongRepository.save(hd);
 	        // Trả về thông tin baidang đã lưu
 	        return ResponseEntity.ok(savedBaiDang);
 
@@ -214,7 +215,7 @@ public class BaiDangRestController {
 	        hd.setBaidang(baidang);
             hd.setTen_hanh_dong("Cập nhật");
           
-           
+            hd.setNgay_hanh_dong(LocalDate.now());
             HanhDongRepository.save(hd);
 
 	        // Trả về thông tin baidang đã lưu
@@ -231,25 +232,7 @@ public class BaiDangRestController {
 	    }
 	}
     
-//    @DeleteMapping("/baidang/delete/{bai_dangID}")
-//	public ResponseEntity<?> deleteBaiDang(@PathVariable String bai_dangID) {
-//    	System.out.println("ccccccccccc"+bai_dangID);
-//	    try {
-//	        // Tìm bài đăng theo ID
-//	        BaiDang baidang = baidangService.findByBaiDangID(bai_dangID);
-//	        if (baidang != null) {
-//	            // Xóa bài đăng
-//	            baidangService.deleteBaiDang(bai_dangID);
-//	            return ResponseEntity.ok("Bài đăng đã được xóa thành công!");
-//	        } else {
-//	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//	                    .body("Không tìm thấy bài đăng với ID: " + bai_dangID);
-//	        }
-//	    } catch (Exception e) {
-//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//	                .body("Lỗi khi xóa bài đăng: " + e.getMessage());
-//	    }
-//	}
+
     
     @PutMapping("/baidang/deleteToGarbage/{bai_dangID}")
 	public ResponseEntity<Object> deleteBaiDangToGarbage(@PathVariable String bai_dangID) {
@@ -259,6 +242,7 @@ public class BaiDangRestController {
 	    	BaiDang baidang = baidangService.findByBaiDangID(bai_dangID);
 	    	hd.setBaidang(baidang);
 	    	hd.setTen_hanh_dong("Xóa");
+	    	hd.setNgay_hanh_dong(LocalDate.now());
 	    	HanhDongRepository.save(hd);
 	        // Trả về một đối tượng JSON
 	        return ResponseEntity.ok(Collections.singletonMap("message", "Bài đăng đã được cập nhật trạng thái xóa"));
@@ -277,6 +261,7 @@ public class BaiDangRestController {
 	    	BaiDang baidang = baidangService.findByBaiDangID(bai_dangID);
 	    	hd.setBaidang(baidang);
 	    	hd.setTen_hanh_dong("Phục hồi");
+	    	hd.setNgay_hanh_dong(LocalDate.now());
 	    	HanhDongRepository.save(hd);
 	        return ResponseEntity.ok(Collections.singletonMap("message", "Bài đăng đã được cập nhật trạng thái chưa xóa"));
 	    } else {

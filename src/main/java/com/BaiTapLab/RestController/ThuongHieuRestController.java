@@ -53,7 +53,7 @@ public class ThuongHieuRestController {
     @Autowired
 	HanhDongRepository HanhDongRepository;
     
-    @GetMapping("/loadAll")
+    @GetMapping("/loadThuongHieu")
     public ResponseEntity<List<ThuongHieu>> getThuongHieu(){
 		List<ThuongHieu> listThuongHieu = thuonghieuRepository.findAll();
 		System.out.println(listThuongHieu);
@@ -165,6 +165,8 @@ public class ThuongHieuRestController {
 	        
 	        hd.setThuonghieu(thuonghieu);
 	        hd.setTen_hanh_dong("Thêm");
+	        
+	        hd.setNgay_hanh_dong(LocalDate.now());
 	        HanhDongRepository.save(hd);
 
 	        // Trả về thông tin voucher đã lưu
@@ -230,6 +232,8 @@ public class ThuongHieuRestController {
 	        
 	        hd.setThuonghieu(thuonghieu);
 	        hd.setTen_hanh_dong("Cập nhật");
+	        
+	        hd.setNgay_hanh_dong(LocalDate.now());
 	        HanhDongRepository.save(hd);
 
 	        // Trả về thông tin thương hiệu đã lưu
@@ -255,6 +259,7 @@ public class ThuongHieuRestController {
 	    	ThuongHieu thuonghieu = thuonghieuService.findByThuongHieuID(thuong_hieuID);
 	    	hd.setThuonghieu(thuonghieu);
 	    	hd.setTen_hanh_dong("Xóa");
+	    	hd.setNgay_hanh_dong(LocalDate.now());
 	    	HanhDongRepository.save(hd);
 	        // Trả về một đối tượng JSON
 	        return ResponseEntity.ok(Collections.singletonMap("message", "Thương hiệu đã được cập nhật trạng thái xóa"));
@@ -272,6 +277,7 @@ public class ThuongHieuRestController {
 	    	ThuongHieu thuonghieu = thuonghieuService.findByThuongHieuID(thuong_hieuID);
 	    	hd.setThuonghieu(thuonghieu);
 	    	hd.setTen_hanh_dong("Phục hồi");
+	    	hd.setNgay_hanh_dong(LocalDate.now());
 	    	HanhDongRepository.save(hd);
 	        // Trả về một đối tượng JSON
 	        return ResponseEntity.ok(Collections.singletonMap("message", "Thương hiệu đã được cập nhật trạng thái chưa xóa"));

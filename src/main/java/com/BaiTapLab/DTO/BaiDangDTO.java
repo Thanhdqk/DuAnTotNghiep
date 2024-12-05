@@ -1,5 +1,7 @@
 package com.BaiTapLab.DTO;
 
+import java.time.LocalDate;
+
 import com.BaiTapLab.Entity.BaiDang;
 
 import lombok.AllArgsConstructor;
@@ -12,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class BaiDangDTO {
 	
 	String ten_HanhDong;
+	LocalDate ngay_HanhDong;
 	BaiDang baidang;
 	
 	

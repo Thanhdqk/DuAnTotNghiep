@@ -1,6 +1,5 @@
 package com.BaiTapLab.Service;
 
-
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -11,15 +10,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-
 public class vnpay_config {
 	public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "http://localhost:8080/movie/vnpay/result";
+	public static String vnp_ReturnUrl = "http://localhost:3000/paymentreturnvnpay";
 	public static String vnp_TmnCode = "CGXZLS0Z";
 	public static String vnp_Version = "2.1.0";
 	public static String vnp_Command = "pay";

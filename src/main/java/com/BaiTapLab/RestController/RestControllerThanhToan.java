@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,14 +23,20 @@ import com.BaiTapLab.Entity.DonHang;
 import com.BaiTapLab.Entity.DonHangChiTiet;
 import com.BaiTapLab.Entity.GioHang;
 import com.BaiTapLab.Entity.MailInfo;
+import com.BaiTapLab.Entity.NhapXuatSanPham;
 import com.BaiTapLab.Entity.SanPham;
+import com.BaiTapLab.Entity.UserWallet;
 import com.BaiTapLab.Entity.Users;
+import com.BaiTapLab.Entity.Voucher;
 import com.BaiTapLab.Repository.DiaChiRepository;
 import com.BaiTapLab.Repository.DonHangChiTietRepository;
 import com.BaiTapLab.Repository.DonHangRepository;
 import com.BaiTapLab.Repository.GioHangRepository;
+import com.BaiTapLab.Repository.NhapXuatSanPhamRepository;
 import com.BaiTapLab.Repository.SanphamRepository;
+import com.BaiTapLab.Repository.UserWalletRepository;
 import com.BaiTapLab.Repository.UsersRepository;
+import com.BaiTapLab.Repository.VoucherRepository;
 import com.BaiTapLab.Service.DiaChiService;
 import com.BaiTapLab.Service.MailerService;
 import com.BaiTapLab.Service.SanPhamService;
@@ -50,7 +57,6 @@ public class RestControllerThanhToan {
 	DiaChiRepository diaChiRepository;
 	@Autowired
 	DiaChiService diachiService;
-
 	@Autowired
 	DonHangChiTietRepository donHangChiTietService;
 	@Autowired
@@ -65,37 +71,42 @@ public class RestControllerThanhToan {
 	ServletContext servletContext;
 	@Autowired
 	HttpSession httpSession;
-
 	@Autowired
 	MailerService mailerService;
 	@Autowired
 	ServletContext context;
 	@Autowired
 	UsersRepository userrepo;
+	@Autowired
+	NhapXuatSanPhamRepository nhapXuatSanPhamRepository;
+	@Autowired
+	UserWalletRepository userWalletRepository;
+	@Autowired
+	VoucherRepository voucherRepository;
 
 	@RequestMapping(value = "/createpayment", method = RequestMethod.POST, produces = "application/json; charset=utf-8", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public DonHang postMethodName(@RequestBody DonHang donhang, @RequestParam("userid") String userid,
+	public String postMethodName(@RequestBody DonHang donhang, @RequestParam("userid") String userid,
 			@RequestParam("spid") List<String> productids, @RequestParam("quantity") List<String> quantity,
 			@RequestParam("total") String totalfee, @RequestParam("method") String paymentmethod,
 			@RequestParam("paypalid") String paypalid) throws UnsupportedEncodingException {
-
+		ajaxServlet vnpay = new ajaxServlet();
 //		if (paymentmethod.equals("2")) {
 //			donhang.setDon_hangid("dh-" + paypalid);
 //		} else {
 //			donhang.setDon_hangid(getnew_donhangId() != null ? getnew_donhangId() : "dh001");
 //			donhang.setTrang_thai("Đang xử lý");
-//		}
+//		}'
+
 		donhang.setOnline_payment_id(paypalid);
-		System.out.println("ma voucher: "+donhang);
-		
-
-		ajaxServlet vnpay = new ajaxServlet();
-
 		donhang.setDiachi(diaChiRepository.findbyUserid(userid));
+		donhang.setUsers(userrepo.findById(userid).get());
 
-		System.out.println("userid : " + userid);
-		System.out.println(donhang.getPhuongthuctt().getPhuong_thucTTID());
-		System.out.println("dh : " + donhang.toString());
+//		System.out.println("userid : " + userid);
+//		System.out.println(donhang.getPhuongthuctt().getPhuong_thucTTID());
+//		System.out.println("dh : " + donhang.toString());
+
+		NhapXuatSanPham nhapXuatSanPham = new NhapXuatSanPham();
+		List<NhapXuatSanPham> listnhapXuatSanPham = new ArrayList<NhapXuatSanPham>();
 
 		Users user = userrepo.findByAccountID(userid);
 
@@ -107,37 +118,57 @@ public class RestControllerThanhToan {
 			dhct.setDonhang(donhang);
 			dhct.setSo_luong(Integer.parseInt(quantity.get(i)));
 			dhct.setSanpham(spService.FindProductByID(productids.get(i)));
+			nhapXuatSanPham.setSanpham(spService.FindProductByID(productids.get(i)));
+			nhapXuatSanPham.setSo_luong(Integer.parseInt(quantity.get(i)));
+			nhapXuatSanPham.setTrang_thai_xuat("Xuất hàng");
+			listnhapXuatSanPham.add(nhapXuatSanPham);
 			dhct.setTong_tien(Double.parseDouble(totalfee));
 			list_dhct.add(dhct);
 		}
+		System.out.println(vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee));
+		String url = vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee);
 
-//		System.out.println(vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee));
-//		String url = vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee);
 		System.out.println(list_dhct.get(0).getId());
 		System.out.println("Đơn hàng" + donhang.getDon_hangid());
 		System.out.println(productids);
 		System.out.println(quantity);
 		try {
+			System.out.println("lưu");
 			donHangRepository.save(donhang);
+			Voucher usedvoucher = new Voucher();
+			if (donhang.getVoucher() != null) {
+				System.out.println("found voucher !");
+				usedvoucher = voucherRepository.findById(donhang.getVoucher().getVoucherID()).get();
+				usedvoucher.setSo_luot_SD(usedvoucher.getSo_luot_SD() - 1);
+				voucherRepository.save(usedvoucher);
+			}
 			Map<String, Object> model = new HashMap();
 			model.put("donhangid", donhang.getDon_hangid());
 			model.put("tongtien", donhang.getTong_tien());
-
+			List<String> sp1 = new ArrayList<String>();
+			List<Integer> sp2 = new ArrayList<Integer>();
 			for (DonHangChiTiet donHangChiTiet : list_dhct) {
 				donHangChiTietService.save(donHangChiTiet);
 			}
 			for (int i = 0; i < productids.size(); i++) {
 				SanPham sp = spService.FindProductByID(productids.get(i));
-				model.put("tensp " + i, sp.getTen_san_pham());
-				model.put("spquantity " + i, sp.getSo_luong());
-
+				nhapXuatSanPhamRepository.save(listnhapXuatSanPham.get(i));
+				sp1.add(sp.getTen_san_pham());
+				sp2.add(sp.getSo_luong());
+//				model.put("tensp " + i, sp.getTen_san_pham());
+//				model.put("spquantity " + i, sp.getSo_luong());
 				sp.setSo_luong(sp.getSo_luong() - Integer.parseInt(quantity.get(i)));
 				GioHang gh = gioHangRepository.findByUserIdAndSanPhamId(userid, productids.get(i));
 //				System.out.println("giỏ hang " + gh.getId() +" "+ gh.getGioHangChiTiet().get(i).getId() + " "+ gh.getGioHangChiTiet().get(i).getSanPham().getTen_san_pham());
 //				gioHangRepository.delete(gioHangRepository.findByUserIdAndSanPhamId(userid, productids.get(i)));
 				gioHangRepository.removeProductFromGioHang(userid, productids.get(i));
-
 				SanphamRepository.save(sp);
+			}
+			model.put("products", sp1);
+			model.put("quantity", sp2);
+
+			if (paymentmethod.equals("3")) {
+				return url;
 			}
 			try {
 				MailInfo mail1 = new MailInfo(user.getAccountID(), "Mã OPT cho đơn thanh toán ",
@@ -151,7 +182,13 @@ public class RestControllerThanhToan {
 			e.printStackTrace();
 		}
 
-		return donhang;
+		return null;
+	}
+
+	@PostMapping("payByvnpay")
+	public String vnpayment() {
+
+		return null;
 	}
 
 //	public String getnew_donhangId() {
@@ -176,7 +213,7 @@ public class RestControllerThanhToan {
 //	}
 
 	@PutMapping("updatestatus")
-	public void UpdateStatus(@RequestParam("id") String paypalid) {
+	public void UpdateStatus1(@RequestParam("id") String paypalid) {
 		try {
 			System.out.println("id :" + paypalid);
 			DonHang dh = donHangRepository.findbypaymentid(paypalid);
@@ -186,7 +223,32 @@ public class RestControllerThanhToan {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
 
+	@PutMapping("updatastatusvnpay")
+	public void UpdateStatus2(@RequestParam("id") String id) {
+		try {
+			System.out.println("id :" + id);
+			DonHang dh = donHangRepository.findById(id).get();
+			dh.setOnline_payment_id((String) context.getAttribute("vnpaycode"));
+//			System.out.println("vnpay id: " + context.getAttribute("vnpaycode"));
+//			System.out.println("find dh" + dh);
+			dh.setTrang_thai("Đang xử lý");
+			donHangRepository.save(dh);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@PostMapping("saveuserwallet")
+	public UserWallet savewalletinfo(@RequestParam String userid, @RequestParam String walletid) {
+		UserWallet userWallet = new UserWallet();
+		Users u = userrepo.findByAccountID(userid);
+		userWallet.setUsers(u);
+		userWallet.setSo_tai_khoan(walletid);
+		userWallet.setSo_du(0);
+		userWalletRepository.save(userWallet);
+		return userWallet;
 	}
 
 	@ResponseBody
@@ -194,6 +256,13 @@ public class RestControllerThanhToan {
 	public DonHang getgiohang() {
 		DonHang dh = donHangRepository.findlastedDH();
 		return dh;
+	}
+
+	@PostMapping("repayVNpay")
+	public String payVNpay(@RequestParam("total") String totalfee) throws UnsupportedEncodingException {
+		ajaxServlet vnpay = new ajaxServlet();
+		String url = vnpay.createPayment(servletRequest, servletContext, httpSession, totalfee);
+		return url;
 	}
 
 }

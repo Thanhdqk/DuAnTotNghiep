@@ -2,6 +2,8 @@ package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,31 +13,37 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "respone")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Respone {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int responseID;
-	
+
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String loai_yeu_cau;
-	
+
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String noi_dung;
-	
+
 	public LocalDate ngay_tao;
-	
+
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String hoat_dong;
-	
+
 	@OneToOne
-    @JoinColumn(name = "feedbackID", referencedColumnName = "feedbackID")
-    private Feedback feedback;
-	
+	@JoinColumn(name = "feedbackID", referencedColumnName = "feedbackID")
+//	@JsonBackReference
+	@JsonManagedReference
+	private Feedback feedback;
+
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;

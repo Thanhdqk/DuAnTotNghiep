@@ -3,7 +3,9 @@ package com.BaiTapLab.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,10 +15,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "popup")
 
 public class Popup {
@@ -35,15 +41,15 @@ public class Popup {
 
 	public String trang_thai_xoa;
 
-
-
 	@OneToMany(mappedBy = "popup", cascade = CascadeType.ALL)
-	@JsonProperty(value = "sanpham")
-	public List<SanPham> sanpham;
+	@JsonProperty(access = Access.READ_ONLY)
+	@JsonManagedReference
+	public List<PopupChiTiet> popupchitiet;
 
 	@ManyToOne
+	@JsonManagedReference
+	@JsonProperty(access = Access.READ_ONLY)
 	@JoinColumn(name = "accountID")
-
 	public Users users;
 
 }

@@ -1,7 +1,10 @@
 package com.BaiTapLab.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,10 +15,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.BaiTapLab.DTO.PopUpDTO2;
+import com.BaiTapLab.DTO.PopupDTO;
+import com.BaiTapLab.DTO.PopupchitietDTO;
+import com.BaiTapLab.DTO.SanPhamDTO2;
+import com.BaiTapLab.Entity.HanhDong;
 import com.BaiTapLab.Entity.Popup;
+import com.BaiTapLab.Entity.PopupChiTiet;
 import com.BaiTapLab.Entity.SanPham;
+import com.BaiTapLab.Entity.Users;
+import com.BaiTapLab.Repository.HanhDongRepository;
 import com.BaiTapLab.Repository.PopupRepository;
+import com.BaiTapLab.Repository.PopupchitietRepository;
 import com.BaiTapLab.Repository.SanphamRepository;
+import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.PopupService;
 
 @RestController
@@ -27,11 +40,59 @@ public class RescontrollerPopup {
 	PopupRepository repo;
 	@Autowired
 	SanphamRepository sanphamrepo;
+	@Autowired
+	HanhDongRepository hdrepo;
+	@Autowired
+	PopupchitietRepository popupchitietRepository;
+	@Autowired
+	UsersRepository usersRepository;
 
 	@GetMapping("FindAllPopUp")
-
 	public List<Popup> getMethodName() {
+
 		return PopupService.FindALL();
+	}
+//	@GetMapping("FindAllPopUp")
+//	public List<Map<String, Object>> getall() {
+//		List<Object[]> listtempt = repo.findallpopup();
+//
+//		return MapToData(listtempt);
+//	}
+
+	@GetMapping("FindAllPopUp1")
+	public List<PopUpDTO2> getallL() {
+
+		return (List<PopUpDTO2>) repo.findnewestrecord2().stream().map(popup -> new PopUpDTO2(popup.getPopupID(),
+				popup.getNgay_tao(), popup.getHan_su_dung(), popup.getHoat_dong(), popup.getTrang_thai_xoa(),
+				popup.getUsers(),
+				popup.getPopupchitiet().stream()
+						.map(p -> new PopupchitietDTO(p.getPopupchitietid(),
+								new SanPhamDTO2(p.getSanpham().getSan_phamId(), p.getSanpham().getTen_san_pham())))
+						.collect(Collectors.toList())))
+				.collect(Collectors.toList());
+
+	}
+
+//	@GetMapping("findall")
+//	public List<PopUpDTO2> tes1() {
+//		return repo.findHanhDongRespone();
+//	}
+
+	public List<Map<String, Object>> MapToData(List<Object[]> results) {
+		List<Map<String, Object>> sanPhamList = new ArrayList<>();
+		for (Object[] row : results) {
+			Map<String, Object> sanPham = new HashMap<>();
+			sanPham.put("popupID", row[0]);
+			sanPham.put("ngay_tao", row[1]);
+			sanPham.put("han_su_dung", row[2]);
+			sanPham.put("hoat_dong", row[3]);
+			sanPham.put("trang_thai_xoa", row[4]);
+			sanPham.put("san_phamId", row[5]);
+			sanPham.put("ten_san_pham", row[6]);
+			sanPham.put("accountID", row[7]);
+			sanPhamList.add(sanPham);
+		}
+		return sanPhamList;
 	}
 
 	@GetMapping("FindAllPopUpSpare")
@@ -39,29 +100,37 @@ public class RescontrollerPopup {
 		return PopupService.FindALLSpare("PopUp_1");
 	}
 
+	@GetMapping("FindAllPopUpwithDTO")
+	public List<PopupDTO> getbydto() {
+		return hdrepo.findHanhDongPopup();
+	}
+
 	@GetMapping("getallpopuphasdeletedstatus")
-	public List<Popup> getallpopuphasdeletedstatus() {
-		List<Popup> temp = PopupService.FindALL();
-		List<Popup> itemshasdeletedstatus = new ArrayList<Popup>();
-		for (Popup popup : temp) {
-			if (popup.getTrang_thai_xoa() != null && popup.getTrang_thai_xoa().equals("1")) {
-				itemshasdeletedstatus.add(popup);
-			}
-		}
-		return itemshasdeletedstatus;
+	public List<PopUpDTO2> getallpopuphasdeletedstatus() {
+		return (List<PopUpDTO2>) repo.findallpopupdeleted().stream().map(popup -> new PopUpDTO2(popup.getPopupID(),
+				popup.getNgay_tao(), popup.getHan_su_dung(), popup.getHoat_dong(), popup.getTrang_thai_xoa(),
+				popup.getUsers(),
+				popup.getPopupchitiet().stream()
+						.map(p -> new PopupchitietDTO(p.getPopupchitietid(),
+								new SanPhamDTO2(p.getSanpham().getSan_phamId(), p.getSanpham().getTen_san_pham())))
+						.collect(Collectors.toList())))
+				.collect(Collectors.toList());
 	}
 
 	@GetMapping("getallpopupnotdeleted")
-	public List<Popup> getallpopupnotdeleted() {
-		List<Popup> temp = PopupService.FindALL();
+	public List<PopUpDTO2> getallpopupnotdeleted() {
+//		List<Object[]> listtempt = repo.findallpopupnotdeleted();
+//		MapToData(listtempt);
+//		return MapToData(listtempt);
 
-		List<Popup> itemshasdeletedstatus = new ArrayList<Popup>();
-		for (Popup popup : temp) {
-			if (!popup.getTrang_thai_xoa().equals("1")) {
-				itemshasdeletedstatus.add(popup);
-			}
-		}
-		return itemshasdeletedstatus;
+		return (List<PopUpDTO2>) repo.findallpopupnotdeleted().stream().map(popup -> new PopUpDTO2(popup.getPopupID(),
+				popup.getNgay_tao(), popup.getHan_su_dung(), popup.getHoat_dong(), popup.getTrang_thai_xoa(),
+				popup.getUsers(),
+				popup.getPopupchitiet().stream()
+						.map(p -> new PopupchitietDTO(p.getPopupchitietid(),
+								new SanPhamDTO2(p.getSanpham().getSan_phamId(), p.getSanpham().getTen_san_pham())))
+						.collect(Collectors.toList())))
+				.collect(Collectors.toList());
 	}
 
 	@GetMapping("all")
@@ -71,68 +140,186 @@ public class RescontrollerPopup {
 	}
 
 	@PostMapping("createnewPopup")
-	public void createnewpopup(@RequestBody Popup popup) {
+	public void createnewpopup(@RequestBody Popup popup, @RequestParam("productname") List<String> productnames,
+			@RequestParam("userid") String userid) {
+		Users currentuser = usersRepository.findById(userid).get();
+		popup.setUsers(currentuser);
+		HanhDong hanhdong = new HanhDong();
+		System.out.println("PopUP đang được thêm : " + popup.getPopupID());
+		System.out.println(popup);
+
 		try {
 			List<SanPham> listsp = new ArrayList<SanPham>();
+			List<PopupChiTiet> listpopChiTiets = new ArrayList<PopupChiTiet>();
 
-			System.out.println(popup);
-			for (int i = 0; i < popup.getSanpham().size(); i++) {
+			for (int i = 0; i < productnames.size(); i++) {
 				System.out.println();
-				SanPham sp = sanphamrepo.findSanPhamById(popup.getSanpham().get(i).getSan_phamId());
-
-				sp.setPopup(popup);
+				SanPham sp = sanphamrepo.findSanPhamById(productnames.get(i));
+				System.out.println("Tên sản phẩm mới : " + sp.getTen_san_pham());
+				PopupChiTiet p = new PopupChiTiet();
+				p.setPopup(popup);
+				p.setSanpham(sp);
+				listpopChiTiets.add(p);
 				listsp.add(sp);
 			}
-			popup.setSanpham(listsp);
-			for (int i = 0; i < popup.getSanpham().size(); i++) {
-				System.out.println("object :" + popup.getSanpham().get(i).getTen_san_pham());
-			}
-			repo.save(popup);
+			popup.setPopupchitiet(listpopChiTiets);
+//			for (int i = 0; i < popup.getSanpham().size(); i++) {
+//				System.out.println("Tên sản phẩm mới :" + popup.getSanpham().get(i).getTen_san_pham());
+//			}
 
-			for (SanPham sanPham : listsp) {
-				System.out.println("sp: " + sanPham.getSan_phamId());
+			System.out.println(popup);
+			repo.save(popup);
+			hanhdong.setPopup(popup);
+			hanhdong.setTen_hanh_dong("Thêm");
+			hdrepo.save(hanhdong);
+//			for (SanPham sanPham : listsp) {
+//				System.out.println("sp: " + sanPham.getSan_phamId());
 //				sanphamrepo.save(sanPham);
-			}
+//			}
 			System.out.println("result: succes ");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	@PostMapping("update")
-	public void update(@RequestBody Popup popup) {
+	@PostMapping(path = "updatePopup", consumes = "application/json", produces = "application/json")
+	public void update(@RequestBody Popup popup, @RequestParam("productname") List<String> productnames,
+			@RequestParam("userid") String userid) {
 		try {
+			Users currentuser = usersRepository.findById(userid).get();
+			popup.setUsers(currentuser);
+			System.out.println("PopUP đang được thêm:" + popup.getPopupID());
+			System.out.println(popup);
+
 			List<SanPham> listsp = new ArrayList<SanPham>();
 
-			System.out.println(popup);
-			for (int i = 0; i < popup.getSanpham().size(); i++) {
-				System.out.println();
-				SanPham sp = sanphamrepo.findSanPhamById(popup.getSanpham().get(i).getSan_phamId());
+			Popup temppop = repo.findById(popup.getPopupID()).get();
 
-				sp.setPopup(popup);
+			for (int i = 0; i < temppop.getPopupchitiet().size(); i++) {
+				System.out
+						.println("Tên sản phẩm cũ :" + temppop.getPopupchitiet().get(i).getSanpham().getTen_san_pham());
+			}
+
+			List<PopupChiTiet> list = new ArrayList<PopupChiTiet>();
+
+			for (int i = 0; i < productnames.size(); i++) {
+				System.out.println(productnames.size());
+				SanPham sp = sanphamrepo.findSanPhamById(productnames.get(i));
+				PopupChiTiet popupchitiet = new PopupChiTiet();
+				popupchitiet.setPopupchitietid(i);
+				popupchitiet.setPopup(popup);
+				popupchitiet.setSanpham(sp);
+//				sp.setPopupchitiet(list);
 				listsp.add(sp);
+				list.add(popupchitiet);
 			}
-			popup.setSanpham(listsp);
-			for (int i = 0; i < popup.getSanpham().size(); i++) {
-				System.out.println("object :" + popup.getSanpham().get(i).getTen_san_pham());
-			}
-			repo.save(popup);
+//			popup.setPopupchitiet(list);
+
+//			for (int i = 0; i < array.length; i++) {
+//				array_type array_element = array[i];
+//				
+//			}
+
+			List<String> source = new ArrayList<String>();
+			List<String> sourcetempt = new ArrayList<String>();
 
 			for (SanPham sanPham : listsp) {
-				System.out.println("sp: " + sanPham.getSan_phamId());
-//				sanphamrepo.save(sanPham);
+				source.add(sanPham.san_phamId);
+				sourcetempt.add(sanPham.san_phamId);
 			}
+
+			List<String> valuesToRemove = new ArrayList<String>();
+			for (int i = 0; i < temppop.getPopupchitiet().size(); i++) {
+				valuesToRemove.add(temppop.getPopupchitiet().get(i).getSanpham().getSan_phamId());
+			}
+//
+//			List<String> valuesToRemove = new ArrayList<String>();
+//			for (SanPham sanPham : temppop.getSanpham()) {
+//				valuesToRemove.add(sanPham.san_phamId);
+//			}
+
+//
+
+			System.out.println("mới: " + source);
+			System.out.println("cũ: " + valuesToRemove);
+
+			try {
+				sourcetempt.removeAll(valuesToRemove);
+				System.out.println("sourcetempt : " + sourcetempt);
+				if (sourcetempt.size() > 0) {
+					for (int i = 0; i < sourcetempt.size(); i++) {
+						PopupChiTiet popupChiTiet = new PopupChiTiet();
+						popupChiTiet.setSanpham(sanphamrepo.findById(sourcetempt.get(i)).get());
+						popupChiTiet.setPopup(popup);
+						popupchitietRepository.save(popupChiTiet);
+
+					}
+
+				}
+				valuesToRemove.removeAll(source);
+				System.out.println("cần xóa: " + valuesToRemove);
+				try {
+					if (valuesToRemove.size() > 0) {
+						for (int i = 0; i < valuesToRemove.size(); i++) {
+							SanPham sp = sanphamrepo.findSanPhamById(valuesToRemove.get(i));
+							popupchitietRepository.removePopupchitiet(popup.getPopupID(), sp.getSan_phamId());
+
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+//
+//			System.out.println("cần xóa: " + valuesToRemove);
+//			for (String string : valuesToRemove) {
+//				SanPham sp = sanphamrepo.findSanPhamById(string);
+//				sp.setPopup(null);
+//				sanphamrepo.save(sp);
+//			}
+//
+////			List<SanPham> results = temppop.getSanpham().stream()
+////					.filter(u -> !popup.getSanpham().contains(u.getSan_phamId())).collect(Collectors.toList());
+//
+//			for (int i = 0; i < productnames.size(); i++) {
+//				System.out.println("Sản phẩm mới  :" + productnames.get(i));
+//			}
+//
+////			for (SanPham sanPham1 : results) {
+////				System.out.println("sản phẩm trùng :" + sanPham1.getTen_san_pham());
+////			}
+//
+			repo.save(popup);
+//			HanhDong hanhdong = new HanhDong();
+//
+//			hanhdong.setPopup(popup);
+//			hanhdong.setTen_hanh_dong("Cập nhật");
+//			hdrepo.save(hanhdong);
+
+//			for (PopupChiTiet pchitiet : list) {
+//				popupchitietRepository.save(pchitiet);
+//			}
+
+//			for (SanPham sanPham : listsp) {
+//				System.out.println("sp: " + sanPham.getSan_phamId());
+//				sanphamrepo.save(sanPham);
+//			}
 			System.out.println("result: succes ");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	@GetMapping("getnewestID")
 	public String newestID() {
 		String currentid = repo.findnewestrecord().getPopupID();
-		String idnumber = currentid.substring(currentid.indexOf("_") + 1, currentid.length());
-		String newid = "PopUp_" + (Integer.parseInt(idnumber) + 1);
+		String idnumber = currentid.substring(currentid.indexOf("0") + 1, currentid.length());
+		String newid = "PopUp0" + (Integer.parseInt(idnumber) + 1);
 		return newid;
 	}
 
@@ -140,16 +327,28 @@ public class RescontrollerPopup {
 	public void ChangeStatus1(@RequestBody Popup popup) {
 		System.out.println("deleted item :  " + popup);
 		Popup pop = repo.findById(popup.getPopupID()).get();
-		pop.setTrang_thai_xoa("1");
+		pop.setTrang_thai_xoa("Đã Xóa");
+
 		repo.save(pop);
+		HanhDong hanhdong = new HanhDong();
+
+		hanhdong.setPopup(pop);
+		hanhdong.setTen_hanh_dong("Cập nhật");
+		hdrepo.save(hanhdong);
 
 	}
+
 	@PostMapping("undodelete")
 	public void ChangeStatus2(@RequestBody Popup popup) {
 		System.out.println("deleted item :  " + popup);
 		Popup pop = repo.findById(popup.getPopupID()).get();
-		pop.setTrang_thai_xoa("0");
+		pop.setTrang_thai_xoa(null);
 		repo.save(pop);
+		HanhDong hanhdong = new HanhDong();
+
+		hanhdong.setPopup(pop);
+		hanhdong.setTen_hanh_dong("Cập nhật");
+		hdrepo.save(hanhdong);
 
 	}
 

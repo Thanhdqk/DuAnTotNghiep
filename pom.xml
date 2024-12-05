@@ -15,7 +15,8 @@
 	<packaging>war</packaging>
 	<name>BackEnd</name>
 	<description>Demo project for Spring Boot</description>
-	<url />
+	<url>https://github.com/jdbc-observations/datasource-proxy/</url>
+
 	<licenses>
 		<license />
 	</licenses>
@@ -23,10 +24,11 @@
 		<developer />
 	</developers>
 	<scm>
-		<connection />
-		<developerConnection />
-		<tag />
-		<url />
+		<connection>
+			scm:git:git@github.com:jdbc-observations/datasource-proxy.git</connection>
+		<developerConnection>
+			scm:git:git@github.com:jdbc-observations/datasource-proxy.git</developerConnection>
+		<url>git@github.com:jdbc-observations/datasource-proxy.git</url>
 	</scm>
 	<properties>
 		<java.version>17</java.version>
@@ -91,9 +93,23 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-freemarker</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.gavlyukovskiy</groupId>
+			<artifactId>datasource-proxy-spring-boot-starter</artifactId>
+			<version>1.9.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 	</dependencies>
 

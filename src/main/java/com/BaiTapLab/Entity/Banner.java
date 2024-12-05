@@ -1,4 +1,4 @@
-package com.BaiTapLab.Entity;
+ package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,8 +31,6 @@ public class Banner {
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;
-	
-
 	
 	@OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
 	@JsonIgnore

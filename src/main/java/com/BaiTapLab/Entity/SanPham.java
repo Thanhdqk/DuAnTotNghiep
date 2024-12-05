@@ -62,8 +62,6 @@ public class SanPham {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String nhap_hang;
 
-
-
 	public double tien_nhap_hang;
 
 	public double chieu_cao;
@@ -108,11 +106,11 @@ public class SanPham {
 	@JsonManagedReference
 	public List<PhanHoiDanhGia> phanhoidanhgia;
 
-	@ManyToOne
-	@JoinColumn(name = "popupID")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonBackReference
-	public Popup popup;
+//	@ManyToOne
+//	@JoinColumn(name = "popupID")
+//	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+//	@JsonBackReference
+//	public Popup popup;
 
 	@ManyToOne
 	@JoinColumn(name = "accountID")
@@ -135,4 +133,14 @@ public class SanPham {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonBackReference
 	private List<GioHangChiTiet> gioHangChiTiet;
+
+	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<NhapXuatSanPham> nhapxuatsanpham;
+
+	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+//	@JsonManagedReference
+	@JsonBackReference
+	public List<PopupChiTiet> popupchitiet;
+
 }

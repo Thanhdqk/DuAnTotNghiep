@@ -18,11 +18,34 @@
                             <div style="font-size: 48px; color:#000000;">
                                 <b>Bạn đã mua hàng với mã đơn là ${donhangid}</b>
                             </div>
-
                             <div style="font-size: 24px; color: #555100;">
-                               
                                  <br> Tổng tiền đơn hàng   : ${tongtien}  <br>
                             </div>
+                            
+                            
+                            <table>
+  <tr>
+    <th>Sản phẩm</th>
+    <th>Giá thành</th>
+  
+  </tr>
+  
+        
+  <tr>
+    <#list products as sp>
+  					<td>>	<p>${sp}/td
+  			
+							</#list>	
+    <#list quantity as q>
+  					<td>>	<p>${q}/td
+  			
+							</#list>	
+  </tr>
+
+</table>
+                            
+                            
+                      
 
                         </td>
                     </tr>

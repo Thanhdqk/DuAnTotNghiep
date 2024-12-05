@@ -15,23 +15,21 @@ import com.BaiTapLab.Repository.DonHangRepository;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class RestControllerDonHang {
-	
+
 	@Autowired
 	DonHangRepository donhangrepo;
-	
-	
+
 	@ResponseBody
 	@GetMapping("getalldonhang")
 	public List<DonHang> getMethodName() {
 		List<DonHang> list = donhangrepo.findAll();
-		List<DonHang> listDonHang= new ArrayList<DonHang>();
+		List<DonHang> listDonHang = new ArrayList<DonHang>();
 		for (DonHang donHang : list) {
-			if (donHang.getTrang_thai().equalsIgnoreCase("Đã thanh toán")) {
+			if (donHang.getTrang_thai().equalsIgnoreCase("Đang xử lý")) {
 				listDonHang.add(donHang);
-			}	
+			}
 		}
 
-	
 		return listDonHang;
 	}
 

@@ -1,13 +1,18 @@
 package com.BaiTapLab.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.Entity.DiaChi;
 import com.BaiTapLab.Entity.Roles;
@@ -15,6 +20,8 @@ import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.DiaChiRepository;
 import com.BaiTapLab.Repository.RoleRepository;
 import com.BaiTapLab.Repository.UsersRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class UsersService {
@@ -26,7 +33,15 @@ public class UsersService {
 	private RoleRepository roleRepository;
 
 	@Autowired
+	private UsersRepository usersRepository;
+
+	@Autowired
+	private RoleRepository rolesRepository;
+
+	@Autowired
 	private DiaChiRepository diaChiRepository;
+
+	private static final String UPLOAD_DIR = "uploads/";
 
 	@Autowired
 	private MailService mailService; // Assuming you have a MailService for sending emails
@@ -41,6 +56,61 @@ public class UsersService {
 	// Thêm phương thức để xóa người dùng bằng accountID
 	public void deleteUserById(String id) {
 		userRepository.deleteById(id);
+	}
+
+	public String saveImage(MultipartFile image) throws IOException {
+		if (image.isEmpty()) {
+			return null;
+		}
+		// Tạo tên file duy nhất
+		String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+		Files.copy(image.getInputStream(), Paths.get(UPLOAD_DIR + fileName));
+		return fileName;
+	}
+	public List<DiaChi> getUserAddresses(String accountID) {
+		Optional<Users> userOptional = userRepository.findById(accountID);
+		if (userOptional.isPresent()) {
+			return diaChiRepository.findByUsers(userOptional.get());
+		} else {
+			throw new RuntimeException("User not found.");
+		}
+	}
+	// Lấy địa chỉ bằng ID
+	public Optional<DiaChi> getAddressById(int addressId) {
+		return diaChiRepository.findById(addressId);
+	}
+	// Thêm hoặc cập nhật địa chỉ
+	public void addOrUpdateUserAddress(String accountID, DiaChi newAddress) {
+		Optional<Users> userOptional = userRepository.findById(accountID);
+		if (userOptional.isPresent()) {
+			Users user = userOptional.get();
+			newAddress.setUsers(user);
+			diaChiRepository.save(newAddress);
+		} else {
+			throw new RuntimeException("User not found.");
+		}
+	}
+
+
+	@Transactional
+	public Users createUserWithImageAndDetails(Users user, Roles role, DiaChi diaChi, MultipartFile image)
+			throws IOException {
+		// Không cần lưu ảnh trên backend, chỉ lưu vào DB
+		Users savedUser = usersRepository.save(user);
+
+		// Lưu vai trò và địa chỉ liên kết với người dùng
+		role.setUsers(savedUser);
+		rolesRepository.save(role);
+
+		diaChi.setUsers(savedUser);
+		diaChiRepository.save(diaChi);
+
+		return savedUser;
+	}
+
+	// Lưu hoặc cập nhật địa chỉ
+	public void saveAddress(DiaChi address) {
+		diaChiRepository.save(address);
 	}
 
 	public String sendOtp(String email) {
@@ -71,37 +141,37 @@ public class UsersService {
 		}
 	}
 
-	 public Users registerUser(String email, String password, String fullName, String phoneNumber, String address) {
-	        if (userRepository.existsByAccountID(email)) {
-	            return null; // Email already exists
-	        }
+	public Users registerUser(String email, String password, String fullName, String phoneNumber, String address) {
+		if (userRepository.existsByAccountID(email)) {
+			return null; // Email already exists
+		}
 
-	        // Create a new user
-	        Users user = new Users();
-	        user.setAccountID(email); // Set email as accountID
-	        user.setPassword(password);
-	        user.setHovaten(fullName); // Set full name
-	        user.setSo_dien_thoai(phoneNumber); // Set phone number
+		// Create a new user
+		Users user = new Users();
+		user.setAccountID(email); // Set email as accountID
+		user.setPassword(password);
+		user.setHovaten(fullName); // Set full name
+		user.setSo_dien_thoai(phoneNumber); // Set phone number
 
-	        // Save the user
-	        Users savedUser = userRepository.save(user);
+		// Save the user
+		Users savedUser = userRepository.save(user);
 
-	        // Assign default role to the user
-	        Roles role = new Roles();
-	        role.setTen_vai_tro("USER"); // Default role is "USER"
-	        role.setUsers(savedUser); // Link to the new user
-	        roleRepository.save(role);
+		// Assign default role to the user
+		Roles role = new Roles();
+		role.setTen_vai_tro("USER"); // Default role is "USER"
+		role.setUsers(savedUser); // Link to the new user
+		roleRepository.save(role);
 
-	        // Save the user's address if provided
-	        if (address != null && !address.isEmpty()) {
-	            DiaChi diaChi = new DiaChi();
-	            diaChi.setDia_chi(address);
-	            diaChi.setUsers(savedUser); // Set the user for the address
-	            diaChiRepository.save(diaChi);
-	        }
+		// Save the user's address if provided
+		if (address != null && !address.isEmpty()) {
+			DiaChi diaChi = new DiaChi();
+			diaChi.setDia_chi(address);
+			diaChi.setUsers(savedUser); // Set the user for the address
+			diaChiRepository.save(diaChi);
+		}
 
-	        return savedUser;
-	    }
+		return savedUser;
+	}
 
 	public Optional<Users> getUserById(String id) { // Updated to accept String since accountID is a String
 		return userRepository.findById(id);
@@ -171,4 +241,5 @@ public class UsersService {
 			System.out.println("User not found!");
 		}
 	}
+
 }

@@ -6,24 +6,38 @@ server: # lưu ý không được dùng tab trong file .yml
     org.hibernate.orm.jdbc.bind: trace
 #Connect sql server
 spring:
-  datasource:
+ 
+ datasource:
     url: jdbc:sqlserver://localhost;databaseName=DuAnTotNghiep11;encrypt=true;trustServerCertificate=true;
     username: sa
     password: 123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-  jpa:
+#    url: jdbc:sqlserver://34.124.177.222:1433;databaseName=DuAnTotNghiep12;encrypt=true;trustServerCertificate=true;
+#    username: sqlserver
+#    password: 123
+#    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+#    url: jdbc:mysql://localhost:3306/DuAnTotNghiep12
+#    username: root
+#    password: 1234
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+ jpa:
     hibernate:
+#      database-platform: org.hibernate.dialect.MySQLDialect
       ddl-auto: update # Hoặc create, none tuỳ theo nhu cầu
-    show-sql: true
+      
     properties:
-      hibernate:
+      hibernate:     
+#        show-sql: true
+#        format_sql: true
         dialect: org.hibernate.dialect.SQLServerDialect # Đảm bảo cung cấp dialect phù hợp
-     
-     
-     
-     
-    
-  mail:
+#        dialect: org.hibernate.dialect.MySQLDialect
+        type: TRACE
+      
+
+       
+   
+
+ mail:
     host: smtp.gmail.com
     port: 587
     username: quangkmps30913@fpt.edu.vn
@@ -31,6 +45,15 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
- 
+
+#logging.level.net.ttddyy.dsproxy.listener: DEBUG
+### Logs the SQL queries
+#logging.level.org.hibernate.SQL: DEBUG
+### Logs the prepared statement parameters
+#logging.level.org.hibernate.orm.jdbc.bind: TRACE
+
+### To make the printing SQL beautify
+#spring.jpa.properties.hibernate.format_sql: true
+
 
 

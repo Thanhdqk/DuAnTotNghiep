@@ -11,32 +11,37 @@ import com.BaiTapLab.Repository.DonHangRepository;
 
 @Service
 public class DonHangService {
-    @Autowired
-    private DonHangRepository donHangRepository;
+	@Autowired
+	private DonHangRepository donHangRepository;
 
-    public List<DonHang> getAllDonHang() {
-        return donHangRepository.findAll();
-    }
+	public List<DonHang> getAllDonHang() {
+		return donHangRepository.findAll();
+	}
 
-    public List<DonHang> getDonHangByUserId(String userId) {
-        return donHangRepository.findByUserIdWithAddress(userId);
-    }
-    public boolean cancelOrder(String orderId) {
-        // Fetch the order by orderId
-        Optional<DonHang> optionalOrder = donHangRepository.findById(orderId);
-        if (optionalOrder.isPresent()) {
-            DonHang order = optionalOrder.get();
+	public String getdonhang_Id(String id) {
+		return donHangRepository.donhangid(id);
+	}
 
-            // Check if the order is in "Nhận Đơn" status
-            if ("Đang chờ xử lý".equals(order.getTrang_thai())) {
-                // Change the status to "Đã Hủy"
-                order.setTrang_thai("Đã Hủy");
-                // Save the updated order
-                donHangRepository.save(order);
-                return true;
-            }
-        }
-        return false;  // Return false if the order can't be canceled
-    }
+	public List<DonHang> getDonHangByUserId(String userId) {
+		return donHangRepository.findByUserIdWithAddress(userId);
+	}
+
+	public boolean cancelOrder(String orderId) {
+		// Fetch the order by orderId
+		Optional<DonHang> optionalOrder = donHangRepository.findById(orderId);
+		if (optionalOrder.isPresent()) {
+			DonHang order = optionalOrder.get();
+
+			// Check if the order is in "Nhận Đơn" status
+			if ("Đang chờ xử lý".equals(order.getTrang_thai())) {
+				// Change the status to "Đã Hủy"
+				order.setTrang_thai("Đã Hủy");
+				// Save the updated order
+				donHangRepository.save(order);
+				return true;
+			}
+		}
+		return false; // Return false if the order can't be canceled
+	}
 
 }

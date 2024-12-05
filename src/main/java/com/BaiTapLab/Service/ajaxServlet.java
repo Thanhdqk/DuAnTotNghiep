@@ -11,24 +11,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TimeZone;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.method.HandlerMethod;
-
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 public class ajaxServlet {
+
 	public String createPayment(HttpServletRequest req, ServletContext context, HttpSession session, String amout)
 			throws UnsupportedEncodingException {
 
@@ -36,9 +26,11 @@ public class ajaxServlet {
 
 		long amount = Integer.parseInt(amout) * 100;
 		String vnp_TxnRef = vnpay_config.getRandomNumber(8);
+
+		context.setAttribute("vnpaycode", vnp_TxnRef);
 		String vnp_IpAddr = "0:0:0:0:0:0:0:1";
 
-		System.out.println(vnp_IpAddr);
+		System.out.println("vnp_TxnRef :" + vnp_TxnRef);
 		String vnp_TmnCode = vnpay_config.vnp_TmnCode;
 
 		Map<String, String> vnp_Params = new HashMap<>();

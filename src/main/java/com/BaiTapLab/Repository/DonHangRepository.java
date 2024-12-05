@@ -20,4 +20,7 @@ public interface DonHangRepository extends JpaRepository<DonHang, String> {
 
 	@Query("Select p from DonHang p where p.online_payment_id =?1")
 	DonHang findbypaymentid(String id);
+
+	@Query("select p.don_hangid from DonHang p where p.online_payment_id=?1 ")
+	String donhangid(String id);
 }

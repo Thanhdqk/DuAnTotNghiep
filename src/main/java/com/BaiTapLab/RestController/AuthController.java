@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,16 +28,21 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.BaiTapLab.Entity.DiaChi;
+import com.BaiTapLab.Entity.UserWallet;
 import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Service.UsersService;
+import com.BaiTapLab.Service.WalletService;
 
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", methods = { RequestMethod.GET, RequestMethod.POST,
+		RequestMethod.PUT, RequestMethod.DELETE })
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController implements WebMvcConfigurer {
 
 	@Autowired
 	private UsersService userService;
+	@Autowired
+	private WalletService walletService;
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -130,7 +137,12 @@ public class AuthController implements WebMvcConfigurer {
 		}
 
 		Users user = userOptional.get();
-		user.setHinh_anh(request.get("hinh_anh")); // Đảm bảo bạn lấy tên file hình ảnh từ request
+
+		// Giữ nguyên hình ảnh nếu không có hình ảnh mới
+		String currentImage = user.getHinh_anh();
+		String newImage = request.get("hinh_anh");
+		user.setHinh_anh(newImage != null && !newImage.isEmpty() ? newImage : currentImage);
+
 		user.setHovaten(request.get("hovaten"));
 		user.setSo_dien_thoai(request.get("so_dien_thoai"));
 
@@ -138,27 +150,65 @@ public class AuthController implements WebMvcConfigurer {
 		return ResponseEntity.ok("User updated successfully.");
 	}
 
-	// Endpoint để cập nhật địa chỉ người dùng
-	@PutMapping("/users/{id}/address")
-	public ResponseEntity<String> updateUserAddress(@PathVariable String id, @RequestBody DiaChi newAddress) {
-		Optional<Users> userOptional = userService.getUserById(id);
-		if (!userOptional.isPresent()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+	@GetMapping("/users/{id}/addresses")
+	public ResponseEntity<List<DiaChi>> getUserAddresses(@PathVariable String id) {
+		try {
+			List<DiaChi> addresses = userService.getUserAddresses(id);
+			return ResponseEntity.ok(addresses);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
-
-		Users user = userOptional.get();
-		userService.updateUserAddress(user.getAccountID(), newAddress);
-		return ResponseEntity.ok("User address updated successfully.");
 	}
 
-	// Endpoint to get user address by ID
-	@GetMapping("/users/{id}/address")
-	public ResponseEntity<DiaChi> getUserAddress(@PathVariable String id) {
-		Optional<DiaChi> address = userService.getUserAddress(id);
-		return address.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+	@PutMapping("/users/{id}/address")
+	public ResponseEntity<String> updateUserAddress(@PathVariable String id, @RequestBody Map<String, Object> payload) {
+		try {
+			System.out.println("Payload nhận được: " + payload);
+
+			DiaChi newAddress = new DiaChi();
+			newAddress.setDia_chi((String) payload.get("dia_chi"));
+			newAddress.setPhuong((String) payload.get("phuong"));
+			newAddress.setQuan((String) payload.get("quan"));
+			newAddress.setThanh_pho((String) payload.get("thanh_pho"));
+
+			Users user = userService.getUserById(id).orElseThrow(() -> new RuntimeException("User not found"));
+			newAddress.setUsers(user);
+
+			userService.addOrUpdateUserAddress(id, newAddress);
+			return ResponseEntity.ok("Address updated successfully.");
+		} catch (Exception e) {
+			System.err.println("Lỗi xảy ra: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra khi xử lý địa chỉ.");
+		}
 	}
 
-	// Endpoint to log in
+	@PutMapping("/users/{id}/addresses/{addressId}")
+	public ResponseEntity<String> editAddress(@PathVariable String id, @PathVariable int addressId,
+			@RequestBody Map<String, String> payload) {
+		try {
+			System.out.println("Payload nhận được từ client: " + payload);
+
+			DiaChi address = userService.getAddressById(addressId)
+					.orElseThrow(() -> new RuntimeException("Address not found."));
+
+			if (!address.getUsers().getAccountID().equals(id)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized to edit this address.");
+			}
+
+			address.setDia_chi(payload.get("dia_chi"));
+			address.setPhuong(payload.get("phuong"));
+			address.setQuan(payload.get("quan"));
+			address.setThanh_pho(payload.get("thanh_pho"));
+
+			userService.saveAddress(address);
+			return ResponseEntity.ok("Address updated successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Failed to update address: " + e.getMessage());
+		}
+	}
+
 	@PostMapping("/login")
 	public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> request) {
 		String email = request.get("email");
@@ -166,13 +216,22 @@ public class AuthController implements WebMvcConfigurer {
 
 		Users user = userService.login(email, password);
 
+		Map<String, Object> response = new HashMap<>();
+
 		if (user != null) {
-			Map<String, Object> response = new HashMap<>();
+			// Kiểm tra trạng thái xóa (khóa tài khoản)
+			if ("Ban".equalsIgnoreCase(user.getTrang_thai_xoa())) {
+				response.put("success", false);
+				response.put("message", "Your account has been locked.");
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+			}
+
+			// Đăng nhập thành công
 			response.put("success", true);
-			response.put("userId", user.getAccountID()); // Return accountID as the user's ID
+			response.put("userId", user.getAccountID());
 			return ResponseEntity.ok(response);
 		} else {
-			Map<String, Object> response = new HashMap<>();
+			// Sai email hoặc mật khẩu
 			response.put("success", false);
 			response.put("message", "Invalid email or password");
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
@@ -183,19 +242,27 @@ public class AuthController implements WebMvcConfigurer {
 	public ResponseEntity<String> changePassword(@PathVariable String id, @RequestBody Map<String, String> request) {
 		Optional<Users> userOptional = userService.getUserById(id);
 		if (!userOptional.isPresent()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng.");
 		}
 
 		Users user = userOptional.get();
 
 		// Check if the current password matches (no encryption needed)
 		if (!request.get("currentPassword").equals(user.getPassword())) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Current password is incorrect.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mật khẩu hiện tại không đúng.");
 		}
 
 		// Set the new password (plain text)
 		user.setPassword(request.get("newPassword"));
 		userService.updateUser(user);
-		return ResponseEntity.ok("Password changed successfully.");
+		return ResponseEntity.ok("Đã thay đổi mật khẩu thành công.");
 	}
+
+	// API để lấy thông tin ví của người dùng theo ID
+	@GetMapping("/{userId}")
+	public ResponseEntity<UserWallet> getWalletByUserId(@PathVariable String userId) {
+		Optional<UserWallet> wallet = walletService.getWalletByUserId(userId);
+		return wallet.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+	}
+
 }

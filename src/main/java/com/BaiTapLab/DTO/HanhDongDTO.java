@@ -11,9 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HanhDongDTO {
 
-    private String tenHanhDong;
-    private DanhMuc danhMuc;
+	private String tenHanhDong;
 
-   
-    
+	private DanhMuc danhMuc;
 }

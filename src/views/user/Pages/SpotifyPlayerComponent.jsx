@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Button, Box, Modal, Typography } from "@mui/material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CLIENT_ID = "6623586a915b49cc85a591cc92bde415";
-const REDIRECT_URI = "http://localhost:3000";
+const REDIRECT_URI = "http://localhost:3000/callback";
 const SCOPES = ["user-read-email", "user-read-private"];
 
 const SpotifyPlayerComponent = () => {
+  const Navigate = useNavigate();
   const [accessToken, setAccessToken] = useState(null);
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
@@ -60,8 +62,8 @@ const SpotifyPlayerComponent = () => {
     const token1 = await axios({ url: `http://localhost:8080/api/users/spotifylogin?username=${username}&email=${userEmail}`, method: "GET" })
 
     setUserData(res.data);
-    console.log("name", userEmail)
-    console.log("token1", token1.data)
+   
+    Navigate("/")
   }
 
 

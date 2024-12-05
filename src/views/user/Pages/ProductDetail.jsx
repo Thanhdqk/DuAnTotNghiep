@@ -27,32 +27,29 @@ const ProductDetail = () => {
 
     const handleChange = (e) => {
         const value = Number(e.target.value);
-        
-        if(QuantityProduct == 0 )
-        {
-           if(value == 0)
-           {
-            const value1 = e.target.value.replace(/^0+/, Number(0));
-            SetQuantityProduct(value1)
+
+        if (QuantityProduct == 0) {
+            if (value == 0) {
+                const value1 = e.target.value.replace(/^0+/, Number(0));
+                SetQuantityProduct(value1)
+                return;
+
+
+            }
+            else {
+                const value1 = e.target.value.replace(/^0+/, '');
+
+
+                SetQuantityProduct(value1 === '' ? 0 : value1);
+            }
+
+
             return;
-           
-           
-           }
-           else
-           {
-            const value1 = e.target.value.replace(/^0+/, '');
-            
-  
-            SetQuantityProduct(value1 === ''  ? 0 : value1 );
-           }
-           
-        
-           return;
         }
         if (value >= 1) {
             SetQuantityProduct(value);
         }
-        else{
+        else {
             console.log('cc')
             SetQuantityProduct(0);
         }
@@ -87,7 +84,7 @@ const ProductDetail = () => {
                 dispatch(addFavotite(res1.data))
 
                 console.log(" có yêu thích", res1.data)
-              
+
             }
             else {
                 dispatch(addFavotite(""))
@@ -100,21 +97,42 @@ const ProductDetail = () => {
         else {
             console.log("không có id")
         }
-       
+
     }
+  
+    const shareOnZalo = () => {
+        const currentUrl = window.location.href; // Lấy URL hiện tại
+        const zaloShareUrl = `https://zalo.me/share?app_id=554&url=${encodeURIComponent(currentUrl)}&title=Chia sẻ từ website của tôi`;
+    
+        // Mở cửa sổ chia sẻ mà không kiểm tra trình duyệt
+        window.open(zaloShareUrl, '_blank');
+    };
+
+    const copyLink = () => {
+        const currentUrl = window.location.href; // Lấy URL hiện tại
+        navigator.clipboard.writeText(currentUrl)  // Sao chép URL vào clipboard
+            .then(() => {
+               toast.success("Sao chép link thành công")
+            })
+            .catch((err) => {
+                console.error("Lỗi khi sao chép: ", err);
+                alert("Không thể sao chép liên kết.");
+            });
+    };
+    
 
     useEffect(() => {
-            
+
         API_Product_Detail()
         Yeuthich()
-        
+
         window.scrollTo(0, 0);
 
-      
+
 
     }, [params.id])
 
-   
+
 
 
 
@@ -165,56 +183,57 @@ const ProductDetail = () => {
                             SetQuantityProduct(QuantityProduct - 1)
                         }} type="button" className="btn btn-outline-primary btn-sm p-2 fw-bold">-</button>
                         <input onChange={handleChange} className="form-control form-control-sm w-50 custom-input"
-                        
-                        onKeyDown={(e) => {
-                            const currentValue = e.target.value;
-                            const isNumberKey = e.key >= "0" && e.key <= "9";
-                            const isAllowedKey = ["Backspace", "ArrowLeft", "ArrowRight", "Delete"].includes(e.key);
-            
-                           
-                            if (isNumberKey && parseInt(currentValue + e.key) > ProductDetail.so_luong) {
-                              e.preventDefault();
-                            }
-                          
-                            else if (!isNumberKey && !isAllowedKey) {
-                              e.preventDefault();
-                            }
-                          }}  
-                        
-                        type="number" value={QuantityProduct} />
-                        <button onClick={() => { SetQuantityProduct(QuantityProduct + 1) }} disabled={QuantityProduct == ProductDetail.so_luong }   type="button" className="btn btn-outline-primary btn-sm p-2 fw-bold">+</button>
+
+                            onKeyDown={(e) => {
+                                const currentValue = e.target.value;
+                                const isNumberKey = e.key >= "0" && e.key <= "9";
+                                const isAllowedKey = ["Backspace", "ArrowLeft", "ArrowRight", "Delete"].includes(e.key);
+
+
+                                if (isNumberKey && parseInt(currentValue + e.key) > ProductDetail.so_luong) {
+                                    e.preventDefault();
+                                }
+
+                                else if (!isNumberKey && !isAllowedKey) {
+                                    e.preventDefault();
+                                }
+                            }}
+
+                            type="number" value={QuantityProduct} />
+                        <button onClick={() => { SetQuantityProduct(QuantityProduct + 1) }} disabled={QuantityProduct == ProductDetail.so_luong} type="button" className="btn btn-outline-primary btn-sm p-2 fw-bold">+</button>
 
 
                     </div>
 
                     <div className='d-flex mt-5'>
 
-                        {Yeuthich1 !== "" ? 
-                        <button className='btn btn-outline-dark text-danger ' onClick={async () => {
-                          
-                            await axios({ url: `http://localhost:8080/DELETE/Yeuthich?idyt=${Yeuthich1?.id}&iduser=${userId}`, method: 'GET' })
-                            dispatch(addFavotite(""))
+                        {Yeuthich1 !== "" ?
+                            <button className='btn btn-outline-dark text-danger ' onClick={async () => {
 
-                        }}><i class="bi bi-heart-fill fs-3"></i>
-                        </button> : 
-                        <button className='btn btn-outline-dark text-danger ' onClick={async () => {
-                          
-                            const res=  await axios({ url: `http://localhost:8080/ADD/Yeuthich?idsp=${params.id}&iduser=${userId}`, method: 'POST' })
-                            dispatch(addFavotite(res.data))
-                            console.log('data',res.data)
-                            
-                        }}><i class="bi bi-heart fs-3"></i></button>}
+                                await axios({ url: `http://localhost:8080/DELETE/Yeuthich?idyt=${Yeuthich1?.id}&iduser=${userId}`, method: 'GET' })
+                                dispatch(addFavotite(""))
 
-                        <button className='btn btn-outline-dark text-danger ms-3'><i class="fa fa-cart-plus fs-3"></i></button>
+                            }}><i class="bi bi-heart-fill fs-3"></i>
+                            </button> :
+                            <button className='btn btn-outline-dark text-danger ' onClick={async () => {
 
-                        <button disabled={QuantityProduct ==0} onClick={() => {
+                                const res = await axios({ url: `http://localhost:8080/ADD/Yeuthich?idsp=${params.id}&iduser=${userId}`, method: 'POST' })
+                                dispatch(addFavotite(res.data))
+                                console.log('data', res.data)
+
+                            }}><i class="bi bi-heart fs-3"></i></button>}
+
+                        <button data-bs-target="#exampleModalToggle" data-bs-toggle="modal" className='btn btn-outline-dark text-danger ms-3'><i className="bi bi-share-fill fs-3" />
+                        </button>
+
+                        <button disabled={QuantityProduct == 0} onClick={() => {
 
                             const addCart = addItemToCart({
                                 ProductDetail: ProductDetail,
                                 QuantityProduct: QuantityProduct,
                             });
                             dispatch(addCart)
-                          
+
                         }} className={`${QuantityProduct == 0 ? 'gradient2-button' : 'gradient-button'}   ms-4 fw-bold`}>
                             Thêm vào giỏ hàng
                         </button>
@@ -227,6 +246,34 @@ const ProductDetail = () => {
                 </div>
 
 
+                <div>
+                    <div className="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabIndex={-1}>
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content">
+                                <div className="modal-header border-0">
+                                    <h1 className="modal-title fs-5" id="exampleModalToggleLabel">Chia Sẻ</h1>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                                </div>
+                                <div className="modal-body my-5 d-flex justify-content-center align-items-center">
+                                    <a  className="btn btn-outline-primary mx-2" title="Share on Facebook">
+                                        <i className="fab fa-facebook-square fa-2x"></i>
+                                    </a>
+                                    <a className="btn btn-outline-info mx-2" title="Share on Twitter">
+                                        <i className="fab fa-twitter-square fa-2x"></i>
+                                    </a>
+                                    <a onClick={shareOnZalo} className="btn btn-outline-success mx-2" title="Share on Zalo">
+                                        <i className="fas fa-comments fa-2x"></i>
+                                    </a>
+                                    <button onClick={copyLink} className="btn btn-outline-info mx-2" title="Copy Link">
+                                        <i className="fas fa-link fa-2x"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
 
 
 

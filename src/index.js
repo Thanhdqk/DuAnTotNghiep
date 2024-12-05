@@ -44,6 +44,8 @@ import RenderLogin from './views/user/Pages/RenderLogin'
 import CRUDAnh from './views/admin/Pages/CRUDAnh';
 
 import SpotifyPlayerComponent from './views/user/Pages/SpotifyPlayerComponent';
+import GitHubLoginPopup from './views/user/Pages/GitHubLoginPopup';
+import SpotifyCallback from './views/user/Pages/SpotifyCallback';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -79,6 +81,7 @@ root.render(
           <Route path='google' element={<GoogleLoginButton></GoogleLoginButton>}></Route>
           <Route path='login' element={<SpotifyPlayerComponent></SpotifyPlayerComponent>}></Route>
           <Route path='success' element={<RenderLogin></RenderLogin>}></Route>
+         
 
         </Route>
 
@@ -117,12 +120,13 @@ root.render(
 
           
 
-
+         <Route path='callback' element={<SpotifyCallback></SpotifyCallback>}></Route>
       </Routes>
       <ToastContainer pauseOnHover={false} />
       <Popup></Popup>
     </BrowserRouter>
     <Loading></Loading>
+    
   </Provider>
   
 );

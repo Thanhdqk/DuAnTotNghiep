@@ -9,7 +9,7 @@ export const addItemToCart = createAsyncThunk(
         const userId = localStorage.getItem('account_id');
         const state = getState();
         const index = state.cart.Cart.findIndex(p => p.san_phamId === ProductDetail.san_phamId);
-        if (index < 0) {   
+        if (index < 0) {
             await axios.post(`http://localhost:8080/AddCart/${userId}/${ProductDetail.san_phamId}/${QuantityProduct}`, null, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -21,7 +21,7 @@ export const addItemToCart = createAsyncThunk(
 
             return { item: { ...ProductDetail, QuantityProduct }, isNew: true, data: res.data };
         } else {
-           
+
             await axios.post(`http://localhost:8080/AddCart/${userId}/${ProductDetail.san_phamId}/${QuantityProduct}`, null, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -36,14 +36,14 @@ export const removeItem = createAsyncThunk(
     'cart/removeItem',
     async ({ userId, idsanpham }, thunkAPI) => {
         const state = thunkAPI.getState();
-        const index = state.cart.ListSpthanhtoan.findIndex(item => item.sanPham.san_phamId === idsanpham); 
-       
+        const index = state.cart.ListSpthanhtoan.findIndex(item => item.sanPham.san_phamId === idsanpham);
+
         if (window.confirm("bạn có muốn xóa vật phẩm này không")) {
             await axios.delete(`http://localhost:8080/remove/${userId}/${idsanpham}`);
             const res = await axios.get(`http://localhost:8080/GETcart/${userId}`, {}, {
                 headers: { 'Content-Type': 'application/json' }
             });
-            return { action: 'remove', data: res.data, id: idsanpham,index:index };
+            return { action: 'remove', data: res.data, id: idsanpham, index: index };
         }
         return thunkAPI.rejectWithValue("User canceled the removal");
 
@@ -70,11 +70,11 @@ export const clearItem = createAsyncThunk(
 export const decreaseItem = createAsyncThunk(
     'cart/decreaseItem',
     async ({ productId, quantity, userId, idsp }, thunkAPI) => {
-        
-       
+
+
         const state = thunkAPI.getState();
         const index = state.cart.ListSpthanhtoan.findIndex(item => item.sanPham.san_phamId === idsp); // Xác định index của sản phẩm
-      
+
         if (quantity === 1) {
             if (window.confirm("Bạn có muốn xóa sản phẩm này không?")) {
                 await axios.delete(`http://localhost:8080/remove/${userId}/${idsp}`);
@@ -208,7 +208,7 @@ const cartReducer = createSlice({
 
 
             if (Array.isArray(state.ListSpthanhtoan)) {
-                
+
                 const isProductExists = state.ListSpthanhtoan.some(item => item.id === newProduct.id); // Thay newProduct.id bằng id của sản phẩm
 
                 if (!isProductExists) {
@@ -224,59 +224,59 @@ const cartReducer = createSlice({
 
         DeleteSpthanhtoan: (state, action) => {
             const productToDelete = action.payload; // Đối tượng sản phẩm cần xóa
-    const idSanPham = productToDelete.id;   // Lấy id từ đối tượng sản phẩm
-            console.log('sad',idSanPham)
-    if (Array.isArray(state.ListSpthanhtoan)) {
-        // Tìm index của sản phẩm trong ListSpthanhtoan dựa trên id
-        const index = state.ListSpthanhtoan.findIndex(item => item.id === idSanPham);
+            const idSanPham = productToDelete.id;   // Lấy id từ đối tượng sản phẩm
+            console.log('sad', idSanPham)
+            if (Array.isArray(state.ListSpthanhtoan)) {
+                // Tìm index của sản phẩm trong ListSpthanhtoan dựa trên id
+                const index = state.ListSpthanhtoan.findIndex(item => item.id === idSanPham);
 
-        if (index !== -1) {
-            
-            state.ListSpthanhtoan.splice(index, 1);
-            console.log(`Sản phẩm với id ${idSanPham} đã được xóa.`);
-        } else {
-            console.error("Không tìm thấy sản phẩm với id:", idSanPham);
-        }
-    } else {
-        console.error("ListSpthanhtoan is not an array");
-    }
+                if (index !== -1) {
 
-           
-            
+                    state.ListSpthanhtoan.splice(index, 1);
+                    console.log(`Sản phẩm với id ${idSanPham} đã được xóa.`);
+                } else {
+                    console.error("Không tìm thấy sản phẩm với id:", idSanPham);
+                }
+            } else {
+                console.error("ListSpthanhtoan is not an array");
+            }
+
+
+
         },
         Clear: (state, action) => {
             state.ListSpthanhtoan = []
         },
         IncreaseSpthanhtoan: (state, action) => {
-          
+
             const { quantity, productId } = action.payload; // Sử dụng sanPham từ payload
-            console.log('sd',quantity)
-            console.log('sd',productId)
-             const index = state.ListSpthanhtoan.findIndex(p => p.sanPham.san_phamId === productId.sanPham.san_phamId);
-             
-             console.log('sd',index)
+            console.log('sd', quantity)
+            console.log('sd', productId)
+            const index = state.ListSpthanhtoan.findIndex(p => p.sanPham.san_phamId === productId.sanPham.san_phamId);
+
+            console.log('sd', index)
             if (index !== -1) {
-              
+
                 state.ListSpthanhtoan[index].soLuong += quantity;
-            } 
-            },
-        
-        
+            }
+        },
+
+
         DecreaseSpthanhtoan: (state, action) => {
-            const { quantity, productId } = action.payload; 
-            
-             const index = state.ListSpthanhtoan.findIndex(p => p.sanPham.san_phamId === productId.sanPham.san_phamId);
-            
+            const { quantity, productId } = action.payload;
+
+            const index = state.ListSpthanhtoan.findIndex(p => p.sanPham.san_phamId === productId.sanPham.san_phamId);
+
             if (index !== -1 && state.ListSpthanhtoan[index].soLuong > 1) {
-               
+
                 state.ListSpthanhtoan[index].soLuong -= quantity;
             }
         },
-        
+
         RemoveSpthanhtoan: (state, action) => {
-            const sanPhamId = action.payload; 
+            const sanPhamId = action.payload;
             const index = state.ListSpthanhtoan.findIndex(p => p.sanPham.san_phamId === sanPhamId);
-        
+
             if (index !== -1) {
                 // Xóa sản phẩm khỏi danh sách nếu tìm thấy
                 state.ListSpthanhtoan.splice(index, 1);
@@ -290,34 +290,34 @@ const cartReducer = createSlice({
 
     }, extraReducers: (builder) => {
         builder
-        .addCase(decreaseItem.fulfilled, (state, action) => {
-            if (!action.payload) return;
+            .addCase(decreaseItem.fulfilled, (state, action) => {
+                if (!action.payload) return;
 
-            const { action: decreaseAction, data, index } = action.payload;
-            if (decreaseAction === 'remove') {
-                if (index !== -1) {
-                    
-                    state.ListSpthanhtoan.splice(index, 1); // Xóa sản phẩm khỏi danh sách thanh toán
+                const { action: decreaseAction, data, index } = action.payload;
+                if (decreaseAction === 'remove') {
+                    if (index !== -1) {
+
+                        state.ListSpthanhtoan.splice(index, 1); // Xóa sản phẩm khỏi danh sách thanh toán
+                    }
+                    state.CartDatabase = data; // Cập nhật CartDatabase sau khi xóa
+                } else if (decreaseAction === 'decrease') {
+                    state.CartDatabase = data;
                 }
-                state.CartDatabase = data; // Cập nhật CartDatabase sau khi xóa
-            } else if (decreaseAction === 'decrease') {
-                state.CartDatabase = data;
-            }
-        })
-        .addCase(decreaseItem.rejected, (state, action) => {
-            console.error("Thao tác bị từ chối:", action.error);
-        })
+            })
+            .addCase(decreaseItem.rejected, (state, action) => {
+                console.error("Thao tác bị từ chối:", action.error);
+            })
             .addCase(increaseItem.fulfilled, (state, action) => {
                 state.CartDatabase = action.payload; // Cập nhật CartDatabase từ phản hồi API
 
             })
             .addCase(removeItem.fulfilled, (state, action) => {
-                const { action: removeAction, data, idsp,index } = action.payload; // Lấy action và dữ liệu từ payload
+                const { action: removeAction, data, idsp, index } = action.payload; // Lấy action và dữ liệu từ payload
                 if (removeAction === 'remove') {
-                    state.ListSpthanhtoan.splice(index,1)
+                    state.ListSpthanhtoan.splice(index, 1)
                     state.CartDatabase = data; // Cập nhật CartDatabase với dữ liệu mới từ server
                     // Xóa sản phẩm khỏi danh sách thanh toán
-                  
+
                 }
             })
             .addCase(removeItem.rejected, (state, action) => {

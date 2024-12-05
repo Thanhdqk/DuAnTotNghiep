@@ -35,7 +35,9 @@ const ListStore = ({ Products, checked }) => {
   useEffect(() => {
     console.log("gay")
     if (TextSearch || danhmuc || sosao || checked || price) {
+      
       SetfirstSearch(false);
+    
     }
   }, [TextSearch, sosao, danhmuc, checked, price,Products]);
 

@@ -679,28 +679,45 @@ header {
   margin: 0;
 }
 .disabled-div {
-  pointer-events: none; /* Vô hiệu hóa tương tác cho div */
-  opacity: 0.5; /* Làm mờ toàn bộ div */
-  position: relative; /* Cần thiết để sử dụng z-index cho các phần tử con */
+  pointer-events: none; /* Vô hiệu hóa tương tác cho toàn bộ div */
+  position: relative; /* Cần thiết để sử dụng z-index và lớp phủ */
 }
 
-.disabled-div .btn-interactive,
-.disabled-div .out-of-stock {
-  pointer-events: auto; /* Cho phép tương tác với nút và phần tử "Hết hàng" */
-  opacity: 1; /* Đảm bảo các phần tử này không bị mờ */
-  z-index: 2; /* Đặt z-index để các phần tử này nổi lên trên */
+.disabled-div::before {
+  content: ''; /* Tạo lớp phủ */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5); /* Làm mờ */
+  z-index: 1; /* Đảm bảo lớp phủ nằm trên nền */
 }
 
 .disabled-div .out-of-stock {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 30%; /* Điều chỉnh vị trí chữ "Hết hàng" */
+  left: 60%; /* Điều chỉnh vị trí chữ "Hết hàng" */
   color: red;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   z-index: 2;
+   /* Đảm bảo nằm trên lớp phủ */
 }
+
+.disabled-div .btn-interactive {
+  position: absolute;
+  bottom: 20%; /* Điều chỉnh vị trí nút "Xóa" */
+  left: 60%; /* Điều chỉnh vị trí nút "Xóa" */
+  z-index: 2; /* Đảm bảo nằm trên lớp phủ */
+  opacity: 1; /* Hiển thị rõ ràng */
+  pointer-events: auto; /* Có thể nhấn nút */
+  border: 1px solid red;
+  color: red;
+  padding: 10px 20px;
+}
+
+
 
 
 

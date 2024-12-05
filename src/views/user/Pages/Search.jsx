@@ -511,7 +511,7 @@ const Search = () => {
                 const key = GETapi();
 
                 if (key != null) {
-                  const url = checked ? sanphamWithDiscount[key] : sanphamWithoutDiscount[key];
+                  const url =  sanphamWithoutDiscount[key];
                   console.log("url", url)
                   console.log("url", key)
                   const res = await axios({ url, method: "GET" });

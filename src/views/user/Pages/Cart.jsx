@@ -434,12 +434,12 @@ function Cart() {
                         <p className="noidung" style={{ paddingLeft: '293px' }}>Quận 7</p>
                     </div>
                     {AddressCurrent?.dia_chi != "" && AddressCurrent?.users?.hovaten != "" && AddressCurrent?.users?.so_dien_thoai != "" ?
-                      <></>
-                        :  <div className="d-flex align-items-center" style={{ height: '40px' }}>
+                        <></>
+                        : <div className="d-flex align-items-center" style={{ height: '40px' }}>
 
 
-                        <p className="text-danger fw-bold" style={{ margin: '0', paddingLeft: '400px' }}>Hãy nhập đầy đủ thông tin để có thể thanh toán</p>
-                    </div>  
+                            <p className="text-danger fw-bold" style={{ margin: '0', paddingLeft: '400px' }}>Hãy nhập đầy đủ thông tin để có thể thanh toán</p>
+                        </div>
                     }
                 </div>
             </div>
@@ -475,41 +475,22 @@ function Cart() {
                             <div>
                                 <div className="d-flex position-relative">
                                     {cart.sanPham.so_luong === 0 && (
-                                        <div
-                                            style={{
-                                                position: 'absolute',
-                                                top: '0',
-                                                left: '40px',
-                                                width: '100%',
-                                                height: '100%',
-                                                color: 'red',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontSize: '18px',
-                                                fontWeight: 'bold',
-                                                zIndex: '1',
-                                            }}
-                                        >
-                                            Hết hàng
-                                            <button
-                                                className="btn btn-danger btn-interactive"
-                                                style={{
-                                                    position: 'absolute',
-                                                    top: '80%',
-                                                    left: '180px',
-                                                    zIndex: '2',
-                                                    transform: 'translateY(-50%)',
-                                                    minWidth: '180px'
-                                                }}
+                                        <>
+                                            <div className="out-of-stock">Hết hàng</div>
+                                            <Button
+                                                className="btn-interactive "
                                                 onClick={() => {
-                                                    const remove = removeItem({ idcart: cart.id, userId, idsanpham: cart.sanPham.san_phamId });
+                                                    const remove = removeItem({
+                                                        idcart: cart.id,
+                                                        userId,
+                                                        idsanpham: cart.sanPham.san_phamId,
+                                                    });
                                                     dispatch(remove);
                                                 }}
                                             >
                                                 Xóa
-                                            </button>
-                                        </div>
+                                            </Button>
+                                        </>
                                     )}
 
                                     <NavLink to={`/product/detail/${cart.sanPham?.san_phamId}`}><img width={150} height={150} src={`/images/${cart.sanPham?.hinhanh[0]?.ten_hinh}`} alt="Sản phẩm" /></NavLink>
@@ -711,7 +692,7 @@ function Cart() {
                                 <button disabled={ListSPChecked.length === 0 || AddressCurrent?.dia_chi == "" || AddressCurrent?.users?.hovaten == "" || AddressCurrent?.users?.so_dien_thoai == ""} style={{
                                     width: '100%', height: '45px',
                                     borderRadius: '5px', border: 'none',
-                                    backgroundColor: ListSPChecked.length === 0 || AddressCurrent?.dia_chi == "" || AddressCurrent?.users?.hovaten == "" || AddressCurrent?.users?.so_dien_thoai == ""  ? 'black' : 'red',
+                                    backgroundColor: ListSPChecked.length === 0 || AddressCurrent?.dia_chi == "" || AddressCurrent?.users?.hovaten == "" || AddressCurrent?.users?.so_dien_thoai == "" ? 'black' : 'red',
                                     color: 'white', fontWeight: 'bolder'
 
                                 }}>Thanh toán</button>

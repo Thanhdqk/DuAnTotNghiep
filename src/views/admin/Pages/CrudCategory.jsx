@@ -46,7 +46,7 @@ const CrudCategory = () => {
       createdDate: '',
       status: '',
       image: "",
-      active: 'Đang hoạt động',
+      active: 'Working',
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Hãy Nhập Tên Danh Mục'),
@@ -159,7 +159,7 @@ const CrudCategory = () => {
         actions: item.tenHanhDong
       }));
       setdatahanhdong(formattedData)
-      console.log('dataaaaaaa',formattedData)
+      console.log('dataaaaaaa', formattedData)
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -231,8 +231,9 @@ const CrudCategory = () => {
     },
     {
       title: 'Hoạt động',
-      dataIndex: 'active',
+      dataIndex: 'active', // chỉ là tên trường dữ liệu
       key: 'active',
+      render: (text) => text === 'Working' ? 'Đang hoạt động' : 'Không hoạt động',
     },
     {
       title: 'Nút',
@@ -345,9 +346,11 @@ const CrudCategory = () => {
     },
     {
       title: 'Hoạt động',
-      dataIndex: 'active',
+      dataIndex: 'active', // chỉ là tên trường dữ liệu
       key: 'active',
+      render: (text) => text === 'Working' ? 'Đang hoạt động' : 'Không hoạt động',
     },
+
     {
       title: 'Hành động ',
       dataIndex: 'actions',
@@ -377,7 +380,7 @@ const CrudCategory = () => {
 
   };
 
-  
+
 
   return (
     <div className='container-fluid'>
@@ -392,7 +395,7 @@ const CrudCategory = () => {
           </li>
           <li className="nav-item " role="presentation">
             <button className="nav-link fw-bold" onClick={() => {
-              
+
             }} id="form-tab" data-bs-toggle="tab" data-bs-target="#form-tab-pane" type="button" role="tab" aria-controls="form-tab-pane" aria-selected="false">BIỂU MẪU</button>
           </li>
           <li className="nav-item" role="presentation" onClick={async () => {
@@ -418,10 +421,49 @@ const CrudCategory = () => {
             <div className="row mt-5 mb-3">
               <div className="col-md-4">
 
-                <select className="form-select form-select-sm" aria-label="Small select example">
+                <select onChange={async () => {
+                  const value = document.getElementById("searchhoatdong").value
+                
+                  if (value == 'Tìm kiếm theo trạng thái hoạt động') {
+                    return;
+                  }
+                  if (value == 'Working') {
+                    const res = await axios({ url: "http://localhost:8080/DanhMuc/findALLWorking", method: "GET" })
+                  
+                    const formattedData = res.data.map((item, index) => ({
+                      key: index,
+                      categoryId: item.danh_mucId,
+                      categoryName: item.ten_loaiDM,
+                      createdDate: item.ngay_tao,
+                      imageUrl: item.hinh_anh,
+                      userId: item?.users?.accountID,
+                      bannerId: item?.banner?.bannerId,
+                      status: item.trang_thai_xoa == null ? "Chưa xóa" : "cc",
+                      active: item.hoat_dong
+                    }));
+                    setDataSource(formattedData);
+                   
+
+                  }
+                  if (value == 'NotWorking') {
+                    const res = await axios({ url: "http://localhost:8080/DanhMuc/findALLNotWorking", method: "GET" })
+                    const formattedData = res.data.map((item, index) => ({
+                      key: index,
+                      categoryId: item.danh_mucId,
+                      categoryName: item.ten_loaiDM,
+                      createdDate: item.ngay_tao,
+                      imageUrl: item.hinh_anh,
+                      userId: item?.users?.accountID,
+                      bannerId: item?.banner?.bannerId,
+                      status: item.trang_thai_xoa == null ? "Chưa xóa" : "cc",
+                      active: item.hoat_dong
+                    }));
+                    setDataSource(formattedData);
+                  }
+                }} className="form-select form-select-sm" id='searchhoatdong' aria-label="Small select example">
                   <option selected>Tìm kiếm theo trạng thái hoạt động</option>
-                  <option value={1}>Đang hoạt động</option>
-                  <option value={2}>Không hoạt động</option>
+                  <option value={'Working'}>Đang hoạt động</option>
+                  <option value={'NotWorking'}>Không hoạt động</option>
 
                 </select>
 
@@ -430,13 +472,13 @@ const CrudCategory = () => {
               </div>
               <div className="col-md-4 d-flex">
 
-                <div class="input-group mb-3">
-                  <input type="text" class="form-control form-control-sm" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2"/>
-                    <span class="input-group-text" id="basic-addon2"><SearchOutlined style={{ fontSize: 18, marginLeft: "1px" }} /></span>
-                </div>
-                
+                {/* <div class="input-group mb-3">
+                  <input type="text" class="form-control form-control-sm" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2" />
+                  <span class="input-group-text" id="basic-addon2"><SearchOutlined style={{ fontSize: 18, marginLeft: "1px" }} /></span>
+                </div> */}
 
-                
+
+
 
               </div>
 
@@ -524,7 +566,7 @@ const CrudCategory = () => {
 
 
 
-                  <img className='img-fluid' style={{ height: "80px" }} onDoubleClick={()=>{
+                  <img className='img-fluid' style={{ height: "80px" }} onDoubleClick={() => {
                     formik.setFieldValue('image', "");
                   }} src={`images/${formik.values.image}`} alt="" />
 
@@ -558,8 +600,8 @@ const CrudCategory = () => {
                     type="radio"
                     name="active"
                     id="option1"
-                    value="Đang hoạt động"
-                    checked={formik.values.active == 'Đang hoạt động'}
+                    value="Working"
+                    checked={formik.values.active == 'Working'}
                     onChange={formik.handleChange}
                   />
                   <label className="form-check-label fw-bold text-primary" htmlFor="option1">
@@ -572,8 +614,8 @@ const CrudCategory = () => {
                     type="radio"
                     name="active"
                     id="option2"
-                    value="Không hoạt động"
-                    checked={formik.values.active == 'Không hoạt động'}
+                    value="NOtWorking"
+                    checked={formik.values.active == 'NOtWorking'}
                     onChange={formik.handleChange}
                   />
                   <label className="form-check-label fw-bold text-primary" htmlFor="option2">

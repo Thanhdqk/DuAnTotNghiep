@@ -1,6 +1,7 @@
 package com.BaiTapLab.Repository;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,20 @@ import org.springframework.data.repository.query.Param;
 import com.BaiTapLab.Entity.SanPham;
 
 public interface SanphamRepository extends JpaRepository<SanPham, String> {
-	
+
+	@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
+			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
+			+ "s.chieu_cao, s.chieu_dai, s.chieu_rong, s.khoi_luong, "
+			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
+			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
+			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC ) AS tenHinhDauTien "
+			+ "FROM DonHang dh " + "LEFT JOIN dh.donhangchitiet dhct " + "LEFT JOIN dhct.sanpham s  "
+			+ "WHERE dh.trang_thai = 'Đã giao' " 
+			+"AND MONTH(dh.ngay_tao) = :thang " + "AND YEAR(dh.ngay_tao) = :nam "
+			+ "GROUP BY YEAR(dh.ngay_tao), MONTH(dh.ngay_tao), s.san_phamId, s.ten_san_pham, s.gia_goc "
+			+ "ORDER BY SUM(dhct.so_luong)  DESC")
+	List<Object[]> FindBySanPhamTopSellByMonth(@Param("thang") Month thang, @Param("nam") int nam);
+
 	// new sản phẩm từ thương hiệu
 	@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
 			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
@@ -22,10 +36,9 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
-			+ "FROM SanPham s "
-			+ "WHERE s.thuonghieu.thuong_hieuID = ?1")
+			+ "FROM SanPham s " + "WHERE s.thuonghieu.thuong_hieuID = ?1 AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null")
 	List<Object[]> findSanPhamThuongHieuID(String id);
-	
+
 	// new giảm giá
 	@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
 			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
@@ -55,17 +68,17 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
 			+ "FROM SanPham s " + "WHERE s.ngay_tao BETWEEN ?1 AND CURRENT_DATE")
 	List<Object[]> findSanPhamLast7Days(LocalDate now);
-	
-	// new tìm tìm kiếm sản phẩm  theo danh mục full
-		@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
-				+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
-				+ "s.chieu_cao, s.chieu_dai, s.chieu_rong, s.khoi_luong, "
-				+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
-				+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
-				+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId AND h.id = "
-				+ "(SELECT MIN(hh.id) FROM HinhAnh hh WHERE hh.sanpham.san_phamId = s.san_phamId)) AS tenHinhDauTien "
-				+ "FROM SanPham s WHERE s.danhmuc.danh_mucId = :danhMucId")
-		List<Object[]> findSanPhamByDMId(@Param("danhMucId") String id);
+
+	// new tìm tìm kiếm sản phẩm theo danh mục full
+	@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
+			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
+			+ "s.chieu_cao, s.chieu_dai, s.chieu_rong, s.khoi_luong, "
+			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
+			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
+			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId AND h.id = "
+			+ "(SELECT MIN(hh.id) FROM HinhAnh hh WHERE hh.sanpham.san_phamId = s.san_phamId)) AS tenHinhDauTien "
+			+ "FROM SanPham s WHERE s.danhmuc.danh_mucId = :danhMucId")
+	List<Object[]> findSanPhamByDMId(@Param("danhMucId") String id);
 
 	// new this week
 	@Query("SELECT s FROM SanPham s WHERE s.ngay_tao BETWEEN  ?1 AND CURRENT_DATE")
@@ -127,7 +140,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 
 	// tìm các sản phẩm bán nhiều nhất
 
-    // tìm kiếm  theo tên
+	// tìm kiếm theo tên
 	@Query(value = "SELECT * FROM SanPham WHERE ten_san_pham COLLATE SQL_Latin1_General_CP1_CI_AI LIKE %?1%", nativeQuery = true)
 	List<SanPham> findSanPhamByTenSanPham(String name);
 
@@ -573,7 +586,19 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 // tìm theo nhiều id
 	@Query("SELECT s FROM SanPham s WHERE s.danhmuc.danh_mucId IN :ids")
 	List<SanPham> findAllByDanhMucIds(@Param("ids") List<String> danhMucIds);
+	
+	
+	@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
+			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
+			+ "s.chieu_cao, s.chieu_dai, s.chieu_rong, s.khoi_luong, "
+			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
+			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
+			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
+			+ "FROM SanPham s " + "WHERE s.danhmuc.danh_mucId IN :ids")
+	List<Object[]> findAllByDanhMucIdsNEW(@Param("ids") List<String> danhMucIds);
 
+/////////////////////////////	/////////////////////////////
+	
 	// new
 
 	@Query("SELECT s FROM SanPham s JOIN s.danhgia d WHERE  d.so_sao = ?1 AND s.ten_san_pham LIKE %?2% AND s.phantram_GG >0")

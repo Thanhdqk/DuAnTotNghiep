@@ -1,5 +1,8 @@
 package com.BaiTapLab.RestController;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.BaiTapLab.Repository.DanhmucRepository;
+import com.BaiTapLab.Repository.SanphamRepository;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
@@ -31,6 +35,9 @@ public class RescontrollerSanPham {
 	
 	@Autowired
 	SanPhamService SanPhamService;
+	
+	@Autowired
+	SanphamRepository SanphamRepository; 
 	
 	@Autowired DanhmucRepository DanhmucRepository;
 	
@@ -71,6 +78,42 @@ public class RescontrollerSanPham {
 			return sanPhamList;
 		}
 	
+		@GetMapping("Product/FindBySanPhamTopSellByMonth")
+		public List<Map<String, Object>> FindBySanPhamTopSellByMonth() {
+			Month now = LocalDate.now().getMonth();
+			int nowyear = LocalDate.now().getYear();
+			List<Object[]> results = SanphamRepository.FindBySanPhamTopSellByMonth(now,nowyear);
+
+			List<Map<String, Object>> sanPhamList = new ArrayList<>();
+
+			for (Object[] row : results) {
+				Map<String, Object> sanPham = new HashMap<>();
+				sanPham.put("san_phamId", row[0]);
+				sanPham.put("hinhanh", row[20]);
+				sanPham.put("ten_san_pham", row[1]);
+				sanPham.put("ngayTao", row[2]);
+				sanPham.put("gia_goc", row[3]);
+				sanPham.put("gia_km", row[4]);
+				sanPham.put("moTa", row[5]);
+				sanPham.put("phan_tram_GG", row[6]);
+				sanPham.put("so_luong", row[7]);
+				sanPham.put("hanGG", row[8]);
+				sanPham.put("trangThaiKho", row[9]);
+				sanPham.put("luotMua", row[10]);
+				sanPham.put("hoatDong", row[11]);
+				sanPham.put("pheDuyet", row[12]);
+				sanPham.put("trangThaiXoa", row[13]);
+				sanPham.put("chieuCao", row[14]);
+				sanPham.put("chieuDai", row[15]);
+				sanPham.put("chieuRong", row[16]);
+				sanPham.put("khoiLuong", row[17]);
+				sanPham.put("sosao", row[18]);
+				sanPham.put("luotdanhgia", row[19]);
+				sanPhamList.add(sanPham);
+			}
+
+			return sanPhamList;
+		}
 	
 	
 	

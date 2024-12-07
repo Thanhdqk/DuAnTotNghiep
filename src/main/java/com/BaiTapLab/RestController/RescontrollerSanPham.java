@@ -1,9 +1,16 @@
 package com.BaiTapLab.RestController;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -33,6 +40,60 @@ public class RescontrollerSanPham {
 	SanphamRepository sanphamRepository;
 	@Autowired
 	DanhmucRepository DanhmucRepository;
+
+	public static Month parseMonth(CharSequence text, TextStyle style, Locale locale) {
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendText(ChronoField.MONTH_OF_YEAR, style)
+				.toFormatter(locale);
+		return Month.from(fmt.parse(text));
+	}
+
+	@GetMapping("Product/getsp23")
+	public List<Object[]>getsp() {
+		Month now = LocalDate.now().getMonth();
+
+		int nowyear = LocalDate.now().getYear();
+		List<Object[]> list = sanphamRepository.FindBySanPhamTopSellByMonth(now.getValue(), nowyear, "Đã giao");
+		return list;
+	}
+
+	@GetMapping("Product/FindBySanPhamTopSellByMonth")
+	public List<Map<String, Object>> FindBySanPhamTopSellByMonth() {
+		Month now = LocalDate.now().getMonth();
+		
+
+		int nowyear = LocalDate.now().getYear();
+		List<Object[]> results = sanphamRepository.findbestsellbymonththisyear(now.getValue(),nowyear);
+
+		List<Map<String, Object>> sanPhamList = new ArrayList<>();
+
+		for (Object[] row : results) {
+			Map<String, Object> sanPham = new HashMap<>();
+			sanPham.put("san_phamId", row[0]);
+			sanPham.put("hinhanh", row[20]);
+			sanPham.put("ten_san_pham", row[1]);
+			sanPham.put("ngayTao", row[2]);
+			sanPham.put("gia_goc", row[3]);
+			sanPham.put("gia_km", row[4]);
+			sanPham.put("moTa", row[5]);
+			sanPham.put("phan_tram_GG", row[6]);
+			sanPham.put("so_luong", row[7]);
+			sanPham.put("hanGG", row[8]);
+			sanPham.put("trangThaiKho", row[9]);
+			sanPham.put("luotMua", row[10]);
+			sanPham.put("hoatDong", row[11]);
+			sanPham.put("pheDuyet", row[12]);
+			sanPham.put("trangThaiXoa", row[13]);
+			sanPham.put("chieuCao", row[14]);
+			sanPham.put("chieuDai", row[15]);
+			sanPham.put("chieuRong", row[16]);
+			sanPham.put("khoiLuong", row[17]);
+			sanPham.put("sosao", row[18]);
+			sanPham.put("luotdanhgia", row[19]);
+			sanPhamList.add(sanPham);
+		}
+
+		return sanPhamList;
+	}
 
 	// find Full sản phẩm theo thương hiệu tối ưu
 	@GetMapping("Product/FindBythuonghieu")
@@ -114,7 +175,7 @@ public class RescontrollerSanPham {
 		List<Object[]> results = sanphamRepository.findSanphamonlyname(PageRequest.of(0, 10));
 
 		List<Map<String, Object>> sanPhamList = new ArrayList<>();
-		
+
 		for (Object[] row : results) {
 			Map<String, Object> sanPham = new HashMap<>();
 			sanPham.put("san_phamId", row[0]);
@@ -296,17 +357,24 @@ public class RescontrollerSanPham {
 	public List<SanPham> checkIfProductIsValid(@RequestParam List<String> selectedproductid) {
 		List<SanPham> producthaserror = new ArrayList<SanPham>();
 		List<SanPham> products = new ArrayList<SanPham>();
-
-		for (String string : selectedproductid) {
-			SanPham findsp = SanPhamService.FindProductByID(string);
-			products.add(findsp);
-		}
-
-		for (SanPham sanPham : products) {
-			if (sanPham.getSo_luong() <= 0 || sanPham.getHoat_dong().equals("Off") || sanPham.getTrang_thai_xoa()!=null) {
-				producthaserror.add(sanPham);
+		try {
+			for (String string : selectedproductid) {
+				SanPham findsp = sanphamRepository.findSanPhamByIdIfItsValid(string);
+				products.add(findsp);
 			}
+			for (SanPham sanPham : products) {
+				if (sanPham.getSo_luong() <= 0 || sanPham.getHoat_dong().equals("Off")
+						|| sanPham.getTrang_thai_xoa() != null || sanPham.getDanhmuc().getTrang_thai_xoa() != null
+						|| sanPham.getDanhmuc().getHoat_dong().equals("Off")
+						|| sanPham.getThuonghieu().getTrang_thai_xoa() != null
+						|| sanPham.getThuonghieu().getHoat_dong().equals("Off")) {
+					producthaserror.add(sanPham);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
 		return producthaserror;
 	}
 
@@ -481,7 +549,6 @@ public class RescontrollerSanPham {
 			@RequestParam("sosao") int sosao) {
 		return SanPhamService.findSanPhamByDandMucAndRatingWithGG(id, sosao);
 	}
-	
 
 	// Tìm sản phẩm theo tên và danh mục và số sao (rating) không có khuyến mãi:
 	@GetMapping("Product/FindbySoSaoandDanhmucandNameWithDiscount")
@@ -501,7 +568,7 @@ public class RescontrollerSanPham {
 
 	// tìm sản phẩm theo tên % %
 	@GetMapping("Product/FindbyName")
-	public List<Map<String, Object>> findbynamelike(@RequestParam("name")String name) {
+	public List<Map<String, Object>> findbynamelike(@RequestParam("name") String name) {
 
 		List<Object[]> results = sanphamRepository.findbynamelike(name);
 
@@ -535,16 +602,14 @@ public class RescontrollerSanPham {
 
 		return sanPhamList;
 	}
-	
-	
-	
+
 //	public List<SanPham> FindSanPhamLikeName(@RequestParam("name") String name) {
 //
 //		return SanPhamService.FindSanPhamLikeName(name);
 //	}
-	
+
 	@GetMapping("Product/FindbyNamenew")
-	public List<Map<String, Object>> findbynamenew(@RequestParam("name")String name) {
+	public List<Map<String, Object>> findbynamenew(@RequestParam("name") String name) {
 
 		List<Object[]> results = sanphamRepository.findbyname(name);
 
@@ -578,7 +643,6 @@ public class RescontrollerSanPham {
 
 		return sanPhamList;
 	}
-	
 
 	// tìm sản phẩm theo name và danh mục có giảm giá
 	@GetMapping("Product/FindbyNameandDanhmucWithDiscount")

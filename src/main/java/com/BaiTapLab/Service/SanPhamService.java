@@ -28,6 +28,11 @@ public class SanPhamService {
 
 		return SanphamRepository.findSanPhamThuongHieuID(id);
 	}
+	
+	public List<Object[]> findBySanPhamTopSellByMonth(int thang,int nam) {
+		
+		return SanphamRepository.findbestsellbymonththisyear(thang,nam);
+	}
 
 	public List<Object[]> findSanPhamByDMId(String id) {
 

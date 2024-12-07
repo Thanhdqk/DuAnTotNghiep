@@ -12,6 +12,83 @@ import com.BaiTapLab.Entity.SanPham;
 
 public interface SanphamRepository extends JpaRepository<SanPham, String> {
 
+	@Query(value = "SELECT " +
+            "    s.san_pham_id, " +
+            "    s.ten_san_pham, " +
+            "    s.ngay_tao, " +
+            "    s.gia_goc, " +
+            "    s.gia_km, " +
+            "    s.mo_ta, " +
+            "    s.phantram_GG, " +
+            "    s.so_luong, " +
+            "    s.han_gg, " +
+            "    s.trang_thai_kho, " +
+            "    s.luot_mua, " +
+            "    s.hoat_dong, " +
+            "    s.phe_duyet, " +
+            "    s.trang_thai_xoa, " +
+            "    s.chieu_cao, " +
+            "    s.chieu_dai, " +
+            "    s.chieu_rong, " +
+            "    s.khoi_luong, " +
+            "    (SELECT CAST(AVG(so_sao) AS DECIMAL(10,1)) " +
+            "     FROM DanhGia dg " +
+            "     WHERE dg.san_pham_id = s.san_pham_id) AS soSao, " +
+            "    (SELECT COUNT(*) " +
+            "     FROM DanhGia dg " +
+            "     WHERE dg.san_pham_id = s.san_pham_id) AS soDanhGia, " +
+            "    (SELECT TOP 1 h.ten_hinh " +
+            "     FROM HinhAnh h " +
+            "     WHERE h.san_pham_id = s.san_pham_id " +
+            "     ORDER BY h.id ASC) AS tenHinhDauTien " +
+            "FROM DonHang dh " +
+            "LEFT JOIN DonHangChiTiet dhct ON dh.don_hangid = dhct.don_hangid " +
+            "LEFT JOIN SanPham s ON dhct.san_pham_id = s.san_pham_id " +
+            "WHERE " +
+            "    dh.trang_thai = N'Đã giao' " +
+            "    AND MONTH(dh.ngay_tao) = :thang " +
+            "    AND YEAR(dh.ngay_tao) = :nam " +
+            "GROUP BY " +
+            "    YEAR(dh.ngay_tao), " +
+            "    MONTH(dh.ngay_tao), " +
+            "    s.san_pham_id, " +
+            "    s.ten_san_pham, " +
+            "    s.ngay_tao, " +
+            "    s.gia_goc, " +
+            "    s.gia_km, " +
+            "    s.mo_ta, " +
+            "    s.phantram_GG, " +
+            "    s.so_luong, " +
+            "    s.han_gg, " +
+            "    s.trang_thai_kho, " +
+            "    s.luot_mua, " +
+            "    s.hoat_dong, " +
+            "    s.phe_duyet, " +
+            "    s.trang_thai_xoa, " +
+            "    s.chieu_cao, " +
+            "    s.chieu_dai, " +
+            "    s.chieu_rong, " +
+            "    s.khoi_luong " +
+            "ORDER BY " +
+            "    SUM(dhct.so_luong) DESC", 
+            nativeQuery = true)
+	List<Object[]> findbestsellbymonththisyear(@Param("thang") int thang, @Param("nam") int nam);
+
+	@Query("SELECT   s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
+			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, "
+			+ "s.trang_thai_xoa,  s.chieu_cao, s.chieu_dai, s.chieu_rong, s.khoi_luong, "
+			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
+			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
+			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
+			+ "FROM DonHang dh " + "LEFT JOIN dh.donhangchitiet dhct  " + "LEFT JOIN dhct.sanpham s  "
+			+ "WHERE dh.trang_thai = :trangthai " + "AND MONTH(dh.ngay_tao) = :thang " + "AND YEAR(dh.ngay_tao) = :nam  "
+//			+ "GROUP BY YEAR(dh.ngay_tao), MONTH(dh.ngay_tao), s.san_phamId, s.ten_san_pham, s.gia_goc,s.ngay_tao, s.gia_km, s.mo_ta, s.phantram_GG, "
+//			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, "
+//			+ "s.trang_thai_xoa,  s.chieu_cao, s.chieu_dai, s.chieu_rong, s.khoi_luong"
+//			+ "ORDER BY SUM(dhct.so_luong)  DESC"
+			)
+	List<Object[]> FindBySanPhamTopSellByMonth(@Param("thang") int thang, @Param("nam") int nam,@Param("trangthai") String trangthai);
+
 	// new sản phẩm từ thương hiệu
 	@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
 			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
@@ -20,7 +97,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
 			+ "FROM SanPham s " + "WHERE s.thuonghieu.thuong_hieuID = ?1"
-			+ "AND s.hoat_dong = 'On' AND s.trang_thai_xoa  is null ")
+			+ "AND s.hoat_dong = 'On' AND s.trang_thai_xoa  is null AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null ")
 	List<Object[]> findSanPhamThuongHieuID(String id);
 
 	// new tìm tìm kiếm sản phẩm theo danh mục full
@@ -31,7 +108,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId AND h.id = "
 			+ "(SELECT MIN(hh.id) FROM HinhAnh hh WHERE hh.sanpham.san_phamId = s.san_phamId)) AS tenHinhDauTien "
-			+ "FROM SanPham s WHERE s.hoat_dong = 'On' AND s.trang_thai_xoa ='' AND  s.danhmuc.danh_mucId = :danhMucId")
+			+ "FROM SanPham s WHERE s.hoat_dong = 'On' AND s.trang_thai_xoa ='' AND  s.danhmuc.danh_mucId = :danhMucId AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null")
 	List<Object[]> findSanPhamByDMId(@Param("danhMucId") String id);
 
 	// tìm các sản phẩm có khuyến mãi Full
@@ -41,7 +118,8 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
-			+ "FROM SanPham s WHERE s.phantram_GG > 0" + "AND s.hoat_dong = 'On' AND s.trang_thai_xoa  is null ")
+			+ "FROM SanPham s WHERE s.phantram_GG > 0"
+			+ "AND s.hoat_dong = 'On' AND s.trang_thai_xoa  is null AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null ")
 	List<Object[]> findSanPhamphantramGGfull();
 
 	// new this week full
@@ -52,7 +130,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
 			+ "FROM SanPham s "
-			+ "WHERE  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null  AND s.ngay_tao BETWEEN ?1 AND CURRENT_DATE")
+			+ "WHERE  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null  AND s.ngay_tao BETWEEN ?1 AND CURRENT_DATE AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null")
 	List<Object[]> findSanPhamLast7Daysfull(LocalDate now);
 
 	// new findListSimilar
@@ -63,7 +141,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId AND h.id = "
 			+ "(SELECT MIN(hh.id) FROM HinhAnh hh WHERE hh.sanpham.san_phamId = s.san_phamId)) AS tenHinhDauTien "
-			+ "FROM SanPham s WHERE  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null  AND s.danhmuc.danh_mucId = :danhMucId")
+			+ "FROM SanPham s WHERE  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null  AND s.danhmuc.danh_mucId = :danhMucId AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null")
 	List<Object[]> finListdSanPhamById(@Param("danhMucId") String id, Pageable page);
 
 //  new this week
@@ -77,7 +155,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
 			+ "FROM SanPham s "
-			+ "WHERE  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null  AND s.ngay_tao BETWEEN ?1 AND CURRENT_DATE")
+			+ "WHERE  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null  AND s.ngay_tao BETWEEN ?1 AND CURRENT_DATE AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null")
 	List<Object[]> findSanPhamLast7DaysTOP100(LocalDate now, Pageable page);
 
 	// new luot mua
@@ -87,11 +165,11 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
-			+ "FROM SanPham s WHERE  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null    ORDER BY s.luot_mua DESC ")
+			+ "FROM SanPham s WHERE  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null  AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null   ORDER BY s.luot_mua DESC  ")
 	List<Object[]> findTop10ByLuotMua(Pageable page);
 
 	@Query("SELECT s.san_phamId, s.ten_san_pham "
-			+ "FROM SanPham s WHERE  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null    ORDER BY s.luot_mua DESC ")
+			+ "FROM SanPham s WHERE  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null  AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null   ORDER BY s.luot_mua DESC ")
 	List<Object[]> findSanphamonlyname(Pageable page);
 
 	@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
@@ -100,7 +178,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
-			+ "FROM SanPham s WHERE s.phantram_GG > 0 AND  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null ")
+			+ "FROM SanPham s WHERE s.phantram_GG > 0 AND  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null ")
 	List<Object[]> findSanPhamPhanTramGiamGia(Pageable pageable);
 
 	@Query("select s from SanPham s where s.phe_duyet = '1'")
@@ -118,9 +196,13 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	@Query("SELECT s.ten_san_pham FROM SanPham s")
 	List<String> findallName();
 
-	@Query("SELECT s FROM SanPham s WHERE s.san_phamId = ?1")
+	@Query("SELECT s FROM SanPham s WHERE s.san_phamId = ?1 ")
 	SanPham findSanPhamById(String id);
 
+	@Query("SELECT s FROM SanPham s WHERE s.san_phamId = ?1 ")
+	SanPham findSanPhamByIdIfItsValid(String id);
+
+// 	
 	// tìm các sản phẩm có khuyến mãi
 	@Query("SELECT s FROM SanPham s WHERE s.phantram_GG > 0")
 	List<SanPham> findSanPhamphantramGG();
@@ -154,22 +236,21 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
-			+ "FROM SanPham s " + "WHERE s.ten_san_pham = ?1 AND s.hoat_dong = 'On' AND s.trang_thai_xoa  is null ")
+			+ "FROM SanPham s "
+			+ "WHERE s.ten_san_pham = ?1 AND s.hoat_dong = 'On' AND s.trang_thai_xoa  is null AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null ")
 	List<Object[]> findbyname(String id);
 
 	@Query("SELECT s FROM SanPham s WHERE s.ten_san_pham LIKE ?1")
 	SanPham findONESanPhamByTenSanPham(String name);
-	
-	
+
 	@Query("SELECT s.san_phamId, s.ten_san_pham, s.ngay_tao, s.gia_goc, s.gia_km, s.mo_ta, s.phantram_GG, "
-	        + "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
-	        + "s.chieu_cao, s.chieu_dai, s.chieu_rong, s.khoi_luong, "
-	        + "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
-	        + "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
-	        + "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
-	        + "FROM SanPham s "
-	        + "WHERE LOWER(s.ten_san_pham) LIKE LOWER(CONCAT('%', :name, '%')) "
-	        + "AND s.hoat_dong = 'On' AND s.trang_thai_xoa  is null ")
+			+ "s.so_luong, s.han_gg, s.trang_thai_kho, s.luot_mua, s.hoat_dong, s.phe_duyet, s.trang_thai_xoa, "
+			+ "s.chieu_cao, s.chieu_dai, s.chieu_rong, s.khoi_luong, "
+			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
+			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
+			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
+			+ "FROM SanPham s " + "WHERE LOWER(s.ten_san_pham) LIKE LOWER(CONCAT('%', :name, '%')) "
+			+ "AND s.hoat_dong = 'On' AND s.trang_thai_xoa  is null  AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null")
 	List<Object[]> findbynamelike(@Param("name") String name);
 
 	// tìm kiếm theo tên ko có khuyến mãi
@@ -199,7 +280,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 	List<SanPham> findSanPhamByDandMucAndRatingWithGG(String id, int rating);
 
 	// Tìm sản phẩm theo tên và danh mục và số sao (rating) không có khuyến mãi:
-	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE p.ten_san_pham LIKE %?1% AND p.danhmuc.danh_mucId = ?2 AND d.so_sao = ?3 AND p.phantram_GG >0")
+	@Query("SELECT p FROM SanPham p JOIN p.danhgia d WHERE  p.ten_san_pham LIKE %?1% AND p.danhmuc.danh_mucId = ?2 AND d.so_sao = ?3 AND p.phantram_GG >0 ")
 	List<SanPham> findSanPhamByTenAndDandMucAndRatingWithGG(String name, String id, int rating);
 
 	// tìm theo danh muc KHÔNG có khuyến mãi

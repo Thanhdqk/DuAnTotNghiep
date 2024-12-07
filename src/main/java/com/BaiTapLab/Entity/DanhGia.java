@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -30,7 +29,7 @@ public class DanhGia {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String noi_dung;
 	
-	public int so_sao;
+	public float so_sao;
 	
 	public String hinh_anh;
 	

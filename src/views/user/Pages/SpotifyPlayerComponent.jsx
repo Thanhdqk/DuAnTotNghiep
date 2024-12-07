@@ -60,7 +60,7 @@ const SpotifyPlayerComponent = () => {
     const username = encodeURIComponent(res.data.display_name); // hoặc dùng email/id nếu cần
     const userEmail = encodeURIComponent(res.data.email);
     const token1 = await axios({ url: `http://localhost:8080/api/users/spotifylogin?username=${username}&email=${userEmail}`, method: "GET" })
-
+    localStorage.setItem("userToken",token1.data)
     setUserData(res.data);
    
     Navigate("/")

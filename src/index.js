@@ -46,6 +46,8 @@ import CRUDAnh from './views/admin/Pages/CRUDAnh';
 import SpotifyPlayerComponent from './views/user/Pages/SpotifyPlayerComponent';
 import GitHubLoginPopup from './views/user/Pages/GitHubLoginPopup';
 import SpotifyCallback from './views/user/Pages/SpotifyCallback';
+import Randomvoucher from './views/user/Pages/Randomvoucher';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
@@ -78,9 +80,10 @@ root.render(
           <Route path='voucher' element={<Voucher></Voucher>}></Route>
           <Route path='Thanhtoan' element={<Thanhtoan></Thanhtoan>}></Route>
           <Route path='Sanphamyeuthich' element={<YeuThichSanPham></YeuThichSanPham>}></Route>
-          <Route path='google' element={<GoogleLoginButton></GoogleLoginButton>}></Route>
-          <Route path='login' element={<SpotifyPlayerComponent></SpotifyPlayerComponent>}></Route>
+          <Route path='login' element={<GoogleLoginButton></GoogleLoginButton>}></Route>
+          {/* <Route path='login' element={<SpotifyPlayerComponent></SpotifyPlayerComponent>}></Route> */}
           <Route path='success' element={<RenderLogin></RenderLogin>}></Route>
+          <Route path='random' element={<Randomvoucher></Randomvoucher>}></Route>
          
 
         </Route>
@@ -93,6 +96,7 @@ root.render(
         <Route path='danhmuc' element={<CrudCategory></CrudCategory>}></Route>
         <Route path='hinhanh' element={<CRUDAnh></CRUDAnh>}></Route>
         <Route path='popup' element={<CrudPOPUP></CrudPOPUP>}></Route>
+        
        
         
         <Route path='/admin/dashboard' element={

@@ -3,6 +3,7 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import SpotifyPlayerComponent from './SpotifyPlayerComponent';
 
 
 
@@ -76,7 +77,21 @@ const GoogleLoginButton = () => {
           </GoogleOAuthProvider>
 
           
+          
+         
 
+
+         
+        </div>
+        <div className="col-md-4"></div>
+
+
+        <div className="col-md-4"></div>
+        <div className="col-md-4 mt-5">
+          <SpotifyPlayerComponent></SpotifyPlayerComponent>
+
+          
+          
          
 
 

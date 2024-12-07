@@ -50,7 +50,7 @@ const CrudCategory = () => {
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Hãy Nhập Tên Danh Mục'),
-      bannerId: Yup.string().required('Hãy Nhập Chọn Banner'),
+   
       createdDate: Yup.date().required('Hãy Nhập Ngày Tạo'),
       image: Yup.string().required('Hãy Nhập Chọn Chọn ảnh')
     }),
@@ -88,7 +88,7 @@ const CrudCategory = () => {
         const formData = new FormData();
         formData.append('id', values.id);
         formData.append('name', values.name);
-        formData.append('bannerId', values.bannerId);
+      
         formData.append('createdDate', values.createdDate);
         formData.append('status', values.active);
         formData.append('image', values.image);
@@ -153,7 +153,7 @@ const CrudCategory = () => {
         createdDate: item.danhMuc.ngay_tao,
         imageUrl: item.danhMuc.hinh_anh,
         userId: item.danhMuc?.users?.accountID,
-        bannerId: item.danhMuc?.banner?.bannerId,
+
         status: item.danhMuc.trang_thai_xoa == null ? "Chưa xóa" : "cc",
         active: item.danhMuc.hoat_dong,
         actions: item.tenHanhDong
@@ -219,11 +219,7 @@ const CrudCategory = () => {
       dataIndex: 'userId', // Adjust if your API uses a different field
       key: 'userId',
     },
-    {
-      title: 'Banner ID',
-      dataIndex: 'bannerId', // Adjust if your API uses a different field
-      key: 'bannerId',
-    },
+   
     {
       title: 'Trạng Thái',
       dataIndex: 'status',
@@ -523,23 +519,7 @@ const CrudCategory = () => {
                   {formik.errors.name && <div className="text-danger ms-1 fw-bold">{formik.errors.name}</div>}
                 </div>
 
-                <select
-                  className="form-select form-select mb-4 text-primary fw-bold"
-                  name="bannerId"
-                  value={formik.values.bannerId}
-                  onChange={formik.handleChange}
-                >
-                  <option disabled value="">
-                    CHỌN BANNER
-                  </option>
-                  {dataBanner.map((item) => (
-                    <option key={item.bannerId} value={item.bannerId}>
-                      {item.bannerId}
-                    </option>
-                  ))}
-                </select>
-                {formik.errors.bannerId && <div className="text-danger ms-1 fw-bold">{formik.errors.bannerId}</div>}
-
+              
 
                 {formik.values.image == "" && <label gay="sad" className="custum-file-upload mt-4" htmlFor="file">
 

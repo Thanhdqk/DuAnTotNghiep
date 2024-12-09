@@ -47,11 +47,12 @@ public class ThuongHieuRestController {
     @Autowired
     UsersRepository userRepository;
     
-    @Autowired
-    NhaCungCapRepository nhaCungCapRepository;
     
     @Autowired
 	HanhDongRepository HanhDongRepository;
+    
+    @Autowired
+    ThuongHieuService thuongHieuService;
     
     @GetMapping("/loadThuongHieu")
     public ResponseEntity<List<ThuongHieu>> getThuongHieu(){
@@ -81,26 +82,32 @@ public class ThuongHieuRestController {
         System.out.println("Latest ThuongHieuId: " + latestThuongHieuId); // In để kiểm tra
         return latestThuongHieuId;
     }
-
+    
     private String generateNewThuongHieuId(String latestThuongHieuId) {
         // Kiểm tra xem mã cũ có hợp lệ không
         if (latestThuongHieuId != null && latestThuongHieuId.startsWith("ThuongHieu")) {
             try {
-                // Lấy phần số từ mã (tách sau dấu "_")
-                String numberPart = latestThuongHieuId.substring("ThuongHieu".length()); // Lấy phần sau "ThuongHieu_"
-                System.out.println("Number part before increment: " + numberPart); // In để kiểm tra
-                int newIdNumber = Integer.parseInt(numberPart) + 1; // Tăng 1 đơn vị
-                System.out.println("New Id Number: " + newIdNumber); // In để kiểm tra
-                return "ThuongHieu" + newIdNumber; // Trả về mã mới, ví dụ: ThuongHieu_2
+                // Lấy phần số từ mã (tách sau "ThuongHieu")
+                String numberPart = latestThuongHieuId.substring("ThuongHieu".length()); 
+                System.out.println("Number part before increment: " + numberPart); // Debug
+
+                // Chuyển phần số thành integer và tăng lên 1
+                int newIdNumber = Integer.parseInt(numberPart) + 1;
+
+                // Định dạng lại số mới để luôn có 3 chữ số
+                String formattedId = String.format("%03d", newIdNumber); // Đảm bảo luôn có 3 chữ số
+
+                System.out.println("Formatted new ID: " + formattedId); // Debug
+
+                // Trả về mã mới, ví dụ: ThuongHieu010
+                return "ThuongHieu" + formattedId;
             } catch (NumberFormatException e) {
-                // Xử lý nếu mã không hợp lệ (ví dụ: nếu phần số không phải là số hợp lệ)
+                // Xử lý lỗi nếu phần số không hợp lệ
                 return "ThuongHieu001"; // Trả về mã mặc định nếu có lỗi
             }
         }
         return "ThuongHieu001"; // Nếu mã cũ không hợp lệ, trả về mã mặc định
     }
-
-
     
     @GetMapping("/edit/thuonghieu/{thuong_hieuID}")
 	public ResponseEntity<ThuongHieu> getSanPhamById(@PathVariable String thuong_hieuID){
@@ -115,23 +122,16 @@ public class ThuongHieuRestController {
 	        @RequestParam("ngay_tao") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngay_tao,
 	        @RequestParam("hoat_dong") String hoat_dong,
 	        @RequestParam(value = "hinh_anh", required = false) MultipartFile[] hinh_anh,
-    		@RequestParam("accountID") String accountID,
-    		@RequestParam("nha_cung_capID") String nha_cung_capID){
+    		@RequestParam("accountID") String accountID){
     		
-//    		Map<String, String> response = new HashMap<>();
     		HanhDong hd = new HanhDong();
 
 	    try {
 	    	
-	    	// Lấy nhà cung cấp từ database
-	        NhaCungCap nhaCungCap = nhaCungCapRepository.findByNha_cung_capID(nha_cung_capID);
-	        
-	        // Kiểm tra tên thương hiệu đã tồn tại trong nhà cung cấp này chưa
-	        if (thuonghieuRepository.existsByTenThuongHieuAndNhaCungCap(ten_thuong_hieu, nha_cung_capID)) {
-	            // Nếu trùng, trả về lỗi
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                    .body("Tên thương hiệu đã tồn tại trong nhà cung cấp này.");
-	        }
+	    	if (thuonghieuRepository.existsByTenThuongHieu(ten_thuong_hieu)) {
+	    	    return ResponseEntity.badRequest().body("Tên thương hiệu đã tồn tại!");
+	    	}
+	    	
 	        // Tạo đối tượng Thương Hiệu từ các tham số
 	        ThuongHieu thuonghieu = new ThuongHieu();
 	        thuonghieu.setThuong_hieuID(thuong_hieuID);
@@ -139,7 +139,6 @@ public class ThuongHieuRestController {
 	        thuonghieu.setNgay_tao(ngay_tao);
 	        thuonghieu.setHoat_dong(hoat_dong);
 	        thuonghieu.setUsers(userRepository.findByAccountID(accountID));
-	        thuonghieu.setNhacungcap(nhaCungCapRepository.findByNha_cung_capID(nha_cung_capID));
 	        
 	        // Xử lý file ảnh nếu được upload
 	        if (hinh_anh != null && hinh_anh.length > 0) {
@@ -191,8 +190,7 @@ public class ThuongHieuRestController {
 	        @RequestParam("ngay_tao") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngay_tao,
 	        @RequestParam("hoat_dong") String hoat_dong,
 	        @RequestParam(value = "hinh_anh", required = false) MultipartFile[] hinh_anh,
-    		@RequestParam("accountID") String accountID,
-    		@RequestParam("nha_cung_capID") String nha_cung_capID) {
+    		@RequestParam("accountID") String accountID) {
     		
     		HanhDong hd = new HanhDong();
 
@@ -200,13 +198,17 @@ public class ThuongHieuRestController {
 	        // Tìm thuonghieu theo ID
 	        ThuongHieu thuonghieu = thuonghieuService.findByThuongHieuID(thuong_hieuID);
 	        
+	        if (thuonghieuRepository.existsByTenThuongHieu(ten_thuong_hieu) &&
+	                !thuonghieu.getTen_thuong_hieu().equals(ten_thuong_hieu)) {
+	            return ResponseEntity.badRequest().body("Tên thương hiệu đã tồn tại!");
+	        }
+	        
 	        // Cập nhật các thuộc tính của thuonghieu
 	        thuonghieu.setThuong_hieuID(thuong_hieuID);
 	        thuonghieu.setTen_thuong_hieu(ten_thuong_hieu);
 	        thuonghieu.setNgay_tao(ngay_tao);
 	        thuonghieu.setHoat_dong(hoat_dong);
 	        thuonghieu.setUsers(userRepository.findByAccountID(accountID));
-	        thuonghieu.setNhacungcap(nhaCungCapRepository.findByNha_cung_capID(nha_cung_capID));
 
 	        // Xử lý file ảnh nếu được upload
 	        if (hinh_anh != null && hinh_anh.length > 0) {

@@ -47,9 +47,6 @@ public class ThuongHieu {
     @JoinColumn(name = "accountID")
     public Users users;
 
-    @ManyToOne
-    @JoinColumn(name = "nha_cung_capID")
-    public NhaCungCap nhacungcap;
 
     @Override
     public String toString() {
@@ -61,7 +58,6 @@ public class ThuongHieu {
                 ", trang_thai_xoa='" + trang_thai_xoa + '\'' +
                 ", hinh_anh='" + hinh_anh + '\'' +
                 ", users=" + (users != null ? users.getAccountID() : "null") +
-                ", nhacungcap=" + (nhacungcap != null ? nhacungcap.getNha_cung_capID() : "null") +
                 '}';
     }
 }

@@ -77,14 +77,22 @@ public class BaiDangRestController {
         // Kiểm tra xem mã cũ có hợp lệ không
         if (latestBaiDangId != null && latestBaiDangId.startsWith("BaiDang")) {
             try {
-                // Lấy phần số từ mã (tách sau dấu "_")
-                String numberPart = latestBaiDangId.substring("BaiDang".length()); // Lấy phần sau "ThuongHieu_"
-                System.out.println("Number part before increment: " + numberPart); // In để kiểm tra
-                int newIdNumber = Integer.parseInt(numberPart) + 1; // Tăng 1 đơn vị
-                System.out.println("New Id Number: " + newIdNumber); // In để kiểm tra
-                return "BaiDang" + newIdNumber; // Trả về mã mới, ví dụ: ThuongHieu_2
+                // Lấy phần số từ mã (tách sau "BaiDang")
+                String numberPart = latestBaiDangId.substring("BaiDang".length()); 
+                System.out.println("Number part before increment: " + numberPart); // Debug
+
+                // Chuyển phần số thành integer và tăng lên 1
+                int newIdNumber = Integer.parseInt(numberPart) + 1;
+
+                // Định dạng lại số mới để luôn có 3 chữ số
+                String formattedId = String.format("%03d", newIdNumber); // Đảm bảo luôn có 3 chữ số
+
+                System.out.println("Formatted new ID: " + formattedId); // Debug
+
+                // Trả về mã mới, ví dụ: ThuongHieu010
+                return "BaiDang" + formattedId;
             } catch (NumberFormatException e) {
-                // Xử lý nếu mã không hợp lệ (ví dụ: nếu phần số không phải là số hợp lệ)
+                // Xử lý lỗi nếu phần số không hợp lệ
                 return "BaiDang001"; // Trả về mã mặc định nếu có lỗi
             }
         }
@@ -146,7 +154,7 @@ public class BaiDangRestController {
 	        BaiDang savedBaiDang = baidangService.createBaiDang(baidang);
 	        hd.setBaidang(baidang);
             hd.setTen_hanh_dong("Thêm");
-          
+//            Thêm ngày hành động
            hd.setNgay_hanh_dong(LocalDate.now());
             HanhDongRepository.save(hd);
 	        // Trả về thông tin baidang đã lưu

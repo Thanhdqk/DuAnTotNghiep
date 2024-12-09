@@ -43,4 +43,5 @@ public class ThuongHieuService {
         return result > 0; // Trả về true nếu cập nhật thành công
     }
 	
+	
 }

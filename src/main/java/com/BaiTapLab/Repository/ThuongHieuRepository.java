@@ -25,8 +25,7 @@ public interface ThuongHieuRepository extends JpaRepository<ThuongHieu, String>{
 	
 	@Query(value = "SELECT th.thuong_hieuID FROM ThuongHieu th ORDER BY th.thuong_hieuID DESC")
     List<String> getLatestThuongHieuId(Pageable pageable);
-
-	@Query("SELECT COUNT(th) > 0 FROM ThuongHieu th WHERE th.ten_thuong_hieu = ?1 AND th.nhacungcap.nha_cung_capID = ?2 AND th.trang_thai_xoa IS NULL")
-	boolean existsByTenThuongHieuAndNhaCungCap(String ten_thuong_hieu, String nha_cung_capID);
-
+	
+	@Query("SELECT COUNT(v) > 0 FROM ThuongHieu v WHERE v.ten_thuong_hieu = ?1")
+    boolean existsByTenThuongHieu(String tenThuongHieu);
 }

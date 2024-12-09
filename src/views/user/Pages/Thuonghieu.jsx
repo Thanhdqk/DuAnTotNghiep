@@ -36,7 +36,6 @@ const Thuonghieu = () => {
     thuong_hieuID: "",
     hoat_dong: "On",
     hanh_dong: "Thêm",
-    nha_cung_capID: "1",
   });
   const [activeKey, setActiveKey] = useState("1");
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -44,8 +43,6 @@ const Thuonghieu = () => {
   const [fileList, setFileList] = useState([]);
   const [searchStatus, setSearchStatus] = useState("");
   const [newThuongHieuID, setNewThuongHieuID] = useState("");
-  const [nhaCungCapList, setNhaCungCapList] = useState([]);
-  const [nha_cung_capID, setNhaCungCapID] = useState("Poca");
 
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
@@ -108,8 +105,7 @@ const Thuonghieu = () => {
         const data = await response.json();
         setSelectedThuongHieu({
           ...data,
-          accountID: data.users ? data.users.accountID : null,
-          nha_cung_capID: data.nhacungcap ? data.nhacungcap.nha_cung_capID : null
+          accountID: data.users ? data.users.accountID : null
         });
         //console.log(data);
         setActiveKey("1");
@@ -142,7 +138,6 @@ const Thuonghieu = () => {
     setSelectedThuongHieu((prev) => ({
       ...prev,
       hoat_dong: value, // Cập nhật trạng thái hoat_dong
-      nha_cung_capID: value,
     }));
   };
 
@@ -161,7 +156,6 @@ const Thuonghieu = () => {
         hinh_anh: item.hinh_anh,
         hanh_dong: item.hanh_dong,
         accountID: item.users.accountID,
-        nha_cung_capID: item.nhacungcap.nha_cung_capID
       }));
       setThuonghieuData(formattedData);
     } catch (error) {
@@ -186,27 +180,10 @@ const Thuonghieu = () => {
         hanh_dong: item.ten_HanhDong,
         ngay_hanh_dong: item.ngay_HanhDong, // Thêm trường này
         accountID: item.thuonghieu.users.accountID,
-        nha_cung_capID: item.thuonghieu.nhacungcap.nha_cung_capID
       }));
       sethanhdong(formattedData);
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu thương hiệu:", error);
-    }
-  };
-
-  const fetchNhaCungCapList = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/nhacungcap/all");
-      const data = await response.json();
-
-      const formattedData = data.map((item) => ({
-        nha_cung_capID: item.nha_cung_capID,
-        ten_nhaCC: item.ten_nhaCC,
-      }));
-      setNhaCungCapList(formattedData);
-      console.log("Danh sách nhà cung cấp: ", formattedData);
-    } catch (error) {
-      console.error("Lỗi khi lấy danh sách nhà cung cấp:", error);
     }
   };
   
@@ -214,7 +191,6 @@ const Thuonghieu = () => {
   useEffect(() => {
     fetchThuongHieuData();
     fetchHanhDongData();
-    fetchNhaCungCapList();
     const accountID = JSON.parse(localStorage.getItem("accountID"));
     if (accountID) {
       setSelectedThuongHieu((prev) => ({
@@ -232,7 +208,6 @@ const Thuonghieu = () => {
       ngay_tao: document.getElementById("ngay_tao").value,
       hoat_dong: selectedThuongHieu.hoat_dong,
       accountID: document.getElementById("accountID").value,
-      nha_cung_capID: selectedThuongHieu.nha_cung_capID,
     };
   };
 
@@ -296,8 +271,8 @@ const Thuonghieu = () => {
         console.log(selectedThuongHieu);
       } else {
         const errorData = await response.text();
+        alert(errorData);
         console.error("Lỗi khi thêm thương hiệu:", response.statusText, errorData);
-        alert("Tên thương hiệu đã tồn tại trong nhà cung cấp này!");
       }
     } catch (error) {
       console.error("Lỗi:", error);
@@ -358,13 +333,13 @@ const Thuonghieu = () => {
         fetchHanhDongData()
         clear();
       } else {
-        const errorData = await response.json();
+        const errorData = await response.text();
         console.error(
           "Lỗi khi cập nhật thương hiệu:",
           response.statusText,
           errorData
         );
-        alert("Cập nhật thương hiệu thất bại!");
+        alert(errorData);
       }
     } catch (error) {
       console.error("Lỗi:", error);
@@ -379,7 +354,6 @@ const Thuonghieu = () => {
     setSelectedThuongHieu({
       hoat_dong: "On",
       trang_thai_xoa: "Chưa xoá",
-      nha_cung_capID: "Poca",
       accountID: JSON.parse(localStorage.getItem("accountID"))
     });
 
@@ -513,11 +487,6 @@ const Thuonghieu = () => {
       key: "accountID",
     },
     {
-      title: "Nhà cung cấp ID",
-      dataIndex: "nha_cung_capID",
-      key: "nha_cung_capID",
-    },
-    {
       title: "Hành động",
       dataIndex: "hanhdong",
       key: "hanhdong",
@@ -581,11 +550,6 @@ const Thuonghieu = () => {
       key: "accountID",
     },
     {
-      title: "Nhà cung cấp ID",
-      dataIndex: "nha_cung_capID",
-      key: "nha_cung_capID",
-    },
-    {
       title: "Hành động",
       dataIndex: "hanhdong",
       key: "hanhdong",
@@ -642,11 +606,6 @@ const Thuonghieu = () => {
       title: "Account ID",
       dataIndex: "accountID",
       key: "accountID",
-    },
-    {
-      title: "Nhà cung cấp ID",
-      dataIndex: "nha_cung_capID",
-      key: "nha_cung_capID",
     },
     {
       title: "Hành động",
@@ -753,25 +712,6 @@ const Thuonghieu = () => {
                       })
                     }
                   />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="nha_cung_capID">Nhà cung cấp</label>
-                  <Select
-                    style={{ width: "100%" }}
-                    value={selectedThuongHieu.nha_cung_capID}
-                    onChange={(value) => {
-                      setSelectedThuongHieu((prev) => ({
-                        ...prev,
-                        nha_cung_capID: value,
-                      }));
-                    }}
-                  >
-                    {nhaCungCapList.map((item) => (
-                      <Select.Option key={item.nha_cung_capID} value={item.nha_cung_capID}>
-                        {item.ten_nhaCC}
-                      </Select.Option>
-                    ))}
-                  </Select>
                 </div>
               </div>
 

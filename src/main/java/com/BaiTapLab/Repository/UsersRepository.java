@@ -23,6 +23,27 @@ public interface UsersRepository extends JpaRepository<Users, String> {
 	           "FROM Users us " +
 	           "JOIN us.diachi dc")
 	List<Object[]> findAllUserWithAddress();
+//	@Query("SELECT us.accountID, us.hovaten, us.so_dien_thoai, us.hoat_dong, dc.dia_chi, dc.dia_chiID " +
+//			"FROM Users us " +
+//			"JOIN DiaChi dc on dc. dc JOIN us.roles r  WHERE r.ten_vai_tro != 'User'")
+//	List<Object[]> findNhanVien();
+	
+	@Query(value = "select us.accountid, dc.dia_chi, rl.ten_vai_tro, us.hovaten, us.so_dien_thoai, us.hinh_anh\r\n"
+			+ "  from users us\r\n"
+			+ "  JOIN diachi dc on us.accountid = dc.accountid\r\n"
+			+ "  JOIN roles rl on rl.accountid = us.accountid\r\n"
+			+ "  where rl.ten_vai_tro = 'User'", nativeQuery = true)
+		List<Object[]> listVaiTroUser();
+
+
+
+		@Query(value = "select us.accountid, dc.dia_chi, rl.ten_vai_tro, us.hovaten, us.so_dien_thoai, us.hinh_anh\r\n"
+				+ "  from users us\r\n"
+				+ "  JOIN diachi dc on us.accountid = dc.accountid\r\n"
+				+ "  JOIN roles rl on rl.accountid = us.accountid\r\n"
+				+ "  where rl.ten_vai_tro != 'User'", nativeQuery = true)
+	List<Object[]> listVaiTroNhanVien();
+	
 	
 	
     @Query("SELECT u FROM Users u WHERE u.trang_thai_xoa = ?1")
@@ -53,8 +74,7 @@ public interface UsersRepository extends JpaRepository<Users, String> {
   	@Query("UPDATE Users u SET u.trang_thai_xoa = 'Ban' WHERE u.accountID = ?1")
   	void mark(String userid);
     
-    
-    
+ 
 
 	
 	@Query("SELECT u FROM  Users u WHERE u.trang_thai_xoa is NULL")
@@ -65,5 +85,8 @@ public interface UsersRepository extends JpaRepository<Users, String> {
 	
 	@Query("SELECT u FROM  Users u WHERE u.trang_thai_xoa = 'Ban' ")
 	List<Users> findUserByVP();
+	
+	@Query("SELECT u FROM  Users u WHERE u.accountID = ?1 ")
+	List<Users> findUserByVPP(String userid);
 	
 }

@@ -7,10 +7,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +24,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.BaiTapLab.DTO.BannerChiTietDTO;
 import com.BaiTapLab.DTO.BannerDTO;
+import com.BaiTapLab.DTO.BannerDTO2;
+import com.BaiTapLab.DTO.DanhMucDTO;
 /*import com.BaiTapLab.DTO.BannerDTO;*/
 import com.BaiTapLab.DTO.UserDTO;
+import com.BaiTapLab.DTO.UserDTO2;
 import com.BaiTapLab.Entity.Banner;
 import com.BaiTapLab.Entity.BannerChiTiet;
 import com.BaiTapLab.Entity.DanhMuc;
@@ -39,34 +46,33 @@ import com.BaiTapLab.Service.BannerService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @RestController
 @RequestMapping("/api/banners")
 @CrossOrigin(origins = { "http://localhost:3000" })
 public class BannerRestController {
 
-    private static final Logger logger = LoggerFactory.getLogger(BannerRestController.class);
-    private static final String IMAGE_DIR = "C:\\Users\\DELL\\Downloads\\LoiFrontend\\public\\images";
+	private static final Logger logger = LoggerFactory.getLogger(BannerRestController.class);
+	private static final String IMAGE_DIR = "C:\\Users\\DELL\\Downloads\\LoiFrontend\\public\\images";
 
-    @Autowired
-    private BannerService bannerService;
-    
-    @Autowired
-    BannerChiTietRepository BannerChiTietRepository;
+	@Autowired
+	private BannerService bannerService;
+
+	@Autowired
+	BannerChiTietRepository BannerChiTietRepository;
 
 	@Autowired
 	UsersRepository userrepository;
-	
-    @Autowired
-    BannerRepository bannerRepository;
-    
-    @Autowired
-    HanhDongReopository HanhDongReopository;
-    
-    @Autowired
-    DanhmucRepository DanhmucRepository;
-    
-    public List<Map<String, Object>> MapToData(List<Object[]> results) {
+
+	@Autowired
+	BannerRepository bannerRepository;
+
+	@Autowired
+	HanhDongReopository HanhDongReopository;
+
+	@Autowired
+	DanhmucRepository DanhmucRepository;
+
+	public List<Map<String, Object>> MapToData(List<Object[]> results) {
 		List<Map<String, Object>> bannerList = new ArrayList<>();
 
 		for (Object[] row : results) {
@@ -84,192 +90,315 @@ public class BannerRestController {
 
 		return bannerList;
 	}
-    
-    @GetMapping("findalldanhmuc")
-    public List<DanhMuc>  getMethodDanhmuc() {
-    	List<DanhMuc>  result =  DanhmucRepository.findAll();
-    	
-        return result;
-    }
-    
-    
-    @GetMapping("findall")
-    public List<Map<String, Object>>  getMethodName() {
-    	List<Object[]>  result =  BannerChiTietRepository.findBannerDanhMucAndUsersJPQL();
-    	
-        return MapToData(result);
-    }
-    
-    @GetMapping("findalldeleted")
-    public List<Map<String, Object>>  findalldeleted() {
-    	List<Object[]>  result =  BannerChiTietRepository.findBannerDanhMucAndUsersJPQLdeleted();
-    	
-        return MapToData(result);
-    }
-    
-    
-    @PutMapping("put")
-    public void createBanner( @RequestParam("bannerId") String bannerId,
-    		  
-    		  @RequestParam("hoat_dong") String hoatDong,
-    		  
-    		  @RequestParam("ngay_tao") String ngayTao,
-    		 
-    		  @RequestParam("trang_thai_xoa") String trangThaiXoa,
-    		  
-    		  @RequestParam("ngay_het_han") String ngayHetHan,
-    		  
-    		  @RequestParam("id") String accountID,
-    		  
-    		  @RequestParam("san_pham") String sanpham,
-    		 
-    		  @RequestParam(value = "hinh_anh", required = false) MultipartFile hinhFile) {
-        
-    	List<String> array =  Arrays.asList(sanpham.split(","));
-        System.out.println("sadsa"+bannerId);
-        System.out.println("sadsa"+ngayTao);
-        System.out.println("sadsa"+trangThaiXoa);
-        System.out.println("sadsa"+hoatDong);
-        System.out.println("sadsa"+ngayHetHan);
-        System.out.println("sadsa"+accountID);
-        System.out.println("sadsa"+array.get(0));
-        System.out.println("sadsa"+array.get(1));
-        System.out.println("sadsa"+array.size());
-        System.out.println("sadsa"+accountID);
-       
-      Users user = userrepository.findByAccountID(accountID);
-  
-     System.out.println("sdsad11111111111"+user.getAccountID());
-      
-     
-    
-      BannerChiTiet bnct = new BannerChiTiet();
-      Banner banner = new Banner();
-      
-      banner.setBannerId(bannerId);
-      banner.setHinh_anh(bannerId);
-      banner.setHoat_dong(hoatDong);
-      banner.setTrang_thai_xoa(trangThaiXoa);
-      banner.setNgay_het_han(LocalDate.parse(ngayHetHan));
-      banner.setNgay_tao(LocalDate.parse(ngayTao));
-      banner.setUsers(user);
-      Banner nhaCungCap2 = bannerRepository.save(banner);
-    	HanhDong hd = new HanhDong();
-  		hd.setBanner(nhaCungCap2);
-  		hd.setTen_hanh_dong("Upload");
-  		HanhDongReopository.save(hd);
-      bnct.setBanner(banner);
-      for (int i = 0; i < array.size(); i++) {
-		Optional<DanhMuc> dm = DanhmucRepository.findById(array.get(i));
-		DanhMuc dmn = dm.get();
-	  bnct.setDanhmuc(dmn);
+
+	@GetMapping("findalldanhmuc")
+	public List<DanhMuc> getMethodDanhmuc() {
+		List<DanhMuc> result = DanhmucRepository.findAll();
+
+		return result;
 	}
-      System.out.println("ss"+bnct.getBanner().getBannerId());
-      bannerRepository.save(banner);
-      BannerChiTietRepository.save(bnct);
-      
-    System.out.println(" Cập Nhật Thành Công");
-        
-    }
-    @PostMapping("add")
-    public void createBannerss( @RequestParam("bannerId") String bannerId,
-    		  
-    		  @RequestParam("hoat_dong") String hoatDong,
-    		  
-    		  @RequestParam("ngay_tao") String ngayTao,
-    		 
-    		  @RequestParam("trang_thai_xoa") String trangThaiXoa,
-    		  
-    		  @RequestParam("ngay_het_han") String ngayHetHan,
-    		  
-    		  @RequestParam("id") String accountID,
-    		  
-    		  @RequestParam("san_pham") String sanpham,
-    		 
-    		  @RequestParam(value = "hinh_anh", required = false) MultipartFile hinhFile) {
-        
-    	List<String> array =  Arrays.asList(sanpham.split(","));
-        System.out.println("sadsa"+bannerId);
-        System.out.println("sadsa"+ngayTao);
-        System.out.println("sadsa"+trangThaiXoa);
-        System.out.println("sadsa"+hoatDong);
-        System.out.println("sadsa"+ngayHetHan);
-        System.out.println("sadsa"+accountID);
-        System.out.println("sadsa"+array.get(0));
-        System.out.println("sadsa"+array.get(1));
-        System.out.println("sadsa"+array.size());
-        System.out.println("sadsa"+accountID);
-       
-      Users user = userrepository.findByAccountID(accountID);
-  
-     System.out.println("sdsad11111111111"+user.getAccountID());
-      
-     
-    
-      BannerChiTiet bnct = new BannerChiTiet();
-      Banner banner = new Banner();
-      
-      banner.setBannerId(bannerId);
-      banner.setHinh_anh(bannerId);
-      banner.setHoat_dong(hoatDong);
-      banner.setTrang_thai_xoa(trangThaiXoa);
-      banner.setNgay_het_han(LocalDate.parse(ngayHetHan));
-      banner.setNgay_tao(LocalDate.parse(ngayTao));
-      banner.setUsers(user);
-      Banner nhaCungCap2 = bannerRepository.save(banner);
-    	HanhDong hd = new HanhDong();
-  		hd.setBanner(nhaCungCap2);
-  		hd.setTen_hanh_dong("Thêm");
-  		HanhDongReopository.save(hd);
-      bnct.setBanner(banner);
-      for (int i = 0; i < array.size(); i++) {
-		Optional<DanhMuc> dm = DanhmucRepository.findById(array.get(i));
-		DanhMuc dmn = dm.get();
-	  bnct.setDanhmuc(dmn);
+
+
+	@GetMapping("findalldanhmuc2")
+	public List<BannerDTO2> getMethodDanhmucByDTO() {
+		return bannerRepository.findAll().stream().map(b -> new BannerDTO2(b.getBannerId(), b.getHinh_anh(),
+				b.getHoat_dong(), b.getTrang_thai_xoa(), b.getNgay_tao(), b.getNgay_het_han(),
+				new UserDTO2(b.getUsers().getAccountID(), b.getUsers().getHovaten()),
+				b.getBannerchitiet().stream()
+						.map(bct -> new BannerChiTietDTO(bct.getBannerchitietid(),
+								new DanhMucDTO(bct.getDanhmuc().getDanh_mucId())))
+						.collect(Collectors.toList())))
+				.collect(Collectors.toList());
+
 	}
-      System.out.println("ss"+bnct.getBanner().getBannerId());
-      bannerRepository.save(banner);
-      BannerChiTietRepository.save(bnct);
-      
-    System.out.println("Thêm Thành Công");
-        
-    }
-    
-   
 
-    
-    
-	 @GetMapping("/generateNewBannerId") public ResponseEntity<String>
-	  getNewBannerId() { String latestBannerId =
-	  bannerRepository.findLatestBannerId(PageRequest.of(0,
-	  1)).stream().findFirst().orElse("BN000"); String newBannerId =
-	  generateNewBannerId(latestBannerId); return ResponseEntity.ok(newBannerId); }
-	  
-	  private String generateNewBannerId(String latestBannerId) { if
-	  (latestBannerId.startsWith("BN")) { int numberPart =
-	  Integer.parseInt(latestBannerId.substring(2)) + 1; return "BN" +
-	  String.format("%03d", numberPart); } return "BN001"; }
-    
-	  @GetMapping("/bannerhanhdong") public List<BannerDTO> getMethodName11() {
-			 return HanhDongReopository.findBanner(); }
-    
-	  
-	  @GetMapping("/delete/{id}") public void
-		  getAllAccountID(@PathVariable("id")String id) { Optional<Banner> banner =
-		  bannerRepository.findById(id); Banner uservip = banner.get(); HanhDong hd =
-		  new HanhDong(); hd.setBanner(uservip); hd.setTen_hanh_dong("Xóa");
-		  HanhDongReopository.save(hd); bannerRepository.markAsDeleted("Đã xóa", id); 
-		  } 
+	@GetMapping("findall")
+	public List<Map<String, Object>> getMethodName() {
+		List<Object[]> result = BannerChiTietRepository.findBannerDanhMucAndUsersJPQL();
 
-		  
-	  @GetMapping("/back/{id}") public void back(@PathVariable("id")String id) {
-			 Optional<Banner> banner = bannerRepository.findById(id); Banner uservip =
-			  banner.get(); HanhDong hd = new HanhDong(); hd.setBanner(uservip);
-			 hd.setTen_hanh_dong("Reload"); HanhDongReopository.save(hd);
-			 bannerRepository.back(id); }
-	  
+		return MapToData(result);
+	}
 
-    
+	@GetMapping("loiyeudau")
+	public List<Map<String, Object>> getMethodNameeee() {
+		// Lấy dữ liệu từ phương thức truy vấn
+		List<Object[]> result = BannerChiTietRepository.findBannerDanhMucAndUsersJPQLtest();
+
+		// Chuyển dữ liệu thành dạng mong muốn (gộp các danh mục theo bannerId)
+		return MapToData1(result);
+	}
+
+	public List<Map<String, Object>> MapToData1(List<Object[]> results) {
+		// Sử dụng Map để nhóm các banner theo bannerId
+		Map<String, Map<String, Object>> bannerMap = new HashMap<>();
+
+		for (Object[] row : results) {
+			String bannerId = (String) row[0]; // bannerId
+
+			// Kiểm tra xem banner đã có trong map chưa, nếu chưa thì tạo mới
+			Map<String, Object> banner = bannerMap.get(bannerId);
+
+			// Nếu banner chưa có trong map, tạo mới
+			if (banner == null) {
+				banner = new HashMap<>();
+				banner.put("bannerId", bannerId);
+				banner.put("hinh_anh", row[1]); // hinh_anh
+				banner.put("hoat_dong", row[2]); // hoat_dong
+				banner.put("ngay_tao", row[3]); // ngay_tao
+				banner.put("ngay_het_han", row[4]); // ngay_het_han
+				banner.put("accountID", row[6]); // accountID
+				banner.put("trang_thai_xoa", row[7]); // trang_thai_xoa
+				// Khởi tạo danh mục là một HashSet để không trùng
+				banner.put("danh_mucIds", new HashSet<String>());
+				// Đưa banner vào map (dùng bannerId làm key để nhóm)
+				bannerMap.put(bannerId, banner);
+			}
+
+			// Lấy danh sách danh mục của banner từ Set (gộp lại các danh mục trùng nhau)
+			Set<String> danhMucIds = (Set<String>) banner.get("danh_mucIds");
+			danhMucIds.add((String) row[5]); // Thêm danh mục vào Set (gộp lại)
+
+			// Cập nhật lại danh mục
+			banner.put("danh_mucIds", danhMucIds);
+		}
+
+		// Trả về danh sách các banner sau khi đã gộp danh mục
+		return new ArrayList<>(bannerMap.values());
+	}
+
+	@GetMapping("findalldeleted")
+	public List<Map<String, Object>> findalldeleted() {
+		List<Object[]> result = BannerChiTietRepository.findBannerDanhMucAndUsersJPQLdeleted();
+
+		return MapToData(result);
+	}
+
+	@PutMapping("put/{bannerId}")
+	public ResponseEntity<Map<String, Object>> updateBanner(@PathVariable String bannerId,
+			@RequestParam("hoat_dong") String hoatDong, @RequestParam("ngay_het_han") String ngayHetHan,
+			@RequestParam("ngay_tao") String ngayTao, @RequestParam("id") String accountID,
+			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhFile,
+			@RequestParam(value = "san_pham", required = false) List<String> sanpham) {
+
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			// Kiểm tra sự tồn tại của Banner
+			Banner banner = bannerRepository.findById(bannerId).orElse(null);
+			if (banner == null) {
+				response.put("message", "Banner không tồn tại!");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+			}
+
+			// Kiểm tra sự tồn tại của User
+			Users user = userrepository.findByAccountID(accountID);
+			if (user == null) {
+				response.put("message", "Không tìm thấy User với ID: " + accountID);
+				return ResponseEntity.badRequest().body(response);
+			}
+
+			// Cập nhật thông tin cho Banner
+			banner.setHoat_dong(hoatDong);
+			banner.setNgay_het_han(LocalDate.parse(ngayHetHan));
+			banner.setNgay_tao(LocalDate.parse(ngayTao));
+			
+			banner.setUsers(user);
+
+			List<String> source = new ArrayList<String>();
+			List<String> sourcetempt = new ArrayList<String>();
+			for (String newsp : sanpham) {
+				source.add(newsp);
+				sourcetempt.add(newsp);
+			}
+
+			List<String> valuesToRemove = new ArrayList<String>();
+			for (int i = 0; i < banner.getBannerchitiet().size(); i++) {
+				valuesToRemove.add(banner.getBannerchitiet().get(i).getDanhmuc().getDanh_mucId());
+			}
+			System.out.println("mới: " + source);
+			System.out.println("cũ: " + valuesToRemove);
+
+			try {
+				sourcetempt.removeAll(valuesToRemove);
+				System.out.println("sourcetempt : " + sourcetempt);
+				if (sourcetempt.size() > 0) {
+					for (int i = 0; i < sourcetempt.size(); i++) {
+						BannerChiTiet bct = new BannerChiTiet();
+						bct.setDanhmuc(DanhmucRepository.findById(sourcetempt.get(i)).get());
+						bct.setBanner(banner);
+						BannerChiTietRepository.save(bct);
+					}
+
+				}
+				valuesToRemove.removeAll(source);
+				System.out.println("cần xóa: " + valuesToRemove);
+				try {
+					if (valuesToRemove.size() > 0) {
+						for (int i = 0; i < valuesToRemove.size(); i++) {
+							DanhMuc dm = DanhmucRepository.findById(valuesToRemove.get(i)).get();
+							BannerChiTietRepository.removefromBannerChitiet(banner.getBannerId(), dm.getDanh_mucId());
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			// Xử lý lưu ảnh nếu có
+			if (hinhFile != null && !hinhFile.isEmpty()) {
+				String fileName = hinhFile.getOriginalFilename();
+				String filePath = IMAGE_DIR + File.separator + fileName;
+
+				hinhFile.transferTo(new File(filePath)); // Lưu ảnh vào thư mục
+				banner.setHinh_anh(fileName); // Cập nhật tên ảnh vào database
+			}
+
+			// Lưu banner đã cập nhật
+			Banner updatedBanner = bannerRepository.save(banner);
+
+			// Ghi lại hành động cập nhật
+			HanhDong hanhDong = new HanhDong();
+			hanhDong.setBanner(updatedBanner);
+			hanhDong.setNgay_hanh_dong(LocalDate.now());
+			hanhDong.setTen_hanh_dong("Upload");
+			HanhDongReopository.save(hanhDong);
+
+			// Trả về kết quả thành công
+			response.put("message", "Banner đã được cập nhật thành công!");
+			response.put("banner", updatedBanner);
+			return ResponseEntity.ok(response);
+
+		} catch (IOException e) {
+			logger.error("Lỗi khi lưu hình ảnh cho banner ID {}: {}", bannerId, e.getMessage());
+			response.put("message", "Không thể lưu hình ảnh: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+
+		} catch (Exception e) {
+			logger.error("Lỗi khi cập nhật banner: {}", e.getMessage());
+			response.put("message", "Có lỗi xảy ra: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+
+	@PostMapping("add")
+	public void createBannerss(@RequestParam("bannerId") String bannerId,
+
+			@RequestParam("hoat_dong") String hoatDong,
+
+			@RequestParam("ngay_tao") String ngayTao,
+
+			@RequestParam("trang_thai_xoa") String trangThaiXoa,
+
+			@RequestParam("ngay_het_han") String ngayHetHan,
+
+			@RequestParam("id") String accountID,
+
+			@RequestParam("san_pham") String sanpham,
+
+			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhFile) {
+
+		List<String> array = Arrays.asList(sanpham.split(","));
+		System.out.println("sadsa" + bannerId);
+		System.out.println("sadsa" + ngayTao);
+		System.out.println("sadsa" + trangThaiXoa);
+		System.out.println("sadsa" + hoatDong);
+		System.out.println("sadsa" + ngayHetHan);
+		System.out.println("sadsa" + accountID);
+		
+		System.out.println("sadsa" + array.size());
+		System.out.println("sadsa" + hinhFile.getOriginalFilename());
+
+		Users user = userrepository.findByAccountID(accountID);
+		Banner banner = new Banner();
+		System.out.println("sdsad11111111111" + user.getAccountID());
+		if (hinhFile != null ) {
+		    // Lấy tên file
+		    String fileName = hinhFile.getOriginalFilename();
+
+		    System.out.println("Sdsadsadas"+fileName);
+		    System.out.println("Sdsadsadas"+fileName);
+		    System.out.println("Sdsadsadas"+fileName);
+		    System.out.println("cccccccccccccccccccccccccccccccccccccc");
+		    banner.setHinh_anh(fileName);
+		}
+
+		
+
+		banner.setBannerId(bannerId);
+	
+		banner.setHoat_dong(hoatDong);
+		banner.setNgay_het_han(LocalDate.parse(ngayHetHan));
+		banner.setNgay_tao(LocalDate.parse(ngayTao));
+		banner.setUsers(user);
+		Banner nhaCungCap2 = bannerRepository.save(banner);
+		HanhDong hd = new HanhDong();
+		hd.setBanner(nhaCungCap2);
+		hd.setNgay_hanh_dong(LocalDate.now());
+		hd.setTen_hanh_dong("Thêm");
+		HanhDongReopository.save(hd);
+
+		for (int i = 0; i < array.size(); i++) {
+			BannerChiTiet bnct = new BannerChiTiet();
+			Optional<DanhMuc> dm = DanhmucRepository.findById(array.get(i));
+			DanhMuc dmn = dm.get();
+			bnct.setDanhmuc(dmn);
+			bnct.setBanner(banner);
+			BannerChiTietRepository.save(bnct);
+		}
+
+		bannerRepository.save(banner);
+
+		System.out.println("Thêm Thành Công");
+
+	}
+
+	@GetMapping("/generateNewBannerId")
+	public ResponseEntity<String> getNewBannerId() {
+		String latestBannerId = bannerRepository.findLatestBannerId(PageRequest.of(0, 1)).stream().findFirst()
+				.orElse("BN000");
+		String newBannerId = generateNewBannerId(latestBannerId);
+		return ResponseEntity.ok(newBannerId);
+	}
+
+	private String generateNewBannerId(String latestBannerId) {
+		if (latestBannerId.startsWith("BN")) {
+			int numberPart = Integer.parseInt(latestBannerId.substring(2)) + 1;
+			return "BN" + String.format("%03d", numberPart);
+		}
+		return "BN001";
+	}
+
+	@GetMapping("/bannerhanhdong")
+	public List<BannerDTO> getMethodName11() {
+		return HanhDongReopository.findBanner();
+	}
+
+	@GetMapping("/delete/{id}")
+	public void getAllAccountID(@PathVariable("id") String id) {
+		Optional<Banner> banner = bannerRepository.findById(id);
+		Banner uservip = banner.get();
+		HanhDong hd = new HanhDong();
+		hd.setBanner(uservip);
+		hd.setTen_hanh_dong("Xóa");
+		HanhDongReopository.save(hd);
+		bannerRepository.markAsDeleted("Đã xóa", id);
+	}
+
+	@GetMapping("/back/{id}")
+	public void back(@PathVariable("id") String id) {
+		Optional<Banner> banner = bannerRepository.findById(id);
+		Banner uservip = banner.get();
+		HanhDong hd = new HanhDong();
+		hd.setBanner(uservip);
+		hd.setTen_hanh_dong("Reload");
+		hd.setNgay_hanh_dong(LocalDate.now());
+		HanhDongReopository.save(hd);
+		bannerRepository.back(id);
+	}
+
 	/*
 	 * @GetMapping public List<Banner> getAllBanners() { return
 	 * bannerService.getAllBanners(); }

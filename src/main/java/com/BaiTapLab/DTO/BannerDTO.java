@@ -1,5 +1,7 @@
 package com.BaiTapLab.DTO;
 
+import java.time.LocalDate;
+
 import com.BaiTapLab.Entity.Banner;
 
 import lombok.AllArgsConstructor;
@@ -11,5 +13,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class BannerDTO {
  String tenHanhDong;
+ LocalDate ngayhanhdong;
  Banner banner;
 }

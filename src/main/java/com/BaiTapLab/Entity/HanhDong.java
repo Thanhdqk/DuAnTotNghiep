@@ -1,5 +1,7 @@
 package com.BaiTapLab.Entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +19,8 @@ public class HanhDong {
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     public int hanh_dongID;
 	
+	public LocalDate ngay_hanh_dong;
+	
 	public String ten_hanh_dong;
 	
 	@ManyToOne // Bảng user
@@ -30,6 +34,8 @@ public class HanhDong {
 	@ManyToOne // Bảng banner
 	@JoinColumn(name = "bannerId")
 	public Banner banner;
+	
+	
 	
 	@ManyToOne // Bảng đánh giá
 	@JoinColumn(name = "danh_giaID")

@@ -16,13 +16,13 @@ import lombok.Data;
 @Table(name = "roles")
 public class Roles {
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    public int id;
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public int id;
+
 	public String ten_vai_tro;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "accountID")
-	 @JsonBackReference
+	@JsonBackReference
 	public Users users;
 }

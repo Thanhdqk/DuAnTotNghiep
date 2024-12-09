@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +60,10 @@ public class NhaCungCapRestController {
 		NhaCungCap uservip = nhacungcap.get();
 		HanhDong hd = new HanhDong();
 		hd.setNhacungcap(uservip);
+		hd.setNgay_hanh_dong(LocalDate.now());
 		hd.setTen_hanh_dong("Xóa");
 		HanhDongReopository.save(hd);
+		
 		 nhacupcaprepository.markAsDeleted(id);
 	}
 	
@@ -70,6 +73,7 @@ public class NhaCungCapRestController {
 		NhaCungCap uservip = nhacungcap.get();
 		HanhDong hd = new HanhDong();
 		hd.setNhacungcap(uservip);
+		hd.setNgay_hanh_dong(LocalDate.now());
 		hd.setTen_hanh_dong("Reload");
 		HanhDongReopository.save(hd);
 		 nhacupcaprepository.back(id);
@@ -116,7 +120,7 @@ public class NhaCungCapRestController {
 //    }
 
 
-    @PutMapping("/saveee")
+    @PutMapping("/put")
     public void createNhaCungCap1(
            
     		
@@ -144,11 +148,11 @@ public class NhaCungCapRestController {
        cc.setSo_dien_thoai(so_dien_thoai);
        cc.setTen_nhaCC(ten_nhaCC);
        cc.setTen_mat_hang(ten_mat_hang);
-       cc.setTrang_thai_xoa(trang_thai_xoa);
        NhaCungCap nhaCungCap2 = nhacupcaprepository.save(cc);
   	HanhDong hd = new HanhDong();
 		hd.setNhacungcap(nhaCungCap2);
-		hd.setTen_hanh_dong("Thêm");
+		hd.setNgay_hanh_dong(LocalDate.now());
+		hd.setTen_hanh_dong("Upload");
 		HanhDongReopository.save(hd);
       System.out.println("ccccccccccccc");
     
@@ -182,11 +186,11 @@ public class NhaCungCapRestController {
        cc.setSo_dien_thoai(so_dien_thoai);
        cc.setTen_nhaCC(ten_nhaCC);
        cc.setTen_mat_hang(ten_mat_hang);
-       cc.setTrang_thai_xoa(trang_thai_xoa);
        NhaCungCap nhaCungCap2 = nhacupcaprepository.save(cc);
   	HanhDong hd = new HanhDong();
 		hd.setNhacungcap(nhaCungCap2);
-		hd.setTen_hanh_dong("Upload");
+		hd.setNgay_hanh_dong(LocalDate.now());
+		hd.setTen_hanh_dong("Thêm");
 		HanhDongReopository.save(hd);
       System.out.println("ccccccccccccc");
     

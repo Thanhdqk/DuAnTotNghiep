@@ -2,10 +2,14 @@ package com.BaiTapLab.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.catalina.User;
 import org.aspectj.apache.bcel.classfile.Module.Uses;
@@ -50,16 +54,55 @@ public class UsersRestController {
 	@Autowired
 	HanhDongReopository HanhDongReopository;
 
-@Autowired
-ServletContext context;
+	@Autowired
+	ServletContext context;
 	
-//		@GetMapping
-//		public List<Users> getAllUsers() {
-//			return userRepository.findUserByTrangThai();
-//		}
+	public List<Map<String, Object>> MapToData(List<Object[]> results) {
+		List<Map<String, Object>> sanPhamList = new ArrayList<>();
+
+		for (Object[] row : results) {
+			Map<String, Object> sanPham = new HashMap<>();
+			sanPham.put("accountID", row[0]);
+			sanPham.put("hovaten", row[3]);
+			sanPham.put("ten_vai_tro", row[2]);
+			sanPham.put("hinh_anh", row[5]);
+			sanPham.put("so_dien_thoai", row[4]);
+			sanPham.put("dia_chi", row[1]);
+		
+			
+		
+			sanPhamList.add(sanPham);
+		}
+
+		return sanPhamList;
+	}
+	
+	@GetMapping("/testtest")
+	public ResponseEntity<List<Object[]>> listTest(){
+		List<Object[]> list = userRepository.listVaiTroUser();
+		return ResponseEntity.ok(list);
+	}
+	
+	@GetMapping("getUser")
+	public List<Map<String, Object>> getMethodName2() {
+		List<Object[]> listNhanVienUser = userRepository.listVaiTroUser();
+		return MapToData(listNhanVienUser);
+	}
+	@GetMapping("getNhanVien")
+	public  List<Map<String, Object>>  getMethodNhanVien() {
+		List<Object[]> listNhanVienUser = userRepository.listVaiTroNhanVien();
+		return  MapToData(listNhanVienUser);
+	}
+	
+
 	@GetMapping
 	public List<Users> getAllUsers() {
 		return userRepository.findAll();
+	}
+
+	@GetMapping("/trung")
+	public List<Users> getAllUserss(@RequestParam("accountID") String accountID) {
+		return userRepository.findUserByVPP(accountID);
 	}
 
 	@GetMapping("/delete/{id}")
@@ -68,6 +111,7 @@ ServletContext context;
 		Users uservip = user.get();
 		HanhDong hd = new HanhDong();
 		hd.setUsers(uservip);
+		hd.setNgay_hanh_dong(LocalDate.now());
 		hd.setTen_hanh_dong("Xóa");
 		HanhDongReopository.save(hd);
 		userRepository.markAsDeleted(id);
@@ -78,7 +122,7 @@ ServletContext context;
 		context.setAttribute("method", "ban");
 		userRepository.mark(id);
 		Map<String, Object> model = new HashMap();
-		model.put("user",id );
+		model.put("user", id);
 		model.put("donhangid", id);
 		try {
 			MailInfo mail1 = new MailInfo(id, "Thông báo về tài khoản tài khoản của bạn ",
@@ -101,17 +145,15 @@ ServletContext context;
 		context.setAttribute("method", "back");
 		Users uservip = user.get();
 		HanhDong hd = new HanhDong();
+		hd.setNgay_hanh_dong(LocalDate.now());
 		hd.setUsers(uservip);
 		hd.setTen_hanh_dong("Reload");
-		
+
 		Map<String, Object> model = new HashMap();
-		model.put("user",id );
-	
-		
-		
+		model.put("user", id);
+
 		try {
-			MailInfo mail1 = new MailInfo(id, "Tài khoản được khôi phục ",
-					mailerService.bodyTemplate(model));
+			MailInfo mail1 = new MailInfo(id, "Tài khoản được khôi phục ", mailerService.bodyTemplate(model));
 			mailerService.send(mail1);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -120,7 +162,7 @@ ServletContext context;
 		userRepository.back(id);
 	}
 
-	@PostMapping
+	@PostMapping("/add")
 	public ResponseEntity<Map<String, Object>> createUserWithImageAndDetails(
 			@RequestParam("accountID") String accountID, @RequestParam("password") String password,
 			@RequestParam("hovaten") String hovaten, @RequestParam("so_dien_thoai") String soDienThoai,
@@ -174,7 +216,7 @@ ServletContext context;
 		}
 	}
 
-	@PutMapping("/{accountId}")
+	@PutMapping("/put/{accountId}")
 	public ResponseEntity<Map<String, Object>> createUserWithImageAndDetailss(
 			@RequestParam("accountID") String accountID, @RequestParam("password") String password,
 			@RequestParam("hovaten") String hovaten, @RequestParam("so_dien_thoai") String soDienThoai,
@@ -183,7 +225,8 @@ ServletContext context;
 			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhAnh)
 			throws IllegalStateException, IOException {
 		Map<String, Object> response = new HashMap<>();
-
+		System.out.println("Địa chỉ : " + diaChi);
+		System.out.println("Role : " + vaiTro);
 		// Validate required fields
 		if (accountID == null || password == null || hovaten == null || soDienThoai == null || vaiTro == null
 				|| diaChi == null) {
@@ -216,8 +259,8 @@ ServletContext context;
 		// Attempt to save user details with service
 		try {
 			Users createdUser = usersService.createUserWithImageAndDetailss(user, role, diaChiEntity, hinhAnh);
-			response.put("message", "Người dùng đã được tạo thành công!");
-			response.put("user", createdUser); // Đảm bảo không tiết lộ mật khẩu
+//			response.put("message", "Người dùng đã được tạo thành công!");
+//			response.put("user", createdUser); // Đảm bảo không tiết lộ mật khẩu
 			return new ResponseEntity<>(response, HttpStatus.CREATED); // 201 Created
 		} catch (IOException e) {
 			logger.error("Error while saving user", e);

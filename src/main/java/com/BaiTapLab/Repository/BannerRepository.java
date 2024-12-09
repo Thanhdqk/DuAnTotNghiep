@@ -59,9 +59,21 @@ public interface BannerRepository extends JpaRepository<Banner, String> {
 	void markAsDeleted(@Param("trangThaiXoa") String trangThaiXoa, @Param("bannerId") String bannerId);
 
 	@Modifying
-    @Transactional
-	 @Query("UPDATE Banner u SET u.trang_thai_xoa = NULL WHERE u.bannerId = ?1")
+	
+	 @Transactional
+	 
+	  @Query("UPDATE Banner u SET u.trang_thai_xoa = NULL WHERE u.bannerId = ?1")
 	 public void back(String userid);
+	
+		/*
+		 * @Modifying
+		 * 
+		 * @Transactional
+		 * 
+		 * @Query("UPDATE Banner u SET u.trang_thai_xoa = :trangThaiXoa WHERE u.bannerId = :bannerId"
+		 * ) void markAsDeleted(@Param("trangThaiXoa") String
+		 * trangThaiXoa, @Param("bannerId") String bannerId);
+		 */
 	
 	 @Query("SELECT b.bannerId FROM Banner b ORDER BY b.bannerId DESC")
 	  List<String> findLatestBannerId(PageRequest pageRequest);

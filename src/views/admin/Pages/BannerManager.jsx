@@ -61,6 +61,7 @@ const BannerManager = () => {
   const [deletedFilterStatus, setDeletedFilterStatus] = useState("Tất cả");
   const [banners, setBanners] = useState([]);
   const [deletedBanners, setDeletedBanners] = useState([]);
+  const [listNgay, setlistNgay] = useState ([])
   const [listDataHd, setlistDataHD] = useState([]);
   const [errors, setErrors] = useState({});
   const [snackbar, setSnackbar] = useState({
@@ -69,9 +70,11 @@ const BannerManager = () => {
     severity: "success",
   });
   const handleChange = (event) => {
+
     const {
       target: { value },
     } = event;
+  
     var temparray = [];
     temparray.push({ 'san_phamId': value });
     
@@ -120,6 +123,15 @@ const fetchProductHasDiscount = async () => {
     setlistDataHD(res.data);
     console.log("sdsadsadfas", res.data);
   };
+  const handleNgay = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/users/today");
+      console.log("Data từ API ngày:", res.data);
+      setlistNgay(res.data); // Cập nhật state `listNgay`
+    } catch (error) {
+      console.error("Lỗi khi gọi API ngày:", error);
+    }
+  };
   const getnewID = async() =>{
     const res = await axios({url:"http://localhost:8080/api/banners/generateNewBannerId",method:"GET"})
     if(formData.bannerId == "")
@@ -129,11 +141,22 @@ const fetchProductHasDiscount = async () => {
     
     console.log("ress",res.data)
   }
-  const fetchBanners = async () => {
+  // const fetchBanners = async () => {
+  //   try {
+  //     const response = await axios.get("http://localhost:8080/api/banners/findall");
+  //     setBanners(response.data);
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     handleSnackbar("Có lỗi xảy ra khi lấy danh sách banner!", "error");
+  //   }
+  // };
+
+  
+  const fetchBannerss = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/banners/findall");
+      const response = await axios.get("http://localhost:8080/api/banners/findalldanhmuc2");
       setBanners(response.data);
-      console.log(response.data);
+      console.log("he he tui dday",response.data);
     } catch (error) {
       handleSnackbar("Có lỗi xảy ra khi lấy danh sách banner!", "error");
     }
@@ -141,10 +164,11 @@ const fetchProductHasDiscount = async () => {
 
 
   useEffect(() => {
-    fetchBanners();
+    // fetchBanners();
     fetchDeletedBanners();
     fetchProductHasDiscount()
-    
+    fetchBannerss();
+    handleNgay();
     if(formData.bannerId == "")
     {
 
@@ -181,7 +205,7 @@ const fetchProductHasDiscount = async () => {
       hoatDong: "",
       ngayTao: "",
       ngayHetHan: "",
-      trangThaiXoa: "Chưa xóa",
+      trangThaiXoa: null,
       accountId: "",
       hanh_dong: "",
     });
@@ -202,7 +226,7 @@ const fetchProductHasDiscount = async () => {
     );
     const matchesFilter =
       filterStatus === "Tất cả" || post.hoat_dong === filterStatus;
-    const trangThaiXoa = post.trang_thai_xoa === null
+    const trangThaiXoa = post.trang_thai_xoa == null
     return matchesSearch && matchesFilter && trangThaiXoa;
   });
 
@@ -231,7 +255,7 @@ const fetchProductHasDiscount = async () => {
   console.log("post đã xóa nè: ", filteredDeletedBannerss)
   
   const handleEdit = (post) => {
-    console.log(post)
+    console.log(" log handle Edit :",post)
     setFormData({
       bannerId: post.bannerId,
       hinhAnh: post.hinhAnh,
@@ -241,38 +265,27 @@ const fetchProductHasDiscount = async () => {
       trangThaiXoa:post.trangThaiXoa,
       accountId: post.accountID,
       hanh_dong: post.hanh_dong,
-
-
-
     });
     setTabValue(1);
+    let temptproduct =[];
+     post.bannerchitiet.map((item)=>{
+      temptproduct.push(item.danhmuc.danh_mucId);
+    
+
+     })
+
+     console.log(" temptproduct :",personName)
+     setPersonName(temptproduct);
+
     setaddorupdate("add")
-    console.log("Dữ liệu khi nhấn edit: ", post);
+    console.log("Dữ liệu khi nhấn et: ", post);
   };
 
-
-
-  
-  const handleDelete = async (bannerId) => {
-    const confirmDelete = window.confirm(
-      "Bạn có chắc chắn muốn xóa banner này?"
-    );
-    if (!confirmDelete) return;
-
-    try {
-      await axios.delete(`http://localhost:8080/api/banners/${bannerId}`);
-      fetchBanners();
-      fetchDeletedBanners();
-      handleSnackbar("Xóa banner thành công!", "success");
-    } catch (error) {
-      handleSnackbar("Có lỗi xảy ra khi xóa banner!", "error");
-    }
-  };
 
   const handleRestore = async (bannerId) => {
     try {
       await axios.get(`http://localhost:8080/api/banners/back/${bannerId}`);
-      fetchBanners();
+      fetchBannerss();
       fetchDeletedBanners();
       handleSnackbar("Khôi phục banner thành công!", "success");
       setTabValue(0);
@@ -306,7 +319,7 @@ const fetchProductHasDiscount = async () => {
 /*     const existingBannerIds = await fetchExistingBannerIds(); */
     const bannerId = formData.bannerId;
     formDataToSend.append("bannerId",  formData.bannerId.toString());
-    formData.trangThaiXoa = "Chưa xóa"
+    formData.trangThaiXoa = ""
     // Kiểm tra bắt buộc nhập
     if (!bannerId || bannerId.trim() === "") {
         setErrors((prevErrors) => ({
@@ -334,6 +347,7 @@ const fetchProductHasDiscount = async () => {
     }
 
     formDataToSend.append("hoat_dong", formData.hoatDong);
+    formDataToSend.append("hinh_anh", formData.hinhAnh);
     const hoatDong = formData.hoatDong;
 
     // Kiểm tra bắt buộc nhập
@@ -377,7 +391,6 @@ const fetchProductHasDiscount = async () => {
     if (
       !formData.bannerId ||
       !formData.hoatDong ||
-      !formData.trangThaiXoa ||
       !formData.ngayHetHan 
     ) {
       handleSnackbar("Vui lòng điền đầy đủ thông tin!", "warning");
@@ -385,17 +398,18 @@ const fetchProductHasDiscount = async () => {
     }
 if(addorupdate !="add")
 {
+  console.log("adsaas",formData.hoatDong)
   await axios.post("http://localhost:8080/api/banners/add", formDataToSend);
         handleSnackbar("Thêm banner thành công!", "success");
 }
-else{
-  await axios.put("http://localhost:8080/api/banners/put", formDataToSend);
+else {
+  await axios.put(`http://localhost:8080/api/banners/put/${bannerId}`, formDataToSend);
   handleSnackbar("Cập nhật banner thành công!", "success");
- 
 }
+
     try {
       
-      fetchBanners();
+      fetchBannerss();
       resetForm();
       setTabValue(0);
     } catch (error) {
@@ -433,7 +447,7 @@ else{
             <Tab label="Thêm Banner" />
             <Tab
               onClick={() => {
-                fetchBanners();
+                fetchBannerss();
               }}
               label="Lịch Sử Xóa"
             />
@@ -481,9 +495,9 @@ else{
                   onChange={(e) => setFilterStatus(e.target.value)}
                   SelectProps={{ native: true }}
                 >
-                  <option value="Tất cả">Tất cả</option>
-                  <option value="Hoạt động">Hoạt động</option>
-                  <option value="Ngừng hoạt động">Ngừng hoạt động</option>
+                   <option value="Tất cả">Tất cả</option>
+                  <option value="ON">Hoạt động</option>
+                  <option value="OFF"> Ngưng Hoạt động</option>
                 </TextField>
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -499,11 +513,11 @@ else{
                 <TableHead>
                   <TableRow className="table-row-header">
                     <TableCell>Mã Banner</TableCell>
+                    <TableCell>Danh Mục</TableCell>
                     <TableCell>Hình Ảnh</TableCell>
                     <TableCell>Trạng Thái Hoạt Động</TableCell>
                     <TableCell>Ngày Tạo</TableCell>
                     <TableCell>Ngày Hết Hạn</TableCell>
-                    <TableCell>Trạng Thái Xóa</TableCell>
                     <TableCell>Account ID</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
@@ -514,6 +528,10 @@ else{
                     .map((post) => (
                       <TableRow key={post.bannerId}>
                         <TableCell>{post.bannerId}</TableCell>
+                        <TableCell>{post.bannerchitiet.map((item)=>{
+                          return <p key={item.bannerchitietid}>{item.danhmuc.danh_mucId}</p>
+                        })}
+                        </TableCell>
                         <TableCell>
                           {post.hinh_anh ? (
                             <img
@@ -525,16 +543,12 @@ else{
                             "No Image"
                           )}
                         </TableCell>
-                        <TableCell>{post.hoat_dong}</TableCell>
+                        <TableCell>{post.hoat_dong == "ON" ? "Hoạt Động" : "Ngưng Hoạt Động"}</TableCell>
                         <TableCell>{post.ngay_tao}</TableCell>
                         <TableCell>{post.ngay_het_han}</TableCell>
+                       
                         <TableCell>
-                          {post.trang_thai_xoa == null
-                            ? "Chưa xóa"
-                            : post.trang_thai_xoa}
-                        </TableCell>
-                        <TableCell>
-                          {post.accountID}
+                          {post.users.accountID}
                         </TableCell>
                         <TableCell>
                           <Button onClick={() =>{ handleEdit(post)
@@ -575,6 +589,13 @@ else{
     <Grid container spacing={2}>
       {/* Mã Banner */}
       <Grid item xs={12}>
+      <Typography
+              variant="h6"
+              align="center"
+              style={{ marginTop: "20px" , marginBottom:"20px" }}
+            >
+              Thêm Banner
+            </Typography>
         <TextField
           name="bannerId"
           label="Mã Banner"
@@ -634,8 +655,8 @@ else{
           <MenuItem value="">
             <em>Chọn trạng thái hoạt động</em>
           </MenuItem>
-          <MenuItem value="Hoạt động">Hoạt động</MenuItem>
-          <MenuItem value="Ngừng hoạt động">Ngừng hoạt động</MenuItem>
+          <MenuItem value="ON">Hoạt Động</MenuItem>
+          <MenuItem value="OFF">Ngưng Hoạt Động</MenuItem>
         </TextField>
       </Grid>
 
@@ -732,12 +753,12 @@ else{
             <Typography
               variant="h6"
               align="center"
-              style={{ marginTop: "16px" }}
+              style={{ marginTop: "20px" , marginBottom:"20px" }}
             >
               Lịch Sử Xóa
             </Typography>
 
-            <Grid container spacing={2} style={{ marginTop: "16px" }}>
+          {/*   <Grid container spacing={2} style={{ marginTop: "16px" }}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Tìm kiếm theo ID"
@@ -758,11 +779,11 @@ else{
                   SelectProps={{ native: true }}
                 >
                   <option value="Tất cả">Tất cả</option>
-                  <option value="Hoạt động">Hoạt động</option>
-                  <option value="Ngừng hoạt động">Ngừng hoạt động</option>
+                  <option value="ON">Hoạt động</option>
+                  <option value="OFF"> Ngưng Hoạt động</option>
                 </TextField>
               </Grid>
-            </Grid>
+            </Grid> */}
 
             <TableContainer
               component={Paper}
@@ -772,6 +793,7 @@ else{
                 <TableHead>
                   <TableRow className="table-row-header">
                     <TableCell>Mã Banner</TableCell>
+                    <TableCell>Danh Mục</TableCell>
                     <TableCell>Hình Ảnh</TableCell>
                     <TableCell>Trạng Thái Hoạt Động</TableCell>
                     <TableCell>Ngày Tạo</TableCell>
@@ -786,6 +808,10 @@ else{
                   {filteredDeletedBannerss.map((post) => (
                      <TableRow key={post.bannerId}>
                      <TableCell>{post.bannerId}</TableCell>
+                     <TableCell>{post.bannerchitiet.map((item)=>{
+                          return <p key={item.bannerchitietid}>{item.danhmuc.danh_mucId}</p>
+                        })}
+                        </TableCell>
                      <TableCell>
                        {post.hinh_anh ? (
                          <img
@@ -806,7 +832,7 @@ else{
                          : post.trang_thai_xoa}
                      </TableCell>
                      <TableCell>
-                       {post.accountID}
+                     {post.users.accountID}
                      </TableCell>
                      <TableCell>
                      <Button
@@ -824,7 +850,7 @@ else{
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={filteredPosts.length}
+              count={filteredDeletedBannerss.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -837,12 +863,11 @@ else{
             <Typography
               variant="h6"
               align="center"
-              style={{ marginTop: "16px" }}
-            >
-              Danh Sách Banner
+              style={{ marginTop: "20px" , marginBottom:"20px" }}>
+              Danh Sách Hành Động
             </Typography>
 
-            <Grid
+        {/*     <Grid
               container
               spacing={2}
               className="search-filter-container"
@@ -867,12 +892,12 @@ else{
                   onChange={(e) => setFilterStatus(e.target.value)}
                   SelectProps={{ native: true }}
                 >
-                  <option value="Tất cả">Tất cả</option>
-                  <option value="Hoạt động">Hoạt động</option>
-                  <option value="Ngừng hoạt động">Ngừng hoạt động</option>
+                   <option value="Tất cả">Tất cả</option>
+                  <option value="ON">Hoạt động</option>
+                  <option value="OFF"> Ngưng Hoạt động</option>
                 </TextField>
               </Grid>
-            </Grid>
+            </Grid> */}
 
             <TableContainer
               component={Paper}
@@ -886,7 +911,7 @@ else{
                     <TableCell>Trạng Thái Hoạt Động</TableCell>
                     <TableCell>Ngày Tạo</TableCell>
                     <TableCell>Ngày Hết Hạn</TableCell>
-                
+                    <TableCell>Ngày Hành Động</TableCell>
                     <TableCell>Nhật Kí Hành Động</TableCell>
                   </TableRow>
                 </TableHead>
@@ -910,7 +935,7 @@ else{
                         <TableCell>{post.banner.hoat_dong}</TableCell>
                         <TableCell>{post.banner.ngay_tao}</TableCell>
                         <TableCell>{post.banner.ngay_het_han}</TableCell>
-                       
+                        <TableCell>{post.ngayhanhdong}</TableCell>
                         <TableCell>{post.tenHanhDong}</TableCell>
                       </TableRow>
                     ))}

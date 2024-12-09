@@ -42,26 +42,60 @@ const UserForm = () => {
     dia_chi: "",
     trang_thai_xoa: "",
     previewUrl: "",
-    hanh_dong:"",
+    hanh_dong: "",
   });
 
   const [formErrors, setFormErrors] = useState({});
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [tabValue, setTabValue] = useState(0);
-  const [listDataHD,setlistDataHD] = useState([])
-  const apilistDataHD = async () =>{
-    const res = await axios({url:"http://localhost:8080/api/users/gethanhdong",method:"GET"})
-    setlistDataHD(res.data)
-    console.log('sdsadsadfas',res.data)
+  const [listDataHD, setlistDataHD] = useState([]);
+  const [listLoad, setlistLoad] = useState ([])
+  const [listUser, setlistUser] = useState ([])
+  const [listNgay, setlistNgay] = useState ([])
+  const apilistDataHD = async () => {
+    const res = await axios({
+      url: "http://localhost:8080/api/users/gethanhdong",
+      method: "GET",
+    });
+    setlistDataHD(res.data);
+    console.log("sdsadsadfas", res.data);
+  };
+
+  const handleLoad = async () => {
+    const res = await axios({
+      url: `http://localhost:8080/api/users/getNhanVien`,
+      method: "GET",
+    });
+    setlistLoad(res.data);
   }
- 
+
+  const handleUser = async () => {
+    const res = await axios({
+      url: `http://localhost:8080/api/users/getUser`,
+      method: "GET",
+    });
+    console.log("first",res.data)
+    setlistUser(res.data);
+  }
+
+  const handleNgay = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/users/today");
+      console.log("Data từ API ngày:", res.data);
+      setlistNgay(res.data); // Cập nhật state `listNgay`
+    } catch (error) {
+      console.error("Lỗi khi gọi API ngày:", error);
+    }
+  };
   
 
   useEffect(() => {
+    handleUser();
+    handleNgay();
     fetchUsers();
-    apilistDataHD()
-   
+    handleLoad();
+    apilistDataHD();
   }, []);
 
   const fetchUsers = async () => {
@@ -101,8 +135,14 @@ const UserForm = () => {
   };
 
   const validateForm = () => {
-    const { accountID, hovaten, password, so_dien_thoai, dia_chi,trang_thai_xoa } =
-      formData;
+    const {
+      accountID,
+      hovaten,
+      password,
+      so_dien_thoai,
+      dia_chi,
+      trang_thai_xoa,
+    } = formData;
     let errors = {};
 
     if (!accountID) errors.accountID = "Account ID không được để trống!";
@@ -125,7 +165,8 @@ const UserForm = () => {
     if (!dia_chi) errors.dia_chi = "Địa chỉ không được để trống!";
     else if (dia_chi.length < 10 || dia_chi.length > 50)
       errors.dia_chi = "Địa chỉ phải từ 10 đến 50 ký tự!";
-    if (!trang_thai_xoa) errors.trang_thai_xoa = "Trạng thái xóa không được để trống!";
+    if (!trang_thai_xoa)
+      errors.trang_thai_xoa = "Trạng thái xóa không được để trống!";
 
     return errors;
   };
@@ -147,16 +188,27 @@ const UserForm = () => {
     try {
       const isUpdating = Boolean(currentUser);
       const url = isUpdating
-        ? `http://localhost:8080/api/users/${currentUser.accountID}`
-        : "http://localhost:8080/api/users";
+        ? `http://localhost:8080/api/users/put/${currentUser.accountID}`
+        : "http://localhost:8080/api/users/add";
       const method = isUpdating ? "PUT" : "POST";
-
+      if (method == "POST") {
+        const acc = formDataToSend.get("accountID");
+        console.log("sâsas", acc);
+        const res = await axios({
+          url: `http://localhost:8080/api/users/trung?accountID=${acc}`,
+          method: "GET",
+        });
+        if (res.data != "") {
+          alert("Trùng Accoutn");
+          return;
+        }
+      }
       const response = await axios({
         method,
         url,
         data: formDataToSend,
         headers: {
-          "Content-Type": "multipart/form-data"
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -199,7 +251,7 @@ const UserForm = () => {
 
   const handleEdit = (user) => {
     setCurrentUser(user);
-    console.log('cc',user);
+    console.log("cc", user);
     setFormData({
       accountID: user.accountID,
       hovaten: user.hovaten,
@@ -207,7 +259,7 @@ const UserForm = () => {
       hinh_anh: user.hinh_anh,
       vai_tro: user.roles[0].ten_vai_tro,
       so_dien_thoai: user.so_dien_thoai,
-      trang_thai_xoa:user.trang_thai_xoa,
+      trang_thai_xoa: user.trang_thai_xoa,
       dia_chi: user.diachi[0].dia_chi,
       previewUrl: user.hinh_anh, // Giả định có URL hình ảnh
       hanh_dong: user.hanh_dong,
@@ -215,67 +267,71 @@ const UserForm = () => {
     setTabValue(1);
   };
   const handleRestore = async (user) => {
-    const {accountID} = user;
-    console.log('id',accountID)
+    const { accountID } = user;
+    console.log("id", accountID);
     try {
-        // Giả định API khôi phục người dùng
-        await axios.get(`http://localhost:8080/api/users/back/${accountID}`);
-        setSnackbarMessage("Khôi phục người dùng thành công!");
-        setSnackbarOpen(true);
-        fetchUsers(); // Cập nhật danh sách người dùng sau khi khôi phục
-        setTabValue(0);
+      // Giả định API khôi phục người dùng
+      await axios.get(`http://localhost:8080/api/users/back/${accountID}`);
+      setSnackbarMessage("Khôi phục người dùng thành công!");
+      setSnackbarOpen(true);
+      fetchUsers(); // Cập nhật danh sách người dùng sau khi khôi phục
+      setTabValue(0);
     } catch (error) {
-        console.error("Lỗi khi khôi phục người dùng:", error);
-        setSnackbarMessage("Có lỗi xảy ra khi khôi phục người dùng!");
-        setSnackbarOpen(true);
+      console.error("Lỗi khi khôi phục người dùng:", error);
+      setSnackbarMessage("Có lỗi xảy ra khi khôi phục người dùng!");
+      setSnackbarOpen(true);
     }
-};
+  };
 
+  const handlechange1 = async (user) => {
+    try {
+      setCurrentUser(user);
+      console.log("cc", user);
+      const { accountID } = user;
+      console.log("ccccc", accountID);
+      const res = await axios({
+        url: `http://localhost:8080/api/users/delete/${accountID}`,
+        method: "GET",
+      });
+      setList((prevList) =>
+        prevList.filter((user) => user.accountID !== accountID)
+      );
 
-const handlechange1 = async (user) => {
-  try {
-    setCurrentUser(user);
-  console.log('cc',user);
- const {accountID} = user;
- console.log('ccccc',accountID)
- const res = await axios({url:`http://localhost:8080/api/users/delete/${accountID}`,method:'GET'})
- setList((prevList) => prevList.filter((user) => user.accountID !== accountID));
+      setSnackbarMessage("Xóa người dùng thành công!");
+      setSnackbarOpen(true);
 
-    setSnackbarMessage("Xóa người dùng thành công!");
-    setSnackbarOpen(true);
-    
-    // Chuyển sang tab thứ ba nếu cần
-    setTabValue(0);
-  } catch (error) {
-    console.error("Lỗi khi xóa người dùng:", error);
-    setSnackbarMessage("Có lỗi xảy ra khi xóa người dùng!");
-    setSnackbarOpen(true);
-  }
+      // Chuyển sang tab thứ ba nếu cần
+      setTabValue(0);
+    } catch (error) {
+      console.error("Lỗi khi xóa người dùng:", error);
+      setSnackbarMessage("Có lỗi xảy ra khi xóa người dùng!");
+      setSnackbarOpen(true);
+    }
+  };
+
   
-};
 
+  const handleDelete = async (accountID) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/users/${accountID}`);
 
+      // Cập nhật danh sách người dùng trong state
+      setList((prevList) =>
+        prevList.filter((user) => user.accountID !== accountID)
+      );
 
-const handleDelete = async (accountID) => {
-  try {
-    await axios.delete(`http://localhost:8080/api/users/${accountID}`);
-    
-    // Cập nhật danh sách người dùng trong state
-    setList((prevList) => prevList.filter((user) => user.accountID !== accountID));
+      setSnackbarMessage("Xóa người dùng thành công!");
+      setSnackbarOpen(true);
 
-    setSnackbarMessage("Xóa người dùng thành công!");
-    setSnackbarOpen(true);
-    
-    // Chuyển sang tab thứ ba nếu cần
-  } catch (error) {
-    console.error("Lỗi khi xóa người dùng:", error);
-    setSnackbarMessage("Có lỗi xảy ra khi xóa người dùng!");
-    setSnackbarOpen(true);
-  }
-};
+      // Chuyển sang tab thứ ba nếu cần
+    } catch (error) {
+      console.error("Lỗi khi xóa người dùng:", error);
+      setSnackbarMessage("Có lỗi xảy ra khi xóa người dùng!");
+      setSnackbarOpen(true);
+    }
+  };
 
   const resetForm = async () => {
-    
     setCurrentUser(null);
     setFormData({
       accountID: "",
@@ -285,30 +341,67 @@ const handleDelete = async (accountID) => {
       vai_tro: "",
       so_dien_thoai: "",
       dia_chi: "",
-      trang_thai_xoa:"",
+      trang_thai_xoa: "",
       previewUrl: "",
     });
     setFormErrors({});
-    
   };
-  console.log(formData)
+  console.log(formData);
   const filteredData = list.filter((user) => {
     const matchesSearchTerm =
       (user.hovaten &&
         user.hovaten.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (user.accountID &&
         user.accountID.toLowerCase().includes(searchTerm.toLowerCase()));
-  
-    const matchesRoleFilter = roleFilter
-      ? user.roles?.some(role => role.ten_vai_tro === roleFilter)
-      : true;
-  
+
+        const matchesRoleFilter = roleFilter
+        ? user.roles && user.roles.some((role) => role.ten_vai_tro === roleFilter)
+        : true;
+
     // Kiểm tra tồn tại của `trang_thai_xoa` trước khi so sánh
     const setTrangThaiXoa = user.trang_thai_xoa === null;
-  
+
     return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
   });
 
+  const filterdataUser = listUser.filter((user) => {
+    const matchesRoleFilter = roleFilter
+  ? user.roles && user.roles.some((role) => role.ten_vai_tro === roleFilter)
+  : true;
+    const matchesSearchTerm =
+      (user.hovaten &&
+        user.hovaten.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.accountID &&
+        user.accountID.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    
+
+    // // Kiểm tra tồn tại của `trang_thai_xoa` trước khi so sánh
+    // const setTrangThaiXoa = user.trang_thai_xoa === null;
+
+    return matchesSearchTerm  && matchesRoleFilter ;
+  });
+
+  const filterdataNhanVien = listLoad.filter((user) => {
+    const normalizedSearchTerm = (searchTerm || "").toLowerCase();
+  
+    // Kiểm tra tên hoặc accountID khớp với từ khóa tìm kiếm
+    const matchesSearchTerm =
+      (user.hovaten &&
+        user.hovaten.toLowerCase().includes(normalizedSearchTerm)) ||
+      (user.accountID &&
+        user.accountID.toLowerCase().includes(normalizedSearchTerm));
+  
+    // Kiểm tra vai trò khớp với bộ lọc
+    const matchesRoleFilter = roleFilter
+      ? user.ten_vai_tro.trim().toLowerCase() === roleFilter.trim().toLowerCase()
+      : true;
+  
+    return matchesSearchTerm && matchesRoleFilter;
+  });
+  
+  
+  
   const filteredDataXoa = list.filter((user) => {
     const matchesSearchTerm =
       (user.hovaten &&
@@ -316,10 +409,10 @@ const handleDelete = async (accountID) => {
       (user.accountID &&
         user.accountID.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        const matchesRoleFilter = roleFilter 
-        ? user.roles?.some(role => role.ten_vai_tro === roleFilter) 
-        : true;
-      const setTrangThaiXoa = user.trang_thai_xoa === "Xóa"
+    const matchesRoleFilter = roleFilter
+      ? user.roles?.some((role) => role.ten_vai_tro === roleFilter)
+      : true;
+    const setTrangThaiXoa = user.trang_thai_xoa === "Xóa";
 
     return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
   });
@@ -330,68 +423,74 @@ const handleDelete = async (accountID) => {
       (user.accountID &&
         user.accountID.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        const matchesRoleFilter = roleFilter 
-        ? user.roles?.some(role => role.ten_vai_tro === roleFilter) 
-        : true;
-      const setTrangThaiXoa = user.trang_thai_xoa === "Ban"
+    const matchesRoleFilter = roleFilter
+      ? user.roles?.some((role) => role.ten_vai_tro === roleFilter)
+      : true;
+    const setTrangThaiXoa = user.vi_pham > 0;
 
     return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
   });
   useEffect(() => {
     console.log("FilerData nè: ", listDataHD);
-  }, [listDataHD]);
-  const filteredDataHoatDong = list.filter((user) => {
-    const matchesSearchTerm =
-      (user.hovaten &&
-        user.hovaten.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (user.accountID &&
-        user.accountID.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [listDataHD,listNgay]);
+  const combinedList = [...listDataHD, ...listNgay];
 
-        const matchesRoleFilter = roleFilter 
-        ? user.roles?.some(role => role.ten_vai_tro === roleFilter) 
-        : true;
-      const setTrangThaiXoa = user.trang_thai_xoa === null || user.trang_thai_xoa !== null
+const filteredCombinedData = combinedList.filter((user) => {
+  const matchesSearchTerm =
+    (user.hovaten &&
+      user.hovaten.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (user.accountID &&
+      user.accountID.toString().toLowerCase().includes(searchTerm.toLowerCase()));
 
-    return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
-  });
+      const matchesRoleFilter = roleFilter
+      ? user.roles && user.roles.some((role) => role.ten_vai_tro === roleFilter)
+      : true;
+
+  // Điều kiện trang_thai_xoa (nếu có từ listDataHD)
+  const setTrangThaiXoa = user.trang_thai_xoa === null || user.trang_thai_xoa !== null;
+
+  return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
+});
+
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
   const handleBanUser = async (user) => {
     try {
-        setCurrentUser(user);
-        console.log('cc', user);
-        const { accountID } = user;
-        console.log('ccccc', accountID);
+      setCurrentUser(user);
+      console.log("cc", user);
+      const { accountID } = user;
+      console.log("ccccc", accountID);
 
-        // Gửi yêu cầu đánh dấu vi phạm
-        const res = await axios({
-            url: `http://localhost:8080/api/users/vipham/${accountID}`,
-            method: 'PUT',
-        });
+      // Gửi yêu cầu đánh dấu vi phạm
+      const res = await axios({
+        url: `http://localhost:8080/api/users/vipham/${accountID}`,
+        method: "PUT",
+      });
 
-        // Cập nhật danh sách người dùng
-        setList((prevList) => prevList.filter((user) => user.accountID !== accountID));
+      // Cập nhật danh sách người dùng
+      setList((prevList) =>
+        prevList.filter((user) => user.accountID !== accountID)
+      );
 
-        setSnackbarMessage("Đánh dấu người dùng vi phạm thành công!");
-        setSnackbarOpen(true);
+      setSnackbarMessage("Đánh dấu người dùng vi phạm thành công!");
+      setSnackbarOpen(true);
 
-        // Chuyển sang tab thứ ba nếu cần
-        setTabValue(0);
+      // Chuyển sang tab thứ ba nếu cần
+      setTabValue(0);
     } catch (error) {
-        console.error("Lỗi khi đánh dấu vi phạm:", error);
-        setSnackbarMessage("Có lỗi xảy ra khi đánh dấu vi phạm!");
-        setSnackbarOpen(true);
+      console.error("Lỗi khi đánh dấu vi phạm:", error);
+      setSnackbarMessage("Có lỗi xảy ra khi đánh dấu vi phạm!");
+      setSnackbarOpen(true);
     }
-};
+  };
 
   
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
-  
 
   return (
     <Container maxWidth="xl" className="form-container">
@@ -401,7 +500,8 @@ const handleDelete = async (accountID) => {
           align="center"
           gutterBottom
           className="form-title"
-        >
+          style={{ marginTop: "20px" , marginBottom:"20px" }}>
+
           User Management
         </Typography>
 
@@ -414,11 +514,32 @@ const handleDelete = async (accountID) => {
             centered
           >
             <Tab label="Danh Sách Người Dùng" />
+            <Tab label="Danh Sách Nhân Viên" />
             <Tab label="Thêm Người Dùng" />
-            <Tab onClick={()=>{fetchUsers()}} label="Lịch Sử Xóa" />
-            <Tab label="Vi Phạm" />
-            <Tab label="Các Tài Khoản Bị Ban" />
-            <Tab onClick={()=>{apilistDataHD()}} label=" Hành Động" />
+            {/* <Tab
+              onClick={() => {
+                fetchUsers();
+              }}
+              label="Lịch Sử Xóa"
+            /> */}
+            <Tab
+              onClick={() => {
+                fetchUsers();
+              }}
+              label="Vi Phạm"
+            />
+            <Tab
+              onClick={() => {
+                fetchUsers();
+              }}
+              label="Các Tài Khoản Bị Ban"
+            />
+            <Tab
+              onClick={() => {
+                apilistDataHD();
+              }}
+              label=" Hành Động"
+            />
           </Tabs>
         </AppBar>
 
@@ -457,12 +578,12 @@ const handleDelete = async (accountID) => {
                   onChange={(e) => setRoleFilter(e.target.value)}
                 >
                   <MenuItem value="">All</MenuItem>
-                  <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
+                  <MenuItem value="Nhân Viên Kho">Nhân Viên Kho</MenuItem>
                   <MenuItem value="Nhân Viên Kinh Doanh">
                     Nhân viên kinh doanh
                   </MenuItem>
                   <MenuItem value="Nhân Viên Đăng Bài">
-                    Nhân viên đăng bài
+                  Nhân Viên Đăng Bài
                   </MenuItem>
                   <MenuItem value="Admin">Admin</MenuItem>
                 </TextField>
@@ -478,12 +599,12 @@ const handleDelete = async (accountID) => {
                   <TableCell>Vai Trò</TableCell>
                   <TableCell>Số Điện Thoại</TableCell>
                   <TableCell>Địa Chỉ</TableCell>
-                  <TableCell>Mật Khẩu</TableCell>
-                  <TableCell>Actions</TableCell>
+                  {/* <TableCell>Mật Khẩu</TableCell> */}
+                  {/* <TableCell>Actions</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredData
+                {filterdataUser
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((user, index) => (
                     <TableRow key={index}>
@@ -500,14 +621,14 @@ const handleDelete = async (accountID) => {
                           "No Image"
                         )}
                       </TableCell>
-                      <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
+                      <TableCell>{user.ten_vai_tro}</TableCell>
                       {/* Hiển thị vai trò */}
                       <TableCell>{user.so_dien_thoai}</TableCell>
-                      <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
+                      <TableCell>{user.dia_chi}</TableCell>
                       {/* Hiển thị địa chỉ */}
-                      
-                      <TableCell>{user.password}</TableCell>
-                      <TableCell>
+
+                      {/* <TableCell>{user.password}</TableCell> */}
+                      {/* <TableCell>
                         <Button onClick={() => handleEdit(user)}>
                           <Edit />
                         </Button>
@@ -520,7 +641,7 @@ const handleDelete = async (accountID) => {
                 >
                     <Delete />
                 </Button>
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   ))}
               </TableBody>
@@ -529,7 +650,107 @@ const handleDelete = async (accountID) => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={filteredData.length}
+              count={filterdataUser.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </TableContainer>
+        )}
+            {tabValue === 1 && (
+          <TableContainer component={Paper} className="table-container">
+            <Typography variant="h6" align="center" className="table-title"
+            style={{ marginTop: "20px" , marginBottom:"20px" }}>
+              
+              Submitted User Data
+            </Typography>
+            <Grid container spacing={2} style={{ alignItems: "center" }}>
+              <Grid item xs={6}>
+                <TextField
+                  className="input-field"
+                  label="Search"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  className="input-field"
+                  select
+                  label="Filter by Role"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                >
+                  <MenuItem value="">All</MenuItem>
+                  <MenuItem value="Nhân Viên Kho">Nhân Viên Kho</MenuItem>
+                  <MenuItem value="Nhân Viên Kinh Doanh">
+                    Nhân viên Kinh Doanh
+                  </MenuItem>
+                  <MenuItem value="Nhân Viên Ðăng Bài">
+                  Nhân Viên Ðăng Bài
+                  </MenuItem>
+                  <MenuItem value="Admin">Admin</MenuItem>
+                </TextField>
+              </Grid>
+            </Grid>
+
+            <Table>
+              <TableHead>
+                <TableRow className="table-row-header">
+                  <TableCell>Account ID</TableCell>
+                  <TableCell>Họ và tên</TableCell>
+                  <TableCell>Hình Ảnh</TableCell>
+                  <TableCell>Vai Trò</TableCell>
+                  <TableCell>Số Điện Thoại</TableCell>
+                  <TableCell>Địa Chỉ</TableCell>
+                  {/* <TableCell>Mật Khẩu</TableCell> */}
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+  {filterdataNhanVien
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    .map((user, index) => (
+      <TableRow key={index}>
+        <TableCell>{user.accountID}</TableCell>
+        <TableCell>{user.hovaten}</TableCell>
+        <TableCell>
+          {user.hinh_anh ? (
+            <img
+              src={`/images/${user.hinh_anh}`}
+              alt="Hình ảnh"
+              style={{ width: 50, height: 50 }}
+            />
+          ) : (
+            "Không Có Hình"
+          )}
+        </TableCell>
+        <TableCell>{user.ten_vai_tro}</TableCell>
+        <TableCell>{user.so_dien_thoai}</TableCell>
+        <TableCell>{user.dia_chi}</TableCell>
+      </TableRow>
+    ))}
+</TableBody>
+
+            </Table>
+
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filterdataNhanVien.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -538,10 +759,17 @@ const handleDelete = async (accountID) => {
           </TableContainer>
         )}
 
-        {tabValue === 1 && (
+        {tabValue === 2 && (
           <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
+              <Typography
+              variant="h6"
+              align="center"
+              style={{ marginTop: "20px" , marginBottom:"20px" }}
+            >
+              Thêm Users
+            </Typography>
                 <TextField
                   name="accountID"
                   label="Account ID"
@@ -581,21 +809,21 @@ const handleDelete = async (accountID) => {
                   helperText={formErrors.password}
                 />
               </Grid>
-                          <Grid item xs={12}>
-              <TextField
-                name="trang_thai_xoa"
-                select
-                label="Trang Thái Xóa"
-                variant="outlined"
-                fullWidth
-                required
-                value={formData.trang_thai_xoa}
-                error={!!formErrors.trang_thai_xoa}
-                onChange={handleInputChange}
-              >
-                <MenuItem value="Chưa Xóa">Chưa Xóa</MenuItem>
-              </TextField>
-            </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="trang_thai_xoa"
+                  select
+                  label="Trang Thái Xóa"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={formData.trang_thai_xoa}
+                  error={!!formErrors.trang_thai_xoa}
+                  onChange={handleInputChange}
+                >
+                  <MenuItem value="Chưa Xóa">Chưa Xóa</MenuItem>
+                </TextField>
+              </Grid>
               <Grid item xs={12}>
                 <TextField
                   name="vai_tro"
@@ -608,12 +836,12 @@ const handleDelete = async (accountID) => {
                   onChange={handleInputChange}
                 >
                   <MenuItem value="">Chọn vai trò</MenuItem>
-                  <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
+                  <MenuItem value="Nhân Viên Kho">Nhân Viên Kho</MenuItem>
                   <MenuItem value="Nhân Viên Kinh Doanh">
-                    Nhân viên kinh doanh
+                  Nhân Viên Kinh Doanh
                   </MenuItem>
-                  <MenuItem value="Nhân Viên Đăng Bài">
-                    Nhân viên đăng bài
+                  <MenuItem value="Nhân Viên Ðăng Bài">
+                  Nhân Viên Ðăng Bài
                   </MenuItem>
                   <MenuItem value="Admin">Admin</MenuItem>
                 </TextField>
@@ -697,450 +925,462 @@ const handleDelete = async (accountID) => {
             </Grid>
           </form>
         )}
-      </Paper>
-      {tabValue === 2 && (
-  <TableContainer component={Paper} className="table-container">
-    <Typography variant="h6" align="center" className="table-title">
-      Lịch Sử Xóa
-    </Typography>
-    <Grid container spacing={2} style={{ alignItems: "center" }}>
-      <Grid item xs={6}>
-        <TextField
-          className="input-field"
-          label="Search"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <TextField
-          className="input-field"
-          select
-          label="Filter by Role"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-        >
-          <MenuItem value="">All</MenuItem>
-          <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
-          <MenuItem value="Nhân Viên Kinh Doanh">Nhân viên kinh doanh</MenuItem>
-          <MenuItem value="Nhân Viên Đăng Bài">Nhân viên đăng bài</MenuItem>
-          <MenuItem value="Admin">Admin</MenuItem>
-        </TextField>
-      </Grid>
-    </Grid>
+      </Paper>  
 
-    <Table>
-      <TableHead>
-        <TableRow className="table-row-header">
-          <TableCell>Account ID</TableCell>
-          <TableCell>Họ và tên</TableCell>
-          <TableCell>Hình Ảnh</TableCell>
-          <TableCell>Vai Trò</TableCell>
-          <TableCell>Số Điện Thoại</TableCell>
-          <TableCell>Địa Chỉ</TableCell>
-          <TableCell>Mật Khẩu</TableCell>
-          <TableCell>Trạng Thái Xóa</TableCell>
-          <TableCell>Actions</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {filteredDataXoa
-          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          .map((user, index) => (
-            <TableRow key={index}>
-              <TableCell>{user.accountID}</TableCell>
-              <TableCell>{user.hovaten}</TableCell>
-              <TableCell>
-                {user.hinh_anh ? (
-                  <img
-                    src={`/images/${user.hinh_anh}`}
-                    alt="Hình ảnh"
-                    style={{ width: 50, height: 50 }}
-                  />
-                ) : (
-                  "No Image"
-                )}
-              </TableCell>
-              <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
-              <TableCell>{user.so_dien_thoai}</TableCell>
-              <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
-              <TableCell>{user.password}</TableCell>
-              <TableCell>{user.trang_thai_xoa}</TableCell>
-              <TableCell>
-                <Button onClick={() => handleRestore(user)}>
-                  <Restore />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-      </TableBody>
-    </Table>
-
-    <TablePagination
-      rowsPerPageOptions={[5, 10, 25]}
-      component="div"
-      count={filteredData.length}
-      rowsPerPage={rowsPerPage}
-      page={page}
-      onPageChange={handleChangePage}
-      onRowsPerPageChange={handleChangeRowsPerPage}
-    />
-  </TableContainer>
-)}
-{tabValue === 3 && (
-          <TableContainer component={Paper} className="table-container">
-            <Typography variant="h6" align="center" className="table-title">
-              Submitted User Data
-            </Typography>
-            <Grid container spacing={2} style={{ alignItems: "center" }}>
-              <Grid item xs={6}>
-                <TextField
-                  className="input-field"
-                  label="Search"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  className="input-field"
-                  select
-                  label="Filter by Role"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={roleFilter}
-                  onChange={(e) => setRoleFilter(e.target.value)}
-                >
-                  <MenuItem value="">All</MenuItem>
-                  <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
-                  <MenuItem value="Nhân Viên Kinh Doanh">
-                    Nhân viên kinh doanh
-                  </MenuItem>
-                  <MenuItem value="Nhân Viên Đăng Bài">
-                    Nhân viên đăng bài
-                  </MenuItem>
-                  <MenuItem value="Admin">Admin</MenuItem>
-                </TextField>
-              </Grid>
-            </Grid>
-
-            <Table>
-              <TableHead>
-                <TableRow className="table-row-header">
-                  <TableCell>Account ID</TableCell>
-                  <TableCell>Họ và tên</TableCell>
-                  <TableCell>Hình Ảnh</TableCell>
-                  <TableCell>Vai Trò</TableCell>
-                  <TableCell>Số Điện Thoại</TableCell>
-                  <TableCell>Địa Chỉ</TableCell>
-                  <TableCell>Mật Khẩu</TableCell>
-                  <TableCell>Vi Phạm</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredData
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((user, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{user.accountID}</TableCell>
-                      <TableCell>{user.hovaten}</TableCell>
-                      <TableCell>
-                        {user.hinh_anh ? (
-                          <img
-                            src={`/images/${user.hinh_anh}`}
-                            alt="Hình ảnh"
-                            style={{ width: 50, height: 50 }}
-                          />
-                        ) : (
-                          "No Image"
-                        )}
-                      </TableCell>
-                      <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
-                      {/* Hiển thị vai trò */}
-                      <TableCell>{user.so_dien_thoai}</TableCell>
-                      <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
-                      {/* Hiển thị địa chỉ */}
-                      
-                      <TableCell>{user.password}</TableCell>
-                      <TableCell>
-  {user.vi_pham === 3 ? (
-    <button 
-      style={{
-        backgroundColor: 'red',
-        color: 'white',
-        border: 'none',
-        padding: '5px 10px',
-        borderRadius: '5px',
-        cursor: 'pointer'
-      }}
-      onClick={() => 
-        handleBanUser(user)
-      }
-    >
-      Ban
       
-    </button>
-  ) : (
-    user.vi_pham
-  )}
-</TableCell>
-
-                      <TableCell>
-                        <Button onClick={() => handleEdit(user)}>
-                          <Edit />
-                        </Button>
-                        <Button
-                    onClick={() => {
-                        handlechange1(user); // Call the edit function
-                        setTabValue(2); // Switch to tab 2
-                    }}
-                    sx={{ color: "secondary" }}
-                >
-                    <Delete />
-                </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={filteredData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableContainer>
-        )}
-          {tabValue === 4 && (
-  <TableContainer component={Paper} className="table-container">
-    <Typography variant="h6" align="center" className="table-title">
-     Tài Khoản Bị Ban
-    </Typography>
-    <Grid container spacing={2} style={{ alignItems: "center" }}>
-      <Grid item xs={6}>
-        <TextField
-          className="input-field"
-          label="Search"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <TextField
-          className="input-field"
-          select
-          label="Filter by Role"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-        >
-          <MenuItem value="">All</MenuItem>
-          <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
-          <MenuItem value="Nhân Viên Kinh Doanh">Nhân viên kinh doanh</MenuItem>
-          <MenuItem value="Nhân Viên Đăng Bài">Nhân viên đăng bài</MenuItem>
-          <MenuItem value="Admin">Admin</MenuItem>
-        </TextField>
-      </Grid>
-    </Grid>
-
-    <Table>
-      <TableHead>
-        <TableRow className="table-row-header">
-          <TableCell>Account ID</TableCell>
-          <TableCell>Họ và tên</TableCell>
-          <TableCell>Hình Ảnh</TableCell>
-          <TableCell>Vai Trò</TableCell>
-          <TableCell>Số Điện Thoại</TableCell>
-          <TableCell>Địa Chỉ</TableCell>
-          <TableCell>Mật Khẩu</TableCell>
-          <TableCell>Trạng Thái Xóa</TableCell>
-          <TableCell>Actions</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {filteredDataViPham
-          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-          .map((user, index) => (
-            <TableRow key={index}>
-              <TableCell>{user.accountID}</TableCell>
-              <TableCell>{user.hovaten}</TableCell>
-              <TableCell>
-                {user.hinh_anh ? (
-                  <img
-                    src={`/images/${user.hinh_anh}`}
-                    alt="Hình ảnh"
-                    style={{ width: 50, height: 50 }}
-                  />
-                ) : (
-                  "No Image"
-                )}
-              </TableCell>
-              <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
-              <TableCell>{user.so_dien_thoai}</TableCell>
-              <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
-              <TableCell>{user.password}</TableCell>
-              <TableCell>{user.trang_thai_xoa}</TableCell>
-              <TableCell>
-                <Button onClick={() => handleRestore(user)}>
-                  <Restore />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-      </TableBody>
-    </Table>
-
-    <TablePagination
-      rowsPerPageOptions={[5, 10, 25]}
-      component="div"
-      count={filteredDataViPham.length}
-      rowsPerPage={rowsPerPage}
-      page={page}
-      onPageChange={handleChangePage}
-      onRowsPerPageChange={handleChangeRowsPerPage}
-    />
-  </TableContainer>
-)}
-  {tabValue === 5 && (
-          <TableContainer component={Paper} className="table-container">
-            <Typography variant="h6" align="center" className="table-title">
-              Nhật ký hoạt động
-            </Typography>
-            <Grid container spacing={2} style={{ alignItems: "center" }}>
-              <Grid item xs={6}>
-                <TextField
-                  className="input-field"
-                  label="Search"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  className="input-field"
-                  select
-                  label="Filter by Role"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={roleFilter}
-                  onChange={(e) => setRoleFilter(e.target.value)}
-                >
-                  <MenuItem value="">All</MenuItem>
-                  <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
-                  <MenuItem value="Nhân Viên Kinh Doanh">
-                    Nhân viên kinh doanh
-                  </MenuItem>
-                  <MenuItem value="Nhân Viên Đăng Bài">
-                    Nhân viên đăng bài
-                  </MenuItem>
-                  <MenuItem value="Admin">Admin</MenuItem>
-                </TextField>
-              </Grid>
+      {/* {tabValue === 4 && (
+        <TableContainer component={Paper} className="table-container">
+          <Typography variant="h6" align="center" className="table-title">
+            Lịch Sử Xóa
+          </Typography>
+          <Grid container spacing={2} style={{ alignItems: "center" }}>
+            <Grid item xs={6}>
+              <TextField
+                className="input-field"
+                label="Search"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+              />
             </Grid>
+            <Grid item xs={6}>
+              <TextField
+                className="input-field"
+                select
+                label="Filter by Role"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+              >
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
+                <MenuItem value="Nhân Viên Kinh Doanh">
+                  Nhân viên kinh doanh
+                </MenuItem>
+                <MenuItem value="Nhân Viên Đăng Bài">
+                  Nhân viên đăng bài
+                </MenuItem>
+                <MenuItem value="Admin">Admin</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid>
 
-            <Table>
-              <TableHead>
-                <TableRow className="table-row-header">
-                  <TableCell>Account ID</TableCell>
-                  <TableCell>Họ và tên</TableCell>
-                  <TableCell>Hình Ảnh</TableCell>
-                  <TableCell>Vai Trò</TableCell>
-                  <TableCell>Số Điện Thoại</TableCell>
-                  <TableCell>Địa Chỉ</TableCell>
-                  <TableCell>Mật Khẩu</TableCell>
-                  <TableCell>Hành Động</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {listDataHD
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((user, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{user.user.accountID}</TableCell>
-                      <TableCell>{user.user.hovaten}</TableCell>
-                      <TableCell>
-                        {user.user.hinh_anh ? (
-                          <img
-                            src={`/images/${user.user.hinh_anh}`}
-                            alt="Hình ảnh"
-                            style={{ width: 50, height: 50 }}
-                          />
-                        ) : (
-                          "No Image"
-                        )}
-                      </TableCell>
-                      <TableCell>{user.user?.roles[0]?.ten_vai_tro}</TableCell>
-                      {/* Hiển thị vai trò */}
-                      <TableCell>{user.user.so_dien_thoai}</TableCell>
-                      <TableCell>{user.user?.diachi[0]?.dia_chi}</TableCell>
-                      {/* Hiển thị địa chỉ */}
-                      
-                      <TableCell>{user.user.password}</TableCell>
-                      <TableCell>{user.tenHanhDong}</TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
+          <Table>
+            <TableHead>
+              <TableRow className="table-row-header">
+                <TableCell>Account ID</TableCell>
+                <TableCell>Họ và tên</TableCell>
+                <TableCell>Hình Ảnh</TableCell>
+                <TableCell>Vai Trò</TableCell>
+                <TableCell>Số Điện Thoại</TableCell>
+                <TableCell>Địa Chỉ</TableCell>
+                <TableCell>Mật Khẩu</TableCell>
+                <TableCell>Trạng Thái Xóa</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredDataXoa
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((user, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{user.accountID}</TableCell>
+                    <TableCell>{user.hovaten}</TableCell>
+                    <TableCell>
+                      {user.hinh_anh ? (
+                        <img
+                          src={`/images/${user.hinh_anh}`}
+                          alt="Hình ảnh"
+                          style={{ width: 50, height: 50 }}
+                        />
+                      ) : (
+                        "No Image"
+                      )}
+                    </TableCell>
+                    <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
+                    <TableCell>{user.so_dien_thoai}</TableCell>
+                    <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
+                    <TableCell>{user.password}</TableCell>
+                    <TableCell>{user.trang_thai_xoa}</TableCell>
+                    <TableCell>
+                      <Button onClick={() => handleRestore(user)}>
+                        <Restore />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
 
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 50]}
-              component="div"
-              count={listDataHD.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableContainer>
-        )}
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredData.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer> */}
+      {/* )} */}
+      {tabValue === 3 && (
+        <TableContainer component={Paper} className="table-container">
+          <Typography variant="h6" align="center" className="table-title"
+          
+          style={{ marginTop: "20px" , marginBottom:"20px" }}>
+            
+           Các Tài Khoản Vi Phạm
+          </Typography>
+          {/* <Grid container spacing={2} style={{ alignItems: "center" }}>
+            <Grid item xs={6}>
+              <TextField
+                className="input-field"
+                label="Search"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                className="input-field"
+                select
+                label="Filter by Role"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+              >
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
+                <MenuItem value="Nhân Viên Kinh Doanh">
+                  Nhân viên kinh doanh
+                </MenuItem>
+                <MenuItem value="Nhân Viên Đăng Bài">
+                  Nhân viên đăng bài
+                </MenuItem>
+                <MenuItem value="Admin">Admin</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid> */}
+
+          <Table>
+            <TableHead>
+              <TableRow className="table-row-header">
+                <TableCell>Account ID</TableCell>
+                <TableCell>Họ và tên</TableCell>
+                <TableCell>Hình Ảnh</TableCell>
+                <TableCell>Vai Trò</TableCell>
+                <TableCell>Số Điện Thoại</TableCell>
+                <TableCell>Địa Chỉ</TableCell>
+                <TableCell>Mật Khẩu</TableCell>
+                <TableCell>Vi Phạm</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredDataViPham
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((user, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{user.accountID}</TableCell>
+                    <TableCell>{user.hovaten}</TableCell>
+                    <TableCell>
+                      {user.hinh_anh ? (
+                        <img
+                          src={`/images/${user.hinh_anh}`}
+                          alt="Hình ảnh"
+                          style={{ width: 50, height: 50 }}
+                        />
+                      ) : (
+                        "No Image"
+                      )}
+                    </TableCell>
+                    <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
+                    {/* Hiển thị vai trò */}
+                    <TableCell>{user.so_dien_thoai}</TableCell>
+                    <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
+                    {/* Hiển thị địa chỉ */}
+
+                    <TableCell>{user.password}</TableCell>
+                    <TableCell>
+                      {user.vi_pham === 3 ? (
+                        <button
+                          style={{
+                            backgroundColor: "red",
+                            color: "white",
+                            border: "none",
+                            padding: "5px 10px",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleBanUser(user)}
+                        >
+                          Ban
+                        </button>
+                      ) : (
+                        user.vi_pham
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      <Button onClick={() => handleEdit(user)}>
+                        <Edit />
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handlechange1(user); // Call the edit function
+                          setTabValue(2); // Switch to tab 2
+                        }}
+                        sx={{ color: "secondary" }}
+                      >
+                        <Delete />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredDataViPham.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
+      )}
+      {tabValue === 4 && (
+        <TableContainer component={Paper} className="table-container">
+          <Typography variant="h6" align="center" className="table-title"
+          style={{ marginTop: "20px" , marginBottom:"20px" }}>
+            Tài Khoản Bị Ban
+          </Typography>
+       {/*    <Grid container spacing={2} style={{ alignItems: "center" }}>
+            <Grid item xs={6}>
+              <TextField
+                className="input-field"
+                label="Search"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                className="input-field"
+                select
+                label="Filter by Role"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+              >
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
+                <MenuItem value="Nhân Viên Kinh Doanh">
+                  Nhân viên kinh doanh
+                </MenuItem>
+                <MenuItem value="Nhân Viên Đăng Bài">
+                  Nhân viên đăng bài
+                </MenuItem>
+                <MenuItem value="Admin">Admin</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid> */}
+
+          <Table>
+            <TableHead>
+              <TableRow className="table-row-header">
+                <TableCell>Account ID</TableCell>
+                <TableCell>Họ và tên</TableCell>
+                <TableCell>Hình Ảnh</TableCell>
+                <TableCell>Vai Trò</TableCell>
+                <TableCell>Số Điện Thoại</TableCell>
+                <TableCell>Địa Chỉ</TableCell>
+                <TableCell>Mật Khẩu</TableCell>
+                <TableCell>Trạng Thái Xóa</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredDataViPham
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((user, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{user.accountID}</TableCell>
+                    <TableCell>{user.hovaten}</TableCell>
+                    <TableCell>
+                      {user.hinh_anh ? (
+                        <img
+                          src={`/images/${user.hinh_anh}`}
+                          alt="Hình ảnh"
+                          style={{ width: 50, height: 50 }}
+                        />
+                      ) : (
+                        "No Image"
+                      )}
+                    </TableCell>
+                    <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
+                    <TableCell>{user.so_dien_thoai}</TableCell>
+                    <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
+                    <TableCell>{user.password}</TableCell>
+                    <TableCell>{user.trang_thai_xoa}</TableCell>
+                    <TableCell>
+                      <Button onClick={() => handleRestore(user)}>
+                        <Restore />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredDataViPham.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
+      )}
+      {tabValue === 5 && (
+        <TableContainer component={Paper} className="table-container">
+          <Typography variant="h6" align="center" className="table-title"
+          style={{ marginTop: "20px" , marginBottom:"20px" }}>
+            Nhật ký hoạt động
+          </Typography>
+          {/* <Grid container spacing={2} style={{ alignItems: "center" }}>
+            <Grid item xs={6}>
+              <TextField
+                className="input-field"
+                label="Search"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                className="input-field"
+                select
+                label="Filter by Role"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+              >
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="Nhân Viên Kho">Nhân viên kho</MenuItem>
+                <MenuItem value="Nhân Viên Kinh Doanh">
+                  Nhân viên kinh doanh
+                </MenuItem>
+                <MenuItem value="Nhân Viên Đăng Bài">
+                  Nhân viên đăng bài
+                </MenuItem>
+                <MenuItem value="Admin">Admin</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid> */}
+
+          <Table>
+            <TableHead>
+              <TableRow className="table-row-header">
+                <TableCell>Account ID</TableCell>
+                <TableCell>Họ và tên</TableCell>
+                <TableCell>Hình Ảnh</TableCell>
+                <TableCell>Vai Trò</TableCell>
+                <TableCell>Số Điện Thoại</TableCell>
+                <TableCell>Địa Chỉ</TableCell>
+                <TableCell>Ngày Hành Động</TableCell>
+                <TableCell>Hành Động</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {listDataHD
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((user, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{user.user.accountID}</TableCell>
+                    <TableCell>{user.user.hovaten}</TableCell>
+                    <TableCell>
+                      {user.user.hinh_anh ? (
+                        <img
+                          src={`/images/${user.user.hinh_anh}`}
+                          alt="Hình ảnh"
+                          style={{ width: 50, height: 50 }}
+                        />
+                      ) : (
+                        "No Image"
+                      )}
+                    </TableCell>
+                    <TableCell>{user?.user?.roles[0]?.ten_vai_tro}</TableCell>
+                    {/* Hiển thị vai trò */}
+                    <TableCell>{user.user.so_dien_thoai}</TableCell>
+                    <TableCell>{user.user?.diachi[0]?.dia_chi}</TableCell>
+                    {/* Hiển thị địa chỉ */}
+
+                    <TableCell>{user.ngayhanhdong}</TableCell>
+                    <TableCell>{user.tenHanhDong}</TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 50]}
+            component="div"
+            count={listDataHD.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
+      )}
 
       <Snackbar
         open={snackbarOpen}

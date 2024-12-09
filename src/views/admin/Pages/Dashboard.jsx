@@ -45,6 +45,7 @@ const SupplierManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [errors, setErrors] = useState({});
   const [suppliers, setSuppliers] = useState([]);
+  const [listNgay, setlistNgay] = useState ([])
   const [listDatahd, setlistDataHD] = useState([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -72,6 +73,7 @@ const SupplierManagement = () => {
   useEffect(() => {
     fetchSuppliers();
     apilistDatahd();
+    handleNgay();
     getnewID();
   }, [formData.nha_cung_capID]);
 
@@ -190,6 +192,15 @@ const SupplierManagement = () => {
       }
     }
   };
+  const handleNgay = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/users/today");
+      console.log("Data từ API ngày:", res.data);
+      setlistNgay(res.data); // Cập nhật state `listNgay`
+    } catch (error) {
+      console.error("Lỗi khi gọi API ngày:", error);
+    }
+  };
 
   const handleRestore = async (nha_cung_capID) => {
     try {
@@ -203,6 +214,7 @@ const SupplierManagement = () => {
       handleSnackbar("Có lỗi xảy ra khi khôi phục banner!", "error");
     }
   };
+  
   
 
   const handleSubmit = async (e) => {
@@ -257,35 +269,37 @@ const SupplierManagement = () => {
         trang_thai_xoa: formData.trang_thai_xoa,
       });
   
-      if(addorupdate !="add") {
+      
+      if (addorupdate !== "add") {
         // Gửi PUT nếu đang ở chế độ chỉnh sửa
-        await axios.put(`http://localhost:8080/api/nhacungcap/saveee?${params.toString()}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      } else {
-        // Gửi POST nếu đang ở chế độ thêm mới
         await axios.post(`http://localhost:8080/api/nhacungcap/save?${params.toString()}`, {
           headers: {
             "Content-Type": "application/json",
           },
         });
+        handleSnackbar("Thêm nhà cung cấp thành công!", "success"); // Thông báo khi thêm mới thành công
+      } else {
+        // Gửi POST nếu đang ở chế độ thêm mới
+          await axios.put(`http://localhost:8080/api/nhacungcap/put?${params.toString()}`, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+        });
+     
+        handleSnackbar("Cập nhật nhà cung cấp thành công!", "success"); // Thông báo khi cập nhật thành công
       }
-      
-  
+    
       fetchSuppliers();
       resetForm();
       setTabValue(0);
-      handleSnackbar("Thêm nhà cung cấp thành công!", "success");
     } catch (error) {
       console.error(
         "Có lỗi xảy ra khi lưu nhà cung cấp:",
         error.response || error.message || error
       );
       handleSnackbar("Có lỗi xảy ra khi lưu nhà cung cấp!", "error");
-    }
-  };
+  }
+};
   
 
   const handleSnackbar = (message, severity) => {
@@ -307,7 +321,9 @@ const SupplierManagement = () => {
         <AppBar position="static" color="default">
           <Tabs value={tabValue} onChange={handleTabChange} centered>
             <Tab label="Danh Sách Nhà Cung Cấp" />
-            <Tab label="Thêm Nhà Cung Cấp" />
+            <Tab onClick={()=>{
+              setaddorupdate("")
+            }} label="Thêm Nhà Cung Cấp" />
             <Tab label="Lịch Sử Xóa" />
             <Tab label="Nhật Kí Hoạt Động" />
           </Tabs>
@@ -318,8 +334,7 @@ const SupplierManagement = () => {
             <Typography
               variant="h6"
               align="center"
-              style={{ marginTop: "16px" }}
-            >
+              style={{ marginTop: "20px" , marginBottom:"20px" }}>
               Danh Sách Nhà Cung Cấp
             </Typography>
 
@@ -342,8 +357,7 @@ const SupplierManagement = () => {
 
             <TableContainer
               component={Paper}
-              style={{ marginTop: "16px", color: "#1976d2" }}
-            >
+              style={{ marginTop: "20px" , marginBottom:"20px" }}>
               <Table>
                 <TableHead>
                   <TableRow className="table-row-header">
@@ -407,9 +421,16 @@ const SupplierManagement = () => {
         )}
 
         {tabValue === 1 && (
+          
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
+              <Typography
+              variant="h6"
+              align="center"
+              style={{ marginTop: "20px" , marginBottom:"20px" }}>
+              Thêm Nhà Cung Cấp
+            </Typography>
                 <TextField
                   name="nha_cung_capID"
                   label="Mã Nhà Cung Cấp"
@@ -480,7 +501,7 @@ const SupplierManagement = () => {
                     fullWidth
                     startIcon={<Add />}
                   >
-                    {addorupdate == "add" ? "CẬP NHẬT NHÀ CUNG CẤP" : "THÊM NHÀ CUNG CẤP "}
+                    {addorupdate === "add" ? "CẬP NHẬT NHÀ CUNG CẤP" : "THÊM NHÀ CUNG CẤP "}
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
@@ -504,12 +525,11 @@ const SupplierManagement = () => {
             <Typography
               variant="h6"
               align="center"
-              style={{ marginTop: "16px" }}
-            >
-              Danh Sách Nhà Cung Cấp
+              style={{ marginTop: "20px" , marginBottom:"20px" }}>
+              Lịch Sử Xóa
             </Typography>
 
-            <Grid
+          {/*   <Grid
               container
               spacing={2}
               className="search-filter-container"
@@ -524,12 +544,12 @@ const SupplierManagement = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </Grid>
-            </Grid>
+            </Grid> */}
 
             <TableContainer
               component={Paper}
-              style={{ marginTop: "16px", color: "#1976d2" }}
-            >
+              style={{ marginTop: "20px" , marginBottom:"20px" }}>
+            
               <Table>
                 <TableHead>
                   <TableRow className="table-row-header">
@@ -585,10 +605,10 @@ const SupplierManagement = () => {
               align="center"
               style={{ marginTop: "16px" }}
             >
-              Danh Sách Nhà Cung Cấp
+              Nhật Kí Hoạt Động
             </Typography>
 
-            <Grid
+          {/*   <Grid
               container
               spacing={2}
               className="search-filter-container"
@@ -604,11 +624,10 @@ const SupplierManagement = () => {
                 />
               </Grid>
             </Grid>
-
+ */}
             <TableContainer
               component={Paper}
-              style={{ marginTop: "16px", color: "#1976d2" }}
-            >
+              style={{ marginTop: "20px" , marginBottom:"20px" }}>
               <Table>
                 <TableHead>
                   <TableRow className="table-row-header">
@@ -619,6 +638,7 @@ const SupplierManagement = () => {
                     <TableCell>Địa Chỉ</TableCell>
                     <TableCell>Trạng Thái Xóa</TableCell>
                     <TableCell>Account ID</TableCell>
+                    <TableCell> Ngày Hành Động</TableCell>
                     <TableCell>Hành Động</TableCell>
                   </TableRow>
                 </TableHead>
@@ -646,6 +666,7 @@ const SupplierManagement = () => {
                         <TableCell>
                           {supplier.nhacungcap.users.accountID}
                         </TableCell>
+                        <TableCell>{supplier.ngayhanhdong}</TableCell>
                         <TableCell>{supplier.tenHanhDong}</TableCell>
                       </TableRow>
                     ))}

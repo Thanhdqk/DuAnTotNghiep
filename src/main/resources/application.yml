@@ -1,22 +1,24 @@
 # Khai báo port
-server: # lưu ý không được dùng tab trong file .yml 
+server:
   port: 8080
   address: 0.0.0.0
-#Connect sql server
+
+# Connect SQL Server
 spring:
   datasource:
-    #url: jdbc:sqlserver://34.124.177.222:1433;databaseName=DuAnTotNghiepTest;encrypt=true;trustServerCertificate=true;
-    url: jdbc:sqlserver://localhost;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;
+    # Uncomment và sửa nếu cần sử dụng địa chỉ máy chủ khác
+    # url: jdbc:sqlserver://34.124.177.222:1433;databaseName=DuAnTotNghiepTest;encrypt=true;trustServerCertificate=true;
+    url: jdbc:sqlserver://localhost:1433;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;
     username: sa
     password: 123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:
-      ddl-auto: update # Hoặc create, none tuỳ theo nhu cầu
+      ddl-auto: update  # Hoặc create, none tùy theo nhu cầu
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.SQLServerDialect # Đảm bảo cung cấp dialect phù hợp  
+        dialect: org.hibernate.dialect.SQLServerDialect  # Đảm bảo cung cấp dialect phù hợp
   servlet:
     multipart:
       enabled: true
@@ -30,10 +32,19 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: thanh02062004@gmail.com  # Thay bằng email của bạn
+    password: "szxq fbrl vzya cdnu"   # Thay bằng mật khẩu ứng dụng Gmail
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.trust: smtp.gmail.com
+
+# Cấu hình PayPal
 paypal:
   client:
     id: AbWy2B4tWfcKdb0qv6UzhoJuC2qWYpa8TwNCz-mGLynovI0bZClkwHyFyU1IEuE-KPrpZaW3Cp5avneH
     secret: EAssZAWtf6BkDmId6KYB1KrrVoxrFTWHIW7UiA_gRpAbqEy7S2_dRqjLT8zu0twefBbdPPEUDGcQDf13
-  mode: sandbox # hoặc 'live' cho môi trường sản xuất
-  
-#url: jdbc:sqlserver://localhost;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;
+  mode: sandbox  # hoặc 'live' cho môi trường sản xuất

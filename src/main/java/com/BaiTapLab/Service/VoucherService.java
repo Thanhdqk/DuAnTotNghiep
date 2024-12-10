@@ -43,12 +43,12 @@ public class VoucherService {
 	
 
 	public boolean deleteVoucherById(String voucherID) {
-        int result = voucherRepository.markAsDeleted(voucherID, "Chuyển vào thùng rác");
+        int result = voucherRepository.markAsDeleted(voucherID);
         return result > 0; // Trả về true nếu cập nhật thành công
     }
 	
 	public boolean reloadVoucherById(String voucherID) {
-        int result = voucherRepository.reloadVoucherID(voucherID, "Khôi phục");
+        int result = voucherRepository.reloadVoucherID(voucherID);
         return result > 0; // Trả về true nếu cập nhật thành công
     }
 	

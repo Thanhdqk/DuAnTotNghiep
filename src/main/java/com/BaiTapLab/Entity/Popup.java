@@ -33,12 +33,14 @@ public class Popup {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
+	
+//	@OneToMany(mappedBy = "popup", cascade = CascadeType.ALL)
+//	@JsonIgnore
+//	public List<SanPham> sanpham;
 	
 	@OneToMany(mappedBy = "popup", cascade = CascadeType.ALL)
 	@JsonIgnore
-	public List<SanPham> sanpham;
+	public List<PopupChiTiet> popupchitiet;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

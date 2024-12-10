@@ -36,10 +36,22 @@ public class BaiDang {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
-	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
+	
+	@Override
+	public String toString() {
+	    return "BaiDang{" +
+	            "bai_dangID='" + bai_dangID + '\'' +
+	            ", hinh_anh='" + hinh_anh + '\'' +
+	            ", tieu_de_phu='" + tieu_de_phu + '\'' +
+	            ", tieu_de_chinh='" + tieu_de_chinh + '\'' +
+	            ", noi_dung='" + noi_dung + '\'' +
+	            ", ngay_tao=" + ngay_tao +
+	            ", hoat_dong='" + hoat_dong + '\'' +
+	            ", trang_thai_xoa='" + trang_thai_xoa + '\'' +
+	            ", users=" + (users != null ? users.getAccountID() : "null") + // Giả sử bạn muốn hiển thị tên người dùng
+	            '}';
+	}
 }

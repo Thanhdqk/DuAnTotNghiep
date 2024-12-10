@@ -35,6 +35,9 @@ public class DanhGia {
 	public LocalDate ngay_tao;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
+	public String hoat_dong;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thaiPH;
 	
 	@OneToMany(mappedBy = "danhgia", cascade = CascadeType.ALL)

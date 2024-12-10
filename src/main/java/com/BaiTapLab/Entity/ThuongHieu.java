@@ -35,9 +35,6 @@ public class ThuongHieu {
 	
 	public String hinh_anh;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
-	
 	@OneToMany(mappedBy = "thuonghieu", cascade = CascadeType.ALL)
 	@JsonIgnore
 	public List<SanPham> sanpham;

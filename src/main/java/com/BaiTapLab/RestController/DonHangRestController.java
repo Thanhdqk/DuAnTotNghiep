@@ -3,6 +3,7 @@ package com.BaiTapLab.RestController;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,7 @@ import com.BaiTapLab.Entity.DonHang;
 import com.BaiTapLab.Entity.SanPham;
 import com.BaiTapLab.Repository.DonHangRepository;
 import com.BaiTapLab.Service.DonHangService;
+import com.BaiTapLab.Service.MailServiceThanh;
 
 @RestController
 @RequestMapping("/api")
@@ -37,11 +40,84 @@ public class DonHangRestController {
 	@Autowired
 	DonHangRepository donhangRepository;
 	
-	@GetMapping("/donhang/getAll")
-	public ResponseEntity<List<DonHang>> getAllList(){
-		List<DonHang> donhang = donhangRepository.findAll();
-		return ResponseEntity.ok(donhang);
+	@Autowired
+    private MailServiceThanh mailService;
+
+	// Đơn hàng của Thành
+	@PostMapping("/send")
+    public String sendEmail(@RequestParam String to, @RequestParam String subject, @RequestParam String text) {
+        try {
+            mailService.sendEmail(to, subject, text);
+            return "Email đã được gửi thành công!";
+        } catch (Exception e) {
+            return "Lỗi khi gửi email: " + e.getMessage();
+        }
+    }
+	
+	@GetMapping("/testne")
+	public ResponseEntity<List<Object[]>> listtestne(){
+		List<Object[]> listTestNe = donhangRepository.findSanPhamTheoThang11();
+		return ResponseEntity.ok(listTestNe);
 	}
+	
+	@GetMapping("/list/bestSeller/dashboard")
+	public ResponseEntity<List<Map<String, Object>>> getAllBestSeller(@RequestParam(required = false) Integer thang,
+	                                                                   @RequestParam(required = false) Integer nam) {
+	    // Kiểm tra nếu tham số tháng và năm không được truyền thì sử dụng mặc định (ví dụ tháng 10, năm 2024)
+	    if (thang == null) {
+	        thang = 10;  // Tháng mặc định là 10
+	    }
+	    if (nam == null) {
+	        nam = 2024;  // Năm mặc định là 2024
+	    }
+
+	    // Lấy danh sách sản phẩm bán chạy
+	    List<Object[]> bestSeller = donhangRepository.listSanPhamBestSeller(thang, nam);
+
+	    // Xử lý kết quả để trả về định dạng dễ đọc hơn
+	    List<Map<String, Object>> response = new ArrayList<>();
+	    for (Object[] row : bestSeller) {
+	        Map<String, Object> item = new HashMap<>();
+	        item.put("thang", row[0]);
+	        item.put("nam", row[1]);
+	        item.put("sanPhamId", row[2]);
+	        item.put("tenSanPham", row[3]);
+	        item.put("giaGoc", row[4]);
+	        item.put("tenHinh", row[5]);
+	        item.put("tongSoLuong", row[6]);
+	        response.add(item);
+	    }
+	    return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/donhang/getAll")
+	public ResponseEntity<List<Map<String, Object>>> getAllList(){
+		List<Object[]> donhang = donhangRepository.listAllDonHang();
+		List<Map<String, Object>> result = new ArrayList<>();
+		for (Object[] obj : donhang) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("don_hangid", obj[0]);
+            map.put("accountID", obj[1]);
+            map.put("so_dien_thoai", obj[2]);
+            map.put("ngay_tao", obj[3]);
+            map.put("thoi_gianXN", obj[4]);
+            map.put("trang_thai", obj[5]);
+            map.put("tong_tien", obj[6]);
+            map.put("phuong_thucTT", obj[7]);
+            map.put("online_payment_id", obj[8]);
+            result.add(map);
+        }
+		return ResponseEntity.ok(result);
+	}
+	
+	@PutMapping("/donhang/hoantien")
+    public ResponseEntity<?> updateTrangThai(@RequestParam String online_payment_id) {
+        int rowsUpdated = donhangRepository.updateHoanTien("Đã hoàn tiền", online_payment_id);
+        if (rowsUpdated > 0) {
+            return ResponseEntity.ok("Cập nhật trạng thái thành công.");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy đơn hàng.");
+    }
 	
 	@GetMapping("/getTotal")
 	public ResponseEntity<Integer> getTotal() {
@@ -171,21 +247,20 @@ public class DonHangRestController {
 	
 	@GetMapping("/detail/donhang/{donhangid}")
 	public ResponseEntity<List<Object[]>> getDonHangDetails(@PathVariable String donhangid) {
-		System.out.println("Ma don hang nhan duoc tu request: " + donhangid);
+		//System.out.println("Ma don hang nhan duoc tu request: " + donhangid);
 	    List<Object[]> donHangDetails = donhangService.getDonHangDetails(donhangid);
 	    // In ra console để kiểm tra dữ liệu
-	    if (donHangDetails != null && !donHangDetails.isEmpty()) {
-	        System.out.println("Dữ liệu chi tiết đơn hàng: ");
-	        for (Object[] detail : donHangDetails) {
-	            System.out.println("Ma don hang: " + detail[0]);
-	        }
-	    } else {
-	        System.out.println("Không có dữ liệu cho đơn hàng với mã: " + donhangid);
-	    }
+//	    if (donHangDetails != null && !donHangDetails.isEmpty()) {
+//	        System.out.println("Dữ liệu chi tiết đơn hàng: ");
+//	        for (Object[] detail : donHangDetails) {
+//	            System.out.println("Ma don hang: " + detail[0]);
+//	        }
+//	    } else {
+//	        System.out.println("Không có dữ liệu cho đơn hàng với mã: " + donhangid);
+//	    }
 	    
 	    // Trả về ResponseEntity chứa dữ liệu
 	    return ResponseEntity.ok(donHangDetails);
-	    
 	}
 	
 	@PutMapping("/update/shipper/nhandon")
@@ -230,6 +305,7 @@ public class DonHangRestController {
 	                .body("Lỗi khi cập nhật đơn hàng: " + ex.getMessage());
 	    }
 	}
+
 	
 	@PutMapping("/update/shipper/huydonhang")
 	public ResponseEntity<String> updateHuyDonHang(
@@ -238,7 +314,7 @@ public class DonHangRestController {
 		System.out.println("DonHangID: " + don_hangid + ", Lý do: " + ly_do);
 	    try {
 	        // Gọi phương thức cập nhật từ repository
-	        int rowsUpdated = donhangRepository.updateDonHangBiHuyShipper("Bị hủy", "Khách không nhận đơn", ly_do, don_hangid);
+	        int rowsUpdated = donhangRepository.updateDonHangBiHuyShipper("Đã hủy", "Khách không nhận đơn", ly_do, don_hangid);
 	        System.out.println("DonHangID: " + don_hangid);
 	        if (rowsUpdated > 0) {
 	            return ResponseEntity.ok("Cập nhật trạng thái đơn hàng thành công!");

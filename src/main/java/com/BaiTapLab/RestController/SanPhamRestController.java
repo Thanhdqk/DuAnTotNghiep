@@ -1,7 +1,10 @@
 package com.BaiTapLab.RestController;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -18,8 +21,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BaiTapLab.DTO.SanPhamDTO;
+import com.BaiTapLab.Entity.HanhDong;
 import com.BaiTapLab.Entity.SanPham;
+import com.BaiTapLab.Repository.HanhDongRepository;
 import com.BaiTapLab.Repository.SanPhamRepository;
+import com.BaiTapLab.Repository.UsersRepository;
 
 @RestController
 @RequestMapping("/api")
@@ -28,78 +34,147 @@ public class SanPhamRestController {
 	@Autowired
 	SanPhamRepository sanPhamRepository;
 	
-//	@GetMapping("/listSanPham")
-//	public ResponseEntity<List<SanPham>> getSanPham(){
-//		List<SanPham> listSanPham = sanPhamRepository.findAll();
-//		return ResponseEntity.ok(listSanPham);
-//	}
+	@Autowired
+	HanhDongRepository hanhDongRepository;
+	
+	@Autowired
+	UsersRepository usersRepository;
+	// Của Thành
+	@GetMapping("/sanPham/nhatKy")
+	public ResponseEntity<List<Map<String, Object>>> getSanPhamNhatKy(){
+		List<Object[]> listSanPham = sanPhamRepository.listNhatKy();
+		List<Map<String, Object>> result = new ArrayList<>();
+		for (Object[] obj : listSanPham) {
+		        Map<String, Object> map = new HashMap<>();
+		        map.put("ten_hanh_dong", obj[0]);
+		        map.put("san_pham_id", obj[1]);
+		        map.put("ngay_hanh_dong", obj[2]);
+		        map.put("accountID", obj[3]);
+		        result.add(map);
+		}
+		return ResponseEntity.ok(result);
+	}
+	
+	@GetMapping("/sanPham/QLSP/danhsach/khuyenmai")
+	public ResponseEntity<List<Map<String, Object>>> getSanPhamKhuyenMai(){
+		List<Object[]> listSanPham = sanPhamRepository.lietKeDanhSachSPKhuyenMai();
+		List<Map<String, Object>> result = new ArrayList<>();
+		for (Object[] obj : listSanPham) {
+		        Map<String, Object> map = new HashMap<>();
+		        map.put("san_phamId", obj[0]);
+	            map.put("ten_san_pham", obj[1]);
+	            map.put("gia_goc", obj[2]);
+	            map.put("gia_km", obj[3]);
+	            map.put("mo_ta", obj[4]);
+	            map.put("luot_mua", obj[5]);
+	            map.put("phantram_GG", obj[6]);
+	            map.put("han_gg", obj[7]);
+	            map.put("hoat_dong", obj[8]);
+		        result.add(map);
+		}
+		return ResponseEntity.ok(result);
+	}
+	
+	@GetMapping("/sanPham/QLSP/danhsach/nhatky")
+	public ResponseEntity<List<Map<String, Object>>> getListNhatKy(){
+		List<Object[]> listSanPham = sanPhamRepository.danhSachNhatKyQLSP();
+		List<Map<String, Object>> result = new ArrayList<>();
+		for (Object[] obj : listSanPham) {
+		        Map<String, Object> map = new HashMap<>();
+		        map.put("san_phamId", obj[0]);
+	            map.put("ten_hanh_dong", obj[1]);
+	            map.put("ngay_hanh_dong", obj[2]);
+	            map.put("accountID", obj[3]);
+		        result.add(map);
+		}
+		return ResponseEntity.ok(result);
+	}
+	
+	@GetMapping("/sanPham/QLSP/edit/{san_phamId}")
+	public ResponseEntity<List<Map<String, Object>>> getSanPhamDetailQLSP(
+			@PathVariable("san_phamId") String san_phamId){
+		List<Object[]> listSanPham = sanPhamRepository.xemDetail(san_phamId);
+		List<Map<String, Object>> result = new ArrayList<>();
+		for (Object[] obj : listSanPham) {
+		        Map<String, Object> map = new HashMap<>();
+		        map.put("san_phamId", obj[0]);
+	            map.put("ten_san_pham", obj[1]);
+	            map.put("gia_goc", obj[2]);
+	            map.put("gia_km", obj[3]);
+	            map.put("mo_ta", obj[4]);
+	            map.put("phantram_GG", obj[5]);
+	            map.put("han_gg", obj[6]);
+	            map.put("hoat_dong", obj[7]);
+		        result.add(map);
+		}
+		return ResponseEntity.ok(result);
+	}
+	
+	@GetMapping("/sanPham/edit/{san_phamId}")
+	public ResponseEntity<List<Map<String, Object>>> getDetail(
+			@PathVariable String san_phamId){
+		List<Object[]> listDetail = sanPhamRepository.findByDetailSanPham(san_phamId);
+		List<Map<String, Object>> result = new ArrayList<>();
+		for (Object[] obj : listDetail) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("ten_san_pham", obj[0]);
+            map.put("ngay_tao", obj[1]);
+            map.put("so_luong", obj[2]);
+            map.put("mo_ta", obj[3]);
+            map.put("chieu_cao", obj[4]);
+            map.put("chieu_dai", obj[5]);
+            map.put("chieu_rong", obj[6]);
+            map.put("khoi_luong", obj[7]);
+            map.put("tien_nhap_hang", obj[8]);
+            map.put("gia_goc", obj[9]);
+            map.put("ten_loaiDM", obj[10]);
+            map.put("ten_thuong_hieu", obj[11]);
+            map.put("ten_nha_cung_cap", obj[12]);
+            map.put("san_phamId", obj[13]);
+            result.add(map);
+        }
+		return ResponseEntity.ok(result);
+	}
 	
 	@GetMapping("/listSanPham")
-	public ResponseEntity<List<SanPhamDTO>> getSanPham() {
+	public ResponseEntity<List<Map<String, Object>>> getSanPham() {
 	    // Lấy tất cả sản phẩm từ cơ sở dữ liệu
-	    List<SanPham> listSanPham = sanPhamRepository.findAll();
-
-	    // Chuyển đổi các đối tượng SanPham thành SanPhamDTO
-	    List<SanPhamDTO> listSanPhamDTO = listSanPham.stream()
-	            .map(sanPham -> new SanPhamDTO(
-	                    sanPham.getSan_phamId(),
-	                    sanPham.getTen_san_pham(),
-	                    sanPham.getNgay_tao(),
-	                    sanPham.getGia_goc(),
-	                    sanPham.getGia_km(),
-	                    sanPham.getHan_gg(),  // Thêm thông tin "han_gg"
-	                    sanPham.getLuot_mua(), // Thêm thông tin "luot_mua"
-	                    sanPham.getMo_ta(),    // Thêm thông tin "mo_ta"
-	                    sanPham.getPhantram_GG(),  // Thêm thông tin "phantram_GG"
-	                    sanPham.getSo_luong(),
-	                    sanPham.getTrang_thai_kho(),
-	                    sanPham.getHoat_dong(),
-	                    sanPham.getPhe_duyet(),
-	                    sanPham.getTrang_thai_xoa(),
-	                    sanPham.getHanh_dong(),
-	                    sanPham.getTien_nhap_hang(),
-	                    sanPham.getChieu_cao(),
-	                    sanPham.getChieu_dai(),
-	                    sanPham.getChieu_rong(),
-	                    sanPham.getKhoi_luong()
-	            ))
-	            .collect(Collectors.toList());
-
-	    // Trả về danh sách SanPhamDTO
-	    return ResponseEntity.ok(listSanPhamDTO);
-	}
-
-	
-	@GetMapping("/edit/sanpham/{san_phamId}")
-	public ResponseEntity<SanPham> getSanPhamById(@PathVariable String san_phamId){
-		Optional<SanPham> sanpham = sanPhamRepository.findById(san_phamId);
-	    return sanpham.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+	    List<Object[]> listSanPham = sanPhamRepository.listSanPhamMoi();
+	    List<Map<String, Object>> result = new ArrayList<>();
+		for (Object[] obj : listSanPham) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("san_phamId", obj[0]);
+            map.put("ten_san_pham", obj[1]);
+            map.put("ngay_tao", obj[2]);
+            map.put("gia_goc", obj[3]);
+            map.put("gia_km", obj[4]);
+            map.put("han_gg", obj[5]);
+            map.put("luot_mua", obj[6]);
+            map.put("mo_ta", obj[7]);
+            map.put("phantram_GG", obj[8]);
+            map.put("so_luong", obj[9]);
+            map.put("trang_thai_kho", obj[10]);
+            map.put("hoat_dong", obj[11]);
+            map.put("phe_duyet", obj[12]);
+            map.put("trang_thai_xoa", obj[13]);
+            map.put("tien_nhap_hang", obj[14]);
+            map.put("chieu_cao", obj[15]);
+            map.put("chieu_dai", obj[16]);
+            map.put("chieu_rong", obj[17]);
+            map.put("khoi_luong", obj[18]);
+            map.put("nhap_hang", obj[19]);
+            map.put("ten_nha_cung_cap", obj[20]);
+            map.put("ten_thuong_hieu", obj[21]);
+            map.put("ten_loaiDM", obj[22]);
+            result.add(map);
+        }
+	    return ResponseEntity.ok(result);
 	}
 	
-//	@PutMapping("/update/sanpham/{san_phamId}")
-//	public ResponseEntity<SanPham> updateSanPham(@PathVariable String san_phamId, @RequestBody SanPham updatedSanPham) {
-//	    Optional<SanPham> optionalSanPham = sanPhamRepository.findById(san_phamId);
-//	    
-//	    if (optionalSanPham.isPresent()) {
-//	        SanPham existingSanPham = optionalSanPham.get();
-//	        
-//	        // Cập nhật thông tin cho sản phẩm
-//	        existingSanPham.setTen_san_pham(updatedSanPham.getTen_san_pham());
-//	        existingSanPham.setGia_goc(updatedSanPham.getGia_goc());
-//	        existingSanPham.setGia_km(updatedSanPham.getGia_km());
-//	        existingSanPham.setMo_ta(updatedSanPham.getMo_ta());
-//	        existingSanPham.setLuot_mua(updatedSanPham.getLuot_mua());
-//	        existingSanPham.setPhantram_GG(updatedSanPham.getPhantram_GG());
-//	        existingSanPham.setHan_gg(updatedSanPham.getHan_gg());
-//	        existingSanPham.setHoat_dong(updatedSanPham.getHoat_dong());
-//	        
-//	        // Lưu sản phẩm đã được cập nhật vào cơ sở dữ liệu
-//	        sanPhamRepository.save(existingSanPham);
-//	        
-//	        return ResponseEntity.ok(existingSanPham); // Trả về sản phẩm đã cập nhật
-//	    } else {
-//	        return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy sản phẩm
-//	    }
+//	@GetMapping("/edit/sanpham/{san_phamId}")
+//	public ResponseEntity<SanPham> getSanPhamById(@PathVariable String san_phamId){
+//		Optional<SanPham> sanpham = sanPhamRepository.findById(san_phamId);
+//	    return sanpham.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 //	}
 	
 	@PutMapping("/update/sanpham/{san_phamId}")
@@ -111,12 +186,12 @@ public class SanPhamRestController {
 			@RequestParam("mo_ta") String mo_ta,
 			@RequestParam("phantram_GG") int phantram_GG,
 			@RequestParam("han_gg") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate han_gg,
-			@RequestParam("hoat_dong") String hoat_dong) {
+			@RequestParam("hoat_dong") String hoat_dong,
+			@RequestParam("accountID") String accountID) {
 	    Optional<SanPham> optionalSanPham = sanPhamRepository.findById(san_phamId);
 	    
 	    if (optionalSanPham.isPresent()) {
-	        SanPham existingSanPham = optionalSanPham.get();
-	        
+	        SanPham existingSanPham = optionalSanPham.get();	        
 	        // Cập nhật thông tin cho sản phẩm
 	        existingSanPham.setTen_san_pham(ten_san_pham);
 	        existingSanPham.setGia_goc(gia_goc);
@@ -126,12 +201,18 @@ public class SanPhamRestController {
 	        existingSanPham.setHan_gg(han_gg);
 	        existingSanPham.setHoat_dong(hoat_dong);
 	        
-	        // Lưu sản phẩm đã được cập nhật vào cơ sở dữ liệu
+	        HanhDong hanhdong = new HanhDong();
+	        hanhdong.setSanpham(existingSanPham);
+	        hanhdong.setNgay_hanh_dong(LocalDate.now());
+	        hanhdong.setTen_hanh_dong("Cập nhật giá khuyến mãi");
+	        hanhdong.setUsers(usersRepository.findById(accountID)
+            		.orElseThrow(() -> new RuntimeException("Account không tồn tại")));
+	        hanhDongRepository.save(hanhdong);
 	        sanPhamRepository.save(existingSanPham);
 	        
-	        return ResponseEntity.ok(existingSanPham); // Trả về sản phẩm đã cập nhật
+	        return ResponseEntity.ok(existingSanPham);
 	    } else {
-	        return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy sản phẩm
+	        return ResponseEntity.notFound().build();
 	    }
 	}
 

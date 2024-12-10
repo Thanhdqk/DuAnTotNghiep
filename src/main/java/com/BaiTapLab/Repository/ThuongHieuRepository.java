@@ -12,6 +12,6 @@ public interface ThuongHieuRepository extends JpaRepository<ThuongHieu, String>{
 	@Query("select th from ThuongHieu th where th.ten_thuong_hieu = :ten_thuong_hieu ")
 	ThuongHieu findByTen_thuong_hieu(@Param("ten_thuong_hieu") String ten_thuong_hieu);
 	
-	@Query("select th.ten_thuong_hieu from ThuongHieu th")
+	@Query("select th.ten_thuong_hieu from ThuongHieu th where th.hoat_dong = 'On'")
 	List<Object[]> listgetTenThuongHieu();
 }

@@ -1,5 +1,8 @@
 package com.BaiTapLab.Entity;
 
+import java.time.LocalDate;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,8 +20,10 @@ public class HanhDong {
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     public int hanh_dongID;
 	
+	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ten_hanh_dong;
 	
+	public LocalDate ngay_hanh_dong;
 	@ManyToOne // Bảng user
 	@JoinColumn(name = "accountID")
 	public Users users;

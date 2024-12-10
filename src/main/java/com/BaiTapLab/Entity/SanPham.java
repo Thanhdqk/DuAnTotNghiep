@@ -43,6 +43,8 @@ public class SanPham {
 	
 	public LocalDate han_gg;
 	
+	public LocalDate han_su_dung;
+	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_kho;
 	
@@ -59,9 +61,6 @@ public class SanPham {
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String nhap_hang;
-	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
 	
 	public double tien_nhap_hang;
 	
@@ -114,6 +113,10 @@ public class SanPham {
 	@JsonIgnore
 	public List<GioHangChiTiet> giohangchitiet;
 	
+	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+	@JsonIgnore
+	public List<PopupChiTiet> popupchitiet;
+	
 	@ManyToOne
 	@JoinColumn(name = "popupID")
 	@JsonBackReference(value = "popup-reference")
@@ -149,7 +152,6 @@ public class SanPham {
 	            ", phe_duyet='" + phe_duyet + '\'' +
 	            ", trang_thai_xoa='" + trang_thai_xoa + '\'' +
 	            ", nhap_hang='" + nhap_hang + '\'' +
-	            ", hanh_dong='" + hanh_dong + '\'' +
 	            ", tien_nhap_hang=" + tien_nhap_hang +
 	            ", chieu_cao=" + chieu_cao +
 	            ", chieu_dai=" + chieu_dai +

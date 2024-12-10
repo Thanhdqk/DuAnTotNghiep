@@ -35,9 +35,6 @@ public class Feedback {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
-	
 	@OneToOne(mappedBy = "feedback", cascade = CascadeType.ALL)
     private Respone respone;
 	

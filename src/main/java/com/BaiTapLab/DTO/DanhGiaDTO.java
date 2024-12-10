@@ -24,6 +24,8 @@ public class DanhGiaDTO {
 	
 	public String trang_thaiPH;
 	
+	public String hoat_dong;
+	
 	public String accountID;
 	
 	public String san_phamId;

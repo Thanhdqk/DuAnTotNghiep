@@ -38,14 +38,14 @@ public class SanPhamDTO {
 	
 	public String trang_thai_xoa;
 	
-	public String hanh_dong;
-	
 	public double tien_nhap_hang;
 	
 	public double chieu_cao;
 	public double chieu_dai;
 	public double chieu_rong;
 	public double khoi_luong;
+	
+	public String nhap_hang;
 	
 	
 	public SanPhamDTO() {
@@ -55,8 +55,8 @@ public class SanPhamDTO {
 
 	public SanPhamDTO(String san_phamId, String ten_san_pham, LocalDate ngay_tao, double gia_goc, double gia_km,
 			LocalDate han_gg, int luot_mua, String mo_ta, int phantram_GG, int so_luong, String trang_thai_kho,
-			String hoat_dong, String phe_duyet, String trang_thai_xoa, String hanh_dong, double tien_nhap_hang,
-			double chieu_cao, double chieu_dai, double chieu_rong, double khoi_luong) {
+			String hoat_dong, String phe_duyet, String trang_thai_xoa, double tien_nhap_hang, double chieu_cao,
+			double chieu_dai, double chieu_rong, double khoi_luong, String nhap_hang) {
 		super();
 		this.san_phamId = san_phamId;
 		this.ten_san_pham = ten_san_pham;
@@ -72,12 +72,12 @@ public class SanPhamDTO {
 		this.hoat_dong = hoat_dong;
 		this.phe_duyet = phe_duyet;
 		this.trang_thai_xoa = trang_thai_xoa;
-		this.hanh_dong = hanh_dong;
 		this.tien_nhap_hang = tien_nhap_hang;
 		this.chieu_cao = chieu_cao;
 		this.chieu_dai = chieu_dai;
 		this.chieu_rong = chieu_rong;
 		this.khoi_luong = khoi_luong;
+		this.nhap_hang = nhap_hang;
 	}
 
 
@@ -221,16 +221,6 @@ public class SanPhamDTO {
 	}
 
 
-	public String getHanh_dong() {
-		return hanh_dong;
-	}
-
-
-	public void setHanh_dong(String hanh_dong) {
-		this.hanh_dong = hanh_dong;
-	}
-
-
 	public double getTien_nhap_hang() {
 		return tien_nhap_hang;
 	}
@@ -278,6 +268,16 @@ public class SanPhamDTO {
 
 	public void setKhoi_luong(double khoi_luong) {
 		this.khoi_luong = khoi_luong;
+	}
+
+
+	public String getNhap_hang() {
+		return nhap_hang;
+	}
+
+
+	public void setNhap_hang(String nhap_hang) {
+		this.nhap_hang = nhap_hang;
 	}
 
 	

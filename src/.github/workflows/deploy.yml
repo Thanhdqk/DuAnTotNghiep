@@ -1,0 +1,25 @@
+name: Deploy to Google Cloud
+on:
+  push:
+    branches:
+      - main # Chọn nhánh bạn muốn deploy khi có thay đổi
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Bước 1: Checkout mã nguồn từ GitHub
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Bước 2: Thiết lập Google Cloud SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }} # Tạo và lưu trong Secrets
+          credentials: ${{ secrets.GCP_CREDENTIALS }} # Lưu key JSON của tài khoản dịch vụ trong Secrets
+
+      # Bước 3: Triển khai lên Google App Engine
+      - name: Deploy to Google App Engine
+        run: |
+          gcloud app deploy

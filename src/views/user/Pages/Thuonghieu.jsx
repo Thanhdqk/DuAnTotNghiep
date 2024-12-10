@@ -29,7 +29,9 @@ const getBase64 = (file) =>
 
 const Thuonghieu = () => {
   const [hanhdong,sethanhdong] = useState([]);
-  // const[error,setError] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [initialHoatDong, setInitialHoatDong] = useState(null); // Giá trị ban đầu của hoat_dong
+  const [isDisabled, setIsDisabled] = useState(false); // Mặc định disable tất cả
   const [thuonghieuData, setThuonghieuData] = useState([]);
   const [hoatDong, setHoatDong] = useState("Hoạt động");
   const [selectedThuongHieu, setSelectedThuongHieu] = useState({
@@ -109,6 +111,9 @@ const Thuonghieu = () => {
         });
         //console.log(data);
         setActiveKey("1");
+
+        setInitialHoatDong(data.hoat_dong); // Lưu giá trị ban đầu của hoat_dong
+        setIsDisabled(data.hoat_dong === "On"); // Disable nếu hoat_dong là "On"
       }
     } catch (error) {
       console.error("Lỗi khi lấy thông tin thương hiệu:", error);
@@ -129,6 +134,7 @@ const Thuonghieu = () => {
     }));
 
     setFileList(initialFileList);
+    setIsEditMode(true);
     
     console.log(thuonghieu);
   };
@@ -326,12 +332,17 @@ const Thuonghieu = () => {
       );
 
       if (response.ok) {
+        // Kiểm tra nếu trạng thái hoat_dong được thay đổi từ "On" sang "Off"
+        if (initialHoatDong === "On" && selectedThuongHieu.hoat_dong === "Off") {
+          setIsDisabled(false); // Tắt disable khi chuyển sang "Off"
+        }
         const data = await response.json();
         console.log("Thương hiệu đã được cập nhật thành công:", data);
         alert("Cập nhật thương hiệu thành công!");
         fetchThuongHieuData(); // Tải lại dữ liệu
         fetchHanhDongData()
         clear();
+        setIsEditMode(false);
       } else {
         const errorData = await response.text();
         console.error(
@@ -361,6 +372,8 @@ const Thuonghieu = () => {
   }
   const handelClear = () => {
     clear();
+    setIsEditMode(false); // Bật lại nút "Thêm"
+    setIsDisabled(false);
   };
 
   const handleReload = async (thuong_hieuID) => {
@@ -688,6 +701,7 @@ const Thuonghieu = () => {
                     type="text"
                     id="ten_thuong_hieu"
                     className="form-control"
+                    disabled={isDisabled} // Disable nếu hoat_dong là "On"
                     value={selectedThuongHieu?.ten_thuong_hieu || ""}
                     onChange={(e) =>
                       setSelectedThuongHieu({
@@ -722,6 +736,7 @@ const Thuonghieu = () => {
                     type="date"
                     id="ngay_tao"
                     className="form-control"
+                    disabled={isDisabled}
                     value={selectedThuongHieu?.ngay_tao || ""}
                     onChange={(e) =>
                       setSelectedThuongHieu({
@@ -735,11 +750,11 @@ const Thuonghieu = () => {
                 <div className="form-group">
                   <label htmlFor="warehouseStatus">Hoạt động</label>
                   <Select
-                    value={selectedThuongHieu.hoat_dong || "Hoạt động"} // Đồng bộ với state selectedVoucher
+                    value={selectedThuongHieu.hoat_dong || "Hoạt động"}
                     onChange={(value) =>
                       setSelectedThuongHieu({
                         ...selectedThuongHieu,
-                        hoat_dong: value, // Cập nhật đúng giá trị vào state
+                        hoat_dong: value,
                       })
                     }
                     options={[
@@ -755,9 +770,11 @@ const Thuonghieu = () => {
                       }),
                     }}
                   />
+
                 </div>
               </div>
               <Upload
+                disabled={isDisabled}
                 action="http://localhost:8080/images/"
                 listType="picture-card"
                 fileList={fileList}
@@ -770,7 +787,7 @@ const Thuonghieu = () => {
 
               <div className="input-container">
                 <div className="form-group">
-                  <button className="button" onClick={handleSave}>
+                  <button className="button" onClick={handleSave} disabled={isEditMode}>
                     Thêm
                   </button>
                 </div>

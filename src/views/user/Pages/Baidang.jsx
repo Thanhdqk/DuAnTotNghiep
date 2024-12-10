@@ -37,6 +37,9 @@ const getBase64 = (file) =>
   });
 
 const Baidang = () => {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [initialHoatDong, setInitialHoatDong] = useState(null); // Giá trị ban đầu của hoat_dong
+  const [isDisabled, setIsDisabled] = useState(false); // Mặc định disable tất cả
   const [hanhdong, sethanhdong] = useState([]);
   const [baidangData, setBaidangData] = useState([]);
   const [hoatDong, setHoatDong] = useState("Hoạt động");
@@ -123,6 +126,8 @@ const Baidang = () => {
         console.log("noi dung: ",data);
         //console.log(data);
         setActiveKey("1");
+        setInitialHoatDong(data.hoat_dong); // Lưu giá trị ban đầu của hoat_dong
+        setIsDisabled(data.hoat_dong === "On"?true:false); // Disable nếu hoat_dong là "On"
       }
     } catch (error) {
       console.error("Lỗi khi lấy thông tin bài đăng:", error);
@@ -143,6 +148,7 @@ const Baidang = () => {
     }));
 
     setFileList(initialFileList);
+    setIsEditMode(true);
 
     console.log(baidang);
   };
@@ -336,12 +342,17 @@ const Baidang = () => {
       );
 
       if (response.ok) {
+        // Kiểm tra nếu trạng thái hoat_dong được thay đổi từ "On" sang "Off"
+        if (initialHoatDong === "On" && selectedBaiDang.hoat_dong === "Off") {
+          setIsDisabled(false); // Tắt disable khi chuyển sang "Off"
+        }
         const data = await response.json();
         console.log("Bài đăng đã được cập nhật thành công:", data);
         alert("Cập nhật bài đăng thành công!");
         fetchBaiDangData(); // Tải lại dữ liệu
         fetchHanhDongData()
         clear();
+        setIsEditMode(false);
       } else {
         const errorData = await response.json();
         console.error(
@@ -373,6 +384,8 @@ const Baidang = () => {
   }
   const handelClear = () => {
     clear();
+    setIsEditMode(false);
+    setIsDisabled(false);
   };
 
 
@@ -794,6 +807,7 @@ const Baidang = () => {
                   <input
                     type="text"
                     id="tieu_de_chinh"
+                    disabled={isDisabled} // Disable nếu hoat_dong là "On"
                     className="form-control"
                     value={selectedBaiDang?.tieu_de_chinh || ""}
                     onChange={(e) =>
@@ -812,6 +826,7 @@ const Baidang = () => {
                   <input
                     type="text"
                     id="tieu_de_phu"
+                    disabled={isDisabled} // Disable nếu hoat_dong là "On"
                     className="form-control"
                     value={selectedBaiDang?.tieu_de_phu || ""}
                     onChange={(e) =>
@@ -847,6 +862,7 @@ const Baidang = () => {
                   <input
                     type="date"
                     id="ngay_tao"
+                    disabled={isDisabled} // Disable nếu hoat_dong là "On"
                     className="form-control"
                     value={selectedBaiDang?.ngay_tao || ""}
                     onChange={(e) =>
@@ -861,11 +877,11 @@ const Baidang = () => {
                 <div className="form-group">
                   <label htmlFor="warehouseStatus">Hoạt động</label>
                   <Select
-                    value={selectedBaiDang.hoat_dong || "Hoạt động"} // Đồng bộ với state selectedVoucher
+                    value={selectedBaiDang.hoat_dong || "Hoạt động"}
                     onChange={(value) =>
                       setSelectedBaiDang({
                         ...selectedBaiDang,
-                        hoat_dong: value, // Cập nhật đúng giá trị vào state
+                        hoat_dong: value,
                       })
                     }
                     options={[
@@ -906,6 +922,9 @@ const Baidang = () => {
                   }}
                   name=""
                   className="mt-5"
+                  disabled={isDisabled}
+                
+                  // Disable nếu hoat_dong là "On"
                   value={content}
                   onEditorChange={handleEditorChange}
 
@@ -915,6 +934,7 @@ const Baidang = () => {
                 action="http://localhost:8080/images/"
                 listType="picture-card"
                 fileList={fileList}
+                disabled={isDisabled} // Disable nếu hoat_dong là "On"
                 value={selectedBaiDang?.hinh_anh || ""}
                 onPreview={handlePreview}
                 onChange={handleChangeImage}
@@ -924,7 +944,7 @@ const Baidang = () => {
 
               <div className="input-container">
                 <div className="form-group">
-                  <button className="button" onClick={handleSave}>
+                  <button className="button" onClick={handleSave} disabled={isEditMode}>
                     Thêm
                   </button>
                 </div>

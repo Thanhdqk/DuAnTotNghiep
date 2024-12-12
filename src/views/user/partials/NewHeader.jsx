@@ -93,7 +93,7 @@ const NewHeader = () => {
                                             <li>
                                                 <NavLink
                                                     className="dropdown-item"
-                                                    to={`/thông-tin-cá-nhân?userId=${userId}`}
+                                                    to={`/personal-info`}
                                                 >
                                                     Quản lý cá nhân
                                                 </NavLink>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-
+import Sidebar from '../partials/Sidebar';
 const VoucherList = () => {
     const [vouchers, setVouchers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,195 +27,60 @@ const VoucherList = () => {
         }
     }, [userId]);
 
-    if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
 
     return (
-        <div style={containerStyle}>
+        <div className="d-flex vh-100">
             {/* Sidebar */}
-            <aside style={sidebarStyle}>
-                <Link to="/" style={linkStyle}>
-                    <h3>Quản Lý Cá Nhân</h3>
-                </Link>
-                <ul style={menuStyle}>
-                    {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá',
-                        "Địa chỉ của bạn",
-                        "Ví đã liên kết",].map((item, index) => (
-                        <li key={index}>
-                            <Link to={`/${item.replace(/ /g, '-').toLowerCase()}?userId=${userId}`} style={linkStyle}>
-                                <button
-                                    style={buttonStyle}
-                                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor)}
-                                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor)}
-                                >
-                                    {item}
-                                </button>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            </aside>
+            <div className='col-2'>
+                <Sidebar userId={userId} />
+            </div>
 
             {/* Voucher List */}
-            <div style={voucherListContainerStyle}>
+            <div className="flex-fill p-4">
                 <h2>Mã giảm giá của bạn</h2>
                 {vouchers.length > 0 ? (
-                    <div className="voucher-cards">
+                    <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mt-4">
                         {vouchers.map((voucher) => (
-                            <div className="voucher-card" key={voucher.voucherID}>
-                                <img
-                                    src={`http://localhost:8080/images/uploads/${voucher.hinh_anh}`}
-                                    alt="Voucher"
-                                    className="voucher-image"
-                                />
-                                <div className="voucher-info">
-                                    <h3>{voucher.so_tien_giam}</h3>
-                                    <p className="expiry-date">Ngày hết hạn: {voucher.han_su_dung}</p>
-                                    <p className="conditions">Điều kiện: {voucher.dieu_kien}</p>
-                                    <p className="status">Trạng thái: {voucher.hoat_dong}</p>
-                                    <p className="usage-left">Số lần sử dụng còn lại: {voucher.so_luong}</p>
+                            <div className="col" key={voucher.voucherID}>
+                                <div
+                                    className="card shadow-sm text-center"
+                                    style={{
+                                        maxWidth: '300px', // Độ rộng tối đa
+                                        margin: '0 auto', // Căn giữa
+                                        overflow: 'hidden',
+                                    }}
+                                >
+                                    <img
+                                        src={`http://localhost:8080/images/uploads/${voucher.hinh_anh}`}
+                                        alt="Voucher"
+                                        className="card-img-top"
+                                        style={{
+                                            height: '250px', // Chiều cao cố định của ảnh
+                                            width: '100%', // Đảm bảo chiều rộng khớp với khung
+                                            objectFit: 'contain', // Đảm bảo hình ảnh co dãn mà không bị cắt
+                                            backgroundColor: '#f8f9fa', // Màu nền nếu ảnh không phủ hết khung
+                                        }}
+                                    />
+
+                                    <div className="card-body text-start">
+                                        <h5 className="card-title">{voucher.so_tien_giam}đ</h5>
+                                        <p className="text-danger mb-1">Ngày hết hạn: {voucher.han_su_dung}</p>
+                                        <p className="mb-1">Điều kiện: {voucher.dieu_kien}</p>
+                                        <p className="text-success mb-1">Trạng thái: {voucher.hoat_dong}</p>
+                                        <p className="text-primary mb-0">Số lần sử dụng còn lại: {voucher.so_luong}</p>
+                                    </div>
+
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <p className="no-vouchers">No vouchers available.</p>
+                    <p className="text-center text-muted mt-4">Không có mã giảm giá nào.</p>
                 )}
             </div>
-            <style>{`
-    .voucher-list-container {
-        padding: 20px;
-        text-align: center;
-        font-family: 'Arial', sans-serif;
-    }
-
-    .voucher-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-    }
-
-    .voucher-card {
-        background-color: #fff; /* Màu nền trắng cho thẻ */
-        border: 1px solid #ddd; /* Viền mỏng màu xám nhạt */
-        border-radius: 8px; /* Bo góc thẻ */
-        overflow: hidden; 
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Bóng đổ nhẹ */
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .voucher-card:hover {
-        transform: translateY(-5px); /* Thẻ nâng lên khi hover */
-        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Bóng đổ mạnh hơn */
-    }
-
-    .voucher-image {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-        border-bottom: 1px solid #ddd; /* Viền dưới ảnh */
-    }
-
-    .voucher-info {
-        padding: 15px;
-        text-align: left;
-    }
-
-    .voucher-info h3 {
-        margin: 10px 0;
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .voucher-info p {
-        margin: 5px 0;
-        color: #555;
-    }
-
-    .expiry-date,
-    .conditions,
-    .status,
-    .usage-left {
-        font-size: 0.9em;
-    }
-
-    .expiry-date {
-        color: #f44336;
-    }
-
-    .status {
-        font-weight: bold;
-        color: #4caf50;
-    }
-
-    .usage-left {
-        font-weight: bold;
-        color: #2196f3;
-    }
-
-    .no-vouchers {
-        font-size: 1.2em;
-        color: #888;
-    }
-`}</style>
-
-
         </div>
     );
-};
-
-// Styles
-const containerStyle = {
-    display: 'flex',
-    height: '100vh',
-    fontFamily: 'Arial, sans-serif',
-};
-
-const sidebarStyle = {
-    width: '250px',
-    background: 'linear-gradient(135deg, #2c3e50, #34495e)',
-    color: '#fff',
-    padding: '20px',
-    boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
-    position: 'fixed',
-    height: '100%',
-    overflowY: 'auto',
-};
-
-const linkStyle = {
-    textDecoration: 'none',
-    color: 'white',
-};
-
-const menuStyle = {
-    listStyleType: 'none',
-    padding: '0',
-};
-
-const buttonStyle = {
-    backgroundColor: '#34495e',
-    border: 'none',
-    color: 'white',
-    width: '100%',
-    padding: '12px',
-    textAlign: 'left',
-    fontSize: '16px',
-    borderRadius: '4px',
-    marginBottom: '10px',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s',
-};
-
-const buttonHoverStyle = {
-    backgroundColor: '#2c3e50',
-};
-
-const voucherListContainerStyle = {
-    marginLeft: '270px',
-    padding: '20px',
-    width: 'calc(100% - 270px)',
 };
 
 export default VoucherList;

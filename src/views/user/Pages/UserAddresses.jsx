@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { Select, Spin, Modal, Button, message } from "antd";
-
+import Sidebar from '../partials/Sidebar';
 const UserAddresses = () => {
     const [userId, setUserId] = useState("");
     const [addresses, setAddresses] = useState([]);
@@ -23,7 +23,7 @@ const UserAddresses = () => {
     const [selectedAddressId, setSelectedAddressId] = useState(null);
 
     useEffect(() => {
-        const accountID = new URLSearchParams(window.location.search).get("userId");
+        const accountID = localStorage.getItem('userId');
         if (accountID) {
             setUserId(accountID);
             fetchAddresses(accountID);
@@ -197,29 +197,9 @@ const UserAddresses = () => {
 
     return (
         <div style={containerStyle}>
-            <aside style={sidebarStyle}>
-                <Link to="/" style={linkStyle}>
-                    <h3>Quản Lý Cá Nhân</h3>
-                </Link>
-                <ul style={menuStyle}>
-                    {[
-                        "Thông tin cá nhân",
-                        "Lịch sử đặt hàng",
-                        "Đổi mật khẩu",
-                        "Feedback",
-                        "Yêu Thích",
-                        "Mã giảm giá",
-                        "Địa chỉ của bạn",
-                        "Ví đã liên kết",
-                    ].map((item, index) => (
-                        <li key={index}>
-                            <Link to={`/${item.replace(/ /g, "-").toLowerCase()}?userId=${userId}`} style={linkStyle}>
-                                <button style={buttonStyle}>{item}</button>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            </aside>
+<div className='col-2'>
+        <Sidebar userId={userId} />
+      </div>
             <main className="container my-5" style={{ flex: 1 }}>
                 <h2 className="text-center mb-4">Quản lý địa chỉ</h2>
                 {loading && (
@@ -376,10 +356,7 @@ const UserAddresses = () => {
     );
 };
 
-const containerStyle = { display: "flex", height: "100vh", fontFamily: "Arial, sans-serif" };
-const sidebarStyle = { width: "250px", backgroundColor: "#2c3e50", color: "#fff", padding: "20px" };
-const linkStyle = { textDecoration: "none", color: "white" };
-const menuStyle = { listStyleType: "none", padding: "0" };
-const buttonStyle = { width: "100%", padding: "12px", backgroundColor: "#34495e", color: "white", border: "none", textAlign: "left", cursor: "pointer", fontSize: "16px", marginBottom: "10px", borderRadius: "5px" };
+const containerStyle = { display: "flex", height: "100vh" };
+
 
 export default UserAddresses;

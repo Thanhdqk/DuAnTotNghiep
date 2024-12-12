@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Sidebar from '../partials/Sidebar';
 
 const PersonalInfo = () => {
   const [form, setForm] = useState({
@@ -15,13 +15,14 @@ const PersonalInfo = () => {
   const [userId, setUserId] = useState('');
 
   useEffect(() => {
-    const accountID = new URLSearchParams(window.location.search).get('userId');
+    // Lấy userId từ localStorage
+    const accountID = localStorage.getItem('userId');
     if (accountID) {
       setForm((prev) => ({ ...prev, accountID }));
       setUserId(accountID);
       fetchUserData(accountID);
     } else {
-      console.error('No accountID found in query parameters');
+      console.error('No userId found in localStorage');
     }
   }, []);
 
@@ -71,311 +72,177 @@ const PersonalInfo = () => {
     setErrorMessage('');
 
     if (!form.hovaten.trim() || !form.so_dien_thoai.trim()) {
-        setErrorMessage('Vui lòng điền đầy đủ thông tin.');
-        return;
+      setErrorMessage('Vui lòng điền đầy đủ thông tin.');
+      return;
     }
 
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(form.so_dien_thoai)) {
-        setErrorMessage('Số điện thoại không hợp lệ. Vui lòng nhập lại.');
-        return;
+      setErrorMessage('Số điện thoại không hợp lệ. Vui lòng nhập lại.');
+      return;
     }
 
     try {
-        let hinhAnhName = form.hinh_anh ? form.hinh_anh.name : form.hinh_anh;
+      let hinhAnhName = form.hinh_anh ? form.hinh_anh.name : form.hinh_anh;
 
-        // Upload hình ảnh nếu có file mới
-        if (form.hinh_anh instanceof File) {
-            const formData = new FormData();
-            formData.append('hinh_anh', form.hinh_anh);
+      if (form.hinh_anh instanceof File) {
+        const formData = new FormData();
+        formData.append('hinh_anh', form.hinh_anh);
 
-            const imageUploadResponse = await fetch(`http://localhost:8080/auth/users/${form.accountID}/upload`, {
-                method: 'POST',
-                body: formData,
-            });
+        const imageUploadResponse = await fetch(
+          `http://localhost:8080/auth/users/${form.accountID}/upload`,
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
 
-            if (!imageUploadResponse.ok) {
-                const result = await imageUploadResponse.json();
-                alert('Lỗi: ' + result.message);
-                return;
-            }
-
-            hinhAnhName = form.hinh_anh.name; // Cập nhật tên ảnh mới
+        if (!imageUploadResponse.ok) {
+          const result = await imageUploadResponse.json();
+          alert('Lỗi: ' + result.message);
+          return;
         }
 
-        // Chuẩn bị dữ liệu gửi đi
-        const userData = {
-            accountID: form.accountID,
-            hovaten: form.hovaten,
-            so_dien_thoai: form.so_dien_thoai,
-            hinh_anh: hinhAnhName, // Sử dụng tên ảnh cũ nếu không upload mới
-        };
+        hinhAnhName = form.hinh_anh.name;
+      }
 
-        const userUpdateResponse = await fetch(`http://localhost:8080/auth/users/${form.accountID}/update`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(userData),
-        });
+      const userData = {
+        accountID: form.accountID,
+        hovaten: form.hovaten,
+        so_dien_thoai: form.so_dien_thoai,
+        hinh_anh: hinhAnhName,
+      };
 
-        if (!userUpdateResponse.ok) {
-            const result = await userUpdateResponse.json();
-            alert('Lỗi: ' + result.message);
-            return;
+      const userUpdateResponse = await fetch(
+        `http://localhost:8080/auth/users/${form.accountID}/update`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userData),
         }
+      );
 
-        alert('Thông tin đã được lưu thành công!');
-        fetchUserData(form.accountID);
+      if (!userUpdateResponse.ok) {
+        const result = await userUpdateResponse.json();
+        alert('Lỗi: ' + result.message);
+        return;
+      }
 
-        if (hinhAnhName) {
-            setPreviewImage(`http://localhost:8080/images/uploads/${hinhAnhName}`);
-        }
+      alert('Thông tin đã được lưu thành công!');
+      fetchUserData(form.accountID);
+
+      if (hinhAnhName) {
+        setPreviewImage(`http://localhost:8080/images/uploads/${hinhAnhName}`);
+      }
     } catch (error) {
-        alert('Có lỗi xảy ra trong quá trình lưu thông tin');
-        console.error('Error:', error);
+      alert('Có lỗi xảy ra trong quá trình lưu thông tin');
+      console.error('Error:', error);
     }
-};
-
-
-  if (isLoading) return <div style={loadingStyle}>Loading...</div>;
+  };
 
   return (
-    <div style={containerStyle}>
-      <aside style={sidebarStyle}>
-        <Link to="/" style={linkStyle}>
-          <h3>Quản Lý Cá Nhân</h3>
-        </Link>
-        <ul style={menuStyle}>
-          {['Thông tin cá nhân', 'Lịch sử đặt hàng', 'Đổi mật khẩu', 'Feedback', 'Yêu Thích', 'Mã giảm giá','Địa chỉ của bạn','Ví đã liên kết'].map(
-            (item, index) => (
-              <li key={index}>
-                <Link to={`/${item.replace(/ /g, '-').toLowerCase()}?userId=${userId}`} style={linkStyle}>
-                  <button style={buttonStyle}>{item}</button>
-                </Link>
-              </li>
-            )
-          )}
-        </ul>
-      </aside>
+    <div className="row vh-100 m-0">
+      <div className="col-2 bg-dark text-white p-0">
+        <Sidebar userId={userId} />
+      </div>
 
-      <main style={mainContentStyle}>
-        <form onSubmit={handleSubmit} style={formStyle} encType="multipart/form-data">
-          <h2 style={formHeaderStyle}>Thông tin cá nhân</h2>
-          {errorMessage && <p style={errorMessageStyle}>{errorMessage}</p>}
-          <div style={gridStyle}>
-            {['hovaten', 'so_dien_thoai'].map((field, index) => (
-              <div key={index} style={gridItemStyle}>
-                <label htmlFor={field} style={labelStyle}>
-                  {field === 'hovaten' ? 'Họ tên' : 'Điện thoại'}
-                </label>
+      <main className="col-10 bg-light d-flex justify-content-center align-items-center">
+        {isLoading ? (
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        ) : (
+          <div className="bg-white rounded shadow p-4" style={{ width: '100%', maxWidth: '800px' }}>
+            <h2 className="text-center text-primary mb-4">Thông tin cá nhân</h2>
+            {errorMessage && <p className="text-danger">{errorMessage}</p>}
+            <form onSubmit={handleSubmit} encType="multipart/form-data">
+              {/* Phần hình ảnh */}
+              <div className="text-center mb-4">
+                {previewImage ? (
+                  <img
+                    src={previewImage}
+                    alt="Preview"
+                    className="img-thumbnail"
+                    style={{
+                      cursor: 'pointer',
+                      width: '200px',
+                      height: '200px',
+                      objectFit: 'cover',
+                    }}
+                    onClick={() => document.getElementById('hinh_anh').click()}
+                  />
+                ) : (
+                  <div
+                    className="border border-dashed rounded p-3 text-muted"
+                    style={{
+                      cursor: 'pointer',
+                      width: '200px',
+                      height: '200px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onClick={() => document.getElementById('hinh_anh').click()}
+                  >
+                    Nhấn để chọn hình ảnh
+                  </div>
+                )}
                 <input
-                  type="text"
-                  name={field}
-                  id={field}
-                  value={form[field]}
-                  onChange={handleChange}
-                  style={inputStyle}
-                  required
+                  type="file"
+                  className="d-none"
+                  id="hinh_anh"
+                  name="hinh_anh"
+                  accept="image/*"
+                  onChange={handleImageChange}
                 />
               </div>
-            ))}
-            <div style={gridItemStyle}>
-              <label htmlFor="accountID" style={labelStyle}>
-                Email
-              </label>
-              <input
-                type="email"
-                name="accountID"
-                id="accountID"
-                value={form.accountID}
-                style={{ ...inputStyle, backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
-                readOnly
-                aria-readonly="true"
-              />
-            </div>
-            <div style={gridItemStyle}>
-              <label style={labelStyle}>Hình ảnh</label>
-              {previewImage ? (
-                <img
-                  src={previewImage}
-                  alt="Preview"
-                  style={imagePreviewStyle}
-                  onClick={() => document.getElementById('hinh_anh').click()}
-                />
-              ) : (
-                <div
-                  style={verticalImageUploadContainerStyle}
-                  onClick={() => document.getElementById('hinh_anh').click()}
-                >
-                  <div style={placeholderStyle}>Nhấn để chọn hình ảnh</div>
+
+              {/* Phần thông tin */}
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <label className="form-label">Họ tên</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="hovaten"
+                    value={form.hovaten}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
-              )}
-              <input
-                type="file"
-                name="hinh_anh"
-                id="hinh_anh"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ display: 'none' }}
-              />
-            </div>
+                <div className="col-md-6">
+                  <label className="form-label">Điện thoại</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="so_dien_thoai"
+                    value={form.so_dien_thoai}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="col-md-12">
+                  <label className="form-label">Email</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    name="accountID"
+                    value={form.accountID}
+                    readOnly
+                  />
+                </div>
+              </div>
+
+              {/* Nút lưu thông tin */}
+              <button type="submit" className="btn btn-success w-100 mt-4">
+                Lưu thông tin
+              </button>
+            </form>
           </div>
-          <button type="submit" style={submitButtonStyle}>
-            Lưu thông tin
-          </button>
-        </form>
+        )}
       </main>
     </div>
   );
-};
-
-// CSS styles as objects
-const containerStyle = {
-  display: 'flex',
-  height: '100vh',
-  fontFamily: 'Arial, sans-serif',
-};
-
-const sidebarStyle = {
-  width: '250px',
-  backgroundColor: '#2c3e50',
-  color: '#fff',
-  padding: '20px',
-  boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
-};
-
-const linkStyle = {
-  textDecoration: 'none',
-  color: 'white',
-};
-
-const menuStyle = {
-  listStyleType: 'none',
-  padding: '0',
-};
-
-const buttonStyle = {
-  width: '100%',
-  padding: '12px',
-  backgroundColor: '#34495e',
-  color: 'white',
-  border: 'none',
-  textAlign: 'left',
-  cursor: 'pointer',
-  fontSize: '16px',
-  marginBottom: '10px',
-  borderRadius: '5px',
-  transition: 'background-color 0.3s',
-};
-
-const mainContentStyle = {
-  flex: 1,
-  padding: '40px',
-  backgroundColor: '#ecf0f1',
-};
-
-const formStyle = {
-  backgroundColor: 'white',
-  borderRadius: '5px',
-  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-  padding: '20px',
-};
-
-const formHeaderStyle = {
-  fontSize: '24px',
-  fontWeight: 'bold',
-  marginBottom: '20px',
-  color: '#34495e',
-};
-
-const errorMessageStyle = {
-  color: 'red',
-  marginBottom: '10px',
-};
-
-const gridStyle1 = {
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gap: '15px',
-};
-
-const gridItemStyle1 = {
-  display: 'flex',
-  flexDirection: 'column',
-};
-const gridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, 1fr)', // Hai cột
-  gap: '20px', // Khoảng cách giữa các ô
-  marginBottom: '20px', // Khoảng cách dưới lưới
-};
-
-const gridItemStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'flex-start', // Căn chỉnh nội dung ở đầu
-  padding: '10px', // Thêm padding cho ô
-  // border: '1px solid #bdc3c7', // Thêm viền cho ô
-  borderRadius: '5px', // Bo góc cho ô
-  backgroundColor: '#fff', // Màu nền cho ô
-};
-
-const labelStyle = {
-  marginBottom: '5px',
-  fontWeight: 'bold',
-};
-
-const inputStyle = {
-  padding: '10px',
-  borderRadius: '5px',
-  border: '1px solid #bdc3c7',
-  fontSize: '16px',
-  outline: 'none',
-  transition: 'border 0.3s',
-};
-
-const verticalImageUploadContainerStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  cursor: 'pointer',
-  height: '200px',
-  border: '2px dashed #bdc3c7',
-  borderRadius: '5px',
-  justifyContent: 'center',
-  backgroundColor: '#ecf0f1',
-  height: '250px', // Increased height for a vertical rectangle
-  width: '250px', // Full width to match form layout
-};
-
-const imagePreviewStyle = {
-  maxWidth: '320px',
-  maxHeight: '240px',
-  borderRadius: '5px',
-};
-
-const placeholderStyle = {
-  color: '#bdc3c7',
-  textAlign: 'center',
-};
-
-const submitButtonStyle = {
-  marginTop: '20px',
-  padding: '12px',
-  width: '100%',
-  backgroundColor: '#27ae60',
-  color: 'white',
-  border: 'none',
-  borderRadius: '5px',
-  fontSize: '18px',
-  cursor: 'pointer',
-  transition: 'background-color 0.3s',
-};
-
-const loadingStyle = {
-  textAlign: 'center',
-  marginTop: '20%',
-  fontSize: '20px',
-  color: '#34495e',
 };
 
 export default PersonalInfo;

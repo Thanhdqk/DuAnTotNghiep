@@ -57,16 +57,16 @@ root.render(
         </Route>
 
         {/*end page user */} 
-        <Route path='/đổi-mật-khẩu' element={<PasswordChangeForm></PasswordChangeForm>} />
+        <Route path='/change-password' element={<PasswordChangeForm></PasswordChangeForm>} />
         <Route path='//review/:productId' element={<ReviewForm></ReviewForm>} />
-        <Route path='/Mã-giảm-giá' element={<UserVouchers></UserVouchers>} />
+        <Route path='/discounts' element={<UserVouchers></UserVouchers>} />
         <Route path='/OrderDetail/:id' element={<OrderDetail ></OrderDetail >} />
-        <Route path='/lịch-sử-đặt-hàng' element={<Order></Order>} />
-        <Route path='/like' element={<FavoriteProducts></FavoriteProducts>} />
-        <Route path='/thông-tin-cá-nhân' element={<PersonalInfo></PersonalInfo>} />
-        <Route path='/Feedback' element={<Feedback></Feedback>} />
-        <Route path='/Địa-chỉ-của-bạn' element={<UserAddresses></UserAddresses>} />
-        <Route path='/Ví-đã-liên-kết' element={<Wallet></Wallet>} />
+        <Route path='/order-history' element={<Order></Order>} />
+        <Route path='/favorites' element={<FavoriteProducts></FavoriteProducts>} />
+        <Route path='/personal-info' element={<PersonalInfo></PersonalInfo>} />
+        <Route path='/feedback' element={<Feedback></Feedback>} />
+        <Route path='/addresses' element={<UserAddresses></UserAddresses>} />
+        <Route path='/linked-wallets' element={<Wallet></Wallet>} />
         {/* page admin */}
         <Route path='/admin/login' element={<AdminLogin></AdminLogin>} />
         

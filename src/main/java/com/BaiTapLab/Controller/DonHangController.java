@@ -29,12 +29,15 @@ public class DonHangController {
 	}
 
 	@PutMapping("/api/donhang/cancel/{orderId}")
-	public ResponseEntity<String> cancelOrder(@PathVariable String orderId) {
-		boolean canceled = donHangService.cancelOrder(orderId);
-		if (canceled) {
-			return ResponseEntity.ok("Order canceled successfully.");
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found or cannot be canceled.");
-		}
+	public ResponseEntity<String> cancelOrder(
+	        @PathVariable String orderId, 
+	        @RequestParam(required = false) String lyDo) {
+	    boolean canceled = donHangService.cancelOrder(orderId, lyDo);
+	    if (canceled) {
+	        return ResponseEntity.ok("Order canceled successfully.");
+	    } else {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found or cannot be canceled.");
+	    }
 	}
+
 }

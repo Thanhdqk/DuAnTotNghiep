@@ -33,7 +33,8 @@ public class DonHang {
 
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ghi_chu;
-
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String ly_do;
 	public double phi_ship;
 	public double tong_tien;
 	@OneToMany(mappedBy = "donhang", cascade = CascadeType.ALL)
@@ -147,5 +148,13 @@ public class DonHang {
 	public void setDiachi(DiaChi diachi) {
 		this.diachi = diachi;
 	}
-	
+
+	public String getLy_do() {
+		return ly_do;
+	}
+
+	public void setLy_do(String ly_do) {
+		this.ly_do = ly_do;
+	}
+
 }

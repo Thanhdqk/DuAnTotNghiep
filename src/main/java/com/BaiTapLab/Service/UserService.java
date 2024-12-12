@@ -70,7 +70,7 @@ public class UserService {
 		}
 	}
 
-	public Users registerUser(String email, String password, String fullName, String phoneNumber, String address) {
+	public Users registerUser(String email, String password, String fullName, String phoneNumber) {
 		if (userRepository.existsByAccountID(email)) {
 			return null; // Email already exists
 		}
@@ -90,14 +90,6 @@ public class UserService {
 		role.setTen_vai_tro("USER"); // Default role is "USER"
 		role.setUsers(savedUser); // Link to the new user
 		roleRepository.save(role);
-
-		// Save the user's address if provided
-		if (address != null && !address.isEmpty()) {
-			DiaChi diaChi = new DiaChi();
-			diaChi.setDia_chi(address);
-			diaChi.setUsers(savedUser); // Set the user for the address
-			diaChiRepository.save(diaChi);
-		}
 
 		return savedUser;
 	}
@@ -145,6 +137,9 @@ public class UserService {
 	// Lấy thông tin người dùng
 	public Optional<Users> getUserById(String id) {
 		return userRepository.findById(id);
+	}
+	public boolean emailExists(String email) {
+	    return userRepository.existsByAccountID(email);
 	}
 
 }

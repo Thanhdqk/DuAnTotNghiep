@@ -66,10 +66,19 @@ public class AuthController implements WebMvcConfigurer {
 		String password = request.get("password");
 		String fullName = request.get("fullName");
 		String phoneNumber = request.get("phoneNumber");
-		String address = request.get("address");
 
-		Users newUser = userService.registerUser(email, password, fullName, phoneNumber, address);
+		Users newUser = userService.registerUser(email, password, fullName, phoneNumber);
 		return newUser != null ? ResponseEntity.ok(newUser) : ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+	}
+
+	@PostMapping("/checkEmail")
+	public ResponseEntity<String> checkEmail(@RequestBody Map<String, String> request) {
+		String email = request.get("email");
+		boolean exists = userService.emailExists(email);
+		if (exists) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Email đã tồn tại vui lòng sử dụng email khác");
+		}
+		return ResponseEntity.ok("Email is available.");
 	}
 
 	// Endpoint to get user details by ID

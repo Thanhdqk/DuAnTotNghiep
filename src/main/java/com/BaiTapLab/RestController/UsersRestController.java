@@ -31,6 +31,12 @@ import com.BaiTapLab.Repository.HanhDongReopository;
 import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.MailerService;
 import com.BaiTapLab.Service.UsersService;
+import com.google.cloud.storage.Acl;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.ServletContext;
@@ -39,12 +45,13 @@ import jakarta.servlet.ServletContext;
 @RequestMapping("/api/users")
 @CrossOrigin(origins = { "http://localhost:3000" })
 public class UsersRestController {
-
+	
 	@Autowired
 	MailerService mailerService;
 
 	private static final Logger logger = LoggerFactory.getLogger(UsersRestController.class);
-
+ 
+	
 	@Autowired
 	private UsersRepository userRepository;
 
@@ -56,6 +63,7 @@ public class UsersRestController {
 
 	@Autowired
 	ServletContext context;
+
 	
 	public List<Map<String, Object>> MapToData(List<Object[]> results) {
 		List<Map<String, Object>> sanPhamList = new ArrayList<>();
@@ -68,6 +76,8 @@ public class UsersRestController {
 			sanPham.put("hinh_anh", row[5]);
 			sanPham.put("so_dien_thoai", row[4]);
 			sanPham.put("dia_chi", row[1]);
+			sanPham.put("hoat_dong", row[6]);
+			sanPham.put("password", row[7]);
 		
 			
 		
@@ -104,7 +114,7 @@ public class UsersRestController {
 	public List<Users> getAllUserss(@RequestParam("accountID") String accountID) {
 		return userRepository.findUserByVPP(accountID);
 	}
-
+	
 	@GetMapping("/delete/{id}")
 	public void getAllAccountID(@PathVariable("id") String id) {
 		Optional<Users> user = userRepository.findById(id);
@@ -116,7 +126,7 @@ public class UsersRestController {
 		HanhDongReopository.save(hd);
 		userRepository.markAsDeleted(id);
 	}
-
+	
 	@PutMapping("/vipham/{id}")
 	public void mark(@PathVariable("id") String id) throws MessagingException {
 		context.setAttribute("method", "ban");
@@ -125,7 +135,7 @@ public class UsersRestController {
 		model.put("user", id);
 		model.put("donhangid", id);
 		try {
-			MailInfo mail1 = new MailInfo(id, "Thông báo về tài khoản tài khoản của bạn ",
+			MailInfo mail1 = new MailInfo(id, "Thông báo tài khoản của bạn đã bị khóa ",
 					mailerService.bodyTemplate(model));
 			mailerService.send(mail1);
 		} catch (Exception e) {
@@ -170,6 +180,7 @@ public class UsersRestController {
 			@RequestParam("trang_thai_xoa") String trang_thai_xoa,
 			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhAnh)
 			throws IllegalStateException, IOException {
+		context.setAttribute("method", "add");
 		Map<String, Object> response = new HashMap<>();
 
 		// Validate required fields
@@ -194,6 +205,15 @@ public class UsersRestController {
 		DiaChi diaChiEntity = new DiaChi();
 
 		diaChiEntity.setDia_chi(diaChi);
+		Map<String, Object> model = new HashMap();
+		model.put("user", accountID);
+
+		try {
+			MailInfo mail1 = new MailInfo(accountID, "asdass ", mailerService.bodyTemplate(model));
+			mailerService.send(mail1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 //			
 //			if (hinhAnh != null && !hinhAnh.isEmpty()) {
 //		    	// Lưu ảnh vào thư mục public/images (từ thư mục gốc của dự án)
@@ -214,18 +234,23 @@ public class UsersRestController {
 			response.put("message", "Không thể lưu người dùng!");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 Internal Server Error
 		}
+		
+		
 	}
 
 	@PutMapping("/put/{accountId}")
 	public ResponseEntity<Map<String, Object>> createUserWithImageAndDetailss(
 			@RequestParam("accountID") String accountID, @RequestParam("password") String password,
 			@RequestParam("hovaten") String hovaten, @RequestParam("so_dien_thoai") String soDienThoai,
+			
 			@RequestParam("vai_tro") String vaiTro, @RequestParam("dia_chi") String diaChi,
-			@RequestParam("trang_thai_xoa") String trang_thai_xoa,
+			@RequestParam(value = "trang_thai_xoa",required = false) String trang_thai_xoa,
+			@RequestParam(value = "hoat_dong",required = false) String hoat_dong,
 			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhAnh)
+	
 			throws IllegalStateException, IOException {
 		Map<String, Object> response = new HashMap<>();
-		System.out.println("Địa chỉ : " + diaChi);
+		
 		System.out.println("Role : " + vaiTro);
 		// Validate required fields
 		if (accountID == null || password == null || hovaten == null || soDienThoai == null || vaiTro == null
@@ -241,6 +266,8 @@ public class UsersRestController {
 		user.setHovaten(hovaten);
 		user.setSo_dien_thoai(soDienThoai);
 		user.setTrang_thai_xoa(null);
+		user.setHoat_dong(hoat_dong);
+		System.out.println("Users : " + user);
 
 		// Nếu có ảnh, lấy tên ảnh và lưu vào đối tượng Users
 		if (hinhAnh != null && !hinhAnh.isEmpty()) {

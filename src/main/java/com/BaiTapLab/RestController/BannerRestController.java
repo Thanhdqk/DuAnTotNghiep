@@ -43,6 +43,13 @@ import com.BaiTapLab.Repository.DanhmucRepository;
 import com.BaiTapLab.Repository.HanhDongReopository;
 import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.BannerService;
+import com.google.cloud.storage.Acl;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -50,7 +57,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/banners")
 @CrossOrigin(origins = { "http://localhost:3000" })
 public class BannerRestController {
-
+	private static final String BUCKET_NAME = "staging.thanhnehihi.appspot.com";
 	private static final Logger logger = LoggerFactory.getLogger(BannerRestController.class);
 	private static final String IMAGE_DIR = "C:\\Users\\DELL\\Downloads\\LoiFrontend\\public\\images";
 
@@ -72,6 +79,29 @@ public class BannerRestController {
 	@Autowired
 	DanhmucRepository DanhmucRepository;
 
+	private String uploadFileToGCS(MultipartFile file, String fileName) throws IOException {
+        // 1. Xác thực với Google Cloud
+        Storage storage = StorageOptions.newBuilder()
+                .setProjectId("thanhnehihi") // Project ID
+                .setCredentials(StorageOptions.getDefaultInstance().getCredentials())
+                .build()
+                .getService();
+
+        // 2. Tạo thông tin Blob
+        BlobId blobId = BlobId.of(BUCKET_NAME, fileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+
+        // 3. Tải file lên bucket
+        Blob blob = storage.create(blobInfo, file.getBytes());
+
+        // 4. Cấp quyền công khai cho file (allUsers có thể đọc)
+        Acl acl = Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER); 
+        storage.createAcl(blobId, acl); // Thêm quyền đọc cho tất cả người dùng
+
+        // 5. Tạo URL công khai
+        return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, fileName);
+    }
+	
 	public List<Map<String, Object>> MapToData(List<Object[]> results) {
 		List<Map<String, Object>> bannerList = new ArrayList<>();
 
@@ -298,7 +328,7 @@ public class BannerRestController {
 
 			@RequestParam("san_pham") String sanpham,
 
-			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhFile) {
+			@RequestParam(value = "hinh_anh", required = false) MultipartFile[] hinhFile) throws IOException {
 
 		List<String> array = Arrays.asList(sanpham.split(","));
 		System.out.println("sadsa" + bannerId);
@@ -309,21 +339,28 @@ public class BannerRestController {
 		System.out.println("sadsa" + accountID);
 		
 		System.out.println("sadsa" + array.size());
-		System.out.println("sadsa" + hinhFile.getOriginalFilename());
+		System.out.println("sadsa" + hinhFile[0].getOriginalFilename());
 
 		Users user = userrepository.findByAccountID(accountID);
 		Banner banner = new Banner();
 		System.out.println("sdsad11111111111" + user.getAccountID());
-		if (hinhFile != null ) {
-		    // Lấy tên file
-		    String fileName = hinhFile.getOriginalFilename();
+//		if (hinhFile != null ) {
+//		    // Lấy tên file
+//		    String fileName = hinhFile.getOriginalFilename();
+//
+//		    System.out.println("Sdsadsadas"+fileName);
+//		    System.out.println("Sdsadsadas"+fileName);
+//		    System.out.println("Sdsadsadas"+fileName);
+//		    System.out.println("cccccccccccccccccccccccccccccccccccccc");
+//		    banner.setHinh_anh(fileName);
+//		}
+		if (hinhFile != null && hinhFile.length > 0) {
+            String originalFileName = hinhFile[0].getOriginalFilename();
 
-		    System.out.println("Sdsadsadas"+fileName);
-		    System.out.println("Sdsadsadas"+fileName);
-		    System.out.println("Sdsadsadas"+fileName);
-		    System.out.println("cccccccccccccccccccccccccccccccccccccc");
-		    banner.setHinh_anh(fileName);
-		}
+            String imageUrl = uploadFileToGCS(hinhFile[0], originalFileName);
+
+            banner.setHinh_anh(imageUrl);
+        }
 
 		
 

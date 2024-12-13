@@ -119,7 +119,13 @@ public class MailerServiceImpl implements MailerService {
 				
 				Template t = config.getTemplate("usermailform2.ftl");
 				html = FreeMarkerTemplateUtils.processTemplateIntoString(t, model);
-			} else {
+				
+			} 
+			else if (method.equals("add")) {
+				Template t = config.getTemplate("usermailform3.ftl");
+				html = FreeMarkerTemplateUtils.processTemplateIntoString(t, model);
+			}
+			else {
 				Template t=	config.getTemplate("usermailform.ftl");
 				html = FreeMarkerTemplateUtils.processTemplateIntoString(t, model);
 			}

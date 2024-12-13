@@ -20,8 +20,7 @@
                             </div>
 
                             <div style="font-size: 24px; color: #555100;">
-                               
-                                 <br> Vui lòng liên hệ (0333614923) <br>
+
                             </div>
 
                         </td>

@@ -16,11 +16,11 @@
                         <td align="center" valign="top" bgcolor="#d3be6c"
                             style="background-color: white; opacity: 0.6;  font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #000000; padding: 0px 15px 10px 15px;">
                             <div style="font-size: 48px; color:#000000;">
-                                <b>Tài khoản ${user}    Tài khoản đã bị cấm đặt hàng bằng tiền mặt</b>
+                                <b>Tài khoản ${user} Tài khoản thêm thành công</b>
                             </div>
 
                             <div style="font-size: 24px; color: #555100;">
-                               
+
                             </div>
 
                         </td>

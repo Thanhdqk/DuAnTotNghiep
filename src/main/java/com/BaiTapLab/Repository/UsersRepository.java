@@ -28,7 +28,7 @@ public interface UsersRepository extends JpaRepository<Users, String> {
 //			"JOIN DiaChi dc on dc. dc JOIN us.roles r  WHERE r.ten_vai_tro != 'User'")
 //	List<Object[]> findNhanVien();
 	
-	@Query(value = "select us.accountid, dc.dia_chi, rl.ten_vai_tro, us.hovaten, us.so_dien_thoai, us.hinh_anh\r\n"
+	@Query(value = "select us.accountid, dc.dia_chi, rl.ten_vai_tro, us.hovaten, us.so_dien_thoai, us.hinh_anh , us.hoat_dong , us.password \r\n"
 			+ "  from users us\r\n"
 			+ "  JOIN diachi dc on us.accountid = dc.accountid\r\n"
 			+ "  JOIN roles rl on rl.accountid = us.accountid\r\n"
@@ -37,7 +37,7 @@ public interface UsersRepository extends JpaRepository<Users, String> {
 
 
 
-		@Query(value = "select us.accountid, dc.dia_chi, rl.ten_vai_tro, us.hovaten, us.so_dien_thoai, us.hinh_anh\r\n"
+		@Query(value = "select distinct  us.accountid, dc.dia_chi, rl.ten_vai_tro, us.hovaten, us.so_dien_thoai, us.hinh_anh , us.hoat_dong , us.password \r\n"
 				+ "  from users us\r\n"
 				+ "  JOIN diachi dc on us.accountid = dc.accountid\r\n"
 				+ "  JOIN roles rl on rl.accountid = us.accountid\r\n"

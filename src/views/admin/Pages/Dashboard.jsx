@@ -322,8 +322,11 @@ const SupplierManagement = () => {
           <Tabs value={tabValue} onChange={handleTabChange} centered>
             <Tab label="Danh Sách Nhà Cung Cấp" />
             <Tab onClick={()=>{
-              setaddorupdate("")
-            }} label="Thêm Nhà Cung Cấp" />
+              resetForm();
+            }} 
+            label="Thêm Nhà Cung Cấp" />
+
+
             <Tab label="Lịch Sử Xóa" />
             <Tab label="Nhật Kí Hoạt Động" />
           </Tabs>

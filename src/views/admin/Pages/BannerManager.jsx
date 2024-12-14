@@ -64,6 +64,7 @@ const BannerManager = () => {
   const [listNgay, setlistNgay] = useState ([])
   const [listDataHd, setlistDataHD] = useState([]);
   const [errors, setErrors] = useState({});
+  const [active,setactive] = useState(false)
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -278,6 +279,7 @@ const fetchProductHasDiscount = async () => {
      setPersonName(temptproduct);
 
     setaddorupdate("add")
+    setactive(post.hoat_dong == "ON" ? true : false)
     console.log("Dữ liệu khi nhấn et: ", post);
   };
 
@@ -616,6 +618,7 @@ else {
           label="Ngày Tạo"
           variant="outlined"
           fullWidth
+          disabled={active}
           type="date"
           value={formData.ngayTao}
           onChange={handleInputChange}
@@ -630,6 +633,7 @@ else {
           label="Ngày Hết Hạn"
           variant="outlined"
           fullWidth
+          disabled={active}
           type="date"
           value={formData.ngayHetHan}
           onChange={handleInputChange}
@@ -668,6 +672,7 @@ else {
             labelId="demo-multiple-checkbox-label"
             id="demo-multiple-checkbox"
             multiple
+            disabled={active}
             value={personName}
             onChange={handleChange}
             input={<OutlinedInput label="Sản phẩm" />}
@@ -696,6 +701,7 @@ else {
         <input
           type="file"
           accept="images/*"
+          disabled={active}
           onChange={handleFileChange}
           style={{ display: "none" }}
           id="upload-button"

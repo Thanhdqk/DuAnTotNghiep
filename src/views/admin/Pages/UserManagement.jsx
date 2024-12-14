@@ -43,6 +43,7 @@ const UserForm = () => {
     trang_thai_xoa: "",
     previewUrl: "",
     hanh_dong: "",
+    hoat_dong: "",
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -53,6 +54,7 @@ const UserForm = () => {
   const [listLoad, setlistLoad] = useState ([])
   const [listUser, setlistUser] = useState ([])
   const [listNgay, setlistNgay] = useState ([])
+  const [active,setactive] = useState(false)
   const apilistDataHD = async () => {
     const res = await axios({
       url: "http://localhost:8080/api/users/gethanhdong",
@@ -92,11 +94,14 @@ const UserForm = () => {
 
   useEffect(() => {
     handleUser();
-    handleNgay();
+    // handleNgay();
     fetchUsers();
     handleLoad();
     apilistDataHD();
   }, []);
+  useEffect(() => {
+    handleLoad();
+  }, [tabValue]);
 
   const fetchUsers = async () => {
     try {
@@ -119,6 +124,7 @@ const UserForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(value);
     setFormData({ ...formData, [name]: value });
     setFormErrors({ ...formErrors, [name]: "" });
   };
@@ -154,20 +160,17 @@ const UserForm = () => {
     else if (password.length < 5 || password.length > 9)
       errors.password = "Mật khẩu phải từ 5 đến 9 ký tự!";
 
-    if (!so_dien_thoai)
+   /*  if (!so_dien_thoai)
       errors.so_dien_thoai = "Số điện thoại không được để trống!";
     else if (!/^0\d{9,13}$/.test(so_dien_thoai))
       errors.so_dien_thoai = "Số điện thoại phải có từ 10 đến 15 ký tự số";
     else if (/[^0-9]/.test(so_dien_thoai))
       errors.so_dien_thoai =
-        "Số điện thoại không được chứa ký tự chữ cái hoặc ký tự đặc biệt!";
+        "Số điện thoại không được chứa ký tự chữ cái hoặc ký tự đặc biệt!"; */
 
-    if (!dia_chi) errors.dia_chi = "Địa chỉ không được để trống!";
+/*     if (!dia_chi) errors.dia_chi = "Địa chỉ không được để trống!";
     else if (dia_chi.length < 10 || dia_chi.length > 50)
-      errors.dia_chi = "Địa chỉ phải từ 10 đến 50 ký tự!";
-    if (!trang_thai_xoa)
-      errors.trang_thai_xoa = "Trạng thái xóa không được để trống!";
-
+      errors.dia_chi = "Địa chỉ phải từ 10 đến 50 ký tự!" */
     return errors;
   };
 
@@ -255,17 +258,18 @@ const UserForm = () => {
     setFormData({
       accountID: user.accountID,
       hovaten: user.hovaten,
-      password: user.password,
       hinh_anh: user.hinh_anh,
-      vai_tro: user.roles[0].ten_vai_tro,
+      vai_tro: user.ten_vai_tro,
       so_dien_thoai: user.so_dien_thoai,
-      trang_thai_xoa: user.trang_thai_xoa,
-      dia_chi: user.diachi[0].dia_chi,
-      previewUrl: user.hinh_anh, // Giả định có URL hình ảnh
-      hanh_dong: user.hanh_dong,
+      dia_chi: user.dia_chi,
+      previewUrl: user.hinh_anh,
+      hoat_dong:user.hoat_dong,// Giả định có URL hình ảnh
+      password:user.password
     });
-    setTabValue(1);
+    setactive(user.hoat_dong == "ON" ? true : false)
+    setTabValue(2);
   };
+  
   const handleRestore = async (user) => {
     const { accountID } = user;
     console.log("id", accountID);
@@ -359,9 +363,9 @@ const UserForm = () => {
         : true;
 
     // Kiểm tra tồn tại của `trang_thai_xoa` trước khi so sánh
-    const setTrangThaiXoa = user.trang_thai_xoa === null;
+    // const setTrangThaiXoa = user.trang_thai_xoa === null;
 
-    return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
+    return matchesSearchTerm && matchesRoleFilter ;
   });
 
   const filterdataUser = listUser.filter((user) => {
@@ -412,9 +416,9 @@ const UserForm = () => {
     const matchesRoleFilter = roleFilter
       ? user.roles?.some((role) => role.ten_vai_tro === roleFilter)
       : true;
-    const setTrangThaiXoa = user.trang_thai_xoa === "Xóa";
+    // const setTrangThaiXoa = user.trang_thai_xoa === "Xóa";
 
-    return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
+    return matchesSearchTerm && matchesRoleFilter ;
   });
   const filteredDataViPham = list.filter((user) => {
     const matchesSearchTerm =
@@ -447,9 +451,9 @@ const filteredCombinedData = combinedList.filter((user) => {
       : true;
 
   // Điều kiện trang_thai_xoa (nếu có từ listDataHD)
-  const setTrangThaiXoa = user.trang_thai_xoa === null || user.trang_thai_xoa !== null;
+  // const setTrangThaiXoa = user.trang_thai_xoa === null || user.trang_thai_xoa !== null;
 
-  return matchesSearchTerm && matchesRoleFilter && setTrangThaiXoa;
+  return matchesSearchTerm && matchesRoleFilter ;
 });
 
 
@@ -515,7 +519,9 @@ const filteredCombinedData = combinedList.filter((user) => {
           >
             <Tab label="Danh Sách Người Dùng" />
             <Tab label="Danh Sách Nhân Viên" />
-            <Tab label="Thêm Người Dùng" />
+            <Tab onClick={() => {
+                resetForm();
+              }} label="Thêm Người Dùng" />
             {/* <Tab
               onClick={() => {
                 fetchUsers();
@@ -528,12 +534,12 @@ const filteredCombinedData = combinedList.filter((user) => {
               }}
               label="Vi Phạm"
             />
-            <Tab
+          {/*   <Tab
               onClick={() => {
                 fetchUsers();
               }}
               label="Các Tài Khoản Bị Ban"
-            />
+            /> */}
             <Tab
               onClick={() => {
                 apilistDataHD();
@@ -715,6 +721,7 @@ const filteredCombinedData = combinedList.filter((user) => {
                   <TableCell>Hình Ảnh</TableCell>
                   <TableCell>Vai Trò</TableCell>
                   <TableCell>Số Điện Thoại</TableCell>
+                  <TableCell>Hoạt Động</TableCell>
                   <TableCell>Địa Chỉ</TableCell>
                   {/* <TableCell>Mật Khẩu</TableCell> */}
                   <TableCell>Actions</TableCell>
@@ -740,7 +747,13 @@ const filteredCombinedData = combinedList.filter((user) => {
         </TableCell>
         <TableCell>{user.ten_vai_tro}</TableCell>
         <TableCell>{user.so_dien_thoai}</TableCell>
+        <TableCell>{user.hoat_dong == "ON" ? "Đang hoạt động" : "Không hoạt động"}</TableCell>
         <TableCell>{user.dia_chi}</TableCell>
+        <TableCell>{ 
+          <Button onClick={() => handleEdit(user)}>
+                          <Edit />
+                        </Button>} 
+                        </TableCell>
       </TableRow>
     ))}
 </TableBody>
@@ -776,6 +789,7 @@ const filteredCombinedData = combinedList.filter((user) => {
                   variant="outlined"
                   fullWidth
                   required
+                  disabled={active}
                   value={formData.accountID}
                   onChange={handleInputChange}
                   error={!!formErrors.accountID}
@@ -789,6 +803,7 @@ const filteredCombinedData = combinedList.filter((user) => {
                   variant="outlined"
                   fullWidth
                   required
+                  disabled={active}
                   value={formData.hovaten}
                   onChange={handleInputChange}
                   error={!!formErrors.hovaten}
@@ -802,6 +817,7 @@ const filteredCombinedData = combinedList.filter((user) => {
                   type="password"
                   variant="outlined"
                   fullWidth
+                  disabled={active}
                   required
                   value={formData.password}
                   onChange={handleInputChange}
@@ -811,25 +827,11 @@ const filteredCombinedData = combinedList.filter((user) => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  name="trang_thai_xoa"
-                  select
-                  label="Trang Thái Xóa"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  value={formData.trang_thai_xoa}
-                  error={!!formErrors.trang_thai_xoa}
-                  onChange={handleInputChange}
-                >
-                  <MenuItem value="Chưa Xóa">Chưa Xóa</MenuItem>
-                </TextField>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
                   name="vai_tro"
                   select
                   label="Vai Trò"
                   variant="outlined"
+                  disabled={active}
                   fullWidth
                   required
                   value={formData.vai_tro}
@@ -846,33 +848,55 @@ const filteredCombinedData = combinedList.filter((user) => {
                   <MenuItem value="Admin">Admin</MenuItem>
                 </TextField>
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <TextField
                   name="so_dien_thoai"
                   label="Số Điện Thoại"
                   variant="outlined"
                   fullWidth
                   required
+                  disabled={active}
                   value={formData.so_dien_thoai}
                   onChange={handleInputChange}
                   error={!!formErrors.so_dien_thoai}
                   helperText={formErrors.so_dien_thoai}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
+        <TextField
+          name="hoat_dong"
+          select
+          label="Trạng Thái Hoạt Động"
+          variant="outlined"
+          fullWidth
+          value={formData.hoat_dong}
+          error={!!formErrors.hoatDong}
+          helperText={formErrors.hoatDong}
+          onChange={handleInputChange}
+        >
+          <MenuItem value="">
+            <em>Chọn trạng thái hoạt động</em>
+          </MenuItem>
+          <MenuItem value="ON">Hoạt Động</MenuItem>
+          <MenuItem value="OFF">Ngưng Hoạt Động</MenuItem>
+        </TextField>
+      </Grid>
+
+             {/*  <Grid item xs={12}>
                 <TextField
                   name="dia_chi"
                   label="Địa Chỉ"
                   variant="outlined"
                   fullWidth
                   required
+                  disabled={active}
                   value={formData.dia_chi}
                   onChange={handleInputChange}
                   error={!!formErrors.dia_chi}
                   helperText={formErrors.dia_chi}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid> */}
+             {/*  <Grid item xs={12}>
                 <input
                   type="file"
                   accept="image/*"
@@ -896,7 +920,7 @@ const filteredCombinedData = combinedList.filter((user) => {
                 ) : (
                   "No Image"
                 )}
-              </Grid>
+              </Grid> */}
               <Grid item xs={12} container spacing={2}>
                 <Grid item xs={6}>
                   <Button
@@ -1092,9 +1116,7 @@ const filteredCombinedData = combinedList.filter((user) => {
                 <TableCell>Vai Trò</TableCell>
                 <TableCell>Số Điện Thoại</TableCell>
                 <TableCell>Địa Chỉ</TableCell>
-                <TableCell>Mật Khẩu</TableCell>
-                <TableCell>Vi Phạm</TableCell>
-                <TableCell>Actions</TableCell>
+{/*                 <TableCell>Vi Phạm</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -1121,8 +1143,7 @@ const filteredCombinedData = combinedList.filter((user) => {
                     <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
                     {/* Hiển thị địa chỉ */}
 
-                    <TableCell>{user.password}</TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       {user.vi_pham === 3 ? (
                         <button
                           style={{
@@ -1140,22 +1161,7 @@ const filteredCombinedData = combinedList.filter((user) => {
                       ) : (
                         user.vi_pham
                       )}
-                    </TableCell>
-
-                    <TableCell>
-                      <Button onClick={() => handleEdit(user)}>
-                        <Edit />
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          handlechange1(user); // Call the edit function
-                          setTabValue(2); // Switch to tab 2
-                        }}
-                        sx={{ color: "secondary" }}
-                      >
-                        <Delete />
-                      </Button>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))}
             </TableBody>
@@ -1172,12 +1178,12 @@ const filteredCombinedData = combinedList.filter((user) => {
           />
         </TableContainer>
       )}
-      {tabValue === 4 && (
+    {/*   {tabValue === 4 && (
         <TableContainer component={Paper} className="table-container">
           <Typography variant="h6" align="center" className="table-title"
           style={{ marginTop: "20px" , marginBottom:"20px" }}>
             Tài Khoản Bị Ban
-          </Typography>
+          </Typography> */}
        {/*    <Grid container spacing={2} style={{ alignItems: "center" }}>
             <Grid item xs={6}>
               <TextField
@@ -1220,7 +1226,7 @@ const filteredCombinedData = combinedList.filter((user) => {
             </Grid>
           </Grid> */}
 
-          <Table>
+      {/*     <Table>
             <TableHead>
               <TableRow className="table-row-header">
                 <TableCell>Account ID</TableCell>
@@ -1229,9 +1235,6 @@ const filteredCombinedData = combinedList.filter((user) => {
                 <TableCell>Vai Trò</TableCell>
                 <TableCell>Số Điện Thoại</TableCell>
                 <TableCell>Địa Chỉ</TableCell>
-                <TableCell>Mật Khẩu</TableCell>
-                <TableCell>Trạng Thái Xóa</TableCell>
-                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -1255,19 +1258,12 @@ const filteredCombinedData = combinedList.filter((user) => {
                     <TableCell>{user?.roles[0]?.ten_vai_tro}</TableCell>
                     <TableCell>{user.so_dien_thoai}</TableCell>
                     <TableCell>{user?.diachi[0]?.dia_chi}</TableCell>
-                    <TableCell>{user.password}</TableCell>
-                    <TableCell>{user.trang_thai_xoa}</TableCell>
-                    <TableCell>
-                      <Button onClick={() => handleRestore(user)}>
-                        <Restore />
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 ))}
             </TableBody>
-          </Table>
+          </Table> */}
 
-          <TablePagination
+       {/*    <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={filteredDataViPham.length}
@@ -1275,10 +1271,10 @@ const filteredCombinedData = combinedList.filter((user) => {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </TableContainer>
-      )}
-      {tabValue === 5 && (
+          /> */}
+  {/*       </TableContainer>
+      )} */}
+      {tabValue === 4 && (
         <TableContainer component={Paper} className="table-container">
           <Typography variant="h6" align="center" className="table-title"
           style={{ marginTop: "20px" , marginBottom:"20px" }}>

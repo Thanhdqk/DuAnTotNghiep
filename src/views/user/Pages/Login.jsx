@@ -18,30 +18,30 @@ function LoginForm() {
     setPasswordError('');
     setSuccessMessage('');
     setErrorMessage('');
-  
+
     if (!validateEmail(email)) {
       setEmailError('Please enter a valid Gmail address.');
       return;
     }
-  
+
     if (!validatePassword(password)) {
       setPasswordError('Password must be exactly 6 digits.');
       return;
     }
-  
+
     try {
       const response = await fetch('http://localhost:8080/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const result = await response.json();
       if (response.status === 403) {
         setErrorMessage(result.message || 'Your account has been locked.');
         return;
       }
-  
+
       if (result.success) {
         setSuccessMessage('Login successful');
         localStorage.setItem('userId', result.userId);
@@ -54,7 +54,7 @@ function LoginForm() {
       setErrorMessage('An error occurred during login.');
     }
   };
-  
+
 
   return (
     <div style={{
@@ -101,37 +101,18 @@ function LoginForm() {
             letterSpacing: '1px',
           }}>Login</h2>
 
-          {/* Success Message */}
-          {successMessage && (
+          {/* Notification Message */}
+          {(successMessage || errorMessage) && (
             <div style={{
-              color: '#388E3C',
+              color: successMessage ? '#388E3C' : '#D32F2F',
               padding: '12px',
-              borderRadius: '8px',
-              backgroundColor: '#E8F5E9',
               marginBottom: '20px',
               textAlign: 'center',
-              border: '1px solid #388E3C',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Added shadow to success box
             }}>
-              {successMessage}
+              {successMessage || errorMessage}
             </div>
           )}
 
-          {/* Error Message */}
-          {errorMessage && (
-            <div style={{
-              color: '#D32F2F',
-              padding: '12px',
-              borderRadius: '8px',
-              backgroundColor: '#FFEBEE',
-              marginBottom: '20px',
-              textAlign: 'center',
-              border: '1px solid #D32F2F',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Added shadow to error box
-            }}>
-              {errorMessage}
-            </div>
-          )}
 
           {/* Email Input */}
           <div style={{ marginBottom: '20px' }}>
@@ -177,31 +158,31 @@ function LoginForm() {
 
           {/* Submit Button */}
           <button
-  type="button" // Hoặc "submit" nếu bạn muốn sử dụng nó trong form
-  style={{
-    width: '100%',
-    padding: '15px',
-    fontSize: '1.2em',
-    color: 'white',
-    backgroundColor: '#ff5851',
-    border: 'none',
-    borderRadius: '50px',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease, transform 0.2s ease',
-    boxShadow: '0px 8px 16px rgba(0,0,0,0.2)',
-  }}
-  onClick={handleLogin} // Gọi hàm handleLogin khi nhấn nút
-  onMouseEnter={(e) => {
-    e.currentTarget.style.backgroundColor = '#ff4040';
-    e.currentTarget.style.transform = 'scale(1.05)';
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.backgroundColor = '#ff5851';
-    e.currentTarget.style.transform = 'scale(1)';
-  }}
->
-  Login
-</button>
+            type="button" // Hoặc "submit" nếu bạn muốn sử dụng nó trong form
+            style={{
+              width: '100%',
+              padding: '15px',
+              fontSize: '1.2em',
+              color: 'white',
+              backgroundColor: '#ff5851',
+              border: 'none',
+              borderRadius: '50px',
+              cursor: 'pointer',
+              transition: 'background-color 0.3s ease, transform 0.2s ease',
+              boxShadow: '0px 8px 16px rgba(0,0,0,0.2)',
+            }}
+            onClick={handleLogin} // Gọi hàm handleLogin khi nhấn nút
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#ff4040';
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#ff5851';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            Login
+          </button>
 
         </div>
       </div>

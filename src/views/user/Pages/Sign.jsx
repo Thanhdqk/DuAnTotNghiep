@@ -217,11 +217,9 @@ function RegisterForm() {
             <div style={{
               color: '#D32F2F',
               padding: '12px',
-              borderRadius: '8px',
               backgroundColor: '#FFEBEE',
               marginBottom: '20px',
               textAlign: 'center',
-              border: '1px solid #D32F2F',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Added shadow to error box
             }}>
               {errorMessage && (
@@ -242,11 +240,9 @@ function RegisterForm() {
             <div style={{
               color: '#388E3C',
               padding: '12px',
-              borderRadius: '8px',
               backgroundColor: '#E8F5E9',
               marginBottom: '20px',
               textAlign: 'center',
-              border: '1px solid #388E3C',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Added shadow to success box
             }}>
               {successMessage}

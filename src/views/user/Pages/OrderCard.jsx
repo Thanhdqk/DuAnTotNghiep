@@ -102,7 +102,7 @@ const DonHang = () => {
 
   return (
     <div className="d-flex vh-100">
-<div className='col-2'>
+      <div className='col-2'>
         <Sidebar userId={userId} />
       </div>
 
@@ -134,7 +134,9 @@ const DonHang = () => {
                   <td>{donhang.users?.hovaten || 'Tên không tồn tại'}</td>
                   <td>{donhang.so_dien_thoai}</td>
                   <td>{donhang.diachi?.dia_chi || 'Địa chỉ không tồn tại'}</td>
-                  <td>{donhang.voucher?.so_tien_giam?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) || 'Không áp dụng'}</td>
+                  <td>
+                    {donhang.voucher?.so_tien_giam?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) || 'Không áp dụng'}
+                  </td>
                   <td>{donhang.phi_ship.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
                   <td>{donhang.tong_tien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
                   <td>

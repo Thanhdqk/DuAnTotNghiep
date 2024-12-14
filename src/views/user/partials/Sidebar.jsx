@@ -16,23 +16,40 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="bg-dark text-white p-4 shadow vh-100">
-      <Link to="/" className="text-decoration-none text-white">
+    <aside
+      style={{
+        backgroundColor: '#343a40', // Màu nền sidebar
+        color: 'white', // Màu chữ
+        padding: '16px', // Khoảng cách bên trong
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Bóng đổ
+        minHeight: '100vh', // Đảm bảo chiều cao tối thiểu là toàn màn hình
+        display: 'flex', // Đảm bảo sidebar không co lại
+        flexDirection: 'column', // Căn nội dung theo cột
+      }}
+    >
+      <Link to="/" style={{ textDecoration: 'none', color: 'white' }}>
         <h3>Quản Lý Cá Nhân</h3>
       </Link>
-      <ul className="list-unstyled mt-3">
+      <ul style={{ listStyleType: 'none', marginTop: '16px', padding: 0 }}>
         {menuItems.map((item, index) => (
-          <li key={index} className="mb-2">
+          <li key={index} style={{ marginBottom: '8px' }}>
             <Link
-              to={item.path} // Không truyền userId qua URL
-              className={`text-decoration-none ${
-                location.pathname === item.path ? 'text-primary' : 'text-white'
-              }`}
+              to={item.path}
+              style={{
+                textDecoration: 'none',
+              }}
             >
               <button
-                className={`btn w-100 text-start ${
-                  location.pathname === item.path ? 'btn-primary' : 'btn-secondary'
-                }`}
+                style={{
+                  width: '100%',
+                  textAlign: 'start',
+                  backgroundColor: location.pathname === item.path ? '#007bff' : '#6c757d', // Thay đổi màu theo trạng thái
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
               >
                 {item.label}
               </button>

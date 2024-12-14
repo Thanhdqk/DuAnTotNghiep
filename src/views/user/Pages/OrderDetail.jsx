@@ -6,6 +6,7 @@ import Sidebar from '../partials/Sidebar';
 const OrderDetail = () => {
     const [order, setOrder] = useState([]);
     const [user, setUser] = useState({});
+    const [reviewedProducts, setReviewedProducts] = useState(new Set());
     const { id } = useParams();
     const userId = localStorage.getItem('userId');
 
@@ -32,8 +33,21 @@ const OrderDetail = () => {
             }
         };
 
+        const fetchReviewedProducts = async () => {
+            try {
+                const res = await axios.get(`http://localhost:8080/api/reviews/check/all`, {
+                    params: { userId }
+                });
+
+                setReviewedProducts(new Set(res.data || []));
+            } catch (error) {
+                console.error("Error fetching reviewed products:", error);
+            }
+        };
+
         fetchOrder();
         fetchUser();
+        fetchReviewedProducts();
     }, [id, userId]);
 
     const totalAmount =
@@ -59,15 +73,58 @@ const OrderDetail = () => {
                 >
                     <h1 style={{ textAlign: 'center', color: '#2c3e50', marginBottom: '20px' }}>Chi Tiết Đơn Hàng</h1>
 
-                    {/* User Information */}
-                    <h2 style={{ borderBottom: '2px solid #2c3e50', paddingBottom: '5px', color: '#2c3e50' }}>
-                        Thông Tin Người Dùng
-                    </h2>
-                    <div style={{ marginBottom: '20px' }}>
-                        <p><strong>Họ và Tên:</strong> {user.hovaten}</p>
-                        <p><strong>Số Điện Thoại:</strong> {user.so_dien_thoai}</p>
-                        <p><strong>Email:</strong> {user.accountID}</p>
-                        <p><strong>Địa Chỉ:</strong> {order[0]?.donhang?.diachi?.dia_chi}</p>
+                    {/* User Information and Order Summary */}
+                    <div className="row">
+                        {/* User Information */}
+                        <div className="col-md-6">
+                            <h2 style={{ borderBottom: '2px solid #2c3e50', paddingBottom: '5px', color: '#2c3e50' }}>
+                                Thông Tin Người Dùng
+                            </h2>
+                            <div  style={{ marginBottom: '20px' }}>
+                                <p><strong>Họ và Tên:</strong> {user.hovaten}</p>
+                                <p><strong>Số Điện Thoại:</strong> {user.so_dien_thoai}</p>
+                                <p><strong>Email:</strong> {user.accountID}</p>
+                                <p><strong>Địa Chỉ:</strong> {order[0]?.donhang?.diachi?.dia_chi}</p>
+                            </div>
+                        </div>
+
+                        {/* Order Summary */}
+                        <div className="col-md-6">
+                            <h2 style={{ borderBottom: '2px solid #2c3e50', paddingBottom: '5px', color: '#2c3e50' }}>
+                                Tóm Tắt Đơn Hàng
+                            </h2>
+                            <table className="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th>Trạng Thái</th>
+                                        <td>{order[0]?.donhang?.trang_thai}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Ngày Tạo</th>
+                                        <td>{order[0]?.donhang?.ngay_tao}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Thời Gian Xác Nhận</th>
+                                        <td>{order[0]?.donhang?.thoi_gianXN}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phí Ship</th>
+                                        <td>
+                                            {order[0]?.donhang?.phi_ship.toLocaleString('vi-VN', {
+                                                style: 'currency',
+                                                currency: 'VND',
+                                            })}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {order[0]?.donhang?.trang_thai === 'Đã Hủy' && (
+                                <div>
+                                    <strong>Lý do hủy đơn: </strong>
+                                    <span>{order[0]?.donhang?.ly_do || 'Không có lý do cụ thể'}</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Order Details */}
@@ -95,54 +152,20 @@ const OrderDetail = () => {
                                         })}
                                     </td>
                                     <td className="text-center">
-                                        {item.donhang?.trang_thai === 'Đã Giao' && item.sanpham?.san_phamId && (
+                                        {item.donhang?.trang_thai === 'Đã Giao' &&
+                                            item.sanpham?.san_phamId &&
+                                            !reviewedProducts.has(item.sanpham?.san_phamId) ? (
                                             <Link to={`/review/${item.sanpham.san_phamId}`} className="btn btn-danger">
                                                 Viết Đánh Giá
                                             </Link>
+                                        ) : (
+                                            <span>Đã Đánh Giá</span>
                                         )}
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-
-                    {/* Order Summary */}
-                    <h2 style={{ borderBottom: '2px solid #2c3e50', paddingBottom: '5px', color: '#2c3e50' }}>
-                        Tóm Tắt Đơn Hàng
-                    </h2>
-                    <table className="table">
-                        <tbody>
-                            <tr>
-                                <th>Trạng Thái</th>
-                                <td>{order[0]?.donhang?.trang_thai}</td>
-                            </tr>
-                            <tr>
-                                <th>Ngày Tạo</th>
-                                <td>{order[0]?.donhang?.ngay_tao}</td>
-                            </tr>
-                            <tr>
-                                <th>Thời Gian Xác Nhận</th>
-                                <td>{order[0]?.donhang?.thoi_gianXN}</td>
-                            </tr>
-                            <tr>
-                                <th>Phí Ship</th>
-                                <td>
-                                    {order[0]?.donhang?.phi_ship.toLocaleString('vi-VN', {
-                                        style: 'currency',
-                                        currency: 'VND',
-                                    })}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    {/* Hiển thị lý do hủy nếu trạng thái là "Đã Hủy" */}
-                    {order[0]?.donhang?.trang_thai === 'Đã Hủy' && (
-                        <div>
-                            <strong>Lý do hủy đơn: </strong>
-                            <span>{order[0]?.donhang?.ly_do || 'Không có lý do cụ thể'}</span>
-                        </div>
-                    )}
 
                     {/* Total Amount */}
                     <div style={{ textAlign: 'right', fontSize: '1.2rem', color: '#e74c3c' }}>

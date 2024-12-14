@@ -110,7 +110,7 @@ public class MailerServiceImpl implements MailerService {
 //			model.put("myProperty", opt);
 //			model.put("mail", mail);
 			FileTemplateLoader templateLoader = new FileTemplateLoader(
-					new File("D:\\FPT Polytechnic Learning Materials\\totnghiep_workspace\\backend2\\DuAnTotNghiep\\src\\main\\resources"));
+					new File("src/main/resources"));
 			config.setTemplateLoader(templateLoader);
 			Template t = config.getTemplate("email.ftl");
 			html = FreeMarkerTemplateUtils.processTemplateIntoString(t, model);

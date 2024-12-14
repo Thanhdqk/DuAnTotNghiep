@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.BaiTapLab.DTO.HinhAnhDTO;
 import com.BaiTapLab.DTO.SanPhamDTO;
 import com.BaiTapLab.DTO.SanPhamDTO2;
 import com.BaiTapLab.Entity.DanhMuc;
@@ -41,6 +42,56 @@ public class RescontrollerSanPham {
 	@Autowired
 	DanhmucRepository DanhmucRepository;
 
+	@GetMapping("Product/getproductsHaveBeenApproved")
+	public List<Map<String, Object>> getsanphamsBeenApproved() {
+		List<Object[]> listtempt = sanphamRepository.getproductshavebeenApproved();
+		List<Map<String, Object>> listtoreturn = MapToData(listtempt);
+		return listtoreturn;
+	}
+	@GetMapping("Product/getproductsHaventBeenApproved")
+	public List<Map<String, Object>> getsanphamsHaventBeenApproved() {
+		List<Object[]> listtempt = sanphamRepository.getproductshavebeenNotApproved();
+		List<Map<String, Object>> listtoreturn = MapToData(listtempt);
+		return listtoreturn;
+	}
+	@GetMapping("Product/getproductsHaveBeenNotApproved")
+	public List<Map<String, Object>> getsanphamsHaventBeenNotApproved() {
+		List<Object[]> listtempt = sanphamRepository.getproductshaventbeenApproved();
+		List<Map<String, Object>> listtoreturn = MapToData(listtempt);
+		return listtoreturn;
+	}
+
+	public List<Map<String, Object>> MapToData(List<Object[]> results) {
+		List<Map<String, Object>> sanPhamList = new ArrayList<>();
+		for (Object[] row : results) {
+			Map<String, Object> sanPham = new HashMap<>();
+			sanPham.put("san_phamId", row[0]);
+			sanPham.put("ten_san_pham", row[1]);
+			sanPham.put("ngayTao", row[2]);
+			sanPham.put("gia_goc", row[3]);
+			sanPham.put("gia_km", row[4]);
+			sanPham.put("moTa", row[5]);
+			sanPham.put("phan_tram_GG", row[6]);
+			sanPham.put("so_luong", row[7]);
+			sanPham.put("hanGG", row[8]);
+			sanPham.put("trangThaiKho", row[9]);
+			sanPham.put("luotMua", row[10]);
+			sanPham.put("hoatDong", row[11]);
+			sanPham.put("pheDuyet", row[12]);
+			sanPham.put("trangThaiXoa", row[13]);
+			sanPham.put("chieuCao", row[14]);
+			sanPham.put("chieuDai", row[15]);
+			sanPham.put("chieuRong", row[16]);
+			sanPham.put("khoiLuong", row[17]);
+			sanPham.put("ghi_chu", row[18]);
+			sanPham.put("accountid", row[19]);
+		
+			sanPhamList.add(sanPham);
+		}
+
+		return sanPhamList;
+	}
+
 	public static Month parseMonth(CharSequence text, TextStyle style, Locale locale) {
 		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendText(ChronoField.MONTH_OF_YEAR, style)
 				.toFormatter(locale);
@@ -48,7 +99,7 @@ public class RescontrollerSanPham {
 	}
 
 	@GetMapping("Product/getsp23")
-	public List<Object[]>getsp() {
+	public List<Object[]> getsp() {
 		Month now = LocalDate.now().getMonth();
 
 		int nowyear = LocalDate.now().getYear();
@@ -56,14 +107,12 @@ public class RescontrollerSanPham {
 		return list;
 	}
 
-	@GetMapping("Product/FindBySanPhamTopSellByMonth")
+	@GetMapping("FindBySanPhamTopSellByMonth")
 	public List<Map<String, Object>> FindBySanPhamTopSellByMonth() {
 		Month now = LocalDate.now().getMonth();
-		
 
 		int nowyear = LocalDate.now().getYear();
-		List<Object[]> results = sanphamRepository.findbestsellbymonththisyear(now.getValue(),nowyear);
-
+		List<Object[]> results = sanphamRepository.findbestsellbymonththisyear(now.getValue(), nowyear);
 		List<Map<String, Object>> sanPhamList = new ArrayList<>();
 
 		for (Object[] row : results) {
@@ -298,11 +347,8 @@ public class RescontrollerSanPham {
 
 	@GetMapping("FindProductThisWeekTOP100")
 	public List<Map<String, Object>> FindProductThisWeekTOP10000() {
-
 		List<Object[]> results = SanPhamService.findSanPhamPhanTramGiamGia(PageRequest.of(0, 10));
-
 		List<Map<String, Object>> sanPhamList = new ArrayList<>();
-
 		for (Object[] row : results) {
 			Map<String, Object> sanPham = new HashMap<>();
 			sanPham.put("san_phamId", row[0]);
@@ -328,14 +374,16 @@ public class RescontrollerSanPham {
 			sanPham.put("luotdanhgia", row[19]);
 			sanPhamList.add(sanPham);
 		}
-
 		return sanPhamList;
 	}
 
 	@GetMapping("FindProducthaspopupid")
 	public List<SanPhamDTO2> FindProducthaspopupid() {
 		return SanPhamService.FindProducthaspopupid().stream()
-				.map(s -> new SanPhamDTO2(s.getSan_phamId(), s.getTen_san_pham())).collect(Collectors.toList());
+				.map(p -> 	new SanPhamDTO2(p.getSan_phamId(), p.getTen_san_pham(),
+						p.getHinhanh().stream().map(h-> new HinhAnhDTO(h.getId(),h.getTen_hinh())).collect(Collectors.toList()),
+						p.getPhantram_GG(),p.getGia_goc(),p.getGia_km()
+						)).collect(Collectors.toList());
 	}
 
 	@GetMapping("FindSanPhamByDTO")
@@ -362,15 +410,18 @@ public class RescontrollerSanPham {
 				SanPham findsp = sanphamRepository.findSanPhamByIdIfItsValid(string);
 				products.add(findsp);
 			}
-			for (SanPham sanPham : products) {
-				if (sanPham.getSo_luong() <= 0 || sanPham.getHoat_dong().equals("Off")
-						|| sanPham.getTrang_thai_xoa() != null || sanPham.getDanhmuc().getTrang_thai_xoa() != null
-						|| sanPham.getDanhmuc().getHoat_dong().equals("Off")
-						|| sanPham.getThuonghieu().getTrang_thai_xoa() != null
-						|| sanPham.getThuonghieu().getHoat_dong().equals("Off")) {
-					producthaserror.add(sanPham);
-				}
+			if(products.size()>0){
+				for (SanPham sanPham : products) {
+					if (sanPham.getSo_luong() <= 0 || sanPham.getHoat_dong().equals("Off")
+							|| sanPham.getTrang_thai_xoa() != null || sanPham.getDanhmuc().getTrang_thai_xoa() != null
+							|| sanPham.getDanhmuc().getHoat_dong().equals("Off")
+							|| sanPham.getThuonghieu().getTrang_thai_xoa() != null
+							|| sanPham.getThuonghieu().getHoat_dong().equals("Off")) {
+						producthaserror.add(sanPham);
+					}
+				}	
 			}
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

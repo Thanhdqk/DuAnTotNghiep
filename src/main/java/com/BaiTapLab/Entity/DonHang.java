@@ -40,6 +40,9 @@ public class DonHang {
 	private String shipper_id;
 
 	private String trang_thai_nhan_hang;
+	
+	@Column(columnDefinition = "NVARCHAR(255)")
+	public String ly_do_huy;
 
 	public double phi_ship;
 

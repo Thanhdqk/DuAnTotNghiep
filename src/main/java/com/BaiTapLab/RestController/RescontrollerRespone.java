@@ -9,15 +9,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BaiTapLab.DTO.ResponeDTO;
 import com.BaiTapLab.Entity.Feedback;
 import com.BaiTapLab.Entity.HanhDong;
 import com.BaiTapLab.Entity.Respone;
+import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.FeedbackRepository;
 import com.BaiTapLab.Repository.HanhDongRepository;
 import com.BaiTapLab.Repository.ResponeRepository;
+import com.BaiTapLab.Repository.UsersRepository;
 
 @RestController
 @RequestMapping("respone")
@@ -30,10 +33,13 @@ public class RescontrollerRespone {
 
 	@Autowired
 	HanhDongRepository dongRepository;
+	@Autowired
+	UsersRepository usersRepository;
 
 	@PostMapping("do")
-	public void dorespone(@RequestBody Respone res) {
+	public void dorespone(@RequestBody Respone res,@RequestParam("accountId")String accountId) {
 		Feedback feedback = feedbackRepository.findById(res.getFeedback().getFeedbackID()).get();
+		Users u = usersRepository.findById(accountId).get();
 
 		res.setNgay_tao(LocalDate.now());
 		res.setFeedback(feedback);
@@ -43,6 +49,8 @@ public class RescontrollerRespone {
 		try {
 			hanhdong.setRespone(res);
 			hanhdong.setTen_hanh_dong("Đã phản hồi");
+			hanhdong.setNgay_tao(LocalDate.now());
+			hanhdong.setUsers(u);
 			dongRepository.save(hanhdong);
 			responeRepository.save(res);
 			feedback.setTrang_thai("Đã phản hồi");

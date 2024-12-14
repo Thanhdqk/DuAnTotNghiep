@@ -242,4 +242,8 @@ public class UsersService {
 		}
 	}
 
+	public boolean emailExists(String email) {
+	    return userRepository.existsByAccountID(email);
+	}
+
 }

@@ -27,8 +27,8 @@ spring:
       
     properties:
       hibernate:     
-        show-sql: true
-        format_sql: true
+#        show-sql: true
+#        format_sql: true
         dialect: org.hibernate.dialect.SQLServerDialect # Đảm bảo cung cấp dialect phù hợp
 #        dialect: org.hibernate.dialect.MySQLDialect
         type: TRACE
@@ -48,9 +48,9 @@ spring:
 #
 #logging.level.net.ttddyy.dsproxy.listener: DEBUG
 ### Logs the SQL queries
-logging.level.org.hibernate.SQL: DEBUG
-### Logs the prepared statement parameters
-logging.level.org.hibernate.orm.jdbc.bind: TRACE
+#logging.level.org.hibernate.SQL: DEBUG
+#### Logs the prepared statement parameters
+#logging.level.org.hibernate.orm.jdbc.bind: TRACE
 
 ### To make the printing SQL beautify
 #spring.jpa.properties.hibernate.format_sql: true

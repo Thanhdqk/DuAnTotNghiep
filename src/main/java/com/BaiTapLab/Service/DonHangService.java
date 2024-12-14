@@ -26,22 +26,18 @@ public class DonHangService {
 		return donHangRepository.findByUserIdWithAddress(userId);
 	}
 
-	public boolean cancelOrder(String orderId) {
-		// Fetch the order by orderId
+	public boolean cancelOrder(String orderId, String lyDo) {
 		Optional<DonHang> optionalOrder = donHangRepository.findById(orderId);
 		if (optionalOrder.isPresent()) {
 			DonHang order = optionalOrder.get();
-
-			// Check if the order is in "Nhận Đơn" status
 			if ("Đang chờ xử lý".equals(order.getTrang_thai())) {
-				// Change the status to "Đã Hủy"
 				order.setTrang_thai("Đã Hủy");
-				// Save the updated order
+				order.setLy_do_huy(lyDo); // Lưu lý do hủy
 				donHangRepository.save(order);
 				return true;
 			}
 		}
-		return false; // Return false if the order can't be canceled
+		return false;
 	}
 
 }

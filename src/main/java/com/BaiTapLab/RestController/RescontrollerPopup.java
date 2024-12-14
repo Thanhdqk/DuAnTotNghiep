@@ -1,5 +1,6 @@
 package com.BaiTapLab.RestController;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,10 +12,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.BaiTapLab.DTO.HinhAnhDTO;
 import com.BaiTapLab.DTO.PopUpDTO2;
 import com.BaiTapLab.DTO.PopupDTO;
 import com.BaiTapLab.DTO.PopupchitietDTO;
@@ -33,6 +35,7 @@ import com.BaiTapLab.Service.PopupService;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@RequestMapping("/api/popup")
 public class RescontrollerPopup {
 	@Autowired
 	PopupService PopupService;
@@ -47,11 +50,7 @@ public class RescontrollerPopup {
 	@Autowired
 	UsersRepository usersRepository;
 
-	@GetMapping("FindAllPopUp")
-	public List<Popup> getMethodName() {
 
-		return PopupService.FindALL();
-	}
 //	@GetMapping("FindAllPopUp")
 //	public List<Map<String, Object>> getall() {
 //		List<Object[]> listtempt = repo.findallpopup();
@@ -59,15 +58,17 @@ public class RescontrollerPopup {
 //		return MapToData(listtempt);
 //	}
 
-	@GetMapping("FindAllPopUp1")
+	@GetMapping("FindAllPopUp")
 	public List<PopUpDTO2> getallL() {
 
 		return (List<PopUpDTO2>) repo.findnewestrecord2().stream().map(popup -> new PopUpDTO2(popup.getPopupID(),
 				popup.getNgay_tao(), popup.getHan_su_dung(), popup.getHoat_dong(), popup.getTrang_thai_xoa(),
 				popup.getUsers(),
-				popup.getPopupchitiet().stream()
-						.map(p -> new PopupchitietDTO(p.getPopupchitietid(),
-								new SanPhamDTO2(p.getSanpham().getSan_phamId(), p.getSanpham().getTen_san_pham())))
+				popup.getPopupchitiet().stream().map(p -> new PopupchitietDTO(p.getPopupchitietid(), new SanPhamDTO2(
+						p.getSanpham().getSan_phamId(), p.getSanpham().getTen_san_pham(),
+						p.getSanpham().getHinhanh().stream().map(h -> new HinhAnhDTO(h.getId(), h.getTen_hinh()))
+								.collect(Collectors.toList()),
+						p.getSanpham().getPhantram_GG(), p.getSanpham().getGia_goc(), p.getSanpham().getGia_km())))
 						.collect(Collectors.toList())))
 				.collect(Collectors.toList());
 
@@ -110,9 +111,11 @@ public class RescontrollerPopup {
 		return (List<PopUpDTO2>) repo.findallpopupdeleted().stream().map(popup -> new PopUpDTO2(popup.getPopupID(),
 				popup.getNgay_tao(), popup.getHan_su_dung(), popup.getHoat_dong(), popup.getTrang_thai_xoa(),
 				popup.getUsers(),
-				popup.getPopupchitiet().stream()
-						.map(p -> new PopupchitietDTO(p.getPopupchitietid(),
-								new SanPhamDTO2(p.getSanpham().getSan_phamId(), p.getSanpham().getTen_san_pham())))
+				popup.getPopupchitiet().stream().map(p -> new PopupchitietDTO(p.getPopupchitietid(), new SanPhamDTO2(
+						p.getSanpham().getSan_phamId(), p.getSanpham().getTen_san_pham(),
+						p.getSanpham().getHinhanh().stream().map(h -> new HinhAnhDTO(h.getId(), h.getTen_hinh()))
+								.collect(Collectors.toList()),
+						p.getSanpham().getPhantram_GG(), p.getSanpham().getGia_goc(), p.getSanpham().getGia_km())))
 						.collect(Collectors.toList())))
 				.collect(Collectors.toList());
 	}
@@ -126,18 +129,16 @@ public class RescontrollerPopup {
 		return (List<PopUpDTO2>) repo.findallpopupnotdeleted().stream().map(popup -> new PopUpDTO2(popup.getPopupID(),
 				popup.getNgay_tao(), popup.getHan_su_dung(), popup.getHoat_dong(), popup.getTrang_thai_xoa(),
 				popup.getUsers(),
-				popup.getPopupchitiet().stream()
-						.map(p -> new PopupchitietDTO(p.getPopupchitietid(),
-								new SanPhamDTO2(p.getSanpham().getSan_phamId(), p.getSanpham().getTen_san_pham())))
+				popup.getPopupchitiet().stream().map(p -> new PopupchitietDTO(p.getPopupchitietid(), new SanPhamDTO2(
+						p.getSanpham().getSan_phamId(), p.getSanpham().getTen_san_pham(),
+						p.getSanpham().getHinhanh().stream().map(h -> new HinhAnhDTO(h.getId(), h.getTen_hinh()))
+								.collect(Collectors.toList()),
+						p.getSanpham().getPhantram_GG(), p.getSanpham().getGia_goc(), p.getSanpham().getGia_km())))
 						.collect(Collectors.toList())))
 				.collect(Collectors.toList());
 	}
 
-	@GetMapping("all")
-	@ResponseBody
-	public List<Popup> all1() {
-		return repo.findAll();
-	}
+
 
 	@PostMapping("createnewPopup")
 	public void createnewpopup(@RequestBody Popup popup, @RequestParam("productname") List<String> productnames,
@@ -170,7 +171,10 @@ public class RescontrollerPopup {
 			System.out.println(popup);
 			repo.save(popup);
 			hanhdong.setPopup(popup);
+
 			hanhdong.setTen_hanh_dong("Thêm");
+			hanhdong.setNgay_tao(LocalDate.now());
+			hanhdong.setUsers(currentuser);
 			hdrepo.save(hanhdong);
 //			for (SanPham sanPham : listsp) {
 //				System.out.println("sp: " + sanPham.getSan_phamId());
@@ -208,6 +212,7 @@ public class RescontrollerPopup {
 				PopupChiTiet popupchitiet = new PopupChiTiet();
 				popupchitiet.setPopupchitietid(i);
 				popupchitiet.setPopup(popup);
+
 				popupchitiet.setSanpham(sp);
 //				sp.setPopupchitiet(list);
 				listsp.add(sp);
@@ -294,11 +299,13 @@ public class RescontrollerPopup {
 ////			}
 //
 			repo.save(popup);
-//			HanhDong hanhdong = new HanhDong();
-//
-//			hanhdong.setPopup(popup);
-//			hanhdong.setTen_hanh_dong("Cập nhật");
-//			hdrepo.save(hanhdong);
+
+			HanhDong hanhdong = new HanhDong();
+			hanhdong.setNgay_tao(LocalDate.now());
+			hanhdong.setUsers(currentuser);
+			hanhdong.setPopup(popup);
+			hanhdong.setTen_hanh_dong("Cập nhật");
+			hdrepo.save(hanhdong);
 
 //			for (PopupChiTiet pchitiet : list) {
 //				popupchitietRepository.save(pchitiet);
@@ -324,32 +331,51 @@ public class RescontrollerPopup {
 	}
 
 	@PostMapping("changeStatus")
-	public void ChangeStatus1(@RequestBody Popup popup) {
+	public void ChangeStatus1(@RequestBody Popup popup,@RequestParam("userid") String userid) {
 		System.out.println("deleted item :  " + popup);
+		Users currentuser = usersRepository.findById(userid).get();
 		Popup pop = repo.findById(popup.getPopupID()).get();
 		pop.setTrang_thai_xoa("Đã Xóa");
 
 		repo.save(pop);
 		HanhDong hanhdong = new HanhDong();
 
-		hanhdong.setPopup(pop);
-		hanhdong.setTen_hanh_dong("Cập nhật");
+	
+		hanhdong.setNgay_tao(LocalDate.now());
+		hanhdong.setUsers(currentuser);
+		hanhdong.setPopup(popup);
+		hanhdong.setTen_hanh_dong("Ẩn popup");
 		hdrepo.save(hanhdong);
 
 	}
 
 	@PostMapping("undodelete")
-	public void ChangeStatus2(@RequestBody Popup popup) {
+	public void ChangeStatus2(@RequestBody Popup popup,@RequestParam("userid") String userid) {
+		Users currentuser = usersRepository.findById(userid).get();
 		System.out.println("deleted item :  " + popup);
 		Popup pop = repo.findById(popup.getPopupID()).get();
 		pop.setTrang_thai_xoa(null);
 		repo.save(pop);
 		HanhDong hanhdong = new HanhDong();
-
-		hanhdong.setPopup(pop);
-		hanhdong.setTen_hanh_dong("Cập nhật");
+		hanhdong.setNgay_tao(LocalDate.now());
+		hanhdong.setUsers(currentuser);
+		hanhdong.setPopup(popup);
+		hanhdong.setTen_hanh_dong("Khôi phục ");
 		hdrepo.save(hanhdong);
-
+	}
+	
+	@GetMapping("getPopupsAfterUpdateStatus")
+	public List<PopUpDTO2> getPopAfterUpdate(){
+		return (List<PopUpDTO2>) repo.updatehoatdong().stream().map(popup -> new PopUpDTO2(popup.getPopupID(),
+				popup.getNgay_tao(), popup.getHan_su_dung(), popup.getHoat_dong(), popup.getTrang_thai_xoa(),
+				popup.getUsers(),
+				popup.getPopupchitiet().stream().map(p -> new PopupchitietDTO(p.getPopupchitietid(), new SanPhamDTO2(
+						p.getSanpham().getSan_phamId(), p.getSanpham().getTen_san_pham(),
+						p.getSanpham().getHinhanh().stream().map(h -> new HinhAnhDTO(h.getId(), h.getTen_hinh()))
+								.collect(Collectors.toList()),
+						p.getSanpham().getPhantram_GG(), p.getSanpham().getGia_goc(), p.getSanpham().getGia_km())))
+						.collect(Collectors.toList())))
+				.collect(Collectors.toList());
 	}
 
 }

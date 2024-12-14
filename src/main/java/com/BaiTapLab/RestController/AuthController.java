@@ -48,6 +48,16 @@ public class AuthController implements WebMvcConfigurer {
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/images/**").addResourceLocations("file:images/uploads/");
 	}
+	
+	@PostMapping("/checkEmail")
+	public ResponseEntity<String> checkEmail(@RequestBody Map<String, String> request) {
+		String email = request.get("email");
+		boolean exists = userService.emailExists(email);
+		if (exists) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Email đã tồn tại vui lòng sử dụng email khác");
+		}
+		return ResponseEntity.ok("Email is available.");
+	}
 
 	// Endpoint to send OTP for verification
 	@PostMapping("/sendOtp")

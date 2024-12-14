@@ -24,7 +24,7 @@ public class ajaxServlet {
 
 		String orderType = "other";
 
-		long amount = Integer.parseInt(amout) * 100;
+		 long amount = Integer.parseInt(amout)*100;
 		String vnp_TxnRef = vnpay_config.getRandomNumber(8);
 
 		context.setAttribute("vnpaycode", vnp_TxnRef);

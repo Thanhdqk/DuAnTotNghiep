@@ -11,7 +11,22 @@ import org.springframework.data.repository.query.Param;
 import com.BaiTapLab.Entity.SanPham;
 
 public interface SanphamRepository extends JpaRepository<SanPham, String> {
-
+	
+	@Query(value = "SELECT s.san_pham_id,s.ten_san_pham,s.ngay_tao,s.gia_goc,s.gia_km,s.mo_ta,s.phantram_GG,s.so_luong,s.han_gg,s.trang_thai_kho,s.luot_mua,"
+			+ "s.hoat_dong,s.phe_duyet,s.trang_thai_xoa,s.chieu_cao,s.chieu_dai,s.chieu_rong,s.khoi_luong ,s.ghi_chu, s.accountid "
+			+ "FROM sanpham s where phe_duyet =N'Đã phê duyệt' ",nativeQuery = true)
+	List<Object[]> getproductshavebeenApproved();
+	
+	@Query(value = "SELECT s.san_pham_id,s.ten_san_pham,s.ngay_tao,s.gia_goc,s.gia_km,s.mo_ta,s.phantram_GG,s.so_luong,s.han_gg,s.trang_thai_kho,s.luot_mua,"
+			+ "s.hoat_dong,s.phe_duyet,s.trang_thai_xoa,s.chieu_cao,s.chieu_dai,s.chieu_rong,s.khoi_luong ,s.ghi_chu , s.accountid "
+			+ "FROM sanpham s where phe_duyet =N'Chưa phê duyệt' ",nativeQuery = true)
+	List<Object[]> getproductshavebeenNotApproved();
+	@Query(value = "SELECT s.san_pham_id,s.ten_san_pham,s.ngay_tao,s.gia_goc,s.gia_km,s.mo_ta,s.phantram_GG,s.so_luong,s.han_gg,s.trang_thai_kho,s.luot_mua,"
+			+ "s.hoat_dong,s.phe_duyet,s.trang_thai_xoa,s.chieu_cao,s.chieu_dai,s.chieu_rong,s.khoi_luong ,s.ghi_chu , s.accountid "
+			+ "FROM sanpham s where phe_duyet =N'Bị từ chối' ",nativeQuery = true)
+	List<Object[]>  getproductshaventbeenApproved();
+	
+	
 	@Query(value = "SELECT " +
             "    s.san_pham_id, " +
             "    s.ten_san_pham, " +
@@ -48,6 +63,9 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
             "    dh.trang_thai = N'Đã giao' " +
             "    AND MONTH(dh.ngay_tao) = :thang " +
             "    AND YEAR(dh.ngay_tao) = :nam " +
+            " 	 AND s.hoat_dong = 'On' "+
+            " 	 AND s.trang_thai_xoa is null "+
+            "    AND s.so_luong > 0 "+
             "GROUP BY " +
             "    YEAR(dh.ngay_tao), " +
             "    MONTH(dh.ngay_tao), " +
@@ -108,7 +126,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId AND h.id = "
 			+ "(SELECT MIN(hh.id) FROM HinhAnh hh WHERE hh.sanpham.san_phamId = s.san_phamId)) AS tenHinhDauTien "
-			+ "FROM SanPham s WHERE s.hoat_dong = 'On' AND s.trang_thai_xoa ='' AND  s.danhmuc.danh_mucId = :danhMucId AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null")
+			+ "FROM SanPham s WHERE s.hoat_dong = 'On' AND s.trang_thai_xoa is null AND  s.danhmuc.danh_mucId = :danhMucId AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null")
 	List<Object[]> findSanPhamByDMId(@Param("danhMucId") String id);
 
 	// tìm các sản phẩm có khuyến mãi Full
@@ -178,7 +196,7 @@ public interface SanphamRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT AVG(dg.so_sao) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soSao, "
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
-			+ "FROM SanPham s WHERE s.phantram_GG > 0 AND  s.hoat_dong = 'On' AND s.trang_thai_xoa  is null AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null ")
+			+ "FROM SanPham s WHERE s.phantram_GG > 0 AND   s.hoat_dong = 'On' AND s.trang_thai_xoa  is null AND s.thuonghieu.hoat_dong = 'On' AND s.thuonghieu.trang_thai_xoa is null AND s.danhmuc.hoat_dong = 'On' AND s.danhmuc.trang_thai_xoa is null ")
 	List<Object[]> findSanPhamPhanTramGiamGia(Pageable pageable);
 
 	@Query("select s from SanPham s where s.phe_duyet = '1'")

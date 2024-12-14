@@ -14,7 +14,7 @@ public interface PopupRepository extends JpaRepository<Popup, String> {
 	@Query("Select e from Popup e order by e.popupID desc limit 1")
 	Popup findnewestrecord();
 
-	@Query("Select e from Popup e ")
+	@Query("Select e from Popup e where  e.trang_thai_xoa is null and e.hoat_dong ='On'")
 	List<Popup> findnewestrecord2();
 //
 //	@Query("Select e from Popup e where e.trang_thai_xoa='1'")
@@ -40,6 +40,9 @@ public interface PopupRepository extends JpaRepository<Popup, String> {
 
 	@Query("Select e from Popup e  where e.trang_thai_xoa is not null ")
 	List<Popup> findallpopupdeleted();
+	
+	@Query(value = "EXEC popup_updatehoatdong", nativeQuery = true)
+	List<Popup> updatehoatdong();
 
 //	@Query("SELECT b.popupID, b.ngay_tao, b.han_su_dung, b.hoat_dong, b.trang_thai_xoa,"
 //			+ "s.san_phamId,s.ten_san_pham, s.users.accountID  FROM PopupChiTiet p JOIN p.sanpham s join p.popup b where b.trang_thai_xoa is not null ")

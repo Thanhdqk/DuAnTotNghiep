@@ -13,6 +13,7 @@ import { tab } from '@testing-library/user-event/dist/tab';
 
 
 const CrudCategory = () => {
+  const [fileImage, SetfileImage] = useState(null)
   const changeImage = (event) => {
     const value = event.currentTarget.files[0];
     const parent = document.querySelector("[gay]");
@@ -46,11 +47,13 @@ const CrudCategory = () => {
       createdDate: '',
       status: '',
       image: "",
+      imageold: "",
+      imageFile: "",
       active: 'Working',
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Hãy Nhập Tên Danh Mục'),
-   
+
       createdDate: Yup.date().required('Hãy Nhập Ngày Tạo'),
       image: Yup.string().required('Hãy Nhập Chọn Chọn ảnh')
     }),
@@ -65,6 +68,7 @@ const CrudCategory = () => {
         formData.append('status', values.active);
         formData.append('image', values.image);
         formData.append('iduser', iduser);
+        formData.append('imgFile', fileImage);
         await axios({
           url: `http://localhost:8080/DanhMuc/ADD_DanhMuc`, method: "POST", data: formData, headers: {
             'Content-Type': 'multipart/form-data',
@@ -78,27 +82,44 @@ const CrudCategory = () => {
 
       }
       else {
-
-
-
         console.log("cập nhật")
-
-
         console.log("data", values)
-        const formData = new FormData();
-        formData.append('id', values.id);
-        formData.append('name', values.name);
-      
-        formData.append('createdDate', values.createdDate);
-        formData.append('status', values.active);
-        formData.append('image', values.image);
-        formData.append('iduser', iduser);
-        await axios({
-          url: `http://localhost:8080/DanhMuc/UPDATE_DanhMuc`, method: "PUT", data: formData, headers: {
-            'Content-Type': 'multipart/form-data',
+        if (values.imageold == values.image) {
+          console.log("cập nhật no img")
+          const formData = new FormData();
+          formData.append('id', values.id);
+          formData.append('name', values.name);
 
-          }
-        })
+          formData.append('createdDate', values.createdDate);
+          formData.append('status', values.active);
+          formData.append('image', values.image);
+          formData.append('iduser', iduser);
+     
+          await axios({
+            url: `http://localhost:8080/DanhMuc/UPDATE_DanhMucNOImage`, method: "PUT", data: formData, headers: {
+              'Content-Type': 'multipart/form-data',
+
+            }
+          })
+        }
+        else {
+          const formData = new FormData();
+          formData.append('id', values.id);
+          formData.append('name', values.name);
+
+          formData.append('createdDate', values.createdDate);
+          formData.append('status', values.active);
+          formData.append('image', values.image);
+          formData.append('iduser', iduser);
+          formData.append('imgFile', fileImage);
+          await axios({
+            url: `http://localhost:8080/DanhMuc/UPDATE_DanhMuc`, method: "PUT", data: formData, headers: {
+              'Content-Type': 'multipart/form-data',
+
+            }
+          })
+        }
+
         toast.success('Cập nhật danh mục thành công!');
         const tab1 = document.querySelector("#table-tab")
 
@@ -219,7 +240,7 @@ const CrudCategory = () => {
       dataIndex: 'userId', // Adjust if your API uses a different field
       key: 'userId',
     },
-   
+
     {
       title: 'Trạng Thái',
       dataIndex: 'status',
@@ -249,7 +270,8 @@ const CrudCategory = () => {
                     createdDate: record.createdDate,
                     status: record.status,
                     image: record.imageUrl,
-                    active: record.active
+                    active: record.active,
+                    imageold: record.imageUrl
                   }
                 )
 
@@ -419,13 +441,13 @@ const CrudCategory = () => {
 
                 <select onChange={async () => {
                   const value = document.getElementById("searchhoatdong").value
-                
+
                   if (value == 'Tìm kiếm theo trạng thái hoạt động') {
                     return;
                   }
                   if (value == 'Working') {
                     const res = await axios({ url: "http://localhost:8080/DanhMuc/findALLWorking", method: "GET" })
-                  
+
                     const formattedData = res.data.map((item, index) => ({
                       key: index,
                       categoryId: item.danh_mucId,
@@ -438,7 +460,7 @@ const CrudCategory = () => {
                       active: item.hoat_dong
                     }));
                     setDataSource(formattedData);
-                   
+
 
                   }
                   if (value == 'NotWorking') {
@@ -519,7 +541,7 @@ const CrudCategory = () => {
                   {formik.errors.name && <div className="text-danger ms-1 fw-bold">{formik.errors.name}</div>}
                 </div>
 
-              
+
 
                 {formik.values.image == "" && <label gay="sad" className="custum-file-upload mt-4" htmlFor="file">
 
@@ -532,7 +554,7 @@ const CrudCategory = () => {
                     </div>
                     <input type="file" id='file' name='image' onChange={(event) => {
                       formik.setFieldValue('image', event.currentTarget.files[0].name);
-
+                      SetfileImage(event.currentTarget.files[0])
 
 
                     }} className=' mt-3' />

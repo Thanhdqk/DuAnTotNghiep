@@ -149,7 +149,7 @@ const ProductDetail = () => {
 
                     <div className='row mx-auto'>
 
-                        {ProductDetail?.hinhanh?.slice(1, 4).map((image, index) => {
+                        {ProductDetail?.hinhanh?.slice(0, 3).filter(image => image.ten_hinh !="").map((image, index) => {
                             return <div className='imagesupport ms-2' key={index} >
 
                                 <img onClick={Change_Img} img-change={`${image.ten_hinh}`} className='img-fluid mt-1 ' style={{ maxHeight: 100, maxWidth: 100 }} src={`/images/${image.ten_hinh}`} alt="" />

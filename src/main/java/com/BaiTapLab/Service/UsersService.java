@@ -104,7 +104,7 @@ public class UsersService {
 
 		// Save the role associated with the user
 		role.setUsers(savedUser);
-		role.setId(1);
+
 		rolesRepository.save(role);
 
 		// Save the address associated with the user

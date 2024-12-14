@@ -14,7 +14,7 @@ import com.BaiTapLab.Entity.HanhDong;
 
 public interface HanhDongReopository extends JpaRepository<HanhDong, Integer> {
 
-	@Query("SELECT new com.BaiTapLab.DTO.UserDTO(hd.ten_hanh_dong, hd.ngay_hanh_dong, hd.users) FROM HanhDong hd")
+	@Query("SELECT new com.BaiTapLab.DTO.UserDTO(hd.ten_hanh_dong, hd.ngay_hanh_dong, hd.users) FROM HanhDong hd ORDER BY  hd.ngay_hanh_dong desc")
 	List<UserDTO> findUser();
 	
 	

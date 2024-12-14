@@ -29,6 +29,7 @@ import com.BaiTapLab.Entity.Roles;
 import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.HanhDongReopository;
 import com.BaiTapLab.Repository.UsersRepository;
+import com.BaiTapLab.Repository.vaitroRepository;
 import com.BaiTapLab.Service.MailerService;
 import com.BaiTapLab.Service.UsersService;
 import com.google.cloud.storage.Acl;
@@ -45,13 +46,12 @@ import jakarta.servlet.ServletContext;
 @RequestMapping("/api/users")
 @CrossOrigin(origins = { "http://localhost:3000" })
 public class UsersRestController {
-	
+
 	@Autowired
 	MailerService mailerService;
 
 	private static final Logger logger = LoggerFactory.getLogger(UsersRestController.class);
- 
-	
+
 	@Autowired
 	private UsersRepository userRepository;
 
@@ -64,7 +64,9 @@ public class UsersRestController {
 	@Autowired
 	ServletContext context;
 
-	
+	@Autowired
+	vaitroRepository vaitroRepository;
+
 	public List<Map<String, Object>> MapToData(List<Object[]> results) {
 		List<Map<String, Object>> sanPhamList = new ArrayList<>();
 
@@ -78,32 +80,30 @@ public class UsersRestController {
 			sanPham.put("dia_chi", row[1]);
 			sanPham.put("hoat_dong", row[6]);
 			sanPham.put("password", row[7]);
-		
-			
-		
+
 			sanPhamList.add(sanPham);
 		}
 
 		return sanPhamList;
 	}
-	
+
 	@GetMapping("/testtest")
-	public ResponseEntity<List<Object[]>> listTest(){
+	public ResponseEntity<List<Object[]>> listTest() {
 		List<Object[]> list = userRepository.listVaiTroUser();
 		return ResponseEntity.ok(list);
 	}
-	
+
 	@GetMapping("getUser")
 	public List<Map<String, Object>> getMethodName2() {
 		List<Object[]> listNhanVienUser = userRepository.listVaiTroUser();
 		return MapToData(listNhanVienUser);
 	}
+
 	@GetMapping("getNhanVien")
-	public  List<Map<String, Object>>  getMethodNhanVien() {
+	public List<Map<String, Object>> getMethodNhanVien() {
 		List<Object[]> listNhanVienUser = userRepository.listVaiTroNhanVien();
-		return  MapToData(listNhanVienUser);
+		return MapToData(listNhanVienUser);
 	}
-	
 
 	@GetMapping
 	public List<Users> getAllUsers() {
@@ -114,7 +114,7 @@ public class UsersRestController {
 	public List<Users> getAllUserss(@RequestParam("accountID") String accountID) {
 		return userRepository.findUserByVPP(accountID);
 	}
-	
+
 	@GetMapping("/delete/{id}")
 	public void getAllAccountID(@PathVariable("id") String id) {
 		Optional<Users> user = userRepository.findById(id);
@@ -126,7 +126,7 @@ public class UsersRestController {
 		HanhDongReopository.save(hd);
 		userRepository.markAsDeleted(id);
 	}
-	
+
 	@PutMapping("/vipham/{id}")
 	public void mark(@PathVariable("id") String id) throws MessagingException {
 		context.setAttribute("method", "ban");
@@ -234,64 +234,61 @@ public class UsersRestController {
 			response.put("message", "Không thể lưu người dùng!");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 Internal Server Error
 		}
-		
-		
+
 	}
 
 	@PutMapping("/put/{accountId}")
-	public ResponseEntity<Map<String, Object>> createUserWithImageAndDetailss(
-			@RequestParam("accountID") String accountID, @RequestParam("password") String password,
+	public ResponseEntity<Map<String, Object>> updateUserWithImageAndDetails(
+			@PathVariable("accountId") String accountID, @RequestParam("password") String password,
 			@RequestParam("hovaten") String hovaten, @RequestParam("so_dien_thoai") String soDienThoai,
-			
 			@RequestParam("vai_tro") String vaiTro, @RequestParam("dia_chi") String diaChi,
-			@RequestParam(value = "trang_thai_xoa",required = false) String trang_thai_xoa,
-			@RequestParam(value = "hoat_dong",required = false) String hoat_dong,
+			@RequestParam(value = "hoat_dong", required = false) String hoatDong,
 			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhAnh)
-	
 			throws IllegalStateException, IOException {
-		Map<String, Object> response = new HashMap<>();
-		
-		System.out.println("Role : " + vaiTro);
-		// Validate required fields
-		if (accountID == null || password == null || hovaten == null || soDienThoai == null || vaiTro == null
-				|| diaChi == null) {
-			response.put("message", "Tất cả các trường là bắt buộc!");
-			return ResponseEntity.badRequest().body(response); // 400 Bad Request
-		}
 
+		Map<String, Object> response = new HashMap<>();
+
+		// Validate required fields
 		// Create user entity
-		Users user = new Users();
-		user.setAccountID(accountID);
+
+		Users user = userRepository.findByAccountID(accountID);
+		String oldRole = user.getRoles().get(0).getTen_vai_tro();
+
 		user.setPassword(password);
 		user.setHovaten(hovaten);
 		user.setSo_dien_thoai(soDienThoai);
-		user.setTrang_thai_xoa(null);
-		user.setHoat_dong(hoat_dong);
-		System.out.println("Users : " + user);
+		user.setHoat_dong(hoatDong);
 
-		// Nếu có ảnh, lấy tên ảnh và lưu vào đối tượng Users
+		// Save image if present
 		if (hinhAnh != null && !hinhAnh.isEmpty()) {
-			// Lưu ảnh vào thư mục public/images (từ thư mục gốc của dự án)
-			String filePath = "C:\\Users\\DELL\\Downloads\\LoiFrontend\\public\\images" + hinhAnh.getOriginalFilename();
-			hinhAnh.transferTo(new File(filePath)); // Lưu ảnh vào server
-			user.setHinh_anh(hinhAnh.getOriginalFilename()); // Lưu tên file vào cơ sở dữ liệu
+			String filePath = "C:\\Users\\DELL\\Downloads\\LoiFrontend\\public\\images\\"
+					+ hinhAnh.getOriginalFilename();
+			hinhAnh.transferTo(new File(filePath)); // Save image to server
+			user.setHinh_anh(hinhAnh.getOriginalFilename()); // Save file name in database
 		}
-		// Create role and address entities
-		Roles role = new Roles();
-		role.setTen_vai_tro(vaiTro);
 
+		Roles role = new Roles();
+
+		System.out.println("role nef" + vaiTro);
+		System.out.println("accountID nef" + accountID);
+		Roles roles = vaitroRepository.findRoleByUserANDIdRole(accountID, oldRole);
+		roles.setTen_vai_tro(vaiTro);
+		roles.setUsers(user);
+
+		System.out.println("rol" + oldRole);
+		
 		DiaChi diaChiEntity = new DiaChi();
 		diaChiEntity.setDia_chi(diaChi);
 
 		// Attempt to save user details with service
 		try {
-			Users createdUser = usersService.createUserWithImageAndDetailss(user, role, diaChiEntity, hinhAnh);
-//			response.put("message", "Người dùng đã được tạo thành công!");
-//			response.put("user", createdUser); // Đảm bảo không tiết lộ mật khẩu
-			return new ResponseEntity<>(response, HttpStatus.CREATED); // 201 Created
+			Users updatedUser = usersService.createUserWithImageAndDetailss(user, roles, diaChiEntity, hinhAnh);
+			response.put("message", "Người dùng đã được cập nhật thành công!");
+			response.put("user", updatedUser); // Ensure password is not exposed
+			return new ResponseEntity<>(response, HttpStatus.OK); // 200 OK
 		} catch (IOException e) {
-			logger.error("Error while saving user", e);
-			response.put("message", "Không thể lưu người dùng!");
+			logger.error("Error while updating user", e);
+			response.put("message", "Không thể cập nhật người dùng!");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 Internal Server Error
 		}
 	}

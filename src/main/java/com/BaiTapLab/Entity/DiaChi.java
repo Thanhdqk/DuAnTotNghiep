@@ -48,7 +48,6 @@ public class DiaChi {
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	@JsonManagedReference
-	
 	public Users users;
 
 	public int getDia_chiID() {
@@ -106,6 +105,5 @@ public class DiaChi {
 	public void setUsers(Users users) {
 		this.users = users;
 	}
-	
 	
 }

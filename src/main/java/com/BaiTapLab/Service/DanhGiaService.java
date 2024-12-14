@@ -7,14 +7,15 @@ import com.BaiTapLab.Repository.DanhGiaRepository;
 
 @Service
 public class DanhGiaService {
-    @Autowired
-    private DanhGiaRepository danhGiaRepository;
+	@Autowired
+	private DanhGiaRepository danhGiaRepository;
 
-    public DanhGia saveReview(DanhGia danhGia) {
-        return danhGiaRepository.save(danhGia);
-    }
-//    public boolean checkReviewExists(String sanPhamId, String userId) {
-//        return danhGiaRepository.existsBySanPhamIdAndUserId(sanPhamId, userId);
-//    }
+	public DanhGia saveReview(DanhGia danhGia) {
+		return danhGiaRepository.save(danhGia);
+	}
+
+//	public boolean checkReviewExists(String sanPhamId, String accountId) {
+//		return danhGiaRepository.existsReviewBySanPhamAndAccount(sanPhamId, accountId);
+//	}
 
 }

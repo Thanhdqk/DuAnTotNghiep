@@ -3,6 +3,7 @@ package com.BaiTapLab.Controller;
 import java.io.IOException;
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,8 @@ import com.BaiTapLab.Repository.SanPhamRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Base64;
+import java.util.List;
+
 import com.BaiTapLab.Repository.DanhGiaRepository;
 
 @RestController
@@ -69,12 +72,15 @@ public class DanhGiaController {
 		}
 	}
 
-//	@GetMapping("/api/reviews/exist")
-//	public ResponseEntity<Boolean> checkReviewExists(@RequestParam String sanPhamId, @RequestParam String userId) {
-//		System.out.println("Checking review for Product ID: " + sanPhamId + " and User ID: " + userId);
-//		boolean exists = danhGiaRepository.existsBySanPhamIdAndUserId(sanPhamId, userId);
-//		System.out.println("Review exists: " + exists);
-//		return ResponseEntity.ok(exists);
-//	}
+	@GetMapping("/check/all")
+	public ResponseEntity<List<String>> getReviewedProducts(@RequestParam String userId) {
+		try {
+			// Tìm danh sách sản phẩm đã được đánh giá
+			List<String> reviewedProductIds = danhGiaRepository.findSanPhamIdsByUserId(userId);
+			return ResponseEntity.ok(reviewedProductIds);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
 
 }

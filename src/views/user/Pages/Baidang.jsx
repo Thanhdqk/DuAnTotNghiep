@@ -275,7 +275,11 @@ const Baidang = () => {
       formData.append("hinh_anh", file.originFileObj); // Sử dụng originFileObj để lấy file thực tế
     });
     try {
-      const response = await fetch("http://localhost:8080/baidang/add", {
+      // const response = await fetch("http://localhost:8080/baidang/add", {
+      //   method: "POST",
+      //   body: formData,
+      // });
+      const response = await fetch("https://thanhnehihi.as.r.appspot.com/baidang/add", {
         method: "POST",
         body: formData,
       });
@@ -532,7 +536,8 @@ const Baidang = () => {
       key: "hinh_anh",
       render: (text) => (
         <img
-          src={`http://localhost:8080/uploads/${text}`}
+          //src={`http://localhost:8080/uploads/${text}`}
+          src = {text}
           alt="Thương hiệu"
           style={{ width: 50, height: 50 }}
         />
@@ -715,7 +720,8 @@ const Baidang = () => {
       key: "hinh_anh",
       render: (text) => (
         <img
-          src={`http://localhost:8080/uploads/${text}`}
+          //src={`http://localhost:8080/uploads/${text}`}
+          src = {text}
           alt="Thương hiệu"
           style={{ width: 50, height: 50 }}
         />

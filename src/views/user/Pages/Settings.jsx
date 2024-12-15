@@ -19,32 +19,42 @@ const Settings = () => {
 
   // Lấy dữ liệu settings từ backend
   useEffect(() => {
-    axios.get("http://localhost:8080/loadSettings")
-        .then((response) => {
-            if (response.data.length > 0) {
-                const setting = response.data[0];
-                setSettingid(setting.settingid); // Gán ID cho cập nhật (đổi settingsID thành settingid)
-                setFormData({
-                    ten_cua_hang: setting.ten_cua_hang,
-                    so_dien_thoai: setting.so_dien_thoai,
-                    dia_chi_cua_hang: setting.dia_chi_cua_hang,
-                    accountID: setting.users?.accountID || "",
-                    faviicon: setting.faviicon,
-                    logo: setting.logo,
-                });
-                // Kiểm tra URL của logo và faviicon
-                console.log('Faviicon URL:', `http://localhost:8080/uploads/images/${setting.faviicon}`);
-                console.log('Logo URL:', `http://localhost:8080/uploads/images/${setting.logo}`);
-                setPreviewFaviicon(`http://localhost:8080/uploads/images/${setting.faviicon}`);
-                setPreviewLogo(`http://localhost:8080/uploads/images/${setting.logo}`);
-            }
-        })
-        .catch((error) => {
-            console.error("Lỗi khi tải settings:", error);
-        });
-        const accountID = JSON.parse(localStorage.getItem("accountID"));
-        setFormData({ ...formData, accountID: accountID });
-}, []);
+    // Lấy accountID từ localStorage
+    const accountID = JSON.parse(localStorage.getItem("accountID"));
+  
+    // Kiểm tra nếu accountID có tồn tại
+    if (accountID) {
+      setFormData((prevData) => ({
+        ...prevData,
+        accountID: accountID,
+      }));
+    }
+  
+    // Gọi API để lấy dữ liệu settings từ backend
+    axios
+      .get("http://localhost:8080/loadSettings")
+      .then((response) => {
+        if (response.data.length > 0) {
+          const setting = response.data[0];
+          setSettingid(setting.settingid); // Gán ID cho cập nhật
+          setFormData((prevData) => ({
+            ...prevData,
+            ten_cua_hang: setting.ten_cua_hang,
+            so_dien_thoai: setting.so_dien_thoai,
+            dia_chi_cua_hang: setting.dia_chi_cua_hang,
+            faviicon: setting.faviicon,
+            logo: setting.logo,
+          }));
+          // Hiển thị xem trước ảnh nếu có
+          setPreviewFaviicon(`http://localhost:8080/uploads/images/${setting.faviicon}`);
+          setPreviewLogo(`http://localhost:8080/uploads/images/${setting.logo}`);
+        }
+      })
+      .catch((error) => {
+        console.error("Lỗi khi tải settings:", error);
+      });
+  }, []);
+  
 
   // Xử lý khi thay đổi dữ liệu form
   const handleChange = (e) => {

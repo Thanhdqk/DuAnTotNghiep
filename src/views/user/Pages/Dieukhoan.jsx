@@ -45,6 +45,17 @@ const Dieukhoan = () => {
                      Chúng tôi cũng có quyền từ chối hoặc hủy bỏ bất kỳ đơn hàng nào dù đơn hàng đó đã hay chưa được xác nhận hoặc đã bị thanh toán.
                 </li>
         </ul>
+        <h5 >IV. Điều khoản vi phạm</h5>
+        <ul>
+          <li className='text-danger fw-bold' style={{fontSize:'20px'}}>Khi đơn hàng đã được xác nhận thì không thể hoàn trả lại tiền và sau đó không nhận bất kì khiếu nại nào</li>
+          <li className='text-danger fw-bold' style={{fontSize:'20px'}}>Nếu không nhận hàng vượt quá 3 lần thì trong các đơn hàng tiếp theo chỉ được thanh toán qua thẻ</li>
+          <li className='text-danger fw-bold' style={{fontSize:'20px'}}>Nếu nhận mail cảnh cáo 3 lần thì tài khoản sẽ bị khóa và không thể khôi phục</li>
+        </ul>
+        <h5>V. Ưu đãi</h5>
+        <ul>
+          <li>Nếu khách hàng thanh toán qua thẻ VNPay thì sẽ được giảm 5% hóa đơn hiện tại</li>
+          
+        </ul>
             <div className="d-flex justify-content-center">
                 <button className="btn btn-primary mb-3">Đồng ý và tiếp tục</button>
             </div>

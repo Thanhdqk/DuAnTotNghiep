@@ -30,9 +30,14 @@ import com.BaiTapLab.Repository.BaiDangRepository;
 import com.BaiTapLab.Repository.HanhDongRepository;
 import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.BaiDangService;
+import com.google.cloud.storage.Acl;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 
 @RestController
-@CrossOrigin("*")
 public class BaiDangRestController {
 	@Autowired
 	BaiDangService baidangService;
@@ -46,6 +51,7 @@ public class BaiDangRestController {
 	@Autowired
 	HanhDongRepository HanhDongRepository;
 	
+	private static final String BUCKET_NAME = "staging.thanhnehihi.appspot.com";
 	@GetMapping("/loadBaiDang")
     public ResponseEntity<List<BaiDang>> getBaiDang(){
 		List<BaiDang> listBaiDang = baidangRepository.findAll();
@@ -105,6 +111,73 @@ public class BaiDangRestController {
 	    return baidang.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 	}
     
+//    @PostMapping("/baidang/add")
+//	public ResponseEntity<?> addBaiDang(
+//	        @RequestParam("bai_dangID") String bai_dangID,
+//	        @RequestParam(value = "hinh_anh", required = false) MultipartFile[] hinh_anh,
+//	        @RequestParam("tieu_de_phu") String tieu_de_phu,
+//	        @RequestParam("tieu_de_chinh") String tieu_de_chinh,
+//	        @RequestParam("noi_dung") String noi_dung,
+//	        @RequestParam("ngay_tao") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngay_tao,
+//	        @RequestParam("hoat_dong") String hoat_dong,
+//    		@RequestParam("accountID") String accountID){
+//    	
+//    		HanhDong hd = new HanhDong();
+//    	
+//	    try {
+//	    	
+//	        // Tạo đối tượng BaiDang từ các tham số
+//	        BaiDang baidang = new BaiDang();
+//	        baidang.setBai_dangID(bai_dangID);
+//	        baidang.setTieu_de_phu(tieu_de_phu);
+//	        baidang.setTieu_de_chinh(tieu_de_chinh);
+//	        baidang.setNoi_dung(noi_dung);
+//	        baidang.setNgay_tao(ngay_tao);
+//	        baidang.setHoat_dong(hoat_dong);
+//	        baidang.setUsers(userRepository.findByAccountID(accountID));
+//	        // Xử lý file ảnh nếu được upload
+//	        if (hinh_anh != null && hinh_anh.length > 0) {
+//	            String tenHinhAnh = hinh_anh[0].getOriginalFilename();
+//	            String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
+//
+//	            // Tạo thư mục nếu chưa tồn tại
+//	            File hinhFile = new File(uploadDir + tenHinhAnh);
+//	            if (!hinhFile.getParentFile().exists()) {
+//	                hinhFile.getParentFile().mkdirs();
+//	            }
+//
+//	            // Lưu file ảnh vào thư mục
+//	            hinh_anh[0].transferTo(hinhFile);
+//
+//	            // Tạo URL để truy cập ảnh và lưu vào đối tượng BaiDang
+//	            String imageUrl = "http://localhost:8080/images/" + tenHinhAnh;
+//	            baidang.setHinh_anh(tenHinhAnh);
+//	           
+//	        }
+//	        
+//	        
+//	        // Lưu baidang vào DB qua service
+//	        BaiDang savedBaiDang = baidangService.createBaiDang(baidang);
+//	        hd.setBaidang(baidang);
+//            hd.setTen_hanh_dong("Thêm");
+////            Thêm ngày hành động
+//           hd.setNgay_hanh_dong(LocalDate.now());
+//            HanhDongRepository.save(hd);
+//	        // Trả về thông tin baidang đã lưu
+//	        return ResponseEntity.ok(savedBaiDang);
+//
+//	    } catch (IOException e) {
+//	        System.out.println(e);
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//	                .body("Lỗi khi lưu file: " + e.getMessage());
+//	    } catch (Exception e) {
+//	        // Xử lý lỗi chung
+//	    	System.out.println(e);
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//	                .body("Lỗi khi tạo bài đăng: " + e.getMessage());
+//	    }
+//	}
+    
     @PostMapping("/baidang/add")
 	public ResponseEntity<?> addBaiDang(
 	        @RequestParam("bai_dangID") String bai_dangID,
@@ -131,22 +204,11 @@ public class BaiDangRestController {
 	        baidang.setUsers(userRepository.findByAccountID(accountID));
 	        // Xử lý file ảnh nếu được upload
 	        if (hinh_anh != null && hinh_anh.length > 0) {
-	            String tenHinhAnh = hinh_anh[0].getOriginalFilename();
-	            String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
+	            String originalFileName = hinh_anh[0].getOriginalFilename();
 
-	            // Tạo thư mục nếu chưa tồn tại
-	            File hinhFile = new File(uploadDir + tenHinhAnh);
-	            if (!hinhFile.getParentFile().exists()) {
-	                hinhFile.getParentFile().mkdirs();
-	            }
+	            String imageUrl = uploadFileToGCS(hinh_anh[0], originalFileName);
 
-	            // Lưu file ảnh vào thư mục
-	            hinh_anh[0].transferTo(hinhFile);
-
-	            // Tạo URL để truy cập ảnh và lưu vào đối tượng BaiDang
-	            String imageUrl = "http://localhost:8080/images/" + tenHinhAnh;
-	            baidang.setHinh_anh(tenHinhAnh);
-	           
+	            baidang.setHinh_anh(imageUrl);
 	        }
 	        
 	        
@@ -172,6 +234,28 @@ public class BaiDangRestController {
 	    }
 	}
     
+    private String uploadFileToGCS(MultipartFile file, String fileName) throws IOException {
+        // 1. Xác thực với Google Cloud
+        Storage storage = StorageOptions.newBuilder()
+                .setProjectId("thanhnehihi") // Project ID
+                .setCredentials(StorageOptions.getDefaultInstance().getCredentials())
+                .build()
+                .getService();
+
+        // 2. Tạo thông tin Blob
+        BlobId blobId = BlobId.of(BUCKET_NAME, fileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+
+        // 3. Tải file lên bucket
+        Blob blob = storage.create(blobInfo, file.getBytes());
+
+        // 4. Cấp quyền công khai cho file (allUsers có thể đọc)
+        Acl acl = Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER); 
+        storage.createAcl(blobId, acl); // Thêm quyền đọc cho tất cả người dùng
+
+        // 5. Tạo URL công khai
+        return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, fileName);
+    }
     @PutMapping("/baidang/update/{bai_dangID}")
 	public ResponseEntity<?> updateBaiDang(
 	        @PathVariable String bai_dangID,
@@ -197,24 +281,15 @@ public class BaiDangRestController {
 	        baidang.setHoat_dong(hoat_dong);
 	        baidang.setUsers(userRepository.findByAccountID(accountID));
 
-	        // Xử lý file ảnh nếu được upload
+	     // Xử lý file ảnh nếu được upload
 	        if (hinh_anh != null && hinh_anh.length > 0) {
-	            String tenHinhAnh = hinh_anh[0].getOriginalFilename();
-	            String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
+	            String originalFileName = hinh_anh[0].getOriginalFilename();
 
-	            // Tạo thư mục nếu chưa tồn tại
-	            File hinhFile = new File(uploadDir + tenHinhAnh);
-	            if (!hinhFile.getParentFile().exists()) {
-	                hinhFile.getParentFile().mkdirs();
-	            }
+	            String imageUrl = uploadFileToGCS(hinh_anh[0], originalFileName);
 
-	            // Lưu file ảnh vào thư mục
-	            hinh_anh[0].transferTo(hinhFile);
-
-	            // Tạo URL để truy cập ảnh và lưu vào đối tượng Voucher
-	            String imageUrl = "http://localhost:8080/images/" + tenHinhAnh;
-	            baidang.setHinh_anh(tenHinhAnh);
+	            baidang.setHinh_anh(imageUrl);
 	        }
+	        
 
 	        // Lưu baidang vào DB qua service
 	        

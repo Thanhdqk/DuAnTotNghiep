@@ -21,7 +21,6 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.ServletContext;
 
 @RestController
-@CrossOrigin("*")
 public class ForgotPasswordRestController {
 
     @Autowired

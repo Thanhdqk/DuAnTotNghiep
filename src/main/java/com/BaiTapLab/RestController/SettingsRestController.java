@@ -24,7 +24,6 @@ import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.SettingService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 public class SettingsRestController {
 	@Autowired
 	SettingService settingService;

@@ -10,7 +10,6 @@ import com.BaiTapLab.Entity.Voucher;
 import com.BaiTapLab.Service.VoucherService;
 
 @RestController
-@CrossOrigin("*")
 public class VoucherRestController {
     @Autowired 
     private VoucherService voucherService;

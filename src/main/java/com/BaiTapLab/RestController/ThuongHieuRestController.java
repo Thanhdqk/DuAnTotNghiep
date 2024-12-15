@@ -36,7 +36,6 @@ import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.ThuongHieuService;
 
 @RestController
-@CrossOrigin("*")
 public class ThuongHieuRestController {
     @Autowired
     ThuongHieuService thuonghieuService;

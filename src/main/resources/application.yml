@@ -6,6 +6,7 @@ server:
 spring:
   datasource:
     url: jdbc:sqlserver://localhost;databaseName=DuAnTotNghiep5;encrypt=true;trustServerCertificate=true;
+   # url: jdbc:sqlserver://34.124.177.222:1433;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;
     username: sa
     password: 123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver

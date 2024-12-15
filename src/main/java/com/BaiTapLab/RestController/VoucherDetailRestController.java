@@ -19,7 +19,6 @@ import com.BaiTapLab.Service.VoucherDetailService;
 import com.BaiTapLab.Service.VoucherService;
 
 @RestController
-@CrossOrigin("*")
 public class VoucherDetailRestController {
 	@Autowired 
 	private VoucherDetailService voucherDetailService;

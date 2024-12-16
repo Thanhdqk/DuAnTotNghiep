@@ -26,9 +26,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.Entity.DonHang;
 import com.BaiTapLab.Entity.SanPham;
+import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.DonHangRepository;
+import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.DonHangService;
 import com.BaiTapLab.Service.MailServiceThanh;
+import com.BaiTapLab.Service.UsersService;
 
 @RestController
 @RequestMapping("/api")
@@ -39,6 +42,12 @@ public class DonHangRestController {
 	
 	@Autowired
 	DonHangRepository donhangRepository;
+	
+	@Autowired
+	UsersRepository usersRepository;
+	
+	@Autowired
+	UsersService usersService;
 	
 	@Autowired
     private MailServiceThanh mailService;
@@ -245,6 +254,32 @@ public class DonHangRestController {
 		return ResponseEntity.ok(listDonHangDaNhan);
 	}
 	
+	@GetMapping("/list/donHangDaGiao")
+	public ResponseEntity<List<Object[]>> listDonDaGiao(
+			@RequestParam("shipperid") String shipperid){
+		List<Object[]> listDonHangDaNhan = donhangRepository.findDaGiaoByShipperID(shipperid, "Đã hoàn thành đơn");
+		return ResponseEntity.ok(listDonHangDaNhan);
+	}
+	
+	@GetMapping("/list/count/donHangChuaNhan")
+	public ResponseEntity<Integer> listCountDonChuaNhan(){
+		int listDonHangDaNhan = donhangRepository.soLuongHangChuaNhan();
+		return ResponseEntity.ok(listDonHangDaNhan);
+	}
+	
+	@GetMapping("/list/count/donHangDaNhan")
+	public ResponseEntity<Integer> listCountDonDaNhan(@RequestParam("shipperid") String shipperid){
+		int listDonHangDaNhan = donhangRepository.soLuongHangDaNhan(shipperid);
+		return ResponseEntity.ok(listDonHangDaNhan);
+	}
+	
+	@GetMapping("/list/count/donHangDaGiao")
+	public ResponseEntity<Integer> listCountDonDaGiao(@RequestParam("shipperid") String shipperid){
+		int listDonHangDaNhan = donhangRepository.soLuongHangDaGiao(shipperid);
+		return ResponseEntity.ok(listDonHangDaNhan);
+	}
+	
+	
 	@GetMapping("/detail/donhang/{donhangid}")
 	public ResponseEntity<List<Object[]>> getDonHangDetails(@PathVariable String donhangid) {
 		//System.out.println("Ma don hang nhan duoc tu request: " + donhangid);
@@ -307,13 +342,49 @@ public class DonHangRestController {
 	}
 
 	
-	@PutMapping("/update/shipper/huydonhang")
+	@PutMapping("/update/shipper/huydonhang/tructiep")
+	public ResponseEntity<String> updateHuyDonHang(
+	        @RequestParam("don_hangid") String don_hangid,
+	        @RequestParam("ly_do") String ly_do,
+	        @RequestParam("accountID") String accountID) {
+		System.out.println("DonHangID: " + don_hangid + ", Lý do: " + ly_do);
+		
+	    try {
+	        int rowsUpdated = donhangRepository.updateDonHangBiHuyShipper("Đã hủy", "Khách không nhận đơn", ly_do, don_hangid);
+	        System.out.println("DonHangID: " + don_hangid);
+	        Users users = usersService.findByAccountID(accountID);
+	        if (users != null) {
+	            // Kiểm tra giá trị vi_pham
+	            Integer viPhamHienTai = users.getVi_pham();
+	            if (viPhamHienTai == null) {
+	                users.setVi_pham(1); // Nếu chưa có, gán bằng 1
+	            } else {
+	                users.setVi_pham(viPhamHienTai + 1); // Nếu đã có, tăng thêm 1
+	            }
+	            usersRepository.save(users); // Lưu cập nhật vào cơ sở dữ liệu
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Không tìm thấy người dùng với ID: " + accountID);
+	        }
+	        if (rowsUpdated > 0) {
+	            return ResponseEntity.ok("Cập nhật trạng thái đơn hàng thành công!");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Không tìm thấy đơn hàng với ID: " + don_hangid);
+	        }
+	    } catch (Exception ex) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Lỗi khi cập nhật đơn hàng: " + ex.getMessage());
+	    }
+	}
+	
+	@PutMapping("/update/shipper/huydonhang/tructuyen")
 	public ResponseEntity<String> updateHuyDonHang(
 	        @RequestParam("don_hangid") String don_hangid,
 	        @RequestParam("ly_do") String ly_do) {
 		System.out.println("DonHangID: " + don_hangid + ", Lý do: " + ly_do);
+		
 	    try {
-	        // Gọi phương thức cập nhật từ repository
 	        int rowsUpdated = donhangRepository.updateDonHangBiHuyShipper("Đã hủy", "Khách không nhận đơn", ly_do, don_hangid);
 	        System.out.println("DonHangID: " + don_hangid);
 	        if (rowsUpdated > 0) {

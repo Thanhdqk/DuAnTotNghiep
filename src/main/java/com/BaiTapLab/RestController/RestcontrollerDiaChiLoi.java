@@ -1,0 +1,58 @@
+
+package com.BaiTapLab.RestController;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.BaiTapLab.Entity.DiaChi;
+import com.BaiTapLab.Entity.Users;
+import com.BaiTapLab.Repository.UsersRepository;
+import com.BaiTapLab.Service.DiaChiServiceLoi;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+public class RestcontrollerDiaChiLoi {
+
+	@Autowired
+	DiaChiServiceLoi DiaChiService;
+
+	@Autowired
+	UsersRepository UsersRepository;
+
+	@GetMapping("FindDiaChiByID")
+	public List<DiaChi> FindDiaChiByID(@RequestParam("id") String id) {
+
+		return DiaChiService.FindDiaChiByID(id);
+	}
+
+	@PostMapping("DiaChi/Add")
+	public DiaChi addAddress(@RequestParam String name, @RequestParam String phone, @RequestParam String address,
+			@RequestParam String iduser, @RequestParam String district, @RequestParam String ward) {
+		Users user = UsersRepository.findByAccountID(iduser);
+		DiaChi diachi = new DiaChi();
+		diachi.setDia_chi(address);
+		diachi.setQuan(district);
+		diachi.setPhuong(ward);
+		diachi.setThanh_pho("202");
+		diachi.setUsers(user);
+		return DiaChiService.AddDiaChi(diachi);
+	}
+	
+	@GetMapping("FindUserByid")
+	public Users getMethodName(@RequestParam String id) {
+		return UsersRepository.findByAccountID(id);
+	}
+
+	@DeleteMapping("DiaChi/Delete/{id}")
+	public void DeleteDiaChi(@PathVariable("id") String id) {
+		DiaChiService.Delete_DiaChi(id);
+	}
+}

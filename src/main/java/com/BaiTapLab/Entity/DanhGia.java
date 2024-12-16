@@ -3,7 +3,9 @@ package com.BaiTapLab.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -41,7 +43,8 @@ public class DanhGia {
 	public String trang_thaiPH;
 	
 	@OneToMany(mappedBy = "danhgia", cascade = CascadeType.ALL)
-    @JsonIgnore
+    //@JsonIgnore
+	@JsonManagedReference
     private List<PhanHoiDanhGia> phanhoidanhgia;
 	
 	@ManyToOne
@@ -49,6 +52,7 @@ public class DanhGia {
 	public Users users;
 	
 	@ManyToOne
+	@JsonBackReference
 	@JoinColumn(name = "san_phamId")
 	public SanPham sanpham;
 }

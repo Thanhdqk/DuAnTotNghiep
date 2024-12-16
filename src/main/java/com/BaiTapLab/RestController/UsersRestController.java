@@ -2,6 +2,7 @@ package com.BaiTapLab.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.Entity.DiaChi;
+import com.BaiTapLab.Entity.HanhDong;
 import com.BaiTapLab.Entity.Roles;
+import com.BaiTapLab.Entity.SanPham;
 import com.BaiTapLab.Entity.Shipper;
 import com.BaiTapLab.Entity.Users;
+import com.BaiTapLab.Repository.DiaChiRepository;
 import com.BaiTapLab.Repository.ShipperRepository;
 import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Security.JwtUtil;
@@ -50,6 +54,9 @@ public class UsersRestController {
 	@Autowired
     private JwtUtil jwtUtil;
 	
+	@Autowired
+	DiaChiRepository diaChiRepository;
+	
 	@PostMapping("/login/mobile")
 	public ResponseEntity<Map<String, Object>> loginMobile(@RequestBody Map<String, String> loginRequest) {
 		 System.out.println("Login Request: " + loginRequest);
@@ -61,7 +68,7 @@ public class UsersRestController {
 	    try {
 	        Optional<Shipper> user = shipperRepository.findByShipperIDAndPassword(shipperid, password);
 	        if (user.isPresent()) {
-	            String token = jwtUtil.generateToken(user.get().getShipperID());
+	            String token = jwtUtil.generateTokenShipper(user.get().getShipperID());
 	            response.put("message", "Đăng nhập thành công!");
 	            response.put("token", token);
 	            response.put("shipperid", user.get().shipperID);
@@ -101,14 +108,31 @@ public class UsersRestController {
 	    Map<String, Object> response = new HashMap<>();
 	    try {
 	        Optional<Users> user = usersRepository.findByAccountIDAndPassword(accountID, password);
+	        if ("Off".equalsIgnoreCase(user.get().getHoat_dong())) {
+                response.put("message", "Tài khoản của bạn hiện đang bị khóa.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
 
-	        if (user.isPresent()) {
-	            String token = jwtUtil.generateToken(user.get().getAccountID());
+            // Kiểm tra vai trò
+            List<String> roles = user.get().getRoles().stream()
+                                     .map(Roles::getTen_vai_tro)
+                                     .collect(Collectors.toList());
+            if (roles.contains("User")) {
+                response.put("message", "Tài khoản của bạn không đủ quyền hạn.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+	        if (user.isPresent() && !user.get().getRoles().stream()
+            		.map(Roles::getTen_vai_tro)
+            		.collect(Collectors.toList()).equals("User") && user.get().getHoat_dong().equals("On")) {
+	            String token = jwtUtil.generateTokenDashboard(user.get().getAccountID(), user.get().getRoles().stream()
+	            		.map(Roles::getTen_vai_tro)
+	            		.collect(Collectors.toList()));
 	            response.put("message", "Đăng nhập thành công!");
 	            response.put("token", token);
 	            response.put("accountID", user.get().accountID);
 	            response.put("hinhAnh", user.get().getHinh_anh());
 	            response.put("hovaten", user.get().getHovaten());
+	            response.put("sodienthoai", user.get().getSo_dien_thoai());
 	            response.put("roles", user.get().getRoles().stream()
 	                .map(Roles::getTen_vai_tro)
 	                .collect(Collectors.toList()));
@@ -118,145 +142,204 @@ public class UsersRestController {
 	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	        }
 	    } catch (Exception e) {
-	        response.put("message", "Lỗi hệ thống: " + e.getMessage());
+	        response.put("message", "Sai tài khoản hoặc mật khẩu!");
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
 	}
 
+	@PutMapping("/update/thongTinCaNhan/{accountID}")
+	public ResponseEntity<?> updateThongTinCaNhan(
+			@PathVariable String accountID,
+			@RequestParam("hovaten") String hovaten,
+			@RequestParam("sodienthoai") String sodienthoai,
+			@RequestParam(value = "hinhAnh", required = false) MultipartFile[] hinhAnh,
+			@RequestParam("dia_chi") String dia_chi) throws IllegalStateException, IOException{
+		Users users = usersRepository.findByAccountID(accountID);
+		users.setHovaten(hovaten);
+		users.setSo_dien_thoai(sodienthoai);
+		
+	    if (hinhAnh != null && hinhAnh.length > 0) {
+		    String tenHinhAnh = hinhAnh[0].getOriginalFilename();
+		    String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
+		
+		    // Tạo thư mục nếu chưa tồn tại
+		    File hinhFile = new File(uploadDir + tenHinhAnh);
+		    if (!hinhFile.getParentFile().exists()) {
+		        hinhFile.getParentFile().mkdirs();
+		    }
+		
+		    // Lưu file ảnh vào thư mục
+		    hinhAnh[0].transferTo(hinhFile);
+		
+		    // Tạo URL để truy cập ảnh và lưu vào đối tượng Voucher
+		    String imageUrl = "http://localhost:8080/images/" + tenHinhAnh;
+		    users.setHinh_anh(tenHinhAnh);
+	    }
+	    DiaChi diachi = (DiaChi) diaChiRepository.lietKeDiaChiTheoAccountID(accountID);
+	    if (diachi == null) {
+	        // Tạo mới bản ghi nếu chưa tồn tại
+	        diachi = new DiaChi();
+	        diachi.setUsers(users);
+	    }
+
+	    // Cập nhật địa chỉ
+	    diachi.setDia_chi(dia_chi);
+	    diaChiRepository.save(diachi);
+	    usersRepository.save(users);
+		return ResponseEntity.ok(users);
+}
 	
-	
-	@PostMapping("/add/users")
-	public ResponseEntity<Map<String, Object>> createUserWithImageAndDetails(
-			@RequestParam("accountID") String accountID, @RequestParam("password") String password,
-			@RequestParam("hovaten") String hovaten, @RequestParam("so_dien_thoai") String so_dien_thoai,
-			@RequestParam("ten_vai_tro") String ten_vai_tro, @RequestParam("dia_chi") String dia_chi,
-			@RequestParam("hoat_dong") String hoat_dong,
-			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinh_anh) throws IllegalStateException, IOException {
-		Map<String, Object> response = new HashMap<>();
-
-		// Validate required fields
-		if (accountID == null || password == null || hovaten == null || so_dien_thoai == null || ten_vai_tro == null
-				|| dia_chi == null) {
-			response.put("message", "Tất cả các trường là bắt buộc!");
-			return ResponseEntity.badRequest().body(response); // 400 Bad Request
-		}
-
-		 if (usersService.existsByAccountID(accountID)) { // Phương thức existsByAccountID phải được định nghĩa trong usersService
-		        response.put("message", "Tài khoản đã tồn tại, không thể thêm mới!");
-		        return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // 409 Conflict
-		 }
-		// Create user entity
-		Users user = new Users();
-		user.setAccountID(accountID);
-		user.setPassword(password);
-		user.setHovaten(hovaten);
-		user.setHoat_dong(hoat_dong);
-		user.setSo_dien_thoai(so_dien_thoai);
-
-		// Create role and address entities
-		Roles role = new Roles();
-		role.setTen_vai_tro(ten_vai_tro);
-
-		DiaChi diaChiEntity = new DiaChi();
-		diaChiEntity.setDia_chi(dia_chi);
-
-		if (hinh_anh != null) {
-            String tenHinhAnh = hinh_anh.getOriginalFilename();
-            String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
-
-            // Tạo thư mục nếu chưa tồn tại
-            File hinhFile = new File(uploadDir + tenHinhAnh);
-            if (!hinhFile.getParentFile().exists()) {
-                hinhFile.getParentFile().mkdirs();
-            }
-
-            // Lưu file ảnh vào thư mục
-            hinh_anh.transferTo(hinhFile);
-
-            // Tạo URL để truy cập ảnh và lưu vào đối tượng Voucher
-            String imageUrl = "http://localhost:8080/images/" + tenHinhAnh;
-            user.setHinh_anh(tenHinhAnh);
+	@GetMapping("/lietKe/thongTinCaNhan/theoId/{accountID}")
+	public ResponseEntity<List<Map<String, Object>>> getThongTinCaNhanTheoId(
+			@PathVariable String accountID) {
+	    // Lấy tất cả sản phẩm từ cơ sở dữ liệu
+	    List<Object[]> listThongTin = usersRepository.lietKeThongTinTheoId(accountID);
+	    List<Map<String, Object>> result = new ArrayList<>();
+		for (Object[] obj : listThongTin) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("accountID", obj[0]);
+            map.put("hovaten", obj[1]);
+            map.put("sodienthoai", obj[2]);
+            map.put("vaitro", obj[3]);
+            map.put("hinhAnh", obj[4]);
+            map.put("dia_chi", obj[5]);
+            result.add(map);
         }
-		// Attempt to save user details with service
-		try {
-			Users createdUser = usersService.createUserWithImageAndDetails(user, role, diaChiEntity, hinh_anh);
-			response.put("message", "Người dùng đã được tạo thành công!");
-			response.put("user", createdUser); // Đảm bảo không tiết lộ mật khẩu
-			return new ResponseEntity<>(response, HttpStatus.CREATED); // 201 Created
-		} catch (IOException e) {
-			response.put("message", "Không thể lưu người dùng!");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 Internal Server Error
-		}
+	    return ResponseEntity.ok(result);
 	}
 	
-	@PutMapping("/update/users/{accountID}")
-	public ResponseEntity<Map<String, Object>> update2(
-			@RequestParam("accountID") String accountID, @RequestParam("password") String password,
-			@RequestParam("hovaten") String hovaten, @RequestParam("so_dien_thoai") String so_dien_thoai,
-			@RequestParam("ten_vai_tro") String ten_vai_tro, @RequestParam("dia_chi") String dia_chi,
-			@RequestParam("hoat_dong") String hoat_dong,
-			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinh_anh) throws IllegalStateException, IOException {
-		Map<String, Object> response = new HashMap<>();
-
-		// Validate required fields
-		if (accountID == null || password == null || hovaten == null || so_dien_thoai == null || ten_vai_tro == null
-				|| dia_chi == null) {
-			response.put("message", "Tất cả các trường là bắt buộc!");
-			return ResponseEntity.badRequest().body(response); // 400 Bad Request
-		}
-
-		// Create user entity
-		Users user = new Users();
-		user.setAccountID(accountID);
-		user.setPassword(password);
-		user.setHovaten(hovaten);
-		user.setHoat_dong(hoat_dong);
-		user.setSo_dien_thoai(so_dien_thoai);
-
-		// Create role and address entities
-		Roles role = new Roles();
-		role.setTen_vai_tro(ten_vai_tro);
-
-		DiaChi diaChiEntity = new DiaChi();
-		diaChiEntity.setDia_chi(dia_chi);
-
-		if (hinh_anh != null) {
-            String tenHinhAnh = hinh_anh.getOriginalFilename();
-            String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
-
-            // Tạo thư mục nếu chưa tồn tại
-            File hinhFile = new File(uploadDir + tenHinhAnh);
-            if (!hinhFile.getParentFile().exists()) {
-                hinhFile.getParentFile().mkdirs();
-            }
-
-            // Lưu file ảnh vào thư mục
-            hinh_anh.transferTo(hinhFile);
-
-            // Tạo URL để truy cập ảnh và lưu vào đối tượng Voucher
-            String imageUrl = "http://localhost:8080/images/" + tenHinhAnh;
-            user.setHinh_anh(tenHinhAnh);
-        }
-		// Attempt to save user details with service
-		try {
-			Users createdUser = usersService.createUserWithImageAndDetails(user, role, diaChiEntity, hinh_anh);
-			response.put("message", "Người dùng đã được tạo thành công!");
-			response.put("user", createdUser); // Đảm bảo không tiết lộ mật khẩu
-			return new ResponseEntity<>(response, HttpStatus.CREATED); // 201 Created
-		} catch (IOException e) {
-			response.put("message", "Không thể lưu người dùng!");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 Internal Server Error
-		}
-	}
-	
-	@DeleteMapping("/delete/users/{accountID}")
-	public ResponseEntity<Void> deleteUser(@PathVariable String accountID) {
-		if (!usersRepository.existsById(accountID)) {
-			return ResponseEntity.notFound().build();
-		}
-		usersRepository.deleteById(accountID);
-		return ResponseEntity.noContent().build();
-	}
+//	@PostMapping("/add/users")
+//	public ResponseEntity<Map<String, Object>> createUserWithImageAndDetails(
+//			@RequestParam("accountID") String accountID, @RequestParam("password") String password,
+//			@RequestParam("hovaten") String hovaten, @RequestParam("so_dien_thoai") String so_dien_thoai,
+//			@RequestParam("ten_vai_tro") String ten_vai_tro, @RequestParam("dia_chi") String dia_chi,
+//			@RequestParam("hoat_dong") String hoat_dong,
+//			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinh_anh) throws IllegalStateException, IOException {
+//		Map<String, Object> response = new HashMap<>();
+//
+//		// Validate required fields
+//		if (accountID == null || password == null || hovaten == null || so_dien_thoai == null || ten_vai_tro == null
+//				|| dia_chi == null) {
+//			response.put("message", "Tất cả các trường là bắt buộc!");
+//			return ResponseEntity.badRequest().body(response); // 400 Bad Request
+//		}
+//
+//		 if (usersService.existsByAccountID(accountID)) { // Phương thức existsByAccountID phải được định nghĩa trong usersService
+//		        response.put("message", "Tài khoản đã tồn tại, không thể thêm mới!");
+//		        return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // 409 Conflict
+//		 }
+//		// Create user entity
+//		Users user = new Users();
+//		user.setAccountID(accountID);
+//		user.setPassword(password);
+//		user.setHovaten(hovaten);
+//		user.setHoat_dong(hoat_dong);
+//		user.setSo_dien_thoai(so_dien_thoai);
+//
+//		// Create role and address entities
+//		Roles role = new Roles();
+//		role.setTen_vai_tro(ten_vai_tro);
+//
+//		DiaChi diaChiEntity = new DiaChi();
+//		diaChiEntity.setDia_chi(dia_chi);
+//
+//		if (hinh_anh != null) {
+//            String tenHinhAnh = hinh_anh.getOriginalFilename();
+//            String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
+//
+//            // Tạo thư mục nếu chưa tồn tại
+//            File hinhFile = new File(uploadDir + tenHinhAnh);
+//            if (!hinhFile.getParentFile().exists()) {
+//                hinhFile.getParentFile().mkdirs();
+//            }
+//
+//            // Lưu file ảnh vào thư mục
+//            hinh_anh.transferTo(hinhFile);
+//
+//            // Tạo URL để truy cập ảnh và lưu vào đối tượng Voucher
+//            String imageUrl = "http://localhost:8080/images/" + tenHinhAnh;
+//            user.setHinh_anh(tenHinhAnh);
+//        }
+//		// Attempt to save user details with service
+//		try {
+//			Users createdUser = usersService.createUserWithImageAndDetails(user, role, diaChiEntity, hinh_anh);
+//			response.put("message", "Người dùng đã được tạo thành công!");
+//			response.put("user", createdUser); // Đảm bảo không tiết lộ mật khẩu
+//			return new ResponseEntity<>(response, HttpStatus.CREATED); // 201 Created
+//		} catch (IOException e) {
+//			response.put("message", "Không thể lưu người dùng!");
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 Internal Server Error
+//		}
+//	}
+//	
+//	@PutMapping("/update/users/{accountID}")
+//	public ResponseEntity<Map<String, Object>> update2(
+//			@RequestParam("accountID") String accountID, @RequestParam("password") String password,
+//			@RequestParam("hovaten") String hovaten, @RequestParam("so_dien_thoai") String so_dien_thoai,
+//			@RequestParam("ten_vai_tro") String ten_vai_tro, @RequestParam("dia_chi") String dia_chi,
+//			@RequestParam("hoat_dong") String hoat_dong,
+//			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinh_anh) throws IllegalStateException, IOException {
+//		Map<String, Object> response = new HashMap<>();
+//
+//		// Validate required fields
+//		if (accountID == null || password == null || hovaten == null || so_dien_thoai == null || ten_vai_tro == null
+//				|| dia_chi == null) {
+//			response.put("message", "Tất cả các trường là bắt buộc!");
+//			return ResponseEntity.badRequest().body(response); // 400 Bad Request
+//		}
+//
+//		// Create user entity
+//		Users user = new Users();
+//		user.setAccountID(accountID);
+//		user.setPassword(password);
+//		user.setHovaten(hovaten);
+//		user.setHoat_dong(hoat_dong);
+//		user.setSo_dien_thoai(so_dien_thoai);
+//
+//		// Create role and address entities
+//		Roles role = new Roles();
+//		role.setTen_vai_tro(ten_vai_tro);
+//
+//		DiaChi diaChiEntity = new DiaChi();
+//		diaChiEntity.setDia_chi(dia_chi);
+//
+//		if (hinh_anh != null) {
+//            String tenHinhAnh = hinh_anh.getOriginalFilename();
+//            String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
+//
+//            // Tạo thư mục nếu chưa tồn tại
+//            File hinhFile = new File(uploadDir + tenHinhAnh);
+//            if (!hinhFile.getParentFile().exists()) {
+//                hinhFile.getParentFile().mkdirs();
+//            }
+//
+//            // Lưu file ảnh vào thư mục
+//            hinh_anh.transferTo(hinhFile);
+//
+//            // Tạo URL để truy cập ảnh và lưu vào đối tượng Voucher
+//            String imageUrl = "http://localhost:8080/images/" + tenHinhAnh;
+//            user.setHinh_anh(tenHinhAnh);
+//        }
+//		// Attempt to save user details with service
+//		try {
+//			Users createdUser = usersService.createUserWithImageAndDetails(user, role, diaChiEntity, hinh_anh);
+//			response.put("message", "Người dùng đã được tạo thành công!");
+//			response.put("user", createdUser); // Đảm bảo không tiết lộ mật khẩu
+//			return new ResponseEntity<>(response, HttpStatus.CREATED); // 201 Created
+//		} catch (IOException e) {
+//			response.put("message", "Không thể lưu người dùng!");
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 Internal Server Error
+//		}
+//	}
+//	
+//	@DeleteMapping("/delete/users/{accountID}")
+//	public ResponseEntity<Void> deleteUser(@PathVariable String accountID) {
+//		if (!usersRepository.existsById(accountID)) {
+//			return ResponseEntity.notFound().build();
+//		}
+//		usersRepository.deleteById(accountID);
+//		return ResponseEntity.noContent().build();
+//	}
 
 //	@GetMapping("/getUserAndAddress")
 //	public List<Map<String, Object>> getUsersWithAddress() {

@@ -31,7 +31,7 @@ public class UsersService {
 
     @Autowired
     private DiaChiRepository diaChiRepository;
-
+    
     @Transactional
     public Users createUserWithImageAndDetails(Users user, Roles role, DiaChi diaChi, MultipartFile image) throws IOException {
         // Không cần lưu ảnh trên backend, chỉ lưu vào DB

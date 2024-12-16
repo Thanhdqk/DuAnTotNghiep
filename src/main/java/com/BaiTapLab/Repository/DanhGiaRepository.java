@@ -33,4 +33,14 @@ public interface DanhGiaRepository extends JpaRepository<DanhGia, Integer>{
 	@Query("select hd.ten_hanh_dong, hd.ngay_hanh_dong, hd.danhgia.danh_giaID, hd.users.accountID from HanhDong hd\r\n"
 			+ "  where hd.danhgia.danh_giaID is not NULL")
 	List<Object[]> listNhatKy();
+	
+	// Lợi
+	@Query("SELECT d FROM DanhGia d WHERE d.sanpham.san_phamId = ?1")
+	List<DanhGia > findDangGiaByidSanPham(String id);
+	
+	@Query("SELECT d FROM DanhGia d WHERE d.sanpham.san_phamId = ?1 AND  d.so_sao = ?2 ORDER BY d.ngay_tao DESC")
+	List<DanhGia > findDangGiaByidSanPhamWithSoSao(String id,int sosao);
+	
+	@Query("SELECT d FROM DanhGia d WHERE d.sanpham.san_phamId = ?1 ORDER BY d.ngay_tao DESC")
+	List<DanhGia> findAllDanhGiasOrderedByDate(String id);
 }

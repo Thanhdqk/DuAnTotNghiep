@@ -20,7 +20,7 @@ public class Settings {
 	@Id
 	public String settingid;
 	
-	public String favicon;
+	public String faviicon;
 	
 	public String logo;
 	
@@ -36,4 +36,17 @@ public class Settings {
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
+	
+	@Override
+	public String toString() {
+	    return "Settings{" +
+	            "settingid='" + settingid + '\'' +
+	            ", ten_cua_hang='" + ten_cua_hang + '\'' +
+	            ", faviicon=" + faviicon +
+	            ", logo='" + logo + '\'' +
+	            ", so_dien_thoai='" + so_dien_thoai + '\'' +
+	            ", dia_chi_cua_hang='" + dia_chi_cua_hang + '\'' +
+	            ", users=" + (users != null ? users.getAccountID() : "null") + // Giả sử bạn muốn hiển thị tên người dùng
+	            '}';
+	}
 }

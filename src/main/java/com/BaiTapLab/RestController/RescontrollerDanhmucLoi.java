@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.BaiTapLab.Entity.Banner;
 import com.BaiTapLab.Entity.DanhMuc;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
-public class RescontrollerDanhmuc {
+public class RescontrollerDanhmucLoi {
 	
 	@Autowired
 	DanhmucService DanhmucService;
@@ -64,25 +65,25 @@ public class RescontrollerDanhmuc {
 		DanhmucService.FindDanhMucByIDSanPham(id);
 		return 	DanhmucService.FindDanhMucByIDSanPham(id);
 	}
-	
+	// here
 	@PostMapping("DanhMuc/ADD_DanhMuc")
-	public void postMethodName1(			
+	public void postMethodName1add(
 			@RequestParam("name") String name, 
-            @RequestParam("bannerId") String bannerId,
             @RequestParam("createdDate") LocalDate createdDate,
             @RequestParam("status") String status,
             @RequestParam("image") String image,
-            @RequestParam("iduser") String iduser) {
+            @RequestParam("iduser") String iduser,
+            @RequestParam("imgFile") MultipartFile imgFile) {
 		List<String> ids = DanhmucRepository.findAllIdsDesc();
 		String newid = generateNewId(ids);
 		HanhDong hanhdong = new HanhDong();
+		System.out.println("ảnh nè ccccccccccccccccccccccc: "+imgFile.getOriginalFilename());
+		System.out.println("ảnh nè ccccccccccccccccccccccc: "+imgFile.getOriginalFilename());
 	    try {
-	    	Users user = UsersRepository.findByAccountID(iduser);
-		    Optional<Banner> banner = BannerRepository.findById(bannerId);
-		    Banner banner2 =  banner.get();
+	    	Users user = UsersRepository.findByAccountID(iduser);	    
 		    DanhMuc danhmuc = new DanhMuc();
 		    danhmuc.setUsers(user);
-		    danhmuc.setTrang_thai_xoa(null);		    
+		    danhmuc.setTrang_thai_xoa(null);
 		    danhmuc.setHinh_anh(image);
 		    danhmuc.setNgay_tao(createdDate);
 		    danhmuc.setTen_loaiDM(name);
@@ -92,37 +93,65 @@ public class RescontrollerDanhmuc {
 		    DanhmucService.ADD_DanhMuc(danhmuc);
 		    hanhdong.setDanhmuc(danhmuc);
 		    hanhdong.setTen_hanh_dong("Thêm");
-		    hanhdong.setNgay_hanh_dong(LocalDate.now());
 		    HanhDongRepository.save(hanhdong);
 		    System.out.println("sadsadsadasdasdsad");
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-	    
 	}
-	
+
+	// here
 	@PutMapping("DanhMuc/UPDATE_DanhMuc")
 	public void postMethodName(
 			@RequestParam("id") String id,
 			@RequestParam("name") String name, 
-            @RequestParam("bannerId") String bannerId,
+			 @RequestParam("imgFile") MultipartFile imgFile,
             @RequestParam("createdDate") LocalDate createdDate,
-            @RequestParam("status") String status,
+           @RequestParam("status") String status,
             @RequestParam("image") String image,
-            @RequestParam("iduser") String iduser) {
+           @RequestParam("iduser") String iduser) {
+		System.out.println("ảnh nè UPDATE ccccccccccccccccccccccc: "+imgFile.getOriginalFilename());
+		System.out.println("ảnh nè UPDATE ccccccccccccccccccccccc: "+imgFile.getOriginalFilename());
 		HanhDong hanhdong = new HanhDong();
 	    try {
 	    	Users user = UsersRepository.findByAccountID(iduser);
-		    Optional<Banner> banner = BannerRepository.findById(bannerId);
-		    Banner banner2 =  banner.get();
 		    DanhMuc danhmuc = new DanhMuc();
-
 		    danhmuc.setUsers(user);
-		  
 		    danhmuc.setTrang_thai_xoa(null);
-		    
+		    danhmuc.setHinh_anh(imgFile.getOriginalFilename());
+	    danhmuc.setNgay_tao(createdDate);
+		    danhmuc.setTen_loaiDM(name);
+		    danhmuc.setHoat_dong(status);
+		    danhmuc.setDanh_mucId(id);
+		    System.out.println("sadasd"+id);
+		    DanhmucService.ADD_DanhMuc(danhmuc);
+		    System.out.println("sadsadsadasdasdsad");
+		    hanhdong.setDanhmuc(danhmuc);
+		    hanhdong.setTen_hanh_dong("Cập Nhật");
+		    HanhDongRepository.save(hanhdong);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	
+	@PutMapping("DanhMuc/UPDATE_DanhMucNOImage")
+	public void DanhMucNOImage(
+			@RequestParam("id") String id,
+			@RequestParam("name") String name, 
+			
+            @RequestParam("createdDate") LocalDate createdDate,
+           @RequestParam("status") String status,
+            @RequestParam("image") String image,
+           @RequestParam("iduser") String iduser) {
+		HanhDong hanhdong = new HanhDong();
+	    try {
+	    	Users user = UsersRepository.findByAccountID(iduser);
+		    DanhMuc danhmuc = new DanhMuc();
+		    danhmuc.setUsers(user);
+		    danhmuc.setTrang_thai_xoa(null);
 		    danhmuc.setHinh_anh(image);
-		    danhmuc.setNgay_tao(createdDate);
+	    danhmuc.setNgay_tao(createdDate);
 		    danhmuc.setTen_loaiDM(name);
 		    danhmuc.setHoat_dong(status);
 		    danhmuc.setDanh_mucId(id);
@@ -177,13 +206,19 @@ public class RescontrollerDanhmuc {
 	
 	private String generateNewId(List<String> ids) {
 	    if (ids.isEmpty()) {
-	        return "danh_muc1";
+	        return "DM001";
 	    }
 	    String lastId = ids.get(0);  
-	    String prefix = lastId.replaceAll("[^a-zA-Z]", "");  
-	    String numberPart = lastId.replaceAll("[^0-9]", "");  
+	    String prefix = lastId.replaceAll("[^a-zA-Z]", "");
+	    String numberPart = lastId.replaceAll("[^0-9]", "");
 	    int newNumber = Integer.parseInt(numberPart) + 1;
-	    return prefix+"_" + newNumber;
+	    return prefix + String.format("%03d", newNumber);
+	}
+	
+	@GetMapping("DanhMuc/findTrung")
+	public DanhMuc getMethodNamefindTrung(@RequestParam String name) {
+		DanhMuc dm =  DanhmucRepository.findDanhMucByname(name);
+		return dm;
 	}
 	
 	@GetMapping("DanhMuc/findALLNotWorking")
@@ -197,4 +232,10 @@ public class RescontrollerDanhmuc {
 	{
 		return DanhmucRepository.findALLWorking();
 	}	
+	
+	@GetMapping("DanhMuc/FINDVIP/{id}")
+	public List<String>  findIDDanhMucByBannerID(@PathVariable("id")String id)
+	{
+		return DanhmucRepository.findDanhMucIdBybannerID(id);
+	}
 }

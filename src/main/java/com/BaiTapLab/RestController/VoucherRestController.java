@@ -40,11 +40,18 @@ import com.BaiTapLab.Repository.VoucherRepository;
 import com.BaiTapLab.Service.UsersService;
 import com.BaiTapLab.Service.VoucherDetailService;
 import com.BaiTapLab.Service.VoucherService;
+import com.google.cloud.storage.Acl;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
 public class VoucherRestController {
+	private static final String BUCKET_NAME = "staging.thanhnehihi.appspot.com";
 	@Autowired
 	VoucherRepository voucherRepository;
 	
@@ -188,6 +195,9 @@ public class VoucherRestController {
 		Map<String, String> response = new HashMap<>();
 
 	    try {
+//	    	if(voucherRepository.danhSachVoucherTheoMaVoucher(ma_voucher)) {
+//	    		
+//	    	}
 	        // Tạo đối tượng Voucher từ các tham số
 	        Voucher voucher = new Voucher();
 	        voucher.setVoucherID(voucherID);
@@ -261,6 +271,107 @@ public class VoucherRestController {
 	                .body("Lỗi khi tạo voucher: " + e.getMessage());
 	    }
 	}
+//	@PostMapping("/voucher/add")
+//	public ResponseEntity<?> addVoucher(
+//	        @RequestParam("voucherID") String voucherID,
+//	        @RequestParam("ma_voucher") String ma_voucher,
+//	        @RequestParam("dieu_kien") String dieu_kien,
+//	        @RequestParam("don_hang_toi_thieu") int don_hang_toi_thieu,
+//	        @RequestParam("ngay_tao") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngay_tao,
+//	        @RequestParam("han_su_dung") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate han_su_dung,
+//	        @RequestParam("hoat_dong") String hoat_dong,
+//	        @RequestParam("so_luong") int so_luong,
+//	        //@RequestParam("so_luot_SD") int so_luot_SD,
+//	        @RequestParam("so_tien_giam") int so_tien_giam,
+//	        @RequestParam("accountID") String accountID,
+//	        @RequestParam(value = "hinh_anh", required = false) MultipartFile[] hinh_anh) {
+//		Map<String, String> response = new HashMap<>();
+//
+//	    try {
+//	        // Tạo đối tượng Voucher từ các tham số
+//	        Voucher voucher = new Voucher();
+//	        voucher.setVoucherID(voucherID);
+//	        voucher.setMa_voucher(ma_voucher);
+//	        voucher.setDieu_kien(dieu_kien);
+//	        voucher.setDon_hang_toi_thieu(don_hang_toi_thieu);
+//	        voucher.setNgay_tao(ngay_tao);
+//	        voucher.setHan_su_dung(han_su_dung);
+//	        voucher.setHoat_dong(hoat_dong);
+//	        voucher.setSo_luong(so_luong);
+//	        //voucher.setSo_luot_SD(so_luot_SD);
+//	        voucher.setSo_tien_giam(so_tien_giam);
+//
+//	        if (hinh_anh != null && hinh_anh.length > 0) {
+//	            String originalFileName = hinh_anh[0].getOriginalFilename();
+//
+//	            String imageUrl = uploadFileToGCS(hinh_anh[0], originalFileName);
+//
+//	            voucher.setHinh_anh(imageUrl);
+//	        }
+//	        // Lưu voucher vào DB qua service
+//	        Voucher savedVoucher = voucherService.createVoucher(voucher);
+//
+//	        // Tạo đối tượng VoucherDetail
+//	        VoucherDetail voucherDetail = new VoucherDetail();
+//	        voucherDetail.setVoucher(savedVoucher);
+//	        
+//	        voucher = voucherRepository.findById(voucherID)
+//                    .orElseThrow(() -> new RuntimeException("Voucher không tồn tại"));
+//	        HanhDong hanhdong = new HanhDong();
+//	        hanhdong.setTen_hanh_dong("Thêm");
+//	        hanhdong.setNgay_hanh_dong(LocalDate.now());
+//	        hanhdong.setVoucher(voucher);
+//	        hanhdong.setUsers(usersRepository.findById(accountID)
+//            		.orElseThrow(() -> new RuntimeException("Account không tồn tại")));
+//	        hanhDongRepository.save(hanhdong);
+//	        // Tìm người dùng theo accountID (Giả sử bạn có một phương thức để tìm User)
+//	        Users user = usersService.findByAccountID(accountID);
+//	        if (user != null) {
+//	            voucherDetail.setUsers(user); // Liên kết VoucherDetail với người dùng
+//	        } else {
+//	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//	                .body("Không tìm thấy người dùng với accountID: " + accountID);
+//	        }
+//
+//	        // Lưu VoucherDetail vào DB
+//	        voucherDetailService.createVoucherDetail(voucherDetail);
+//
+//	        // Trả về thông tin voucher và voucherDetail đã lưu
+//	        return ResponseEntity.ok(savedVoucher);
+//
+//	    } catch (IOException e) {
+//	        // Xử lý lỗi IO
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//	                .body("Lỗi khi lưu file: " + e.getMessage());
+//	    } catch (Exception e) {
+//	        // Xử lý lỗi chung
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//	                .body("Lỗi khi tạo voucher: " + e.getMessage());
+//	    }
+//	}
+	
+	private String uploadFileToGCS(MultipartFile file, String fileName) throws IOException {
+        // 1. Xác thực với Google Cloud
+        Storage storage = StorageOptions.newBuilder()
+                .setProjectId("thanhnehihi") // Project ID
+                .setCredentials(StorageOptions.getDefaultInstance().getCredentials())
+                .build()
+                .getService();
+
+        // 2. Tạo thông tin Blob
+        BlobId blobId = BlobId.of(BUCKET_NAME, fileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+
+        // 3. Tải file lên bucket
+        Blob blob = storage.create(blobInfo, file.getBytes());
+
+        // 4. Cấp quyền công khai cho file (allUsers có thể đọc)
+        Acl acl = Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER); 
+        storage.createAcl(blobId, acl); // Thêm quyền đọc cho tất cả người dùng
+
+        // 5. Tạo URL công khai
+        return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, fileName);
+    }
 
 	
 	@PutMapping("/voucher/update/{voucherID}")

@@ -2,6 +2,10 @@ package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,8 +17,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-
-@Data
+import lombok.Getter;
+import lombok.Setter;
+@Getter
+@Setter
 @Entity
 @Table(name = "feedback")
 public class Feedback {
@@ -36,9 +42,11 @@ public class Feedback {
 	public String trang_thai;
 	
 	@OneToOne(mappedBy = "feedback", cascade = CascadeType.ALL)
+	@JsonBackReference
     private Respone respone;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
+	@JsonProperty(value = "users",access = Access.READ_ONLY)
 	public Users users;
 }

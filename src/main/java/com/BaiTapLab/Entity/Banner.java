@@ -32,6 +32,8 @@ public class Banner {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;
 	
+	public LocalDate ngay_het_han; // Added field for expiration date
+	
 //	@OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
 //	@JsonIgnore
 //	public List<DanhMuc> danhmuc;

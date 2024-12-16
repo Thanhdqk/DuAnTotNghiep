@@ -4,13 +4,17 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.BaiTapLab.Entity.Roles;
 import com.BaiTapLab.Entity.Users;
 
+import jakarta.transaction.Transactional;
+
 public interface UsersRepository extends JpaRepository<Users, String> {
+	// Thành
 	Optional<Users> findByAccountIDAndPassword(String accountID, String password);
 	Users findByAccountID(String accountID);
 	@Query("SELECT u FROM Users u LEFT JOIN u.roles r WHERE u.accountID = :accountID")
@@ -29,4 +33,80 @@ public interface UsersRepository extends JpaRepository<Users, String> {
 	List<Object[]> listUsers();
 	
 	boolean existsByAccountID(String accountID);
-	}
+	
+	// Cập nhật thông tin bên trang thông tin cá nhân
+	@Modifying
+	@Transactional
+	@Query(value = "update users\r\n"
+			+ "set hovaten = :hovaten, so_dien_thoai = :sodienthoai, hinh_anh = :hinhanh\r\n"
+			+ "where accountid = :accountID", nativeQuery = true)
+	int updateThongTinCaNha(@Param("hovaten") String hovaten, @Param("sodienthoai") String sodienthoai,
+			@Param("hinhanh") String hinhanh, @Param("accountID") String accountID);
+	
+	// Liệt kê thông tin theo id
+	@Query(value = "select us.accountid, us.hovaten, us.so_dien_thoai, rl.ten_vai_tro, us.hinh_anh, dc.dia_chi \r\n"
+			+ "from users us\r\n"
+			+ "JOIN roles rl on us.accountid = rl.accountid "
+			+ "LEFT JOIN diachi dc on dc.accountid = us.accountid\r\n"
+			+ "where us.accountid = :accountid", nativeQuery = true)
+	List<Object[]> lietKeThongTinTheoId(@Param("accountid") String accountid);
+	
+	// Khánh	
+	@Query(value = "select us.accountid, rl.ten_vai_tro, us.hovaten, us.hoat_dong, us.password, us.so_dien_thoai \r\n"
+			+ "  from users us\r\n"
+			+ "  JOIN roles rl on rl.accountid = us.accountid\r\n"
+			+ "  where rl.ten_vai_tro = 'User'", nativeQuery = true)
+	List<Object[]> listVaiTroUser();
+
+
+
+	@Query(value = "select us.accountid, rl.ten_vai_tro, us.hovaten, us.hoat_dong, us.password, us.so_dien_thoai \r\n"
+				+ "  from users us\r\n"
+				+ "  JOIN roles rl on rl.accountid = us.accountid\r\n"
+				+ "  where rl.ten_vai_tro != 'User'", nativeQuery = true)
+	List<Object[]> listVaiTroNhanVien();
+	
+	
+	
+    @Query("SELECT u FROM Users u WHERE u.trang_thai_xoa = ?1")
+	List<Users> findUserByTrangThaideleted(String tt);
+    
+    @Modifying
+	@Transactional
+	@Query("UPDATE Users u SET u.trang_thai_xoa = 'Xóa' WHERE u.accountID = ?1")
+	void markAsDeleted(String userid);
+    
+    @Modifying
+	@Transactional
+	@Query("UPDATE Users u SET u.trang_thai_xoa = NULL WHERE u.accountID = ?1")
+	void back(String userid);
+	
+    @Modifying
+    @Transactional
+    @Query("UPDATE Users u SET u.trang_thai_xoa = NULL WHERE u.accountID = ?1" )
+    int reloadThuongHieuID(String thuong_hieuID);
+    
+    @Modifying
+    @Transactional
+    @Query("UPDATE Users u SET u.vi_pham = NULL WHERE u.accountID = ?1" )
+    void reloadViPham(String userid);
+    
+    @Modifying
+  	@Transactional
+  	@Query("UPDATE Users u SET u.trang_thai_xoa = 'Ban' WHERE u.accountID = ?1")
+  	void mark(String userid);
+    
+	@Query("SELECT u FROM  Users u WHERE u.trang_thai_xoa is NULL")
+	List<Users> findUserByTrangThai();
+ 
+	@Query("SELECT u FROM Users u WHERE u.vi_pham >= 0")
+	List<Users> findUserByViPham();
+	
+	@Query("SELECT u FROM  Users u WHERE u.trang_thai_xoa = 'Ban' ")
+	List<Users> findUserByVP();
+	
+	@Query("SELECT u FROM  Users u WHERE u.accountID = ?1 ")
+	List<Users> findUserByVPP(String userid);
+	
+}
+

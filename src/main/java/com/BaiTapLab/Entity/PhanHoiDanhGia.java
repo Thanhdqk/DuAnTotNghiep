@@ -2,6 +2,7 @@ package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,25 +20,24 @@ import lombok.Data;
 public class PhanHoiDanhGia {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
-	public int phan_hoiID;
+	public int id;
 	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String noi_dung;
 	
 	public LocalDate ngay_tao;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
-	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
 	
 	@ManyToOne
+	@JsonBackReference
 	@JoinColumn(name = "san_phamId")
 	public SanPham sanpham;
 	
 	@ManyToOne
+	@JsonBackReference
 	@JoinColumn(name = "danh_giaID")
 	public DanhGia danhgia;
 	

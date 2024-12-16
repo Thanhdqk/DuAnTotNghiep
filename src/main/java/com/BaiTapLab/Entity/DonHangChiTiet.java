@@ -1,5 +1,7 @@
 package com.BaiTapLab.Entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,9 +25,11 @@ public class DonHangChiTiet {
 
 	@ManyToOne
 	@JoinColumn(name = "don_hangid")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public DonHang donhang;
 	
 	@ManyToOne
 	@JoinColumn(name = "san_phamId")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public SanPham sanpham;
 }

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.BaiTapLab.Entity.DonHang;
+import com.BaiTapLab.Entity.DonHangChiTiet;
 import com.BaiTapLab.Entity.Shipper;
 
 import jakarta.transaction.Transactional;
@@ -136,12 +137,14 @@ public interface DonHangRepository extends JpaRepository<DonHang, String> {
 	
 	@Query(value = "SELECT dh.don_hangid, dh.tong_tien, us.hovaten, " +
             "us.so_dien_thoai, dc.dia_chi, dc.phuong, dc.quan, " +
-            "dc.thanh_pho, sp.ten_san_pham, dhct.tong_tien, dhct.so_luong, us.accountid " +
+            "dc.thanh_pho, sp.ten_san_pham, dhct.tong_tien, dhct.so_luong, us.accountid, pttt.phuong_thucttid, "
+            + "dh.trang_thai " +
             "FROM donhang dh " +
             "LEFT JOIN users us ON dh.accountid = us.accountid " +
             "LEFT JOIN diachi dc ON dc.accountid = dh.accountid " +
             "LEFT JOIN donhangchitiet dhct ON dhct.don_hangid = dh.don_hangid " +
             "LEFT JOIN sanpham sp ON sp.san_pham_id = dhct.san_pham_id " +
+            "LEFT JOIN phuongthuctt pttt ON pttt.phuong_thucttid = dh.phuong_thucttid " +
             "WHERE dh.don_hangid = ?", nativeQuery = true)
 	List<Object[]> findDonHangDetailsById(String donhangid);
 	
@@ -290,4 +293,40 @@ public interface DonHangRepository extends JpaRepository<DonHang, String> {
             nativeQuery = true)
     List<Object[]> findSanPhamTheoThang11();
     
+    // Count đơn hàng chưa nhận
+    @Query(value = "select count(*) from donhang\r\n"
+    		+ "where trang_thai = N'Đã xác nhận'", nativeQuery = true)
+    int soLuongHangChuaNhan();
+    
+    // Count đơn hàng đã nhận
+    @Query(value = "select count(*) from donhang\r\n"
+    		+ "where trang_thai = N'Đang giao' and shipperid = :shipperid", nativeQuery = true)
+    int soLuongHangDaNhan(@Param("shipperid") String shipperid);
+    
+    // Count đơn hàng đã giao
+    @Query(value = "select count(*) from donhang\r\n"
+    		+ "where trang_thai = N'Đã giao' and shipperid = :shipperid", nativeQuery = true)
+    int soLuongHangDaGiao(@Param("shipperid") String shipperid);
+    
+    // Danh sách đơn đã giao
+    @Query("SELECT d.don_hangid, d.thoi_gian_du_kien FROM DonHang d WHERE d.shipper.shipperID = :shipperid and d.trang_thai_nhan_don =:trangThaiNhanDon")
+	List<Object[]> findDaGiaoByShipperID(@Param("shipperid") String shipperid, @Param("trangThaiNhanDon") String trangThaiNhanDon);
+	
+	// Phát
+	@Query("Select p from DonHang p where p.phuongthuctt.phuong_thucTTID='ptt01' order by p.thoi_gianXN DESC limit 1 ")
+	DonHang findlastedDH();
+
+	@Query("Select p from DonHang p where p.trang_thai = ?1 ")
+	List<DonHang> findbyStatus(String dieukien);
+
+	@Query("SELECT dh FROM DonHang dh LEFT JOIN dh.diachi dc WHERE dh.users.accountID = :accountID")
+	List<DonHang> findByUserIdWithAddress(@Param("accountID") String accountID);
+
+	@Query("Select p from DonHang p where p.online_payment_id =?1")
+	DonHang findbypaymentid(String id);
+
+
+	@Query("select p.don_hangid from DonHang p where p.online_payment_id=?1 ")
+	String donhangid(String id);
+	
 }

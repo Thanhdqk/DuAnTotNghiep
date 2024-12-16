@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -79,19 +80,23 @@ public class SanPham {
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
 	//@JsonIgnore
 	@JsonManagedReference
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<DanhGia> danhgia;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
 	//@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonBackReference(value = "yeuthich-reference")
 	public List<YeuThich> yeuthich;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
 	//@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonManagedReference
 	public List<HinhAnh> hinhanh;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonIgnore
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
@@ -101,6 +106,7 @@ public class SanPham {
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
 	//@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonManagedReference
 	public List<PhanHoiDanhGia> phanhoidanhgia;
 	
@@ -110,19 +116,23 @@ public class SanPham {
 //	public List<GioHang> giohang;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	//@JsonIgnore
+	@JsonBackReference
 	public List<GioHangChiTiet> giohangchitiet;
 	
 	@OneToMany(mappedBy = "sanpham", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	public List<PopupChiTiet> popupchitiet;
 	
-	@ManyToOne
-	@JoinColumn(name = "popupID")
-	@JsonBackReference(value = "popup-reference")
-	public Popup popup;
+//	@ManyToOne
+//	@JoinColumn(name = "popupID")
+//	@JsonBackReference(value = "popup-reference")
+//	public Popup popup;
 
 	@ManyToOne
+	@JsonManagedReference
 	@JoinColumn(name = "accountID")
 	public Users users;
 	
@@ -131,6 +141,7 @@ public class SanPham {
 	public DanhMuc danhmuc;
 	
 	@ManyToOne
+	@JsonBackReference
 	@JoinColumn(name = "thuong_hieuID")
 	public ThuongHieu thuonghieu;
 	

@@ -4,19 +4,22 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Data
+
 @Getter
 @Setter
 @Entity
@@ -43,11 +46,9 @@ public class Users {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String trang_thai_xoa;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
-	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonManagedReference
     private List<Roles> roles;  
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
@@ -59,7 +60,8 @@ public class Users {
     private List<DanhMuc> danhmuc;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonBackReference
 	public List<SanPham> sanpham;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)

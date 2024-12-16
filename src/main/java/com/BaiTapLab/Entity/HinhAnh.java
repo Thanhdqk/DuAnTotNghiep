@@ -2,6 +2,7 @@ package com.BaiTapLab.Entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
@@ -24,6 +25,7 @@ public class HinhAnh {
 	public String ten_hinh;
 	
 	@ManyToOne
+	@JsonBackReference
 	@JoinColumn(name = "san_phamId")
 	public SanPham sanpham;
 }

@@ -10,6 +10,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -23,6 +24,26 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, username);
     }
+    public String generateTokenDashboard(String username, List<String> roles) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", roles);
+        return createToken(claims, username);
+    }
+    
+    public String generateTokenShipper(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, username);
+    }
+    
+//    public String generateToken(String username, String fullName, String avatar, String phoneNumber, List<String> roles) {
+//        Map<String, Object> claims = new HashMap<>();
+//        claims.put("hovaten", fullName);
+//        claims.put("hinhAnh", avatar);
+//        claims.put("phoneNumber", phoneNumber);
+//        claims.put("roles", roles);
+//        return createToken(claims, username);
+//    }
+
 
     private String createToken(Map<String, Object> claims, String subject) {
         Date now = new Date();

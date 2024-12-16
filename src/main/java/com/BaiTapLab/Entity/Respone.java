@@ -2,6 +2,10 @@ package com.BaiTapLab.Entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,14 +33,13 @@ public class Respone {
 	
 	public LocalDate ngay_tao;
 	
-	@Column(columnDefinition = "NVARCHAR(255)")
-	public String hanh_dong;
-	
 	@OneToOne
+	@JsonManagedReference
     @JoinColumn(name = "feedbackID", referencedColumnName = "feedbackID")
     private Feedback feedback;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
+	@JsonProperty(value = "user",access = Access.READ_ONLY)
 	public Users users;
 }

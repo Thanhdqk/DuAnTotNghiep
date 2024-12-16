@@ -1,5 +1,8 @@
 package com.BaiTapLab.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,13 +18,16 @@ import lombok.Data;
 public class GioHangChiTiet {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    public int gio_hangct_id;
+    public int id;
+	
+	private int soLuong;
+	@JsonBackReference
+	@ManyToOne
+	@JoinColumn(name = "giohang_id")
+	public GioHang gioHang;
 	
 	@ManyToOne
-	@JoinColumn(name = "gio_hangid")
-	public GioHang giohang;
-	
-	@ManyToOne
+	@JsonManagedReference
 	@JoinColumn(name = "san_phamId")
 	public SanPham sanpham;
 }

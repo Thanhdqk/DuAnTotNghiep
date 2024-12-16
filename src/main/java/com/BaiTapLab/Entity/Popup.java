@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -39,10 +42,13 @@ public class Popup {
 //	public List<SanPham> sanpham;
 	
 	@OneToMany(mappedBy = "popup", cascade = CascadeType.ALL)
-	@JsonIgnore
+	@JsonProperty(access = Access.READ_ONLY)
+	@JsonManagedReference
 	public List<PopupChiTiet> popupchitiet;
 	
 	@ManyToOne
+	@JsonManagedReference
+	@JsonProperty(access = Access.READ_ONLY)
 	@JoinColumn(name = "accountID")
 	public Users users;
 	

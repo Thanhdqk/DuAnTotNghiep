@@ -20,7 +20,7 @@ public interface DanhMucRepository extends JpaRepository<DanhMuc, String>{
     DanhMuc findByTen_loaiDM(@Param("ten_loaiDM") String ten_loaiDM);
 	
 	// Của Lợi
-	@Query("SELECT d FROM DanhMuc d WHERE d.trang_thai_xoa is NULL")
+	@Query("SELECT d FROM DanhMuc d WHERE d.trang_thai_xoa is NULL and d.hoat_dong = 'On'")
 	List<DanhMuc> findALLVIP();
 	
 	@Query("SELECT d FROM DanhMuc d JOIN d.sanpham s WHERE s.san_phamId = ?1")
@@ -56,4 +56,18 @@ public interface DanhMucRepository extends JpaRepository<DanhMuc, String>{
 	
 	@Query("SELECT d FROM DanhMuc d  WHERE d.hoat_dong = 'On'")
 	List<DanhMuc> findALLWorking();
+	
+	// Khánh
+	@Query("SELECT d.danh_mucId FROM DanhMuc d")
+	List<String> FindALLNAME();
+	
+	// Phát	
+	@Query(value = "SELECT d.danh_muc_id FROM DanhMuc d"
+			+ " JOIN bannerchitiet bnct on d.danh_muc_id = bnct.danh_muc_id"
+			+ " WHERE bnct.banner_id = ?1", nativeQuery = true)
+	List<String > findDanhMucIdBybannerID(String id);
+	
+	@Query("SELECT d FROM DanhMuc d where d.ten_loaiDM = ?1")
+	DanhMuc findDanhMucByname(String name);
+
 }

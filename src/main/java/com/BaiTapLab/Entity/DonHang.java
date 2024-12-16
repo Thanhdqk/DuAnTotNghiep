@@ -15,8 +15,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "donhang")
 public class DonHang {
@@ -32,7 +35,8 @@ public class DonHang {
 	
 	public LocalDate thoi_gianXN;
 	
-	public LocalDate thoi_gian_du_kien;
+	//public LocalDate thoi_gian_du_kien;
+	public String thoi_gian_du_kien;
 	
 	public String so_dien_thoai;
 	
@@ -59,7 +63,7 @@ public class DonHang {
 	
     @ManyToOne
     @JoinColumn(name = "accountID")
-    @JsonProperty(value="users")
+    @JsonProperty(value = "users", access = JsonProperty.Access.READ_ONLY)
     public Users users;
     
     @ManyToOne

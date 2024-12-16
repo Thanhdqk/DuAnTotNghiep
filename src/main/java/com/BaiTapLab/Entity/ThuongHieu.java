@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -36,15 +37,28 @@ public class ThuongHieu {
 	public String hinh_anh;
 	
 	@OneToMany(mappedBy = "thuonghieu", cascade = CascadeType.ALL)
-	@JsonIgnore
+	//@JsonIgnore
+	@JsonManagedReference
 	public List<SanPham> sanpham;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")
 	public Users users;
 	
-	@ManyToOne
-	@JoinColumn(name = "nha_cung_capID")
-	public NhaCungCap nhacungcap;
+//	@ManyToOne
+//	@JoinColumn(name = "nha_cung_capID")
+//	public NhaCungCap nhacungcap;
+	@Override
+    public String toString() {
+        return "ThuongHieu{" +
+                "thuong_hieuID='" + thuong_hieuID + '\'' +
+                ", ten_thuong_hieu='" + ten_thuong_hieu + '\'' +
+                ", ngay_tao=" + ngay_tao +
+                ", hoat_dong='" + hoat_dong + '\'' +
+                ", trang_thai_xoa='" + trang_thai_xoa + '\'' +
+                ", hinh_anh='" + hinh_anh + '\'' +
+                ", users=" + (users != null ? users.getAccountID() : "null") +
+                '}';
+    }
 }
 

@@ -40,9 +40,9 @@ public class NhaCungCap {
 	@JsonIgnore
 	public List<NhaCungCapChiTiet> nhacungcapchitiet;
 	
-	@OneToMany(mappedBy = "nhacungcap", cascade = CascadeType.ALL)
-	@JsonIgnore
-	public List<ThuongHieu> thuonghieu;
+//	@OneToMany(mappedBy = "nhacungcap", cascade = CascadeType.ALL)
+//	@JsonIgnore
+//	public List<ThuongHieu> thuonghieu;
 	
 	@ManyToOne
 	@JoinColumn(name = "accountID")

@@ -79,4 +79,8 @@ public class HanhDong {
 	@ManyToOne // Bảng voucher
 	@JoinColumn(name = "voucherID")
 	public Voucher voucher;
+	
+	@ManyToOne // Bảng shipper
+	@JoinColumn(name = "shipperID")
+	public Shipper shipper;
 }

@@ -84,6 +84,7 @@ public class NhapHangRestController {
 		  @RequestParam("tien_nhap_hang") double tien_nhap_hang,
 		  @RequestParam("so_luong") int so_luong,
 		  @RequestParam("ngay_tao") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ngay_tao,
+		  @RequestParam("han_su_dung") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate han_su_dung,
 		  @RequestParam("accountID") String accountID,
 		  @RequestParam("ten_loaiDM") String ten_loaiDM,
 		  @RequestParam("ten_thuong_hieu") String ten_thuong_hieu,
@@ -104,8 +105,9 @@ public class NhapHangRestController {
   	  sanpham.setSo_luong(so_luong);
   	  sanpham.setMo_ta(mo_ta);
   	  sanpham.setNgay_tao(ngay_tao);
+  	  sanpham.setHan_su_dung(han_su_dung);
   	  sanpham.setTrang_thai_kho("Chờ phê duyệt");
-  	  sanpham.setNhap_hang("Mới nhập hàng");
+  	  sanpham.setNhap_hang("Chờ phê duyệt");
   	  sanpham.setPhe_duyet("Chưa phê duyệt");
   	  sanpham.setHoat_dong("Off");
 

@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/client/static/css/main.856c2774.css",
-    "main.js": "/client/static/js/main.69fc3016.js",
-    "static/js/453.d855a71b.chunk.js": "/client/static/js/453.d855a71b.chunk.js",
-    "static/media/fa-solid-900.ttf": "/client/static/media/fa-solid-900.07ed6d5fa32c1d54af0f.ttf",
-    "static/media/fa-brands-400.ttf": "/client/static/media/fa-brands-400.0ff70dcbf135d859ebf3.ttf",
-    "static/media/fa-solid-900.woff2": "/client/static/media/fa-solid-900.93f719f4d62bfa3e748c.woff2",
-    "static/media/fa-brands-400.woff2": "/client/static/media/fa-brands-400.bb8d5a145e22822103fb.woff2",
-    "static/media/fa-regular-400.ttf": "/client/static/media/fa-regular-400.17a6e1aebccdbaa39e78.ttf",
-    "static/media/fa-regular-400.woff2": "/client/static/media/fa-regular-400.bc3722686635b5f86132.woff2",
-    "static/media/fa-v4compatibility.ttf": "/client/static/media/fa-v4compatibility.0f6cb412603527bda691.ttf",
-    "static/media/fa-v4compatibility.woff2": "/client/static/media/fa-v4compatibility.6cfec8414be20e2c3426.woff2",
-    "index.html": "/client/index.html",
-    "main.856c2774.css.map": "/client/static/css/main.856c2774.css.map",
-    "main.69fc3016.js.map": "/client/static/js/main.69fc3016.js.map",
-    "453.d855a71b.chunk.js.map": "/client/static/js/453.d855a71b.chunk.js.map"
+    "main.css": "/desktop-tutorial/static/css/main.eb369665.css",
+    "main.js": "/desktop-tutorial/static/js/main.fe6a4af3.js",
+    "static/js/453.d855a71b.chunk.js": "/desktop-tutorial/static/js/453.d855a71b.chunk.js",
+    "static/media/fa-solid-900.ttf": "/desktop-tutorial/static/media/fa-solid-900.07ed6d5fa32c1d54af0f.ttf",
+    "static/media/fa-brands-400.ttf": "/desktop-tutorial/static/media/fa-brands-400.0ff70dcbf135d859ebf3.ttf",
+    "static/media/fa-solid-900.woff2": "/desktop-tutorial/static/media/fa-solid-900.93f719f4d62bfa3e748c.woff2",
+    "static/media/fa-brands-400.woff2": "/desktop-tutorial/static/media/fa-brands-400.bb8d5a145e22822103fb.woff2",
+    "static/media/fa-regular-400.ttf": "/desktop-tutorial/static/media/fa-regular-400.17a6e1aebccdbaa39e78.ttf",
+    "static/media/fa-regular-400.woff2": "/desktop-tutorial/static/media/fa-regular-400.bc3722686635b5f86132.woff2",
+    "static/media/fa-v4compatibility.ttf": "/desktop-tutorial/static/media/fa-v4compatibility.0f6cb412603527bda691.ttf",
+    "static/media/fa-v4compatibility.woff2": "/desktop-tutorial/static/media/fa-v4compatibility.6cfec8414be20e2c3426.woff2",
+    "index.html": "/desktop-tutorial/index.html",
+    "main.eb369665.css.map": "/desktop-tutorial/static/css/main.eb369665.css.map",
+    "main.fe6a4af3.js.map": "/desktop-tutorial/static/js/main.fe6a4af3.js.map",
+    "453.d855a71b.chunk.js.map": "/desktop-tutorial/static/js/453.d855a71b.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.856c2774.css",
-    "static/js/main.69fc3016.js"
+    "static/css/main.eb369665.css",
+    "static/js/main.fe6a4af3.js"
   ]
 }

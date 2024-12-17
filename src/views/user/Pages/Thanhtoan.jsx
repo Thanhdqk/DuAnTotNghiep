@@ -63,7 +63,7 @@ function Thanhtoan() {
 
     let total =  useSelector(state => state.cart.total)
     let totalafterdiscount = useSelector(state => state.cart.totalafterdiscount)
-    let voucher = useSelector(state => state.cart.voucher)
+    let voucher = useSelector(state => state.cart.voucher) || null
     let voucher2 = useSelector(state => state.cart.voucher2)
     let discount = useSelector(state => state.cart.discount)
     let totalweight= useSelector(state => state.cart.totalweight)
@@ -116,15 +116,15 @@ function Thanhtoan() {
         setlistprovince(res.data.data);
     }
     const checkvalidvoucher = async () => {
-        const jsonparsevoucher = JSON.parse(voucher);
+        const jsonparsevoucher = voucher;
         if (jsonparsevoucher != null) {
-            const object = JSON.parse(localStorage.getItem('voucher'));
+            const object =voucher;
             const response = await axios({ url: `http://localhost:8080/checkifvoucherisvalid?voucherId=${object.voucherID}&accountID=${userId}&amount=${totalAmount}`, method: 'POST' });
             const respone2 = await axios({
                 url: `http://localhost:8080/checkifproductsarevalid?selectedproductid=${product_id_params}`,
                 method: "POST",
             })
-            if (jsonparsevoucher != null) {
+            if (jsonparsevoucher !== null) {
                 if (!response.data) {
                     seterrormessage(errormessage + "Voucher đã hết hạn hoặc hết số lần sử dụng!");
                 }
@@ -231,9 +231,9 @@ function Thanhtoan() {
                 'so_dien_thoai': AddressCurrent.users.so_dien_thoai,
                 'ghi_chu': ghichu ? ghichu : '',
                 'phi_ship': shipfee,
-                'voucher': JSON.parse(voucher),
+                'voucher': voucher,
                 'tong_tien': checkfordiscount(),
-                'thoi_gian_du_kien': leadtime.toString(),
+                'thoi_gian_du_kien': new Date(leadtime*1000),
                 'online_payment_id': paypalid ? paypalid : null,
                 'users': {
                     'accountID': AddressCurrent.users.accountID,
@@ -693,8 +693,8 @@ function Thanhtoan() {
                                         redirect('/login');
 
                                     } else {
-                                        const jsonparsevoucher = JSON.parse(voucher);
-                                        console.log(jsonparsevoucher)
+                                        // const jsonparsevoucher = JSON.parse(voucher);
+                                        // console.log(jsonparsevoucher)
                                         checkvalidvoucher(voucher);
                                     }
                                 }} style={{

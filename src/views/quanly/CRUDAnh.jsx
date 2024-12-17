@@ -186,9 +186,9 @@ const CRUDAnh = () => {
       if (update == "") {
         const formData = new FormData();
         formData.append("name", values.name);
-        formData.append("imagemain", values.imagemain);
-        formData.append("imagephu1", values.imagephu1);
-        formData.append("imagephu2", values.imagephu2);
+        formData.append("imagemain", fileImgMain);
+        formData.append("imagephu1", fileImgphu1);
+        formData.append("imagephu2", fileImgphu2);
 
         formData.append("imagemainold", values.imagemainold);
         formData.append("imagephu1old", values.imagephu1old);

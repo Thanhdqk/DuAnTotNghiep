@@ -25,12 +25,14 @@ const MonthlyEarnings = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Dữ liệu từ API:", data);
+        setDoanhThu(data);
         // Kiểm tra và lấy giá trị revenue
-        if (data && typeof data === "object" && data.revenue) {
-          setDoanhThu(data.revenue);
-        } else {
-          setDoanhThu(0);
-        }
+        // if (data && typeof data === "object" && data.revenue) {
+        //   //setDoanhThu(data.revenue);
+        //   console.log("Doanh thu:", data.revenue);
+        // } else {
+        //   setDoanhThu(0);
+        // }
       })
       .catch((error) => {
         console.error("Lỗi khi gọi API:", error);

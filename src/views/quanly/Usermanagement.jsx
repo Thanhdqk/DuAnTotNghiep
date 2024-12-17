@@ -23,6 +23,7 @@ import {
   AppBar,
 } from "@mui/material";
 import { Add, Search, Edit, Delete, Restore } from "@mui/icons-material";
+import { jwtDecode } from "jwt-decode";
 
 const UserManagement = () => {
   const [page, setPage] = useState(0);

@@ -12,6 +12,7 @@ import { data, get } from "jquery";
 import * as XLSX from "xlsx";
 import { notification } from "antd";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 //import "../../assets/images"
 
 const getBase64 = (file) =>
@@ -59,6 +60,8 @@ const Voucher = () => {
     return `${year}-${month}-${day}`;
   };
 
+  //const accountIDNe = jwtDecode(localStorage.getItem("jwtToken")).sub;
+  //console.log("accountid nè: ", accountIDNe);
   const getNewVoucherID = async () => {
     try {
       const response = await axios.get(
@@ -299,11 +302,13 @@ const Voucher = () => {
     if (
       voucher.so_luong <= 0 ||
       voucher.so_tien_giam < 10000 ||
-      voucher.don_hang_toi_thieu < 100000
+      voucher.don_hang_toi_thieu < 100000 ||
+      voucher.so_tien_giam > voucher.don_hang_toi_thieu
     ) {
       notification.error({
         message: "Thêm thất bại !",
-        description: `Đơn vị không hợp lệ, vui lòng xem lại số lượng > 0, số tiền giảm >= 10.000 và đơn hàng tối thiểu >= 100.000`,
+        description:
+          "Đơn vị không hợp lệ, vui lòng xem lại số lượng > 0, số tiền giảm >= 10.000, đơn hàng tối thiểu >= 100.000 hoặc số tiền giảm không được lớn hơn đơn hàng tối thiểu",
         duration: 3, // thời gian hiển thị
       });
       return;
@@ -317,10 +322,11 @@ const Voucher = () => {
     for (const key in voucher) {
       formData.append(key, voucher[key]);
     }
-    const accountData = JSON.parse(localStorage.getItem("data")); // Giả sử bạn lưu dữ liệu trong khóa "data"
-    if (accountData && accountData.accountID) {
-      formData.append("accountID", accountData.accountID);
-      console.log(accountData.accountID); // Thêm accountID vào formData
+    //const accountData = JSON.parse(localStorage.getItem("data")); // Giả sử bạn lưu dữ liệu trong khóa "data"
+    const accountIDNe = jwtDecode(localStorage.getItem("jwtToken")).sub;
+    if (accountIDNe) {
+      formData.append("accountID", accountIDNe);
+      console.log(accountIDNe); // Thêm accountID vào formData
     } else {
       console.error("Không tìm thấy accountID trong localStorage");
       alert("Không tìm thấy thông tin tài khoản. Vui lòng đăng nhập lại.");
@@ -360,21 +366,46 @@ const Voucher = () => {
       } else if (response.status === 409) {
         // Conflict (Mã voucher đã tồn tại)
         const errorData = await response.text();
-        alert(`Lỗi: ${errorData}`);
+        notification.error({
+          message: "Thêm thất bại !",
+          description: errorData,
+          duration: 3,
+        });
       } else {
         const errorData = await response.json();
         console.error("Lỗi khi thêm voucher:", response.statusText, errorData);
         alert(errorData.message);
       }
     } catch (error) {
-      console.error("Lỗi:", error);
+      console.error("Lỗi nè:", error);
+      notification.error({
+        message: "Thêm thất bại !",
+        description: error.message,
+        duration: 3,
+      });
     }
   };
 
   const handleUpdate = async () => {
     const accountID = JSON.parse(localStorage.getItem("data"));
     voucherChung();
-
+    if (
+      voucher.ma_voucher === "" ||
+      voucher.dieu_kien === "" ||
+      voucher.don_hang_toi_thieu === 0 ||
+      voucher.ngay_tao === "" ||
+      voucher.han_su_dung === "" ||
+      voucher.so_luong === 0 ||
+      voucher.so_tien_giam === 0 ||
+      fileList.length === 0
+    ) {
+      notification.error({
+        message: "Cập nhật thất bại !",
+        description: `Cần nhập đầy đủ thông tin`,
+        duration: 3, // thời gian hiển thị
+      });
+      return;
+    }
     const formData = new FormData();
     for (const key in voucher) {
       formData.append(key, voucher[key]);
@@ -695,16 +726,6 @@ const Voucher = () => {
       ),
     },
     {
-      title: "Người tạo",
-      dataIndex: "accountID",
-      key: "accountID",
-      render: (text) => (
-        <div style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-          {text}
-        </div>
-      ),
-    },
-    {
       title: "Hành động",
       dataIndex: "hanhdong",
       key: "hanhdong",
@@ -950,8 +971,7 @@ const Voucher = () => {
 
   const filteredVoucherDataGarbage = voucherData.filter((voucher) => {
     const matchesName =
-      !findByName ||
-      voucher.ma_voucher.toLowerCase().includes(findByName.toLowerCase());
+      !findByName || new RegExp(findByName, "i").test(voucher.ma_voucher);
     return voucher.trang_thai_xoa !== null && matchesName;
   });
   console.log("Thùng rác nè:", filteredVoucherDataGarbage);

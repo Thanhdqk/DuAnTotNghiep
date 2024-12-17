@@ -17,43 +17,43 @@ const SalesOverview = () => {
     fetchMonthlyRevenue(year);
   }, [year]);
 
-  // const fetchMonthlyRevenue = async (selectedYear) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `http://localhost:8080/api/getDoanhThuChart?year=${selectedYear}`
-  //     );
-  //     setMonthlyRevenue(response.data || []); // Giả sử API trả về mảng doanh thu theo tháng
-  //   } catch (error) {
-  //     console.error("Lỗi khi lấy doanh thu: ", error);
-  //     setMonthlyRevenue([]);
-  //   }
-  // };
   const fetchMonthlyRevenue = async (selectedYear) => {
     try {
       const response = await axios.get(
         `http://localhost:8080/api/getDoanhThuChart?year=${selectedYear}`
       );
-
-      console.log("Dữ liệu từ API:", response.data);
-
-      // Mảng mặc định cho 12 tháng, giá trị ban đầu là 0
-      const defaultRevenue = Array(12).fill(0);
-
-      // Giả sử dữ liệu API trả về dạng [{ month: 1, revenue: 100 }, ...]
-      if (Array.isArray(response.data)) {
-        response.data.forEach((item) => {
-          if (item.month >= 1 && item.month <= 12) {
-            defaultRevenue[item.month - 1] = item.revenue || 0; // Đặt doanh thu vào đúng tháng
-          }
-        });
-      }
-
-      setMonthlyRevenue(defaultRevenue); // Ghi nhận dữ liệu đã xử lý
+      setMonthlyRevenue(response.data || []); // Giả sử API trả về mảng doanh thu theo tháng
     } catch (error) {
-      console.error("Lỗi khi lấy doanh thu: ", error.response || error);
-      setMonthlyRevenue(Array(12).fill(0)); // Giá trị mặc định khi lỗi
+      console.error("Lỗi khi lấy doanh thu: ", error);
+      setMonthlyRevenue([]);
     }
   };
+  // const fetchMonthlyRevenue = async (selectedYear) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `http://localhost:8080/api/getDoanhThuChart?year=${selectedYear}`
+  //     );
+
+  //     console.log("Dữ liệu từ API doanh thu chart:", response.data);
+
+  //     // Mảng mặc định cho 12 tháng, giá trị ban đầu là 0
+  //     const defaultRevenue = Array(12).fill(0);
+
+  //     // Giả sử dữ liệu API trả về dạng [{ month: 1, revenue: 100 }, ...]
+  //     if (Array.isArray(response.data)) {
+  //       response.data.forEach((item) => {
+  //         if (item.month >= 1 && item.month <= 12) {
+  //           defaultRevenue[item.month - 1] = item.revenue || 0; // Đặt doanh thu vào đúng tháng
+  //         }
+  //       });
+  //     }
+
+  //     setMonthlyRevenue(defaultRevenue); // Ghi nhận dữ liệu đã xử lý
+  //   } catch (error) {
+  //     console.error("Lỗi khi lấy doanh thu: ", error.response || error);
+  //     setMonthlyRevenue(Array(12).fill(0)); // Giá trị mặc định khi lỗi
+  //   }
+  // };
 
   const handleYearChange = (event) => {
     const selectedYear = event.target.value;

@@ -17,7 +17,7 @@ import ColumnGroup from "antd/es/table/ColumnGroup";
 import { UploadOutlined } from "@ant-design/icons";
 import { Button, Upload, Modal } from "antd";
 import Swal from 'sweetalert2'
-
+import { jwtDecode } from "jwt-decode";
 
 const fileList = [];
 

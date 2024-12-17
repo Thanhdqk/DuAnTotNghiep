@@ -38,6 +38,7 @@ import "../../styles/BannerManager.css";
 const BannerManager = () => {
   const userid = JSON.parse(localStorage.getItem("data")).accountID;
   console.log("Userid nè trờiL: ", userid);
+  const [datahethan, setDatahethan] = useState([]);
   const [personName, setPersonName] = React.useState([]);
   const [product_discount2, setproduct_discount2] = useState([]);
   const [tabValue, setTabValue] = useState(0);
@@ -64,6 +65,17 @@ const BannerManager = () => {
   const [listNgay, setlistNgay] = useState([]);
   const [listDataHd, setlistDataHD] = useState([]);
   const [errors, setErrors] = useState({});
+  const fetchBannershethan = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/api/banners/findallbannerHetHan"
+      );
+      setDatahethan(response.data);
+      console.log("he he tui dday", response.data);
+    } catch (error) {
+      handleSnackbar("Có lỗi xảy ra khi lấy danh sách banner!", "error");
+    }
+  };
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -169,11 +181,11 @@ const BannerManager = () => {
     fetchDeletedBanners();
     fetchProductHasDiscount();
     fetchBannerss();
+    fetchBannershethan();
     handleNgay();
     if (formData.bannerId == "") {
       getnewID();
     }
-
   }, [formData.bannerId]);
 
   const fetchDeletedBanners = async () => {
@@ -449,6 +461,12 @@ const BannerManager = () => {
                 apilistDataHd();
               }}
               label=" Hành Động"
+            />
+            <Tab
+              onClick={() => {
+                apilistDataHd();
+              }}
+              label=" Hết hạn"
             />
           </Tabs>
         </AppBar>
@@ -956,6 +974,104 @@ const BannerManager = () => {
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={listDataHd.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </div>
+        )}
+        {tabValue === 4 && (
+          <div>
+            <Typography
+              variant="h6"
+              align="center"
+              style={{ marginTop: "16px" }}
+            >
+              Danh Sách Banner Hết Hạn
+            </Typography>
+
+            <TableContainer
+              component={Paper}
+              style={{ marginTop: "16px", color: "#1976d2" }}
+            >
+              <Table>
+                <TableHead>
+                  <TableRow className="table-row-header">
+                    <TableCell>Mã Banner</TableCell>
+                    <TableCell>Danh Mục</TableCell>
+                    <TableCell>Hình Ảnh</TableCell>
+                    <TableCell>Trạng Thái Hoạt Động</TableCell>
+                    <TableCell>Ngày Tạo</TableCell>
+                    <TableCell>Ngày Hết Hạn</TableCell>
+                    <TableCell>Account ID</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {datahethan
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((post) => (
+                      <TableRow key={post.bannerId}>
+                        <TableCell>{post.bannerId}</TableCell>
+                        <TableCell>
+                          {post.bannerchitiet.map((item) => {
+                            return (
+                              <p key={item.bannerchitietid}>
+                                {item.danhmuc.danh_mucId}
+                              </p>
+                            );
+                          })}
+                        </TableCell>
+                        <TableCell>
+                          {post.hinh_anh ? (
+                            <img
+                              src={`/images/${post.hinh_anh}`}
+                              alt="Hình ảnh"
+                              style={{ width: 50, height: 50 }}
+                            />
+                          ) : (
+                            "No Image"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {post.hoat_dong == "ON"
+                            ? "Hoạt Động"
+                            : "Ngưng Hoạt Động"}
+                        </TableCell>
+                        <TableCell>{post.ngay_tao}</TableCell>
+                        <TableCell>{post.ngay_het_han}</TableCell>
+
+                        <TableCell>{post.users.accountID}</TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={() => {
+                              handleEdit(post);
+                              console.log("cc", post);
+                            }}
+                          >
+                            <Edit />
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              handleChange1(post);
+                              setTabValue(2); // Chuyển sang tab lịch sử
+                            }}
+                            sx={{ color: "secondary" }}
+                          >
+                            <Delete />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredPosts.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}

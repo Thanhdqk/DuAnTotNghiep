@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import { jwtDecode } from "jwt-decode";
 const Settings = () => {
   const [formData, setFormData] = useState({
     ten_cua_hang: "",

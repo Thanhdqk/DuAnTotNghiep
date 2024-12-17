@@ -9,9 +9,11 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useState, useEffect, useRef } from "react";
-import { data, get } from "jquery";
+import { data, get, param } from "jquery";
 import * as XLSX from "xlsx";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import { notification } from "antd";
 //import "../../assets/images"
 
 const getBase64 = (file) =>
@@ -42,6 +44,7 @@ const QuanLyShipper = () => {
   const [isDeleteDisabled, setIsDeleteDisabled] = useState(false);
   const [listShipper, setListShipper] = useState([]);
   const [listShipperDaGiao, setListShipperDaGiao] = useState([]);
+  const [listNhatKy, setListNhatKy] = useState([]);
 
   // Kiểm tra quyền admin
   const isAdmin = userData && userData.roles.includes("Admin");
@@ -110,6 +113,7 @@ const QuanLyShipper = () => {
       setActiveKey("1");
     }
     danhSachShipperDaGiao();
+    danhSachNhatKy();
   }, []);
 
   let voucher = {};
@@ -123,7 +127,7 @@ const QuanLyShipper = () => {
       hoat_dong: selectedShipper.hoat_dong,
       hovaten: selectedShipper.hovaten,
       password: selectedShipper.password,
-      accountID: JSON.parse(localStorage.getItem("data")).accountID,
+      accountID: jwtDecode(localStorage.getItem("jwtToken")).sub,
     };
     return voucher;
   };
@@ -136,6 +140,7 @@ const QuanLyShipper = () => {
       console.log("Chi tiết shipper: ", response.data);
       setSelectedShipper(response.data[0]);
       setActiveKey("1");
+      setIsDisabled(true);
     } catch {}
   };
   const handleSaveShipper = async () => {
@@ -160,25 +165,71 @@ const QuanLyShipper = () => {
           " Mật khẩu: " +
           shipperChung.password
       );
+      fetchVoucherData();
+      handelClear();
+      console.log("Lưu thành công: ", response.data);
+    } catch {}
+  };
+
+  const danhSachNhatKy = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/api/shipper/listNhatKy"
+      );
+      console.log("Dữ liệu nhật ký nè: ", response.data);
+      setListNhatKy(response.data);
+    } catch {
+      console.error("Lỗi khi lấy dữ liệu voucher:");
+    }
+  };
+  const handleUpdateShipper = async () => {
+    const shipperChung = voucherChung();
+    console.log("Khi nhấn lưu nè: ", shipperChung);
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/api/shipper/updateShipper`,
+        shipperChung,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      notification.success({
+        message: "Thêm thành công !",
+        description: `Cập nhật shipper thành công !`,
+        duration: 3, // thời gian hiển thị
+      });
+      setSelectedShipper("");
+      fetchVoucherData();
       console.log("Lưu thành công: ", response.data);
     } catch {}
   };
 
   const updateKhoiPhucShipper = async (record) => {
+    const shipperChung = voucherChung();
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/shipper/update/khoiphuc/${record}`
+        `http://localhost:8080/api/shipper/update/khoiphuc/${record}`,
+        {
+          params: shipperChung.accountID,
+        }
       );
+      fetchVoucherData();
       console.log("Dữ liệu xóa nè: ", response.data);
       alert("Khôi phục shipper thành cong");
     } catch {}
   };
 
   const updateShipperXoaTable = async (record) => {
+    const shipperChung = voucherChung();
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/shipper/update/trangThaiXoa/${record}`
+        `http://localhost:8080/api/shipper/update/trangThaiXoa/${record}`,
+        shipperChung
       );
+      fetchVoucherData();
+      setSelectedShipper("");
       console.log("Dữ liệu xóa nè: ", response.data);
       alert("Xóa shipper thành cong");
     } catch {}
@@ -188,75 +239,19 @@ const QuanLyShipper = () => {
     const shipperChung = voucherChung();
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/shipper/update/trangThaiXoa/${shipperChung.shipperID}`
+        `http://localhost:8080/api/shipper/update/trangThaiXoa/${shipperChung.shipperID}`,
+        shipperChung
       );
+      fetchVoucherData();
+      setSelectedShipper("");
       console.log("Dữ liệu xóa nè: ", response.data);
       alert("Xóa shipper thành cong");
     } catch {}
   };
-  const handleUpdate = async () => {
-    voucherChung();
 
-    const formData = new FormData();
-    for (const key in voucher) {
-      formData.append(key, voucher[key]);
-    }
-
-    formData.append("hanh_dong", "Cập nhật");
-    // Nếu có hình ảnh mới, thêm vào formData
-    fileList.forEach((file) => {
-      formData.append("hinh_anh", file.originFileObj);
-    });
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/voucher/update/${voucher.voucherID}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Voucher đã được cập nhật thành công:", data);
-        alert("Cập nhật voucher thành công!");
-        fetchVoucherData(); // Tải lại dữ liệu
-        clear();
-      } else {
-        const errorData = await response.json();
-        console.error(
-          "Lỗi khi cập nhật voucher:",
-          response.statusText,
-          errorData
-        );
-        alert("Cập nhật voucher thất bại!");
-      }
-    } catch (error) {
-      console.error("Lỗi:", error);
-    }
-  };
-
-  const clear = () => {
-    document.getElementById("ma_voucher").value = "";
-    document.getElementById("dieu_kien").value = "";
-    document.getElementById("don_hang_toi_thieu").value = "";
-    document.getElementById("ngay_tao").value = getCurrentDate();
-    document.getElementById("han_su_dung").value = "";
-    document.getElementById("so_luong").value = "";
-    //document.getElementById("so_luot_SD").value = "";
-    document.getElementById("so_tien_giam").value = "";
-
-    setSelectedShipper(null);
-    setIsAddDisabled(false);
-    setFileList([]);
-    setSelectedShipper({
-      hoat_dong: "on",
-      ngay_tao: getCurrentDate(), // Giá trị mặc định
-    });
-  };
   const handelClear = () => {
-    clear();
+    setSelectedShipper("");
+    setIsDisabled(false);
   };
 
   // Cấu hình cột cho bảng
@@ -357,12 +352,13 @@ const QuanLyShipper = () => {
             style={{ cursor: "pointer", color: "#1890ff" }}
             onClick={() => chiTietShipper(record.shipperID)}
           />
-          {record.hoat_dong !== "Hoạt động" && (
-            <DeleteOutlined
-              style={{ cursor: "pointer", color: "red" }}
-              onClick={() => updateShipperXoaTable(record.shipperID)}
-            />
-          )}
+          {record.hoat_dong !== "Hoạt động" &&
+            record.trang_thai_xoa !== "Đã xóa" && (
+              <DeleteOutlined
+                style={{ cursor: "pointer", color: "red" }}
+                onClick={() => updateShipperXoaTable(record.shipperID)}
+              />
+            )}
           {record.trang_thai_xoa === "Đã xóa" && (
             <ReloadOutlined
               style={{ cursor: "pointer", color: "green" }}
@@ -378,66 +374,24 @@ const QuanLyShipper = () => {
   }
   const columnsNhatKyHoatDong = [
     {
-      title: "Mã voucher",
-      dataIndex: "voucherID",
-      key: "voucherID",
+      title: "Người thực hiện",
+      dataIndex: "accountID",
+      key: "accountID",
     },
     {
-      title: "Mã voucher",
-      dataIndex: "ma_voucher",
-      key: "ma_voucher",
+      title: "Ngày hành động",
+      dataIndex: "ngay_hanh_dong",
+      key: "ngay_hanh_dong",
     },
     {
-      title: "Điều kiện",
-      dataIndex: "dieu_kien",
-      key: "dieu_kien",
+      title: "Tên hành động",
+      dataIndex: "ten_hanh_dong",
+      key: "ten_hanh_dong",
     },
     {
-      title: "Đơn hàng tối thiểu",
-      dataIndex: "don_hang_toi_thieu",
-      key: "don_hang_toi_thieu",
-    },
-    {
-      title: "Ngày tạo",
-      dataIndex: "ngay_tao",
-      key: "ngay_tao",
-    },
-    {
-      title: "Hạn sử dụng",
-      dataIndex: "han_su_dung",
-      key: "han_su_dung",
-    },
-    {
-      title: "Số lượng",
-      dataIndex: "so_luong",
-      key: "so_luong",
-    },
-    {
-      title: "Số lượng sử dụng",
-      dataIndex: "so_luot_SD",
-      key: "so_luot_SD",
-    },
-    {
-      title: "Số tiền giảm giá",
-      dataIndex: "so_tien_giam",
-      key: "so_tien_giam",
-    },
-    {
-      title: "Hình ảnh",
-      dataIndex: "hinh_anh",
-      key: "hinh_anh",
-      render: (text) => (
-        <img
-          src={`http://localhost:8080/images/${text}`}
-          alt="Voucher"
-          style={{ width: 50, height: 50 }}
-        />
-      ),
-    },
-    {
-      title: "Hành động",
-      dataIndex: "hanh_dong",
-      key: "hanh_dong",
+      title: "ShipperID được thêm",
+      dataIndex: "shipperID",
+      key: "shipperID",
     },
   ];
 
@@ -566,7 +520,7 @@ const QuanLyShipper = () => {
                   </button>
                 </div>
                 <div className="form-group">
-                  <button className="button" onClick={handleUpdate}>
+                  <button className="button" onClick={handleUpdateShipper}>
                     Cập nhật
                   </button>
                 </div>
@@ -697,7 +651,7 @@ const QuanLyShipper = () => {
             <div className="tab-content">
               <h1>Nhật kí hoạt động</h1>
               <Table
-                //dataSource={filteredVoucherDataNhatKy}
+                dataSource={listNhatKy}
                 columns={columnsNhatKyHoatDong}
                 pagination={false}
               />

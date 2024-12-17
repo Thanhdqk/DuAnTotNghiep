@@ -11,20 +11,34 @@ import {
 } from "@mui/material";
 
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
-
+import { jwtDecode } from "jwt-decode";
 //import ProfileImg from "../../../assets/images/thanhne1.png";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
   const [userData, setUserData] = useState({});
   const navigate = useNavigate();
-
+  const danhSachThongTinCaNhan = async (accountid) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/lietKe/thongTinCaNhan/theoId/${accountid}`
+      );
+      const hinhAnhDay = response.data[0].hinhAnh;
+      console.log("Hình ảnh đây: ", hinhAnhDay);
+      setUserData(hinhAnhDay);
+      console.log("Danh sách nè trời: ", response.data);
+    } catch {}
+  };
   useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem("data"));
-    if (storedData) {
-      setUserData(storedData);
-    }
+    // const storedData = JSON.parse(localStorage.getItem("data"));
+    const accountIDNe = jwtDecode(localStorage.getItem("jwtToken")).sub;
+    console.log("accountIDNe nè: ", accountIDNe);
+    danhSachThongTinCaNhan(accountIDNe);
+    // if (hinhAnhNe) {
+    //   setUserData(hinhAnhNe);
+    // }
   }, []);
   const handleLogout = () => {
     localStorage.removeItem("jwtToken");
@@ -55,7 +69,7 @@ const Profile = () => {
         onClick={handleClick2}
       >
         <Avatar
-          src={`/images/${userData.hinhAnh}`}
+          src={`http://localhost:8080/images/${userData}`}
           alt="Null"
           sx={{
             width: 35,
@@ -80,7 +94,7 @@ const Profile = () => {
           },
         }}
       >
-        <MenuItem>
+        {/* <MenuItem>
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
@@ -97,7 +111,7 @@ const Profile = () => {
             <IconListCheck width={20} />
           </ListItemIcon>
           <ListItemText>My Tasks</ListItemText>
-        </MenuItem>
+        </MenuItem> */}
         <Box mt={1} py={1} px={2}>
           <Button
             variant="outlined"

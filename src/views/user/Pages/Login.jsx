@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import GoogleLoginButton from './GoogleLoginButton';
 
 
 function LoginForm() {
@@ -211,6 +212,7 @@ function LoginForm() {
           >
             Login
           </button>
+          <GoogleLoginButton></GoogleLoginButton>
 
         </div>
       </div>

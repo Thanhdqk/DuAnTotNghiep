@@ -14,21 +14,16 @@ const YeuThichSanPham = () => {
     const API_Call_SP_FAVORITE = async () => {
         const res = await axios({ url: `http://localhost:8080/FindALL/${userId}`, method: 'GET' })
         SetData(res.data)
-
     }
-
     useEffect(() => {
         API_Call_SP_FAVORITE()
-
     }, [])
 
     return (
-
         <div className="row vh-100 m-0">
         <div className="col-2 bg-dark text-white p-0">
           <Sidebar userId={userId} />
         </div>
-
         <main className="col-10 bg-light  justify-content-center align-items-center">
         <div className='container-fluid'>
             <div className="row mt-3">
@@ -38,7 +33,6 @@ const YeuThichSanPham = () => {
             </div>
             <div className="row">
                 {Data.map((product, index) => {
-
                     const totalStars = product.sanpham.danhgia.reduce((sum, rating) => sum + rating.so_sao, 0);
                     const averageStars = product.sanpham.danhgia.length > 0 ? (totalStars / product.sanpham.danhgia.length).toFixed(1) : 0;
                     return (

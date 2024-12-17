@@ -4,7 +4,7 @@ import { json, NavLink, useNavigate } from "react-router-dom";
 import { Checkbox, Button, Modal, Input, Select } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, UserOutlined, PhoneOutlined, HomeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { useDispatch, useSelector } from "react-redux";
-import { ClearCart, DecreaseItem, IncreaseItem, RemoveItem, AddSpthanhtoan, Clear, DecreaseSpthanhtoan, DeleteSpthanhtoan, IncreaseSpthanhtoan, RemoveSpthanhtoan, Thanhtoan, CallAPI_Cart, increaseItem, decreaseItem, removeItem, clearItem } from "../Reducer/cartReducer";
+import { ClearCart, DecreaseItem, IncreaseItem, addtotal, RemoveItem, addtotalweight, addvoucher2, addtotalheight, addtotallength, addtotalwidth, addtotalafterdiscount, AddSpthanhtoan, Clear, DecreaseSpthanhtoan, adddiscount, DeleteSpthanhtoan, IncreaseSpthanhtoan, RemoveSpthanhtoan, addvoucher, Thanhtoan, CallAPI_Cart, increaseItem, decreaseItem, removeItem, clearItem } from "../Reducer/cartReducer";
 import axios from "axios";
 import Swal from 'sweetalert2'
 import { Card, Col, Container, Row } from 'react-bootstrap'; import { toast } from 'react-toastify';
@@ -134,7 +134,6 @@ function Cart() {
             const api = AddSpthanhtoan(cart);
             dispatch(api);
         } else {
-
             const api = DeleteSpthanhtoan(cart);
             dispatch(api);
         }
@@ -178,8 +177,8 @@ function Cart() {
 
             if (jsonparsevoucher != null) {
                 if (!response.data) {
-               
-                    seterrormessage(errormessage.includes("Voucher đã hết hạn hoặc hết số lần sử dụng!")? errormessage+"" :errormessage+"Voucher đã hết hạn hoặc hết số lần sử dụng!");
+
+                    seterrormessage(errormessage.includes("Voucher đã hết hạn hoặc hết số lần sử dụng!") ? errormessage + "" : errormessage + "Voucher đã hết hạn hoặc hết số lần sử dụng!");
                     return false;
                 }
                 if (respone2.data.length != 0) {
@@ -216,6 +215,10 @@ function Cart() {
     const navigatetoCart = () => {
         localStorage.setItem('discount', 0);
         localStorage.setItem('total_after', JSON.stringify(0));
+        const api = adddiscount(0);
+        dispatch(api);
+        const api2 = addtotalafterdiscount(JSON.stringify(0));
+        dispatch(api2);
         navigate('/thanhtoan')
     }
 
@@ -253,6 +256,8 @@ function Cart() {
 
     const applyVoucher = (selectedvoucher, index, a, b) => {
         setvoucherindex(index);
+        const api = addvoucher(selectedvoucher);
+        dispatch(api);
         localStorage.setItem('voucher', JSON.stringify(selectedvoucher));
         setIsModalVoucherOpen(false)
 
@@ -278,10 +283,23 @@ function Cart() {
             setclick1(index);
             localStorage.setItem('total_after', JSON.stringify(total));
             localStorage.setItem('discount', parseInt(selectedvoucher.so_tien_giam));
+            const api = adddiscount(parseInt(selectedvoucher.so_tien_giam));
+            dispatch(api);
+            const api2 = addtotalafterdiscount(JSON.stringify(total));
+            dispatch(api2);
             console.log("ship_discount", total);
             console.log("shipvalue", shipvalue);
         } else {
             localStorage.setItem('voucher', null);
+
+            const api = addvoucher("");
+            dispatch(api);
+
+            const api2 = adddiscount(0);
+            dispatch(api2);
+            const api3 = addtotalafterdiscount(0);
+            dispatch(api3);
+
             setvoucherApplied(false)
             localStorage.setItem('discount', 0);
             localStorage.setItem('total_after', JSON.stringify(0));
@@ -309,8 +327,13 @@ function Cart() {
                 setvoucherApplied(false);
                 localStorage.setItem('voucher', null);
                 setvoucherindex(-1);
+
                 localStorage.setItem('discount', 0);
                 localStorage.setItem('total_after', JSON.stringify(0));
+                const api = adddiscount(0);
+                dispatch(api);
+                const api2 = addtotalafterdiscount(JSON.stringify(0));
+                dispatch(api2);
                 setshipvalue_discount(0)
             }
         } catch (error) {
@@ -340,12 +363,10 @@ function Cart() {
             const address = document.querySelector('.ant-select-selection-item');
             address.innerHTML = " ";
             console.log(address);
-
         }
         catch (error) {
             console.log(error)
         }
-
     };
     const onChangeWard = (value) => {
         try {
@@ -511,6 +532,24 @@ function Cart() {
 
         }
     };
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        iconColor: 'white',
+        customClass: {
+          popup: 'colored-toast',
+        },
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+      })
+
+      const ToastFire = () => {
+        Toast.fire({
+            icon: 'error',
+            title: `Bạn đã chọn hết sản phẩm !`,
+          })
+      }
 
     const InformationUser = async () => {
         const res = await axios({ url: `http://localhost:8080/FindDiaChiByID?id=${userId}`, method: "GET" })
@@ -539,7 +578,20 @@ function Cart() {
             checkamounttotal();
         }
         localStorage.setItem('totalamount', JSON.stringify(totalAmount));
+        const api = addtotal(totalAmount);
+        dispatch(api);
+
+
         apishippingfee(totalweight, totallength, totalwidth, totalheight);
+
+        const api3 = addtotalweight(totalweight);
+        const api4 = addtotallength(totallength);
+        const api5 = addtotalwidth(totalwidth);
+        const api6 = addtotalheight(totalheight);
+        dispatch(api3);
+        dispatch(api4);
+        dispatch(api5);
+        dispatch(api6);
         localStorage.setItem("totalweight", totalweight);
         localStorage.setItem("totallength", totallength);
         localStorage.setItem("totalwidth", totalwidth);
@@ -874,7 +926,10 @@ function Cart() {
                                     <span style={{ margin: '0 10px' }}>{cart.soLuong}</span>
                                     <Button onClick={() => {
                                         if (cart.soLuong == cart.sanPham.so_luong) {
-                                            alert(`Trong shop còn ${cart.sanPham.so_luong} sản phẩm thêm ăn cc à`);
+
+
+                                            // alert(`Trong shop còn ${cart.sanPham.so_luong} sản phẩm thêm ăn cc à`);
+                                            ToastFire(cart.sanPham.so_luong);
                                             return;
                                         }
                                         const increase = increaseItem({
@@ -908,9 +963,16 @@ function Cart() {
                             }} style={{ paddingTop: '70px', paddingLeft: '65px' }} />
                         </div>
                     })}
+                    {ListCart?.gioHangChiTiet?.length == 0 &&
+                        <div className="col-md-12 mt-5 text-center">
 
+                            <h4 className='fw-bold'>Rất tiếc !</h4>
+                            <h6>Bạn chưa thêm sản phẩm nào vào giỏ hàng</h6>
+                            <img src="/images/img-comment.svg" alt="" /></div>}
 
                 </div>
+
+
 
                 <div className="khuyenmai col-4">
                     <div className="tieudekhuyenmai">
@@ -1006,7 +1068,7 @@ function Cart() {
                             </div>
                         </div>
                         <div className="col-12 mt-2 thanhtoan" >
-                  
+
                             <button onClick={
                                 () => {
                                     console.log("error:", errormessage);

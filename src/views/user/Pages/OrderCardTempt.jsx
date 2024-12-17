@@ -63,7 +63,6 @@ const DonHang = () => {
 
 
     const Show_order_details = async (id) => {
-
         const res = await axios({
             url: `https://api-m.sandbox.paypal.com/v2/checkout/orders/${id}`,
             method: 'GET',
@@ -76,7 +75,6 @@ const DonHang = () => {
         console.log('order details', res.data);
         Show_details_for_authorized_payment(res.data.purchase_units[0].payments.authorizations[0].id);
         Show_captured_payment_details(res.data.purchase_units[0].payments.captures[0].id);
-
     }
     const Refund_captured_payment = async (url) => {
         const res = await axios({
@@ -133,7 +131,7 @@ const DonHang = () => {
                         { title: 'Đang chờ xử lý', description: 'Đơn hàng đã được xác nhận và chuẩn bị.' },
                         { title: 'Đang Chuẩn Bị', description: 'Đơn hàng đang được chuẩn bị để vận chuyển.' },
                         { title: 'Đang Giao', description: 'Đơn hàng đang trong quá trình vận chuyển.' },
-                        { title: 'Đã Giao', description: 'Đơn hàng đã được giao đến khách hàng.' },
+                        { title: 'Đã giao', description: 'Đơn hàng đã được giao đến khách hàng.' },
                     ]}
                 />
             </>
@@ -160,7 +158,7 @@ const DonHang = () => {
                         { title: 'Đang chờ xử lý', description: 'Đơn hàng đã được xác nhận và chuẩn bị.' },
                         { title: 'Đang Chuẩn Bị', description: 'Đơn hàng đang được chuẩn bị để vận chuyển.' },
                         { title: 'Đang Giao', description: 'Đơn hàng đang trong quá trình vận chuyển.' },
-                        { title: 'Đã Giao', description: 'Đơn hàng đã được giao đến khách hàng.' },
+                        { title: 'Đã giao', description: 'Đơn hàng đã được giao đến khách hàng.' },
                     ]}
                 />
             </>
@@ -256,8 +254,8 @@ const DonHang = () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/donhang?userId=${userId}`);
                 const sortedData = response.data.sort((a, b) => {
-                    if ((a.trang_thai === 'Đã Hủy' || a.trang_thai === 'Đã Giao') && !(b.trang_thai === 'Đã Hủy' || b.trang_thai === 'Đã Giao')) return 1;
-                    if (!(a.trang_thai === 'Đã Hủy' || a.trang_thai === 'Đã Giao') && (b.trang_thai === 'Đã Hủy' || b.trang_thai === 'Đã Giao')) return -1;
+                    if ((a.trang_thai === 'Đã Hủy' || a.trang_thai === 'Đã giao') && !(b.trang_thai === 'Đã Hủy' || b.trang_thai === 'Đã giao')) return 1;
+                    if (!(a.trang_thai === 'Đã Hủy' || a.trang_thai === 'Đã giao') && (b.trang_thai === 'Đã Hủy' || b.trang_thai === 'Đã giao')) return -1;
                     return new Date(b.ngay_tao) - new Date(a.ngay_tao);
                 });
                 setDonHangList(sortedData);
@@ -305,7 +303,7 @@ const DonHang = () => {
                 return 1;
             case 'Đang Giao':
                 return 2;
-            case 'Đã Giao':
+            case 'Đã giao':
                 return 3;
             case 'Đã Hủy':
                 return 4;
@@ -376,7 +374,7 @@ const DonHang = () => {
                           { title: 'Đang chờ xử lý', description: 'Đơn hàng đã được xác nhận.' },
                           { title: 'Đang Chuẩn Bị', description: 'Đơn hàng đang chuẩn bị.' },
                           { title: 'Đang Giao', description: 'Đơn hàng đang giao.' },
-                          { title: 'Đã Giao', description: 'Đơn hàng đã giao.' },
+                          { title: 'Đã giao', description: 'Đơn hàng Đã giao.' },
                         ]}
                       />
                     )}

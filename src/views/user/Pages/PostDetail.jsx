@@ -26,7 +26,8 @@ const PostDetail = () => {
       <div className="row mt-5">
 
       <div className="col-md-6">
-      <p className='text-muted ms-2 fw-bold'>{data.noi_dung}</p>
+      <div className="border p-3" dangerouslySetInnerHTML={{ __html: data.noi_dung }} />
+      {/* <p className='text-muted ms-2 fw-bold'>{data.noi_dung}</p> */}
       </div>
 
       <div className="col-md-6 d-flex justify-content-center">

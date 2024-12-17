@@ -8,10 +8,6 @@ const Spthanhtoan = createSlice({
     name: 'Spthanhtoan',
     initialState,
     reducers: {
-
-      
-       
-
     }
 });
 

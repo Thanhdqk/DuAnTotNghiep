@@ -3,6 +3,7 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import SpotifyPlayerComponent from './SpotifyPlayerComponent';
 
 
 
@@ -43,8 +44,7 @@ const GoogleLoginButton = () => {
 
       console.log("User saved:", res.data);
       localStorage.setItem("userToken", response.credential);
-      localStorage.setItem("account_id", res.data.accountID);
-      navigate("/");
+      navigate("/")
     } catch (error) {
       console.error("Error saving user:", error);
     }
@@ -58,8 +58,8 @@ const GoogleLoginButton = () => {
   return (
     <div className="container">
       <div className="row mt-5">
-        <div className="col-md-4"></div>
-        <div className="col-md-4">
+        
+        <div className="col-md-12">
           <GoogleOAuthProvider clientId={clientId}>
             <div className="GoogleLoginButton">
               <GoogleLogin
@@ -77,13 +77,27 @@ const GoogleLoginButton = () => {
           </GoogleOAuthProvider>
 
           
-
+          
          
 
 
-        
+         
         </div>
-        <div className="col-md-4"></div>
+   
+
+
+        <div className="col-md-12"></div>
+   
+          <SpotifyPlayerComponent></SpotifyPlayerComponent>
+
+          
+          
+         
+
+
+         
+ 
+
       </div>
     </div>
   );

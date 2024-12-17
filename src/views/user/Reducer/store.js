@@ -12,9 +12,7 @@ import YeuthichReducer from './YeuthichReducer'
 import postReducer from './postReducer'
 import voucherReducer from './voucherReducer'
 export const store = configureStore({
-
     reducer:{
-
         user:userReducer,
         popup:popReducer,
         category:categoryReducer,
@@ -28,6 +26,4 @@ export const store = configureStore({
         post: postReducer,
         voucher : voucherReducer
     }
-
-
 })

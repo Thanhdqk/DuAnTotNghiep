@@ -11,31 +11,13 @@ import { styled } from "@mui/material";
 import { clearListSpthanhtoan2 } from "../Reducer/cartReducer";
 import Swal from 'sweetalert2'
 
-const userId = localStorage.getItem('account_id');
-let shipfee = localStorage.getItem('shippingfee');
-
-
-
-let total = localStorage.getItem('totalamount');
-let totalafterdiscount = localStorage.getItem('total_after');
-let voucher = (localStorage.getItem('voucher'));
-let voucher2 = JSON.parse(localStorage.getItem('voucher'));
-let discount = localStorage.getItem('discount');
-let totalweight;
-let totallength;
-let totalwidth
-let totalheight;
 
 
 
 
 
-const AddressCurrent = localStorage.getItem('addressCurent') ? JSON.parse(localStorage.getItem('addressCurent')) : null;
 
 
-console.log('test', (((parseInt(total) + parseInt(shipfee)) * 0.00003951).toString()));
-console.log(Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(
-    ((parseInt(total) + parseInt(shipfee)) * 0.00003951)).toString());
 const options = [
     {
         label: (
@@ -74,6 +56,27 @@ const labelRender = (props) => {
 };
 
 function Thanhtoan() {
+
+    let shipfee = localStorage.getItem('shippingfee');
+
+    useSelector(state => state.cart.ListSpthanhtoan2)
+
+    let total =  useSelector(state => state.cart.total)
+    let totalafterdiscount = useSelector(state => state.cart.totalafterdiscount)
+    let voucher = useSelector(state => state.cart.voucher)
+    let voucher2 = useSelector(state => state.cart.voucher2)
+    let discount = useSelector(state => state.cart.discount)
+    let totalweight= useSelector(state => state.cart.totalweight)
+    let totallength= useSelector(state => state.cart.totallength)
+    let totalwidth=useSelector(state => state.cart.totalwidth)
+    let totalheight=useSelector(state => state.cart.totalheight)
+    const AddressCurrent = localStorage.getItem('addressCurent') ? JSON.parse(localStorage.getItem('addressCurent')) : null;
+
+
+    console.log('test', (((parseInt(total) + parseInt(shipfee)) * 0.00003951).toString()));
+    console.log(Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(
+        ((parseInt(total) + parseInt(shipfee)) * 0.00003951)).toString());
+
     const dispatch = useDispatch();
     const [temptid, settemptid] = useState(1);
     const [ghichu, setghichu] = useState('');
@@ -248,7 +251,7 @@ function Thanhtoan() {
         console.log("Response tao don hang: ", res.data);
         setdonhangid(res.data.don_hangid);
         sendmail();
-        
+
     }
     const sendmail = async () => {
         const res = await axios({
@@ -256,7 +259,7 @@ function Thanhtoan() {
             headers: {
                 "Content-Type": "application/json"
             }, data: {
-              
+
             }
         });
     }
@@ -342,7 +345,7 @@ function Thanhtoan() {
             text: "Khi thanh toán thông qua bán VNpay thì bạn sẽ không được hoàn tiền khi hủy đơn! Hãy xuy nghĩ kỹ",
             confirmButtonText: "Tiếp tục thanh toán",
             denyButtonText: `Don't save`
-          })
+        })
     }
 
 
@@ -456,7 +459,7 @@ function Thanhtoan() {
                 apipayment(res.data.data.order_code, null);
             }
         }
-  
+
 
     }
 
@@ -480,13 +483,13 @@ function Thanhtoan() {
 
 
     useEffect(() => {
-        totalweight = localStorage.getItem('totalweight');
-        totallength = localStorage.getItem('totallength');
-        totalwidth = localStorage.getItem("totalwidth");
-        totalheight = localStorage.getItem("totalheight");
-        voucher = localStorage.getItem('voucher');
+        // totalweight = localStorage.getItem('totalweight');
+        // totallength = localStorage.getItem('totallength');
+        // totalwidth = localStorage.getItem("totalwidth");
+        // totalheight = localStorage.getItem("totalheight");
+        // voucher = localStorage.getItem('voucher');
 
-        console.log(JSON.parse(voucher));
+        // console.log(JSON.parse(voucher));
     }, [donhangid, totalAmount, vouchervalid]);
     useEffect(() => {
         console.log('voucher validation', vouchervalid);
@@ -632,9 +635,9 @@ function Thanhtoan() {
                                 options={options}
                                 onChange={(value) => {
                                     setmethod(value)
-                           if(value == '3'){
-                               askiftheywanttocontinue()
-                           }
+                                    if (value == '3') {
+                                        askiftheywanttocontinue()
+                                    }
                                     if (value != '1') {
                                         setusingonlinepayment(true);
                                     } else {
@@ -686,14 +689,14 @@ function Thanhtoan() {
                                     color: 'white', fontWeight: 'bolder'
                                 }}>Trở về giỏ hàng</button> </Link> :
                                 <button disabled={ListSPChecked.length == 0 ? true : false} className="thanhtoanbtn" data-bs-toggle="modal" data-bs-target="#exampleModal2" ref={btn} onClick={() => {
-                                   if(userId.includes("null")){
-                                    redirect('/login');
-                              
-                                   }else{
-                                    const jsonparsevoucher = JSON.parse(voucher);
-                                    console.log(jsonparsevoucher)
-                                    checkvalidvoucher(voucher);
-                                   }
+                                    if (userId.includes("null")) {
+                                        redirect('/login');
+
+                                    } else {
+                                        const jsonparsevoucher = JSON.parse(voucher);
+                                        console.log(jsonparsevoucher)
+                                        checkvalidvoucher(voucher);
+                                    }
                                 }} style={{
                                     width: '100%', height: '45px',
                                     borderRadius: '5px', border: 'none', backgroundColor: 'red',

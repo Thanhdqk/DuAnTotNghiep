@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-// import imageChill from 'images/backgoundlogin.png';
+
 
 function RegisterForm() {
   const [email, setEmail] = useState('');
@@ -7,7 +7,6 @@ function RegisterForm() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [address, setAddress] = useState('');
   const [step, setStep] = useState(1);
   const [timer, setTimer] = useState(60);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -41,19 +40,41 @@ function RegisterForm() {
     setLoading(true);
     setErrorMessage('');
     setSuccessMessage('');
+
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setErrorMessage('Please enter a valid email address.');
       setLoading(false);
       return;
     }
+
+    // Check if the email exists
     try {
-      const response = await fetch('http://localhost:8080/auth/sendOtp', {
+      const checkResponse = await fetch('http://localhost:8080/auth/checkEmail', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-      const result = await response.text();
-      if (response.ok) {
+      if (!checkResponse.ok) {
+        const result = await checkResponse.text();
+        setErrorMessage(result); // Display message: Email already exists
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      setErrorMessage('Email đã tồn tại vui lòng sử dụng email khác');
+      setLoading(false);
+      return;
+    }
+
+    // Proceed to send OTP
+    try {
+      const otpResponse = await fetch('http://localhost:8080/auth/sendOtp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const result = await otpResponse.text();
+      if (otpResponse.ok) {
         if (result.includes('OTP sent successfully')) {
           setStep(2);
           setIsButtonDisabled(true);
@@ -70,6 +91,7 @@ function RegisterForm() {
       setLoading(false);
     }
   };
+
 
   const handleVerifyOtp = async () => {
     setLoading(true);
@@ -114,23 +136,19 @@ function RegisterForm() {
       setLoading(false);
       return;
     }
-    if (!address) {
-      setErrorMessage('Please enter your address.');
-      setLoading(false);
-      return;
-    }
+
     try {
       const response = await fetch('http://localhost:8080/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, fullName, phoneNumber, address }),
+        body: JSON.stringify({ email, password, fullName, phoneNumber }),
       });
       if (response.ok) {
         const newUser = await response.json();
         localStorage.setItem('userEmail', email);
         localStorage.setItem('userId', newUser.accountID);
         setSuccessMessage('Registration successful!');
-        window.location.href = `http://localhost:3000/personnalinfo?userId=${newUser.accountID}`;
+        window.location.href = `http://localhost:3000/thông-tin-cá-nhân?userId=${newUser.accountID}`;
       } else {
         const result = await response.json();
         setErrorMessage('Error: ' + result.message);
@@ -172,7 +190,8 @@ function RegisterForm() {
       }}>
         <div style={{
           flex: 1,
-          backgroundImage: `url(images/backgoundlogin.png)`,
+         backgroundImage: `url(images/backgoundlogin.png)`,
+          backgroundSize: 'cover',
           backgroundPosition: 'center',
           borderTopLeftRadius: '15px',
           borderBottomLeftRadius: '15px',
@@ -198,14 +217,22 @@ function RegisterForm() {
             <div style={{
               color: '#D32F2F',
               padding: '12px',
-              borderRadius: '8px',
               backgroundColor: '#FFEBEE',
               marginBottom: '20px',
               textAlign: 'center',
-              border: '1px solid #D32F2F',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Added shadow to error box
             }}>
-              {errorMessage}
+              {errorMessage && (
+                <div style={{
+                  color: '#D32F2F',
+                  padding: '12px',
+                  backgroundColor: '#FFEBEE',
+                  textAlign: 'center',
+                }}>
+                  {errorMessage}
+                </div>
+              )}
+
             </div>
           )}
 
@@ -213,11 +240,9 @@ function RegisterForm() {
             <div style={{
               color: '#388E3C',
               padding: '12px',
-              borderRadius: '8px',
               backgroundColor: '#E8F5E9',
               marginBottom: '20px',
               textAlign: 'center',
-              border: '1px solid #388E3C',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Added shadow to success box
             }}>
               {successMessage}
@@ -265,149 +290,132 @@ function RegisterForm() {
               </button>
             </>
           )}
-{step === 2 && (
-  <>
-    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: '20px' }}>
-      {otp.map((digit, index) => (
-        <input
-          key={index}
-          type="text"
-          value={digit}
-          onChange={(e) => handleOtpChange(index, e.target.value)}
-          ref={(el) => (otpRefs.current[index] = el)}
-          maxLength="1"
-          style={{
-            width: 'calc(33.33% - 10px)', // 3 inputs per row
-            padding: '10px', // Smaller padding
-            fontSize: '1.2em', // Smaller font size
-            fontWeight: 'bold',
-            textAlign: 'center',
-            borderRadius: '8px',
-            border: '2px solid #ff6f61',
-            marginBottom: '10px', // Vertical space between rows
-            outline: 'none',
-            boxSizing: 'border-box',
-            transition: 'border-color 0.3s ease, transform 0.2s ease',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
-            transform: digit ? 'scale(1.1)' : 'scale(1)',
-          }}
-        />
-      ))}
-    </div>
-    <button
-      onClick={handleVerifyOtp}
-      style={{
-        width: '100%',
-        padding: '15px',
-        backgroundColor: '#ff6f61',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '8px',
-        fontSize: '1.1em',
-        cursor: loading ? 'not-allowed' : 'pointer',
-        transition: 'background-color 0.3s ease',
-        marginTop: '15px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      }}
-      disabled={loading}
-    >
-      {loading ? 'Verifying...' : 'Verify OTP'}
-    </button>
-  </>
-)}
+          {step === 2 && (
+            <>
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: '20px' }}>
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    value={digit}
+                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                    ref={(el) => (otpRefs.current[index] = el)}
+                    maxLength="1"
+                    style={{
+                      width: 'calc(33.33% - 10px)', // 3 inputs per row
+                      padding: '10px', // Smaller padding
+                      fontSize: '1.2em', // Smaller font size
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                      borderRadius: '8px',
+                      border: '2px solid #ff6f61',
+                      marginBottom: '10px', // Vertical space between rows
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      transition: 'border-color 0.3s ease, transform 0.2s ease',
+                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+                      transform: digit ? 'scale(1.1)' : 'scale(1)',
+                    }}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={handleVerifyOtp}
+                style={{
+                  width: '100%',
+                  padding: '15px',
+                  backgroundColor: '#ff6f61',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '1.1em',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  transition: 'background-color 0.3s ease',
+                  marginTop: '15px',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                }}
+                disabled={loading}
+              >
+                {loading ? 'Verifying...' : 'Verify OTP'}
+              </button>
+            </>
+          )}
 
 
-{step === 3 && (
-  <>
-    <input
-      type="password"
-      placeholder="Password (6 digits)"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      style={{
-        width: '100%',
-        padding: '15px',
-        fontSize: '1.1em',
-        borderRadius: '8px',
-        border: '2px solid #ff6f61',
-        marginBottom: '15px',
-        outline: 'none',
-        boxSizing: 'border-box',
-        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
-      }}
-    />
-    <input
-      type="text"
-      placeholder="Full Name"
-      value={fullName}
-      onChange={(e) => setFullName(e.target.value)}
-      style={{
-        width: '100%',
-        padding: '15px',
-        fontSize: '1.1em',
-        borderRadius: '8px',
-        border: '2px solid #ff6f61',
-        marginBottom: '15px',
-        outline: 'none',
-        boxSizing: 'border-box',
-        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
-      }}
-    />
-    <input
-      type="text"
-      placeholder="Phone Number"
-      value={phoneNumber}
-      onChange={(e) => setPhoneNumber(e.target.value)}
-      style={{
-        width: '100%',
-        padding: '15px',
-        fontSize: '1.1em',
-        borderRadius: '8px',
-        border: '2px solid #ff6f61',
-        marginBottom: '15px',
-        outline: 'none',
-        boxSizing: 'border-box',
-        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
-      }}
-    />
-    <input
-      type="text"
-      placeholder="Address"
-      value={address}
-      onChange={(e) => setAddress(e.target.value)}
-      style={{
-        width: '100%',
-        padding: '15px',
-        fontSize: '1.1em',
-        borderRadius: '8px',
-        border: '2px solid #ff6f61',
-        marginBottom: '15px',
-        outline: 'none',
-        boxSizing: 'border-box',
-        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
-      }}
-    />
-    <button
-      onClick={handleRegistration}
-      style={{
-        width: '100%',
-        padding: '15px',
-        backgroundColor: '#ff6f61',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '8px',
-        fontSize: '1.1em',
-        cursor: loading ? 'not-allowed' : 'pointer',
-        transition: 'background-color 0.3s ease',
-        marginTop: '15px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Added shadow to button
-      }}
-      disabled={loading}
-    >
-      {loading ? 'Registering...' : 'Register'}
-    </button>
-  </>
-)}
+          {step === 3 && (
+            <>
+              <input
+                type="password"
+                placeholder="Password (6 digits)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '15px',
+                  fontSize: '1.1em',
+                  borderRadius: '8px',
+                  border: '2px solid #ff6f61',
+                  marginBottom: '15px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '15px',
+                  fontSize: '1.1em',
+                  borderRadius: '8px',
+                  border: '2px solid #ff6f61',
+                  marginBottom: '15px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Phone Number"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '15px',
+                  fontSize: '1.1em',
+                  borderRadius: '8px',
+                  border: '2px solid #ff6f61',
+                  marginBottom: '15px',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Added shadow to input
+                }}
+              />
+              <button
+                onClick={handleRegistration}
+                style={{
+                  width: '100%',
+                  padding: '15px',
+                  backgroundColor: '#ff6f61',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '1.1em',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  transition: 'background-color 0.3s ease',
+                  marginTop: '15px',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Added shadow to button
+                }}
+                disabled={loading}
+              >
+                {loading ? 'Registering...' : 'Register'}
+              </button>
+            </>
+          )}
 
         </div>
       </div>

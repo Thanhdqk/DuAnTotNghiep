@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BaiTapLab.Entity.DanhGia;
+import com.BaiTapLab.Entity.HanhDong;
 import com.BaiTapLab.Entity.PhanHoiDanhGia;
 import com.BaiTapLab.Entity.SanPham;
 import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Repository.DanhGiaRepository;
+import com.BaiTapLab.Repository.HanhDongRepository;
 import com.BaiTapLab.Repository.PhanHoiDanhGiaRepository;
 
 @RestController
@@ -28,6 +30,9 @@ public class PhanHoiDanhGiaRestController {
 	
 	@Autowired
 	DanhGiaRepository danhGiaRepository;
+	
+	@Autowired
+	HanhDongRepository hanhdongRepository;
 	
 	@PostMapping("/save")
 	public ResponseEntity<PhanHoiDanhGia> savePhanHoi(
@@ -61,6 +66,13 @@ public class PhanHoiDanhGiaRestController {
 		phanhoidanhgia.setSanpham(sanpham);
 		phanhoidanhgia.setUsers(users);
 		phanhoiDanhGiaRepository.save(phanhoidanhgia);
+		
+		HanhDong hanhdong = new HanhDong();
+		hanhdong.setNgay_hanh_dong(LocalDate.now());
+		hanhdong.setTen_hanh_dong("Phản hồi đánh giá");
+		hanhdong.setDanhgia(danhgia);
+		hanhdong.setUsers(users);
+		hanhdongRepository.save(hanhdong);
 		return ResponseEntity.ok(phanhoidanhgia);
 	}
 }

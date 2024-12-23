@@ -48,4 +48,9 @@ public interface ShipperRepository extends JpaRepository<Shipper, String>{
 			+ "set trang_thai_xoa = NULL, hoat_dong = 'On'\r\n"
 			+ "where shipperid = :shipperid", nativeQuery = true)
 	int updateKhoiPhucShipper(@Param("shipperid") String shipperid);
+	
+	// Nhật ký Shipper
+	@Query(value = "select accountid, ngay_hanh_dong, ten_hanh_dong, shipperid from hanhdong\r\n"
+			+ "  where shipperid is not null", nativeQuery = true)
+	List<Object[]> listNhatKy();
 }

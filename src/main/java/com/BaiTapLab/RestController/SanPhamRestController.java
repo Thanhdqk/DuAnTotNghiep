@@ -254,6 +254,7 @@ public class SanPhamRestController {
             map.put("ten_thuong_hieu", obj[11]);
             map.put("ten_nha_cung_cap", obj[12]);
             map.put("san_phamId", obj[13]);
+            map.put("han_su_dung", obj[14]);
             result.add(map);
         }
 		return ResponseEntity.ok(result);
@@ -290,6 +291,7 @@ public class SanPhamRestController {
             map.put("ten_thuong_hieu", obj[21]);
             map.put("ten_loaiDM", obj[22]);
             map.put("han_su_dung", obj[23]);
+            map.put("ghi_chu", obj[24]);
             result.add(map);
         }
 	    return ResponseEntity.ok(result);

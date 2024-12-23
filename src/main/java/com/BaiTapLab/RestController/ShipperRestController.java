@@ -53,9 +53,37 @@ public class ShipperRestController {
 	    return ResponseEntity.ok(result);
 	}
 	
+	@GetMapping("/listNhatKy")
+	public ResponseEntity<List<Map<String, Object>>> getDanhSachShipperNhatKy() {
+	    // Lấy tất cả sản phẩm từ cơ sở dữ liệu
+	    List<Object[]> listShipper = shipperRepository.listNhatKy();
+	    List<Map<String, Object>> result = new ArrayList<>();
+		for (Object[] obj : listShipper) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("accountID", obj[0]);
+            map.put("ngay_hanh_dong", obj[1]);
+            map.put("ten_hanh_dong", obj[2]);
+            map.put("shipperID", obj[3]);
+            result.add(map);
+        }
+	    return ResponseEntity.ok(result);
+	}
+	
 	@PutMapping("/update/trangThaiXoa/{shipperID}")
-	  public ResponseEntity<?> deleteShipper(@PathVariable("shipperID") String shipperID) {
+	  public ResponseEntity<?> deleteShipper(@PathVariable("shipperID") String shipperID,
+			  @RequestParam("accountID") String accountID) {
 	      Integer isUpdated = shipperRepository.updateShipper(shipperID);
+	      Optional<Shipper> shipper = shipperRepository.findById(shipperID);
+		if(shipper.isPresent()) {
+			Shipper shipperNe = shipper.get();
+			HanhDong hanhdong = new HanhDong();
+			hanhdong.setTen_hanh_dong("Chuyển shipper vào thùng rác");
+			hanhdong.setNgay_hanh_dong(LocalDate.now());
+			hanhdong.setShipper(shipperNe);
+			hanhdong.setUsers(usersRepository.findById(accountID)
+          		.orElseThrow(() -> new RuntimeException("Account không tồn tại")));
+			hanhDongRepository.save(hanhdong);
+			};
 	      if (isUpdated > 0) {
 	          return ResponseEntity.ok("Trạng thái sản phẩm với ID " + shipperID + " đã được cập nhật thành 'Đã xóa'.");
 	      } else {
@@ -65,8 +93,20 @@ public class ShipperRestController {
 	 }
 	
 	@PutMapping("/update/khoiphuc/{shipperID}")
-	  public ResponseEntity<?> khoiphucShipper(@PathVariable("shipperID") String shipperID) {
+	  public ResponseEntity<?> khoiphucShipper(@PathVariable("shipperID") String shipperID,
+			  @RequestParam("accountID") String accountID) {
 	      Integer isUpdated = shipperRepository.updateKhoiPhucShipper(shipperID);
+	      Optional<Shipper> shipper = shipperRepository.findById(shipperID);
+	      Shipper shipperNe = shipper.get();
+			if(shipper.isPresent()) {
+				HanhDong hanhdong = new HanhDong();
+				hanhdong.setTen_hanh_dong("Khôi phục shipper");
+				hanhdong.setNgay_hanh_dong(LocalDate.now());
+				hanhdong.setShipper(shipperNe);
+				hanhdong.setUsers(usersRepository.findById(accountID)
+	          		.orElseThrow(() -> new RuntimeException("Account không tồn tại")));
+				hanhDongRepository.save(hanhdong);
+				};
 	      if (isUpdated > 0) {
 	          return ResponseEntity.ok("Trạng thái sản phẩm với ID " + shipperID + " đã được cập nhật thành 'Đã xóa'.");
 	      } else {
@@ -120,6 +160,32 @@ public class ShipperRestController {
 			@RequestParam("password") String password,
 			@RequestParam("hoat_dong") String hoat_dong,
 			@RequestParam("accountID") String accountID){
+		
+			Shipper shipperNe = new Shipper();
+			shipperNe.setShipperID(shipperID);
+			shipperNe.setHovaten(hovaten);
+			shipperNe.setPassword(password);
+			shipperNe.setVai_tro("Shipper");
+			shipperNe.setHoat_dong(hoat_dong);
+			shipperRepository.save(shipperNe);
+			HanhDong hanhdong = new HanhDong();
+			hanhdong.setTen_hanh_dong("Thêm shipper");
+			hanhdong.setNgay_hanh_dong(LocalDate.now());
+			hanhdong.setShipper(shipperNe);
+			hanhdong.setUsers(usersRepository.findById(accountID)
+            		.orElseThrow(() -> new RuntimeException("Account không tồn tại")));
+			hanhDongRepository.save(hanhdong);
+		
+		return ResponseEntity.ok(shipperNe);
+	}
+	
+	@PutMapping("/updateShipper")
+	public ResponseEntity<?> updateShipper(
+			@RequestParam("shipperID") String shipperID,
+			@RequestParam("hovaten") String hovaten,
+			@RequestParam("password") String password,
+			@RequestParam("hoat_dong") String hoat_dong,
+			@RequestParam("accountID") String accountID){
 		Optional<Shipper> shipper = shipperRepository.findById(shipperID);
 		if(shipper.isPresent()) {
 			Shipper shipperNe = shipper.get();
@@ -130,7 +196,7 @@ public class ShipperRestController {
 			shipperNe.setHoat_dong(hoat_dong);
 			
 			HanhDong hanhdong = new HanhDong();
-			hanhdong.setTen_hanh_dong("Thêm shipper");
+			hanhdong.setTen_hanh_dong("Cập nhật shipper");
 			hanhdong.setNgay_hanh_dong(LocalDate.now());
 			hanhdong.setShipper(shipperNe);
 			hanhdong.setUsers(usersRepository.findById(accountID)

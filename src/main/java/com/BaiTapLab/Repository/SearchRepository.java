@@ -20,7 +20,7 @@ public interface SearchRepository extends JpaRepository<SanPham, String> {
 			+ "(SELECT COUNT(dg) FROM DanhGia dg WHERE dg.sanpham.san_phamId = s.san_phamId) AS soDanhGia, "
 			+ "(SELECT h.ten_hinh FROM HinhAnh h WHERE h.sanpham.san_phamId = s.san_phamId ORDER BY h.id ASC LIMIT 1) AS tenHinhDauTien "
 			+ "FROM SanPham s WHERE s.danhmuc.danh_mucId = ?1 AND (?2 = true AND s.phantram_GG > 0 OR ?2 = false AND s.phantram_GG >= 0 )"
-			+ "AND s.hoat_dong LIKE 'Working' AND s.trang_thai_xoa  is null ")
+			+ "AND s.hoat_dong LIKE 'On' AND s.trang_thai_xoa  is null ")
 	List<Object[]> findSanPhamByDanhMuc(String danhmuc, boolean showDiscount);
 
 	// danh mục and name

@@ -140,8 +140,8 @@ public class VoucherRestController {
             map.put("so_luot_SD", obj[8]);
             map.put("so_tien_giam", obj[9]);
             map.put("hoat_dong", obj[10]);
-            map.put("accountID", obj[11]);
-            map.put("trang_thai_xoa", obj[12]);
+            //map.put("accountID", obj[11]);
+            map.put("trang_thai_xoa", obj[11]);
             result.add(map);
         }
 		return ResponseEntity.ok(result);
@@ -195,9 +195,11 @@ public class VoucherRestController {
 		Map<String, String> response = new HashMap<>();
 
 	    try {
-//	    	if(voucherRepository.danhSachVoucherTheoMaVoucher(ma_voucher)) {
-//	    		
-//	    	}
+	    	if(!voucherRepository.danhSachVoucherTheoMaVoucher(ma_voucher).isEmpty()) {
+	    		//response.put("message", "Voucher này đã tồn tại");
+	    		String errorMessage = "Voucher với mã '" + ma_voucher + "' đã tồn tại trong hệ thống.";
+	            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+	    	}
 	        // Tạo đối tượng Voucher từ các tham số
 	        Voucher voucher = new Voucher();
 	        voucher.setVoucherID(voucherID);
@@ -256,7 +258,7 @@ public class VoucherRestController {
 	        }
 
 	        // Lưu VoucherDetail vào DB
-	        voucherDetailService.createVoucherDetail(voucherDetail);
+	        //voucherDetailService.createVoucherDetail(voucherDetail);
 
 	        // Trả về thông tin voucher và voucherDetail đã lưu
 	        return ResponseEntity.ok(savedVoucher);

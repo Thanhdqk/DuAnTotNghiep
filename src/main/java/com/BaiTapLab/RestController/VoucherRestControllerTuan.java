@@ -27,6 +27,11 @@ public class VoucherRestControllerTuan {
 	@Autowired
 	VoucherRepository detailRepository;
 
+	
+	@GetMapping("/getallwithoutId")
+	public List<Voucher> getMethodName() {
+		return detailRepository.findVoucherall();
+	}
 	@GetMapping("/loadAllVouchers")
     public List<Voucher> loadAllVouchers(@RequestParam String accountID) {
         return voucherService.findAllVouchersWithSavedStatus(accountID);

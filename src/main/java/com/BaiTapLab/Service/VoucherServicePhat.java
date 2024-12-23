@@ -67,7 +67,7 @@ public class VoucherServicePhat {
 	        LocalDate today = LocalDate.now();
 	        
 	        return VoucherRepository.findAll().stream()
-	                .filter(voucher -> voucher.getHan_su_dung().isAfter(today) && voucher.getSo_luong() > 0)
+	                .filter(voucher -> voucher.getHan_su_dung().isAfter(today) && voucher.getSo_luong() > 0 && !voucher.getHoat_dong().equals("Off"))
 	                .peek(voucher -> voucher.setSaved(savedVoucherIDs.contains(voucher.getVoucherID())))
 	                .toList();
 	    }

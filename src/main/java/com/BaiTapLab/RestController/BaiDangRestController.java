@@ -39,6 +39,7 @@ import com.google.cloud.storage.StorageOptions;
 
 @RestController
 public class BaiDangRestController {
+	// Finsish cloud
 	private static final String BUCKET_NAME = "staging.thanhnehihi.appspot.com";
 	@Autowired
 	BaiDangService baidangService;
@@ -137,12 +138,22 @@ public class BaiDangRestController {
 	        baidang.setUsers(userRepository.findByAccountID(accountID));
 	        // Xử lý file ảnh nếu được upload
 	        if (hinh_anh != null && hinh_anh.length > 0) {
-	            String originalFileName = hinh_anh[0].getOriginalFilename();
+            String tenHinhAnh = hinh_anh[0].getOriginalFilename();
+            String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
 
-	            String imageUrl = uploadFileToGCS(hinh_anh[0], originalFileName);
+            // Tạo thư mục nếu chưa tồn tại
+            File hinhFile = new File(uploadDir + tenHinhAnh);
+            if (!hinhFile.getParentFile().exists()) {
+                hinhFile.getParentFile().mkdirs();
+            }
 
-	            baidang.setHinh_anh(imageUrl);
-	        }
+            // Lưu file ảnh vào thư mục
+            hinh_anh[0].transferTo(hinhFile);
+
+            // Tạo URL để truy cập ảnh và lưu vào đối tượng Voucher
+            String imageUrl = "http://localhost:8080/images/" + tenHinhAnh;
+            baidang.setHinh_anh(tenHinhAnh);
+        }
 	        
 	        
 	        // Lưu baidang vào DB qua service
@@ -233,6 +244,13 @@ public class BaiDangRestController {
 	            baidang.setHinh_anh(tenHinhAnh);
 	        }
 
+	        if (hinh_anh != null && hinh_anh.length > 0) {
+	            String originalFileName = hinh_anh[0].getOriginalFilename();
+
+	            String imageUrl = uploadFileToGCS(hinh_anh[0], originalFileName);
+
+	            baidang.setHinh_anh(imageUrl);
+	        }
 	        // Lưu baidang vào DB qua service
 	        
 	        BaiDang updatedBaiDang = baidangService.updateBaiDang(baidang);

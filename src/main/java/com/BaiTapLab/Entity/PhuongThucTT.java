@@ -25,8 +25,6 @@ public class PhuongThucTT {
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ten_phuong_thuc;
 	
-	public LocalDate ngay_tao;
-	
 	@Column(columnDefinition = "NVARCHAR(255)")
 	public String ten_loai;
 	

@@ -110,7 +110,11 @@ public class NhapHangRestController {
   	  sanpham.setNhap_hang("Chờ phê duyệt");
   	  sanpham.setPhe_duyet("Chưa phê duyệt");
   	  sanpham.setHoat_dong("Off");
-
+	  	if(!sanphamRepository.trungTenSanPham(ten_san_pham).isEmpty()) {
+			//response.put("message", "Voucher này đã tồn tại");
+			String errorMessage = "Sản phẩm với mã '" + san_phamId + "' đã tồn tại trong hệ thống.";
+	        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+		}
   	  
   	  Users user = userService.findByAccountID(accountID);
       if (user != null) {
@@ -242,17 +246,33 @@ public class NhapHangRestController {
                   .body("Không tìm thấy nhà cung cấp với tên: " + ten_nha_cung_cap);
       }
 
+      HanhDong hanhdong = new HanhDong();
+      hanhdong.setTen_hanh_dong("Cập nhật sản phẩm chờ phê duyệt");
+      hanhdong.setNgay_hanh_dong(LocalDate.now());
+      hanhdong.setUsers(user);
+      hanhdong.setSanpham(sanpham);
       // Lưu sản phẩm đã cập nhật
       sanphamRepository.save(sanpham);
+      hanhDongRepository.save(hanhdong);
 
       return ResponseEntity.ok("Sản phẩm đã được cập nhật thành công!");
   }
 
   @PutMapping("/update/trangThaiXoa/{san_phamId}")// Xóa hàng hàng chưa duyệt
-  public ResponseEntity<?> deleteSanPham(@PathVariable("san_phamId") String san_phamId) {
+  public ResponseEntity<?> deleteSanPham(@PathVariable("san_phamId") String san_phamId,
+		  @RequestParam("accountID") String accountID) {
       Integer isUpdated = sanphamRepository.updateSanPhamById(san_phamId);
+      SanPham sanpham = sanphamRepository.findById(san_phamId).orElse(null);
+      Users user = userService.findByAccountID(accountID);
       if (isUpdated > 0) {
+          HanhDong hanhdong = new HanhDong();
+          hanhdong.setTen_hanh_dong("Xóa sản phẩm chờ phê duyệt");
+          hanhdong.setNgay_hanh_dong(LocalDate.now());
+          hanhdong.setUsers(user);
+          hanhdong.setSanpham(sanpham);
+          hanhDongRepository.save(hanhdong);
           return ResponseEntity.ok("Trạng thái sản phẩm với ID " + san_phamId + " đã được cập nhật thành 'Đã xóa'.");
+          
       } else {
           return ResponseEntity.status(HttpStatus.NOT_FOUND)
                   .body("Không tìm thấy sản phẩm với ID: " + san_phamId);
@@ -260,9 +280,18 @@ public class NhapHangRestController {
   }
   
   @PutMapping("/update/reload/{san_phamId}") // Khôi phục hàng chưa duyệt
-  public ResponseEntity<?> reloadSanPham(@PathVariable("san_phamId") String san_phamId) {
+  public ResponseEntity<?> reloadSanPham(@PathVariable("san_phamId") String san_phamId,
+		  @RequestParam("accountID") String accountID) {
       Integer isUpdated = sanphamRepository.reloadSanPhamById(san_phamId);
+      SanPham sanpham = sanphamRepository.findById(san_phamId).orElse(null);
+      Users user = userService.findByAccountID(accountID);
       if (isUpdated > 0) {
+          HanhDong hanhdong = new HanhDong();
+          hanhdong.setTen_hanh_dong("Khôi phục sản phẩm chờ phê duyệt");
+          hanhdong.setNgay_hanh_dong(LocalDate.now());
+          hanhdong.setUsers(user);
+          hanhdong.setSanpham(sanpham);
+          hanhDongRepository.save(hanhdong);
           return ResponseEntity.ok("Trạng thái sản phẩm với ID " + san_phamId + " đã được cập nhật thành 'Đã xóa'.");
       } else {
           return ResponseEntity.status(HttpStatus.NOT_FOUND)

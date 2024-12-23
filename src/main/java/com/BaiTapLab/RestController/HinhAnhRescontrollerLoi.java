@@ -184,25 +184,26 @@ public class HinhAnhRescontrollerLoi {
 		return ResponseEntity.ok("Hình ảnh sản phẩm đã được cập nhật!");
 
 	}
-
+// google 
 	@PostMapping("update/images")
 	public ResponseEntity<?> ADDHinhAnhSanPham(@RequestParam("name") String name,
-			@RequestParam("imagemain") String imagemain, @RequestParam("imagephu1") String imagephu1,
-			@RequestParam("imagephu2") String imagephu2, @RequestParam("imagemainold") String imagemainold,
+			@RequestParam("imagemain") MultipartFile imagemain, @RequestParam("imagephu1") MultipartFile imagephu1,
+			@RequestParam("imagephu2") MultipartFile imagephu2, @RequestParam("imagemainold") String imagemainold,
 			@RequestParam("imagephu1old") String imagephu1old, @RequestParam("imagephu2old") String imagephu2old
 
 	) {
 
-		System.out.println("s1 :" + name);
-		System.out.println("s1" + imagemain);
-		System.out.println("s1" + imagephu1);
-		System.out.println("s1" + imagephu2);
-
+	// here
+		String imgmain = imagemain.getOriginalFilename();
+		String img1 = imagephu1.getOriginalFilename();
+		String img2 = imagephu2.getOriginalFilename();
 		System.out.println("s1" + name);
 		System.out.println("s1" + imagemainold);
 		System.out.println("s1" + imagephu1old);
 		System.out.println("s1" + imagephu2old);
-
+		System.out.println("sadsadsad :"+imgmain);
+		System.out.println("sadsadsad :"+img1);
+		System.out.println("sadsadsad :"+img2);
 		SanPham sanpham = sanPhamRepository.findONESanPhamByTenSanPham(name);
 
 		String id = sanpham.getSan_phamId();
@@ -210,10 +211,10 @@ public class HinhAnhRescontrollerLoi {
 		if (imagemain != null && !imagemain.isEmpty()) {
 			System.out.println("running ");
 			HinhAnh ha = new HinhAnh();
-			List<HinhAnh> hanh = hinhAnhRepository.findBySanphamAndTenHinh(id, imagemain);
+		
 
 			ha.setSanpham(sanpham);
-			ha.setTen_hinh(imagemain);
+			ha.setTen_hinh(imgmain);
 			hinhAnhRepository.save(ha);
 			HanhDong hd = new HanhDong();
 			hd.setHinhanh(ha);
@@ -224,10 +225,10 @@ public class HinhAnhRescontrollerLoi {
 		if (imagephu1 != null && !imagephu1.isEmpty()) {
 			System.out.println("running 1");
 			HinhAnh ha = new HinhAnh();
-			List<HinhAnh> hanh = hinhAnhRepository.findBySanphamAndTenHinh(id, imagephu1);
+		
 
 			ha.setSanpham(sanpham);
-			ha.setTen_hinh(imagephu1);
+			ha.setTen_hinh(img1);
 			hinhAnhRepository.save(ha);
 			HanhDong hd = new HanhDong();
 			hd.setHinhanh(ha);
@@ -238,10 +239,10 @@ public class HinhAnhRescontrollerLoi {
 		if (imagephu2 != null && !imagephu2.isEmpty()) {
 			System.out.println("running 2");
 			HinhAnh ha = new HinhAnh();
-			List<HinhAnh> hanh = hinhAnhRepository.findBySanphamAndTenHinh(id, imagephu2);
+			
 
 			ha.setSanpham(sanpham);
-			ha.setTen_hinh(imagephu2);
+			ha.setTen_hinh(img2);
 			hinhAnhRepository.save(ha);
 			HanhDong hd = new HanhDong();
 			hd.setHinhanh(ha);
@@ -274,6 +275,7 @@ public class HinhAnhRescontrollerLoi {
 
 	////////////////////////////
 	// update 3 ảnh
+	// google
 	@PutMapping("update/images3ANH")
 	public ResponseEntity<?> updateHinhAnhSanPham3ANH(@RequestParam("name") String name,
 			@RequestParam("imagemain") MultipartFile imagemain, @RequestParam("imagephu1") MultipartFile imagephu1,
@@ -291,7 +293,7 @@ public class HinhAnhRescontrollerLoi {
 		System.out.println("" + imagemainold);
 		System.out.println("" + imagephu1old);
 		System.out.println("" + imagephu2old);
-
+		//
 		String TenANHMAIN = imagemain.getOriginalFilename();
 		String TenanhPhu1 = imagephu1.getOriginalFilename();
 		String TenanhPhu2 = imagephu2.getOriginalFilename();
@@ -364,6 +366,7 @@ public class HinhAnhRescontrollerLoi {
 	}
 
 	// update 2 ảnh mainand1
+	// google
 	@PutMapping("update/imagesmainand1")
 	public ResponseEntity<?> updateHinhAnhSanPhammainand1(@RequestParam("name") String name,
 			@RequestParam("imagemain") MultipartFile imagemain, @RequestParam("imagephu1") MultipartFile imagephu1,
@@ -432,6 +435,7 @@ public class HinhAnhRescontrollerLoi {
 
 	
 	// update 2 ảnh mainand1
+	// google
 		@PutMapping("update/imagesmain1anh")
 		public ResponseEntity<?> updateHinhAnhSanPham1anh(@RequestParam("name") String name,
 				@RequestParam("imagemain") MultipartFile imagemain,
@@ -445,7 +449,7 @@ public class HinhAnhRescontrollerLoi {
 			System.out.println("" + imagemainold);
 		
 			
-
+//
 			String TenANHMAIN = imagemain.getOriginalFilename();
 			
 			

@@ -52,6 +52,7 @@ public class XuyetduyetSanPhamPhat {
 		
 		NhapXuatSanPham nxsp = new NhapXuatSanPham();
 		nxsp.setSanpham(sp);
+		nxsp.setNgay_nhap_xuat(LocalDate.now());
 		nxsp.setSo_luong(sp.getSo_luong());
 		nxsp.setTrang_thai_nhap("Nhập hàng");
 		nhapXuatSanPhamRepository.save(nxsp);

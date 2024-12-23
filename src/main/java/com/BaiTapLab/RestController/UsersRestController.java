@@ -126,13 +126,13 @@ public class UsersRestController {
             		.collect(Collectors.toList()).equals("User") && user.get().getHoat_dong().equals("On")) {
 	            String token = jwtUtil.generateTokenDashboard(user.get().getAccountID(), user.get().getRoles().stream()
 	            		.map(Roles::getTen_vai_tro)
-	            		.collect(Collectors.toList()));
+	            		.collect(Collectors.toList()), user.get().getHinh_anh());
 	            response.put("message", "Đăng nhập thành công!");
 	            response.put("token", token);
 	            response.put("accountID", user.get().accountID);
-	            response.put("hinhAnh", user.get().getHinh_anh());
-	            response.put("hovaten", user.get().getHovaten());
-	            response.put("sodienthoai", user.get().getSo_dien_thoai());
+//	            response.put("hinhAnh", user.get().getHinh_anh());
+//	            response.put("hovaten", user.get().getHovaten());
+//	            response.put("sodienthoai", user.get().getSo_dien_thoai());
 	            response.put("roles", user.get().getRoles().stream()
 	                .map(Roles::getTen_vai_tro)
 	                .collect(Collectors.toList()));

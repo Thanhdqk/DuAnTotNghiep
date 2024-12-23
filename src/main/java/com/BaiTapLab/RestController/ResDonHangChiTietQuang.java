@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.BaiTapLab.Entity.DonHangChiTiet;
@@ -35,8 +36,8 @@ public class ResDonHangChiTietQuang {
 	public List<HinhAnh> getHinhAnhBySanPhamId(@PathVariable String sanPhamId) {
 		return hinhAnhRepository.findBySanPhamId(sanPhamId);
 	}
-	@GetMapping("/api/users/{accountID}")
-    public Users getUserByAccountID(@PathVariable String accountID) {
+	@GetMapping("/api/userss")
+    public Users getUserByAccountID(@RequestParam("accountID") String accountID) {
         return userRepository.findById(accountID).orElse(null);
     }
 }

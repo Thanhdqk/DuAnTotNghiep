@@ -66,6 +66,7 @@ public class RescontrollerDanhmucLoi {
 		return 	DanhmucService.FindDanhMucByIDSanPham(id);
 	}
 	// here
+	// google
 	@PostMapping("DanhMuc/ADD_DanhMuc")
 	public void postMethodName1add(
 			@RequestParam("name") String name, 
@@ -101,6 +102,7 @@ public class RescontrollerDanhmucLoi {
 	}
 
 	// here
+	// google
 	@PutMapping("DanhMuc/UPDATE_DanhMuc")
 	public void postMethodName(
 			@RequestParam("id") String id,

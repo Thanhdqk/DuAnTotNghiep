@@ -95,11 +95,12 @@ public class RestControllerThanhToanPhat {
 			@RequestParam("paypalid") String paypalid) throws UnsupportedEncodingException {
 
 		ajaxServlet vnpay = new ajaxServlet();
-		String date = new java.text.SimpleDateFormat("MM/dd/yyyy")
-				.format(new java.util.Date(Long.parseLong(donhang.thoi_gian_du_kien) * 1000));
-		System.out.println("du kien : " + new java.util.Date(Long.parseLong(donhang.thoi_gian_du_kien) * 1000));
-		System.out.println("du kien : " + Integer.parseInt(donhang.thoi_gian_du_kien));
+//		String date = new java.text.SimpleDateFormat("MM/dd/yyyy")
+//				.format(new java.util.Date(Long.parseLong(donhang.thoi_gian_du_kien) * 1000));
+//		System.out.println("du kien : " + new java.util.Date(Long.parseLong(donhang.thoi_gian_du_kien) * 1000));
+//		System.out.println("du kien : " + Integer.parseInt(donhang.thoi_gian_du_kien));
 		String status = "OK";
+		System.out.println(donhang.thoi_gian_du_kien);
 //		if (paymentmethod.equals("2")) {
 //			donhang.setDon_hangid("dh-" + paypalid);
 //		} else {
@@ -170,7 +171,7 @@ public class RestControllerThanhToanPhat {
 				SanphamRepository.save(sp);
 			}
 			model.put("products", sp1);
-			model.put("estimateddate", String.valueOf(date));
+			model.put("estimateddate", String.valueOf(donhang.thoi_gian_du_kien));
 			model.put("PayMentMethod", paymentmethod.equals("1") ? "Thanh toán khi nhận hàng"
 					: paymentmethod.equals("2") ? "Thanh toán thông qua paypal" : "Thanh toán thông qua VNpay");
 			model.put("shippingfee", donhang.getPhi_ship());
@@ -189,7 +190,7 @@ public class RestControllerThanhToanPhat {
 	@PostMapping("sendmail")
 	public ResponseEntity<MailInfo> sendmailmethod(@RequestParam("accountid") String accountid) {
 		MailInfo mail1 = new MailInfo(accountid, "Thông báo thanh toán đơn hàng",
-				mailerService.bodyTemplate2((Map<String, Object>) context.getAttribute("model")));
+				mailerService.bodyTemplate((Map<String, Object>) context.getAttribute("model")));
 		try {
 			mailerService.send(mail1);
 		} catch (MessagingException e) {

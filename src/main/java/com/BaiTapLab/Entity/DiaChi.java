@@ -43,4 +43,6 @@ public class DiaChi {
 	@ManyToOne
     @JoinColumn(name = "accountID")
     public Users users;
+	
+	public boolean beingselected;
 }

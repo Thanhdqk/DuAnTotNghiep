@@ -19,7 +19,9 @@ public class DonHangService {
 	}
 	
 	public double getDoanhThu() {
-		return donhangRepository.doanhthuDonHang("Đã giao");
+		//return donhangRepository.doanhthuDonHang("Đã giao");
+		Double doanhThu = donhangRepository.doanhthuDonHang("Đã giao");
+	    return doanhThu != null ? doanhThu : 0.0;
 	}
 	
 	public Integer getKhachHang() {

@@ -7,6 +7,7 @@ import com.BaiTapLab.Entity.Users;
 import jakarta.transaction.Transactional;
 
 import java.awt.print.Pageable;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -91,5 +92,11 @@ public interface BannerRepository extends JpaRepository<Banner, String> {
 		    nativeQuery = true
 		)
 		List<Object[]> findAllBannersWithDanhMuc();
+		
+		@Query("SELECT b FROM Banner b where ?1 BETWEEN b.ngay_tao AND b.ngay_het_han ")
+		List<Banner> findkohethan(LocalDate now);
+		
+		@Query("SELECT b FROM Banner b WHERE ?1 > b.ngay_het_han")
+		List<Banner> findExpiredBanners(LocalDate now);
      
 }

@@ -20,6 +20,10 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String>{
 			+ "  where sp.ten_san_pham = :tenSP")
 	SanPham findByTenSP(@Param("tenSP") String tenSP);
 	
+	// Kiểm lỗi sản phẩm trùng
+	@Query(value = "select * from sanpham sp where sp.ten_san_pham = :ten_san_pham", nativeQuery = true)
+	List<Object[]> trungTenSanPham(@Param("ten_san_pham") String ten_san_pham);
+	
 	@Query(value = "SELECT sp.san_phamId FROM SanPham sp ORDER BY sp.san_phamId DESC")
     List<String> getLatestProductId(Pageable pageable);
 	
@@ -31,7 +35,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String>{
 	// Xem chi tiết sản phẩm
 	@Query(value = "select sp.ten_san_pham, sp.ngay_tao, sp.so_luong, sp.mo_ta,\r\n"
 			+ "  sp.chieu_cao, sp.chieu_dai, sp.chieu_rong, sp.khoi_luong, sp.tien_nhap_hang, sp.gia_goc,\r\n"
-			+ "  dm.ten_loaidm, th.ten_thuong_hieu, ncc.ten_nhacc, sp.san_pham_id from sanpham sp\r\n"
+			+ "  dm.ten_loaidm, th.ten_thuong_hieu, ncc.ten_nhacc, sp.san_pham_id, sp.han_su_dung from sanpham sp\r\n"
 			+ "  JOIN danhmuc dm on sp.danh_muc_id = dm.danh_muc_id\r\n"
 			+ "  JOIN thuonghieu th on sp.thuong_hieuid = th.thuong_hieuid\r\n"
 			+ "  JOIN nhacungcapchitiet nccct on nccct.san_pham_id = sp.san_pham_id\r\n"
@@ -45,7 +49,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String>{
 			+ "  sp.trang_thai_kho, sp.hoat_dong, sp.phe_duyet, sp.trang_thai_xoa, \r\n"
 			+ "  sp.tien_nhap_hang, sp.chieu_cao, sp.chieu_dai, sp.chieu_rong,\r\n"
 			+ "  sp.khoi_luong, sp.nhap_hang, ncc.ten_nhacc, th.ten_thuong_hieu, \r\n"
-			+ "  dm.ten_loaidm, sp.han_su_dung from sanpham sp\r\n"
+			+ "  dm.ten_loaidm, sp.han_su_dung, sp.ghi_chu from sanpham sp\r\n"
 			+ "  LEFT JOIN danhmuc dm on sp.danh_muc_id = dm.danh_muc_id\r\n"
 			+ "  LEFT JOIN thuonghieu th on th.thuong_hieuid = sp.thuong_hieuid\r\n"
 			+ "  LEFT JOIN nhacungcapchitiet nccct on nccct.san_pham_id = sp.san_pham_id\r\n"

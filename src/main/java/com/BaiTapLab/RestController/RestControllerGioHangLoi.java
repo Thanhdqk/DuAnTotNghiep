@@ -4,6 +4,7 @@ import com.BaiTapLab.Entity.GioHang;
 import com.BaiTapLab.Entity.SanPham;
 import com.BaiTapLab.Entity.Users;
 import com.BaiTapLab.Service.GioHangServiceLoi;
+import com.BaiTapLab.Repository.GioHangRepository;
 import com.BaiTapLab.Repository.SanPhamRepository;
 import com.BaiTapLab.Repository.UsersRepository;
 
@@ -27,6 +28,9 @@ public class RestControllerGioHangLoi {
 	    @Autowired
 	    SanPhamRepository SanphamRepository;
 	    
+	    @Autowired
+	    GioHangRepository gioHangRepository;
+	    
 	    @GetMapping("cart")
 	    public String getMethodName() {
 	    	return "run cart";
@@ -34,7 +38,17 @@ public class RestControllerGioHangLoi {
 	    
 	    @GetMapping("GETcart/{accountId}")
 	    public GioHang getGioHang(@PathVariable String accountId) {
-	        return gioHangService.getGioHang(accountId);
+	    	
+	    	GioHang giohang = gioHangService.getGioHang(accountId);
+	    	Users user = usersRepository.findByAccountID(accountId);
+	    	if(giohang==null)
+	    	{	
+	    		GioHang giohang1 = new GioHang();
+	    		giohang1.setUsers(user);
+	    		gioHangRepository.save(giohang1);
+	    		return giohang1;
+	    	}
+	        return giohang;
 	    }
 	    
 	    

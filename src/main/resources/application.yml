@@ -7,8 +7,9 @@ server:
 spring:
   datasource:
     # Uncomment và sửa nếu cần sử dụng địa chỉ máy chủ khác
-    #url: jdbc:sqlserver://34.124.177.222:1433;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;
+#    url: jdbc:sqlserver://34.124.177.222:1433;databaseName=DuAnTotNghiep1;encrypt=true;trustServerCertificate=true;
     url: jdbc:sqlserver://localhost:1433;databaseName=DuAnTotNghiep;encrypt=true;trustServerCertificate=true;
+#    username: sqlserver
     username: sa
     password: 123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver

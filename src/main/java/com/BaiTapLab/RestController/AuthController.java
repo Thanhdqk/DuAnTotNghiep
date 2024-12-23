@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.BaiTapLab.Entity.DiaChi;
 import com.BaiTapLab.Entity.UserWallet;
 import com.BaiTapLab.Entity.Users;
+import com.BaiTapLab.Repository.DiaChiRepository;
+import com.BaiTapLab.Security.JwtUtil;
 import com.BaiTapLab.Service.UsersService;
 import com.BaiTapLab.Service.UsersServiceQuang;
 import com.BaiTapLab.Service.WalletService;
@@ -39,11 +42,14 @@ import com.BaiTapLab.Service.WalletService;
 @RestController
 @RequestMapping("/auth")
 public class AuthController implements WebMvcConfigurer {
-
+	@Autowired
+	JwtUtil jwtutil;
 	@Autowired
 	private UsersServiceQuang userService;
 	@Autowired
 	private WalletService walletService;
+	@Autowired
+	DiaChiRepository diaChiRepository;
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -181,6 +187,20 @@ public class AuthController implements WebMvcConfigurer {
 			newAddress.setPhuong((String) payload.get("phuong"));
 			newAddress.setQuan((String) payload.get("quan"));
 			newAddress.setThanh_pho((String) payload.get("thanh_pho"));
+			List<DiaChi> list = new ArrayList<DiaChi>();
+			try {
+				
+				list = diaChiRepository.getDiaChiByIdUser2(id);
+						
+				if (list.size() > 0) {
+					System.out.println(list.size());
+					System.out.println("cc");
+					newAddress.setBeingselected(false);
+				} else {
+					newAddress.setBeingselected(true);
+				}}catch (Exception e) {
+					e.printStackTrace();
+				}
 
 			Users user = userService.getUserById(id).orElseThrow(() -> new RuntimeException("User not found"));
 			newAddress.setUsers(user);
@@ -238,8 +258,11 @@ public class AuthController implements WebMvcConfigurer {
 			}
 
 			// Đăng nhập thành công
+			String jwt = jwtutil.generateToken(user.getAccountID());
+			System.out.println("hsahhsahsa"+jwt);
 			response.put("success", true);
 			response.put("userId", user.getAccountID());
+			response.put("jwt", jwt);
 			return ResponseEntity.ok(response);
 		} else {
 			// Sai email hoặc mật khẩu

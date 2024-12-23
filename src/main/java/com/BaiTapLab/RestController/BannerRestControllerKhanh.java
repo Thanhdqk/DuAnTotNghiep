@@ -43,6 +43,13 @@ import com.BaiTapLab.Repository.DanhMucRepository;
 import com.BaiTapLab.Repository.HanhDongRepository;
 import com.BaiTapLab.Repository.UsersRepository;
 import com.BaiTapLab.Service.BannerService;
+import com.google.cloud.storage.Acl;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -50,10 +57,33 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/banners")
 @CrossOrigin(origins = { "http://localhost:3000" })
 public class BannerRestControllerKhanh {
-
+	// Finish cloud
 	private static final Logger logger = LoggerFactory.getLogger(BannerRestControllerKhanh.class);
 	private static final String IMAGE_DIR = "C:\\Users\\DELL\\Downloads\\LoiFrontend\\public\\images";
+	private static final String BUCKET_NAME = "staging.thanhnehihi.appspot.com";
+	private String uploadFileToGCS(MultipartFile file, String fileName) throws IOException {
+        // 1. Xác thực với Google Cloud
+        Storage storage = StorageOptions.newBuilder()
+                .setProjectId("thanhnehihi") // Project ID
+                .setCredentials(StorageOptions.getDefaultInstance().getCredentials())
+                .build()
+                .getService();
 
+        // 2. Tạo thông tin Blob
+        BlobId blobId = BlobId.of(BUCKET_NAME, fileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
+
+        // 3. Tải file lên bucket
+        Blob blob = storage.create(blobInfo, file.getBytes());
+
+        // 4. Cấp quyền công khai cho file (allUsers có thể đọc)
+        Acl acl = Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER); 
+        storage.createAcl(blobId, acl); // Thêm quyền đọc cho tất cả người dùng
+
+        // 5. Tạo URL công khai
+        //return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, fileName);
+        return String.format(fileName);
+    }
 	@Autowired
 	private BannerService bannerService;
 
@@ -101,7 +131,22 @@ public class BannerRestControllerKhanh {
 
 	@GetMapping("findalldanhmuc2")
 	public List<BannerDTO2> getMethodDanhmucByDTO() {
-		return bannerRepository.findAll().stream().map(b -> new BannerDTO2(b.getBannerId(), b.getHinh_anh(),
+		LocalDate now = LocalDate.now();
+		return bannerRepository.findkohethan(now).stream().map(b -> new BannerDTO2(b.getBannerId(), b.getHinh_anh(),
+				b.getHoat_dong(), b.getTrang_thai_xoa(), b.getNgay_tao(), b.getNgay_het_han(),
+				new UserDTO2(b.getUsers().getAccountID(), b.getUsers().getHovaten()),
+				b.getBannerchitiet().stream()
+						.map(bct -> new BannerChiTietDTO(bct.getBannerchitietid(),
+								new DanhMucDTO(bct.getDanhmuc().getDanh_mucId())))
+						.collect(Collectors.toList())))
+				.collect(Collectors.toList());
+
+	}
+	
+	@GetMapping("findallbannerHetHan")
+	public List<BannerDTO2> getMethodDanhmucByDTOHetHan() {
+		LocalDate now = LocalDate.now();
+		return bannerRepository.findExpiredBanners(now).stream().map(b -> new BannerDTO2(b.getBannerId(), b.getHinh_anh(),
 				b.getHoat_dong(), b.getTrang_thai_xoa(), b.getNgay_tao(), b.getNgay_het_han(),
 				new UserDTO2(b.getUsers().getAccountID(), b.getUsers().getHovaten()),
 				b.getBannerchitiet().stream()
@@ -269,6 +314,13 @@ public class BannerRestControllerKhanh {
 				hinhFile.transferTo(new File(filePath)); // Lưu ảnh vào thư mục
 				banner.setHinh_anh(fileName); // Cập nhật tên ảnh vào database
 			}
+//	        if (hinhFile != null ) {
+//	            String originalFileName = hinhFile.getOriginalFilename();
+//	
+//	            String imageUrl = uploadFileToGCS(hinhFile, originalFileName);
+//	
+//	            banner.setHinh_anh(imageUrl);
+//	        }
 
 			// Lưu banner đã cập nhật
 			Banner updatedBanner = bannerRepository.save(banner);
@@ -312,7 +364,7 @@ public class BannerRestControllerKhanh {
 
 			@RequestParam("san_pham") String sanpham,
 
-			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhFile) {
+			@RequestParam(value = "hinh_anh", required = false) MultipartFile hinhFile) throws IOException {
 
 		List<String> array = Arrays.asList(sanpham.split(","));
 		System.out.println("sadsa" + bannerId);
@@ -338,6 +390,13 @@ public class BannerRestControllerKhanh {
 		    System.out.println("cccccccccccccccccccccccccccccccccccccc");
 		    banner.setHinh_anh(fileName);
 		}
+//		if (hinhFile != null ) {
+//            String originalFileName = hinhFile.getOriginalFilename();
+//
+//            String imageUrl = uploadFileToGCS(hinhFile, originalFileName);
+//
+//            banner.setHinh_anh(imageUrl);
+//        }
 
 		
 

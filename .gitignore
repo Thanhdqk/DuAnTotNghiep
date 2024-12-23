@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Sensitive files ###
+# Add your sensitive files or directories that should be ignored here
+# Examples:
+# Ignoring service account key files (e.g., Google Cloud credentials)
+*.json
+*.key
+*.pem
+
+# Ignore any other sensitive files you don't want to be pushed to GitHub
